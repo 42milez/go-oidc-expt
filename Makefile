@@ -2,13 +2,15 @@ PROJECT_NAME := go-oidc-server
 VERSION := $(shell git tag --sort=-v:refname | head -n 1)
 GITHUB_ID := 42milez
 
-.PHONY: help build build-local clean debug down fmt lint migrate resolve start stop test up
+.PHONY: help
 
 help: Makefile
 	@sed -n "s/^##//p" $< | column -t -s ":" |  sed -e "s/^/ /"
 
 #  Build
 # --------------------------------------------------
+
+.PHONY: build build-local
 
 ## build: Build docker images to deploy
 build:
@@ -26,6 +28,8 @@ build-local:
 
 #  Utility
 # --------------------------------------------------
+
+.PHONY: clean debug fmt lint migrate resolve test
 
 ## clean: Clean up caches
 clean:
@@ -57,6 +61,8 @@ test:
 
 #  Docker
 # --------------------------------------------------
+
+.PHONY: up down start stop
 
 ## up: Create and start containers
 up:

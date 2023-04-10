@@ -11,7 +11,7 @@ services:
       - dev
     ports:
       - "8080:80"
-      - "40000:40000"
+      - "12345:2345"
     stdin_open: true
     tty: true
     volumes:
