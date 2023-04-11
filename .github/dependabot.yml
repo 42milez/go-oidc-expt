@@ -1,9 +1,23 @@
 version: 2
 updates:
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: daily
+    target-branch: main
+    assignees:
+      - 42milez
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    target-branch: main
+    assignees:
+      - 42milez
   - package-ecosystem: gomod
     directory: /
     schedule:
       interval: daily
-    target-branch: develop
+    target-branch: main
     assignees:
       - 42milez

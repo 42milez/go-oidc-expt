@@ -14,7 +14,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Println(version)
+	fmt.Println("go-oidc-server")
 }
 
 func run(ctx context.Context) error {

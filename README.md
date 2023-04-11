@@ -1,6 +1,7 @@
 # go-oidc-server
 
-`go-oidc-server` is an experimental implementation of [OpenID Connect](https://openid.net/connect/) with Go. It only supports `Authorization Code` flow.
+`go-oidc-server` is an experimental implementation of [OpenID Connect](https://openid.net/connect/) with Go. It only
+supports `Authorization Code` flow.
 
 ## Features
 
@@ -48,21 +49,22 @@ make up
 ```
 
 Note:
-  - The containers:
-    - can be stopped with `make stop`
-      - The stopped containers can be started with `make start`
-    - can be stopped and removed with `make down`
+
+- The containers:
+  - can be stopped with `make stop`
+    - The stopped containers can be started with `make start`
+  - can be stopped and removed with `make down`
 
 # References
 
 - OpenID Connect
-    - OpenID Connect Core 1.0 incorporating errata set 1
-        - [EN](https://openid.net/specs/openid-connect-core-1_0.html)
-        - [JA](https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html)
+  - OpenID Connect Core 1.0 incorporating errata set 1
+    - [EN](https://openid.net/specs/openid-connect-core-1_0.html)
+    - [JA](https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html)
 - OTP
-    - [RFC4226: An HMAC-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc4226)
-    - [RFC6238: Time-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc6238)
-    - [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
+  - [RFC4226: An HMAC-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc4226)
+  - [RFC6238: Time-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc6238)
+  - [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
 
 # Notes
 
