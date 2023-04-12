@@ -35,10 +35,6 @@ build-local:
 clean:
 	@go clean -cache -fuzzcache -testcache
 
-## debug: Start containers with debugger
-debug:
-	@docker-compose -f docker-compose.yml -f docker/docker-compose.debug.yml up --force-recreate -d
-
 ## fmt: Run formatter
 fmt:
 	@go fmt ./...
@@ -66,7 +62,7 @@ test:
 
 ## up: Create and start containers
 up:
-	@docker-compose up --force-recreate -d
+	@docker-compose up -d
 
 ## down: Stop and remove containers
 down:

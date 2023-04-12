@@ -9,17 +9,14 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	var got *Config
-	var err error
-
 	wantPort := 1234
 
 	t.Setenv("PORT", fmt.Sprint(wantPort))
 
-	got, err = New()
+	got, err := New()
 
 	if err != nil {
-		t.Fatalf("cannot create config: %v", err)
+		t.Fatalf("cannot create config: %+v", err)
 	}
 
 	if got.Port != wantPort {
