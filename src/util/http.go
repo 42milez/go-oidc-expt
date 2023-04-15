@@ -1,12 +1,13 @@
 package util
 
 import (
-	"github.com/rs/zerolog/log"
 	"net/http"
+
+	"github.com/rs/zerolog/log"
 )
 
-func HttpClose(resp *http.Response) {
+func CloseHTTPConn(resp *http.Response) {
 	if err := resp.Body.Close(); err != nil {
-		log.Error().Err(err).Send()
+		log.Error().Err(err).Msg("failed to close connection")
 	}
 }

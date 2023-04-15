@@ -3,9 +3,10 @@ package config
 import (
 	"errors"
 	"fmt"
-	"github.com/caarlos0/env/v8"
 	"reflect"
 	"testing"
+
+	"github.com/caarlos0/env/v8"
 )
 
 func TestNew(t *testing.T) {

@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"github.com/rs/zerolog/log"
-	"golang.org/x/sync/errgroup"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/rs/zerolog/log"
+	"golang.org/x/sync/errgroup"
 )
 
 func NewServer(lis net.Listener, mux http.Handler) *Server {
