@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/42milez/go-oidc-server/src/handler"
 	"github.com/42milez/go-oidc-server/src/service"
-	"net/http"
 
 	"github.com/42milez/go-oidc-server/src/clock"
 	"github.com/42milez/go-oidc-server/src/config"

@@ -2,8 +2,66 @@
 
 package ent
 
+import (
+	"time"
+
+	"github.com/42milez/go-oidc-server/src/ent/ent/user"
+	"github.com/42milez/go-oidc-server/src/ent/schema"
+)
+
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescName is the schema descriptor for name field.
+	userDescName := userFields[0].Descriptor()
+	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	user.NameValidator = func() func(string) error {
+		validators := userDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+			validators[2].(func(string) error),
+			validators[3].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescPassword is the schema descriptor for password field.
+	userDescPassword := userFields[1].Descriptor()
+	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	user.PasswordValidator = func() func(string) error {
+		validators := userDescPassword.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+			validators[2].(func(string) error),
+		}
+		return func(password string) error {
+			for _, fn := range fns {
+				if err := fn(password); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescCreatedAt is the schema descriptor for created_at field.
+	userDescCreatedAt := userFields[2].Descriptor()
+	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(time.Time)
+	// userDescModifiedAt is the schema descriptor for modified_at field.
+	userDescModifiedAt := userFields[3].Descriptor()
+	// user.DefaultModifiedAt holds the default value on creation for the modified_at field.
+	user.DefaultModifiedAt = userDescModifiedAt.Default.(time.Time)
+	// user.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
+	user.UpdateDefaultModifiedAt = userDescModifiedAt.UpdateDefault.(func() time.Time)
 }

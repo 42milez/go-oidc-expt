@@ -65,6 +65,8 @@ Note:
   - [RFC4226: An HMAC-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc4226)
   - [RFC6238: Time-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc6238)
   - [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
+- Password
+  - [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 
 # Notes
 

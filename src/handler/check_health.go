@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"github.com/rs/zerolog/log"
 	"net/http"
+
+	"github.com/rs/zerolog/log"
 )
 
 type CheckHealth struct {

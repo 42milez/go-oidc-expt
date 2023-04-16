@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"time"
+
+	"github.com/rs/zerolog/log"
 
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/src/clock"

@@ -29,7 +29,7 @@ build-local:
 #  Utility
 # --------------------------------------------------
 
-.PHONY: clean debug fmt lint migrate resolve test
+.PHONY: clean debug fmt gen lint migrate resolve test
 
 ## clean: Clean up caches
 clean:
@@ -38,6 +38,10 @@ clean:
 ## fmt: Run formatter
 fmt:
 	@go fmt ./...
+
+## gen: Run generator
+gen:
+	@go generate ./...
 
 ## lint: Run linters
 lint:
@@ -53,7 +57,7 @@ resolve:
 
 ## test: Run all tests
 test:
-	@go test -covermode=atomic -coverprofile=coverage.out ./...
+	@go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent"`
 
 #  Docker
 # --------------------------------------------------
