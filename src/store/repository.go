@@ -8,6 +8,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
+	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/src/clock"
 	"github.com/42milez/go-oidc-server/src/config"
@@ -16,8 +17,8 @@ import (
 )
 
 func New(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(), error) {
-	dbCfg := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
-	db, err := sql.Open("mysql", dbCfg)
+	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
+	db, err := sql.Open(dialect.MySQL, dataSrc)
 	if err != nil {
 		return nil, nil, func() {}, err
 	}

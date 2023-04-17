@@ -9,13 +9,13 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// User holds the schema definition for the User entity.
-type User struct {
+// Account holds the schema definition for the Account entity.
+type Account struct {
 	ent.Schema
 }
 
-// Fields of the User.
-func (User) Fields() []ent.Field {
+// Fields of the Account.
+func (Account) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
 			MinLen(6).
@@ -44,7 +44,7 @@ func (User) Fields() []ent.Field {
 	}
 }
 
-// Edges of the User.
-func (User) Edges() []ent.Edge {
+// Edges of the Account.
+func (Account) Edges() []ent.Edge {
 	return nil
 }
