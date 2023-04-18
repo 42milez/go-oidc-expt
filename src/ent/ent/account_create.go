@@ -32,6 +32,12 @@ func (ac *AccountCreate) SetPassword(s string) *AccountCreate {
 	return ac
 }
 
+// SetTotpSecret sets the "totp_secret" field.
+func (ac *AccountCreate) SetTotpSecret(s string) *AccountCreate {
+	ac.mutation.SetTotpSecret(s)
+	return ac
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ac *AccountCreate) SetCreatedAt(t time.Time) *AccountCreate {
 	ac.mutation.SetCreatedAt(t)
@@ -123,6 +129,14 @@ func (ac *AccountCreate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
 		}
 	}
+	if _, ok := ac.mutation.TotpSecret(); !ok {
+		return &ValidationError{Name: "totp_secret", err: errors.New(`ent: missing required field "Account.totp_secret"`)}
+	}
+	if v, ok := ac.mutation.TotpSecret(); ok {
+		if err := account.TotpSecretValidator(v); err != nil {
+			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Account.totp_secret": %w`, err)}
+		}
+	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Account.created_at"`)}
 	}
@@ -162,6 +176,10 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Password(); ok {
 		_spec.SetField(account.FieldPassword, field.TypeString, value)
 		_node.Password = value
+	}
+	if value, ok := ac.mutation.TotpSecret(); ok {
+		_spec.SetField(account.FieldTotpSecret, field.TypeString, value)
+		_node.TotpSecret = &value
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(account.FieldCreatedAt, field.TypeTime, value)

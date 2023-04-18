@@ -21,6 +21,8 @@ type Account struct {
 	Name string `json:"name,omitempty"`
 	// Password holds the value of the "password" field.
 	Password string `json:"password,omitempty"`
+	// TotpSecret holds the value of the "totp_secret" field.
+	TotpSecret *string `json:"totp_secret,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
@@ -35,7 +37,7 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case account.FieldID:
 			values[i] = new(sql.NullInt64)
-		case account.FieldName, account.FieldPassword:
+		case account.FieldName, account.FieldPassword, account.FieldTotpSecret:
 			values[i] = new(sql.NullString)
 		case account.FieldCreatedAt, account.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
@@ -71,6 +73,13 @@ func (a *Account) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field password", values[i])
 			} else if value.Valid {
 				a.Password = value.String
+			}
+		case account.FieldTotpSecret:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field totp_secret", values[i])
+			} else if value.Valid {
+				a.TotpSecret = new(string)
+				*a.TotpSecret = value.String
 			}
 		case account.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -125,6 +134,11 @@ func (a *Account) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("password=")
 	builder.WriteString(a.Password)
+	builder.WriteString(", ")
+	if v := a.TotpSecret; v != nil {
+		builder.WriteString("totp_secret=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(a.CreatedAt.Format(time.ANSIC))

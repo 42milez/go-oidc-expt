@@ -55,12 +55,16 @@ func init() {
 			return nil
 		}
 	}()
+	// accountDescTotpSecret is the schema descriptor for totp_secret field.
+	accountDescTotpSecret := accountFields[2].Descriptor()
+	// account.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
+	account.TotpSecretValidator = accountDescTotpSecret.Validators[0].(func(string) error)
 	// accountDescCreatedAt is the schema descriptor for created_at field.
-	accountDescCreatedAt := accountFields[2].Descriptor()
+	accountDescCreatedAt := accountFields[3].Descriptor()
 	// account.DefaultCreatedAt holds the default value on creation for the created_at field.
 	account.DefaultCreatedAt = accountDescCreatedAt.Default.(func() time.Time)
 	// accountDescModifiedAt is the schema descriptor for modified_at field.
-	accountDescModifiedAt := accountFields[3].Descriptor()
+	accountDescModifiedAt := accountFields[4].Descriptor()
 	// account.DefaultModifiedAt holds the default value on creation for the modified_at field.
 	account.DefaultModifiedAt = accountDescModifiedAt.Default.(func() time.Time)
 	// account.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
@@ -106,12 +110,16 @@ func init() {
 			return nil
 		}
 	}()
+	// userDescTotpSecret is the schema descriptor for totp_secret field.
+	userDescTotpSecret := userFields[2].Descriptor()
+	// user.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
+	user.TotpSecretValidator = userDescTotpSecret.Validators[0].(func(string) error)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[2].Descriptor()
+	userDescCreatedAt := userFields[3].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescModifiedAt is the schema descriptor for modified_at field.
-	userDescModifiedAt := userFields[3].Descriptor()
+	userDescModifiedAt := userFields[4].Descriptor()
 	// user.DefaultModifiedAt holds the default value on creation for the modified_at field.
 	user.DefaultModifiedAt = userDescModifiedAt.Default.(func() time.Time)
 	// user.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.

@@ -40,6 +40,12 @@ func (au *AccountUpdate) SetPassword(s string) *AccountUpdate {
 	return au
 }
 
+// SetTotpSecret sets the "totp_secret" field.
+func (au *AccountUpdate) SetTotpSecret(s string) *AccountUpdate {
+	au.mutation.SetTotpSecret(s)
+	return au
+}
+
 // SetModifiedAt sets the "modified_at" field.
 func (au *AccountUpdate) SetModifiedAt(t time.Time) *AccountUpdate {
 	au.mutation.SetModifiedAt(t)
@@ -99,6 +105,11 @@ func (au *AccountUpdate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
 		}
 	}
+	if v, ok := au.mutation.TotpSecret(); ok {
+		if err := account.TotpSecretValidator(v); err != nil {
+			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Account.totp_secret": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -119,6 +130,9 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.Password(); ok {
 		_spec.SetField(account.FieldPassword, field.TypeString, value)
+	}
+	if value, ok := au.mutation.TotpSecret(); ok {
+		_spec.SetField(account.FieldTotpSecret, field.TypeString, value)
 	}
 	if value, ok := au.mutation.ModifiedAt(); ok {
 		_spec.SetField(account.FieldModifiedAt, field.TypeTime, value)
@@ -152,6 +166,12 @@ func (auo *AccountUpdateOne) SetName(s string) *AccountUpdateOne {
 // SetPassword sets the "password" field.
 func (auo *AccountUpdateOne) SetPassword(s string) *AccountUpdateOne {
 	auo.mutation.SetPassword(s)
+	return auo
+}
+
+// SetTotpSecret sets the "totp_secret" field.
+func (auo *AccountUpdateOne) SetTotpSecret(s string) *AccountUpdateOne {
+	auo.mutation.SetTotpSecret(s)
 	return auo
 }
 
@@ -227,6 +247,11 @@ func (auo *AccountUpdateOne) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
 		}
 	}
+	if v, ok := auo.mutation.TotpSecret(); ok {
+		if err := account.TotpSecretValidator(v); err != nil {
+			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Account.totp_secret": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -264,6 +289,9 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	}
 	if value, ok := auo.mutation.Password(); ok {
 		_spec.SetField(account.FieldPassword, field.TypeString, value)
+	}
+	if value, ok := auo.mutation.TotpSecret(); ok {
+		_spec.SetField(account.FieldTotpSecret, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.ModifiedAt(); ok {
 		_spec.SetField(account.FieldModifiedAt, field.TypeTime, value)

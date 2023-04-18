@@ -40,6 +40,12 @@ func (uu *UserUpdate) SetPassword(s string) *UserUpdate {
 	return uu
 }
 
+// SetTotpSecret sets the "totp_secret" field.
+func (uu *UserUpdate) SetTotpSecret(s string) *UserUpdate {
+	uu.mutation.SetTotpSecret(s)
+	return uu
+}
+
 // SetModifiedAt sets the "modified_at" field.
 func (uu *UserUpdate) SetModifiedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetModifiedAt(t)
@@ -99,6 +105,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.TotpSecret(); ok {
+		if err := user.TotpSecretValidator(v); err != nil {
+			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "User.totp_secret": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -119,6 +130,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
+	}
+	if value, ok := uu.mutation.TotpSecret(); ok {
+		_spec.SetField(user.FieldTotpSecret, field.TypeString, value)
 	}
 	if value, ok := uu.mutation.ModifiedAt(); ok {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)
@@ -152,6 +166,12 @@ func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 // SetPassword sets the "password" field.
 func (uuo *UserUpdateOne) SetPassword(s string) *UserUpdateOne {
 	uuo.mutation.SetPassword(s)
+	return uuo
+}
+
+// SetTotpSecret sets the "totp_secret" field.
+func (uuo *UserUpdateOne) SetTotpSecret(s string) *UserUpdateOne {
+	uuo.mutation.SetTotpSecret(s)
 	return uuo
 }
 
@@ -227,6 +247,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "User.password": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.TotpSecret(); ok {
+		if err := user.TotpSecretValidator(v); err != nil {
+			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "User.totp_secret": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -264,6 +289,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Password(); ok {
 		_spec.SetField(user.FieldPassword, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.TotpSecret(); ok {
+		_spec.SetField(user.FieldTotpSecret, field.TypeString, value)
 	}
 	if value, ok := uuo.mutation.ModifiedAt(); ok {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)

@@ -37,6 +37,7 @@ type AccountMutation struct {
 	id            *int
 	name          *string
 	password      *string
+	totp_secret   *string
 	created_at    *time.Time
 	modified_at   *time.Time
 	clearedFields map[string]struct{}
@@ -215,6 +216,42 @@ func (m *AccountMutation) ResetPassword() {
 	m.password = nil
 }
 
+// SetTotpSecret sets the "totp_secret" field.
+func (m *AccountMutation) SetTotpSecret(s string) {
+	m.totp_secret = &s
+}
+
+// TotpSecret returns the value of the "totp_secret" field in the mutation.
+func (m *AccountMutation) TotpSecret() (r string, exists bool) {
+	v := m.totp_secret
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotpSecret returns the old "totp_secret" field's value of the Account entity.
+// If the Account object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountMutation) OldTotpSecret(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotpSecret is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotpSecret requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotpSecret: %w", err)
+	}
+	return oldValue.TotpSecret, nil
+}
+
+// ResetTotpSecret resets all changes to the "totp_secret" field.
+func (m *AccountMutation) ResetTotpSecret() {
+	m.totp_secret = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *AccountMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -321,12 +358,15 @@ func (m *AccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, account.FieldName)
 	}
 	if m.password != nil {
 		fields = append(fields, account.FieldPassword)
+	}
+	if m.totp_secret != nil {
+		fields = append(fields, account.FieldTotpSecret)
 	}
 	if m.created_at != nil {
 		fields = append(fields, account.FieldCreatedAt)
@@ -346,6 +386,8 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case account.FieldPassword:
 		return m.Password()
+	case account.FieldTotpSecret:
+		return m.TotpSecret()
 	case account.FieldCreatedAt:
 		return m.CreatedAt()
 	case account.FieldModifiedAt:
@@ -363,6 +405,8 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldName(ctx)
 	case account.FieldPassword:
 		return m.OldPassword(ctx)
+	case account.FieldTotpSecret:
+		return m.OldTotpSecret(ctx)
 	case account.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case account.FieldModifiedAt:
@@ -389,6 +433,13 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPassword(v)
+		return nil
+	case account.FieldTotpSecret:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotpSecret(v)
 		return nil
 	case account.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -459,6 +510,9 @@ func (m *AccountMutation) ResetField(name string) error {
 	case account.FieldPassword:
 		m.ResetPassword()
 		return nil
+	case account.FieldTotpSecret:
+		m.ResetTotpSecret()
+		return nil
 	case account.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -525,6 +579,7 @@ type UserMutation struct {
 	id            *int
 	name          *string
 	password      *string
+	totp_secret   *string
 	created_at    *time.Time
 	modified_at   *time.Time
 	clearedFields map[string]struct{}
@@ -703,6 +758,42 @@ func (m *UserMutation) ResetPassword() {
 	m.password = nil
 }
 
+// SetTotpSecret sets the "totp_secret" field.
+func (m *UserMutation) SetTotpSecret(s string) {
+	m.totp_secret = &s
+}
+
+// TotpSecret returns the value of the "totp_secret" field in the mutation.
+func (m *UserMutation) TotpSecret() (r string, exists bool) {
+	v := m.totp_secret
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotpSecret returns the old "totp_secret" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldTotpSecret(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotpSecret is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotpSecret requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotpSecret: %w", err)
+	}
+	return oldValue.TotpSecret, nil
+}
+
+// ResetTotpSecret resets all changes to the "totp_secret" field.
+func (m *UserMutation) ResetTotpSecret() {
+	m.totp_secret = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *UserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -809,12 +900,15 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, user.FieldName)
 	}
 	if m.password != nil {
 		fields = append(fields, user.FieldPassword)
+	}
+	if m.totp_secret != nil {
+		fields = append(fields, user.FieldTotpSecret)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -834,6 +928,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case user.FieldPassword:
 		return m.Password()
+	case user.FieldTotpSecret:
+		return m.TotpSecret()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	case user.FieldModifiedAt:
@@ -851,6 +947,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case user.FieldPassword:
 		return m.OldPassword(ctx)
+	case user.FieldTotpSecret:
+		return m.OldTotpSecret(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case user.FieldModifiedAt:
@@ -877,6 +975,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPassword(v)
+		return nil
+	case user.FieldTotpSecret:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotpSecret(v)
 		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -946,6 +1051,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldPassword:
 		m.ResetPassword()
+		return nil
+	case user.FieldTotpSecret:
+		m.ResetTotpSecret()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

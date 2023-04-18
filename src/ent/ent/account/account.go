@@ -17,6 +17,8 @@ const (
 	FieldName = "name"
 	// FieldPassword holds the string denoting the password field in the database.
 	FieldPassword = "password"
+	// FieldTotpSecret holds the string denoting the totp_secret field in the database.
+	FieldTotpSecret = "totp_secret"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldModifiedAt holds the string denoting the modified_at field in the database.
@@ -30,6 +32,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldPassword,
+	FieldTotpSecret,
 	FieldCreatedAt,
 	FieldModifiedAt,
 }
@@ -49,6 +52,8 @@ var (
 	NameValidator func(string) error
 	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	PasswordValidator func(string) error
+	// TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
+	TotpSecretValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultModifiedAt holds the default value on creation for the "modified_at" field.
@@ -73,6 +78,11 @@ func ByName(opts ...sql.OrderTermOption) Order {
 // ByPassword orders the results by the password field.
 func ByPassword(opts ...sql.OrderTermOption) Order {
 	return sql.OrderByField(FieldPassword, opts...).ToFunc()
+}
+
+// ByTotpSecret orders the results by the totp_secret field.
+func ByTotpSecret(opts ...sql.OrderTermOption) Order {
+	return sql.OrderByField(FieldTotpSecret, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
