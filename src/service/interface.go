@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/42milez/go-oidc-server/src/ent/ent"
+
 	"github.com/42milez/go-oidc-server/src/entity"
 )
 
@@ -12,6 +13,9 @@ type UserCreater interface {
 }
 
 type UserReader interface {
-	Read(ctx context.Context, db *ent.Client) (entity.User, error)
-	ReadBulk(ctx context.Context, db *ent.Client) ([]entity.Users, error)
+	ReadUser(ctx context.Context, db *ent.Client) (entity.User, error)
+}
+
+type UsersReader interface {
+	ReadUsers(ctx context.Context, db *ent.Client) (entity.Users, error)
 }

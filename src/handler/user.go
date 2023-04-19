@@ -13,7 +13,7 @@ type ReadUser struct {
 func (p *ReadUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	user, err := p.Service.Read(ctx)
+	user, err := p.Service.ReadUser(ctx)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
@@ -35,7 +35,7 @@ type ReadUsers struct {
 func (p *ReadUsers) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	users, err := p.Service.ReadBulk(ctx)
+	users, err := p.Service.ReadUsers(ctx)
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),

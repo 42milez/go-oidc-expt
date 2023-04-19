@@ -12,9 +12,9 @@ type CheckHealthService interface {
 }
 
 type ReadUserService interface {
-	Read(ctx context.Context) (entity.User, error)
+	ReadUser(ctx context.Context) (entity.User, error)
 }
 
 type ReadUsersService interface {
-	ReadBulk(ctx context.Context) (entity.Users, error)
+	ReadUsers(ctx context.Context) (entity.Users, error)
 }

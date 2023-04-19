@@ -9,7 +9,7 @@ import (
 )
 
 type CreateUser struct {
-	DB   *ent.UserClient
+	DB   *ent.Client
 	Repo UserCreater
 }
 
@@ -18,14 +18,19 @@ func (p *CreateUser) Create(ctx context.Context) error {
 }
 
 type ReadUser struct {
-	DB   *ent.UserClient
+	DB   *ent.Client
 	Repo UserReader
 }
 
-func (p *ReadUser) Read(ctx context.Context, db *ent.Client) (entity.User, error) {
+func (p *ReadUser) ReadUser(ctx context.Context) (entity.User, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (p *ReadUser) ReadBulk(ctx context.Context, db *ent.Client) (entity.Users, error) {
+type ReadUsers struct {
+	DB   *ent.Client
+	Repo UsersReader
+}
+
+func (p *ReadUsers) ReadUsers(ctx context.Context) (entity.Users, error) {
 	return nil, errors.New("not implemented")
 }

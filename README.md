@@ -55,7 +55,7 @@ Note:
     - The stopped containers can be started with `make start`
   - can be stopped and removed with `make down`
 
-# References
+## References
 
 - OpenID Connect
   - OpenID Connect Core 1.0 incorporating errata set 1
@@ -68,6 +68,6 @@ Note:
 - Password
   - [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 
-# Notes
+## Notes
 
 - [TOTP Base32 vs Base64](https://stackoverflow.com/questions/50082075/totp-base32-vs-base64)
