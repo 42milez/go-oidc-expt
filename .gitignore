@@ -16,3 +16,4 @@
 
 # go-oidc-server
 bin/
+venv/

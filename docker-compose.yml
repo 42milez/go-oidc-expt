@@ -54,7 +54,7 @@ services:
     tty: true
     volumes:
       - type: volume
-        source: redis_data
+        source: cache_data
         target: /data
     deploy:
       resources:
@@ -102,9 +102,9 @@ networks:
   dev:
     driver: bridge
 volumes:
+  cache_data:
+    driver: local
   db_data:
     driver: local
   db_logs:
-    driver: local
-  redis_data:
     driver: local
