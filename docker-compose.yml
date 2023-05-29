@@ -1,0 +1,110 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+      target: dev
+    container_name: go-oidc-server-app
+    image: go-oidc-server-app:latest
+    networks:
+      - dev
+    ports:
+      - "8080:80"
+      - "12345:2345"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: app
+      DB_PASSWORD: app
+      DB_NAME: app
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    depends_on:
+      - cache
+      - db
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+  cache:
+    build:
+      context: docker/cache/
+    container_name: go-oidc-server-cache
+    image: go-oidc-server-cache:latest
+    networks:
+      - dev
+    ports:
+      - "16379:6379"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: volume
+        source: cache_data
+        target: /data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 64M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+  db:
+    build:
+      context: docker/db/
+    container_name: go-oidc-server-db
+    image: go-oidc-server-db:latest
+    networks:
+      - dev
+    ports:
+      - "13306:3306"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: ./docker/db/conf.d
+        target: /etc/mysql/conf.d
+      - type: bind
+        source: ./docker/db/docker-entrypoint-initdb.d
+        target: /docker-entrypoint-initdb.d
+      - type: volume
+        source: db_data
+        target: /var/lib/mysql
+      - type: volume
+        source: db_logs
+        target: /var/log/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+networks:
+  dev:
+    driver: bridge
+volumes:
+  cache_data:
+    driver: local
+  db_data:
+    driver: local
+  db_logs:
+    driver: local

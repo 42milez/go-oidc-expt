@@ -1,0 +1,23 @@
+run:
+  skip-dirs:
+    - src/ent/ent
+linters-settings:
+  govet:
+    check-shadowing: false
+  gocyclo:
+    min-complexity: 10
+  misspell:
+    locale: US
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gocognit
+    - gocyclo
+    - gofmt
+    - goimports
+    - govet
+    - misspell
+    - staticcheck
+    - unused
+    - whitespace
