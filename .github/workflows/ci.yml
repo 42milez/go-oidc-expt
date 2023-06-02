@@ -33,6 +33,8 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - name: Start services
         run: docker-compose up -d cache db
+      - name: Wait for database to be available
+        run: .github/scripts/waiter/db
       - name: Run all tests
         run: make test
   notify:
