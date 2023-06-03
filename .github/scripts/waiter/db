@@ -13,7 +13,7 @@ while ! mysql -h "${DB_HOST}" -P "${DB_PORT}" -u "${DB_USER}" -e "SELECT 1;" >/d
   d=$((now-STARTED_AT))
 
   if [[ ${d} -gt ${TIMEOUT} ]]; then
-    echo "timeout: mysql"
+    echo "timeout: failed to establish database connection"
     exit 1
   fi
 
