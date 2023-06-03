@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
       - uses: golangci/golangci-lint-action@v3
@@ -28,11 +28,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
       - name: Start services
         run: docker-compose up -d cache db
+      - name: Wait for database to be available
+        run: .github/scripts/waiter/db
       - name: Run all tests
         run: make test
   notify:
