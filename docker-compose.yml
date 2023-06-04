@@ -1,12 +1,12 @@
 version: "3.9"
 services:
-  app:
+  idp:
     build:
       context: .
-      dockerfile: docker/app/Dockerfile
+      dockerfile: docker/app/idp/Dockerfile
       target: dev
-    container_name: go-oidc-server-app
-    image: go-oidc-server-app:latest
+    container_name: go-oidc-server-idp
+    image: go-oidc-server-idp:latest
     networks:
       - dev
     ports:
@@ -19,12 +19,12 @@ services:
         source: .
         target: /workspace
     environment:
-      DB_HOST: db
+      DB_HOST: idp-db
       DB_PORT: 3306
-      DB_USER: app
-      DB_PASSWORD: app
-      DB_NAME: app
-      REDIS_HOST: cache
+      DB_USER: idp
+      DB_PASSWORD: idp
+      DB_NAME: idp
+      REDIS_HOST: idp-cache
       REDIS_PORT: 6379
     deploy:
       resources:
@@ -35,17 +35,17 @@ services:
         condition: on-failure
         max_attempts: 3
     depends_on:
-      - cache
-      - db
+      - idp-cache
+      - idp-db
     cap_add:
       - SYS_PTRACE
     security_opt:
       - apparmor:unconfined
-  cache:
+  idp-cache:
     build:
-      context: docker/cache/
-    container_name: go-oidc-server-cache
-    image: go-oidc-server-cache:latest
+      context: docker/cache/idp
+    container_name: go-oidc-server-idp-cache
+    image: go-oidc-server-idp-cache:latest
     networks:
       - dev
     ports:
@@ -54,7 +54,7 @@ services:
     tty: true
     volumes:
       - type: volume
-        source: cache_data
+        source: idp_cache_data
         target: /data
     deploy:
       resources:
@@ -64,11 +64,11 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
-  db:
+  idp-db:
     build:
-      context: docker/db/
-    container_name: go-oidc-server-db
-    image: go-oidc-server-db:latest
+      context: docker/db/idp
+    container_name: go-oidc-server-idp-db
+    image: go-oidc-server-idp-db:latest
     networks:
       - dev
     ports:
@@ -77,16 +77,16 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: ./docker/db/conf.d
+        source: ./docker/db/idp/conf.d
         target: /etc/mysql/conf.d
       - type: bind
-        source: ./docker/db/docker-entrypoint-initdb.d
+        source: ./docker/db/idp/docker-entrypoint-initdb.d
         target: /docker-entrypoint-initdb.d
       - type: volume
-        source: db_data
+        source: idp_db_data
         target: /var/lib/mysql
       - type: volume
-        source: db_logs
+        source: idp_db_logs
         target: /var/log/mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
@@ -102,9 +102,9 @@ networks:
   dev:
     driver: bridge
 volumes:
-  cache_data:
+  idp_cache_data:
     driver: local
-  db_data:
+  idp_db_data:
     driver: local
-  db_logs:
+  idp_db_logs:
     driver: local

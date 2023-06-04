@@ -1,7 +1,6 @@
 # go-oidc-server
 
-`go-oidc-server` is an experimental implementation of [OpenID Connect](https://openid.net/connect/) with Go. It only
-supports `Authorization Code` flow.
+`go-oidc-server` is an experimental implementation of [OpenID Connect](https://openid.net/connect/) with Go.
 
 ## Features
 

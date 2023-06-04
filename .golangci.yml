@@ -1,6 +1,6 @@
 run:
   skip-dirs:
-    - src/ent/ent
+    - app/idp/ent/ent
 linters-settings:
   govet:
     check-shadowing: false
