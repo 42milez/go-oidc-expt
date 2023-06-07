@@ -8,10 +8,10 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 )
 
-func (p *Repository) ReadUser(ctx context.Context, db *ent.Client) (entity.User, error) {
+func (p *Repository) ReadAdmin(ctx context.Context, db *ent.Client) (entity.Admin, error) {
 	return nil, errors.New("not implemented")
 }
 
-func (p *Repository) ReadUsers(ctx context.Context, db *ent.Client) (entity.Users, error) {
+func (p *Repository) ReadAdmins(ctx context.Context, db *ent.Client) (entity.Admins, error) {
 	return nil, errors.New("not implemented")
 }

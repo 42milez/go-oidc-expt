@@ -36,7 +36,7 @@ func TestServer_Run(t *testing.T) {
 		return s.Run(ctx)
 	})
 
-	path := "test"
+	path := "idp_test"
 	url := fmt.Sprintf("http://%s/%s", lis.Addr().String(), path)
 	t.Logf("try request to %q", url)
 	resp, err := http.Get(url)

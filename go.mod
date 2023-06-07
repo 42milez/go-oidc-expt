@@ -3,6 +3,7 @@ module github.com/42milez/go-oidc-server
 go 1.20
 
 require (
+	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf
 	entgo.io/ent v0.12.3
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/go-chi/chi/v5 v5.0.8
@@ -13,7 +14,6 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect

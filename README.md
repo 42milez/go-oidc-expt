@@ -47,6 +47,21 @@ docker context use lima-go-oidc-server
 make up
 ```
 
+#### Execute migration files
+
+```
+brew install ariga/tap/atlas
+
+```
+
+## Commands
+
+### Generate assets
+
+```
+go generate ./...
+```
+
 Note:
 
 - The containers:

@@ -20,12 +20,7 @@ services:
         target: /workspace
     environment:
       DB_HOST: idp-db
-      DB_PORT: 3306
-      DB_USER: idp
-      DB_PASSWORD: idp
-      DB_NAME: idp
       REDIS_HOST: idp-cache
-      REDIS_PORT: 6379
     deploy:
       resources:
         limits:

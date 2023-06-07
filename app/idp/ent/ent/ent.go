@@ -12,8 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent/account"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -74,8 +73,7 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			account.Table: account.ValidColumn,
-			user.Table:    user.ValidColumn,
+			admin.Table: admin.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

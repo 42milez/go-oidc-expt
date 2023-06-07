@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -eu
+
+readonly APP_NAME="${1}"
+
+readonly DB_HOST="127.0.0.1"
+readonly DB_PORT=13306
+readonly DB_USER="atlas"
+readonly DB_PASSWORD="atlas"
+
+atlas migrate apply \
+  --dir "file://app/${APP_NAME}/ent/migrations" \
+  --url "mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${APP_NAME}"
+
+atlas migrate apply \
+  --dir "file://app/${APP_NAME}/ent/migrations" \
+  --url "mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${APP_NAME}_test"

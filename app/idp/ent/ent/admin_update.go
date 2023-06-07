@@ -11,60 +11,60 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent/account"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
 )
 
-// AccountUpdate is the builder for updating Account entities.
-type AccountUpdate struct {
+// AdminUpdate is the builder for updating Admin entities.
+type AdminUpdate struct {
 	config
 	hooks    []Hook
-	mutation *AccountMutation
+	mutation *AdminMutation
 }
 
-// Where appends a list predicates to the AccountUpdate builder.
-func (au *AccountUpdate) Where(ps ...predicate.Account) *AccountUpdate {
+// Where appends a list predicates to the AdminUpdate builder.
+func (au *AdminUpdate) Where(ps ...predicate.Admin) *AdminUpdate {
 	au.mutation.Where(ps...)
 	return au
 }
 
 // SetName sets the "name" field.
-func (au *AccountUpdate) SetName(s string) *AccountUpdate {
+func (au *AdminUpdate) SetName(s string) *AdminUpdate {
 	au.mutation.SetName(s)
 	return au
 }
 
 // SetPassword sets the "password" field.
-func (au *AccountUpdate) SetPassword(s string) *AccountUpdate {
+func (au *AdminUpdate) SetPassword(s string) *AdminUpdate {
 	au.mutation.SetPassword(s)
 	return au
 }
 
 // SetTotpSecret sets the "totp_secret" field.
-func (au *AccountUpdate) SetTotpSecret(s string) *AccountUpdate {
+func (au *AdminUpdate) SetTotpSecret(s string) *AdminUpdate {
 	au.mutation.SetTotpSecret(s)
 	return au
 }
 
 // SetModifiedAt sets the "modified_at" field.
-func (au *AccountUpdate) SetModifiedAt(t time.Time) *AccountUpdate {
+func (au *AdminUpdate) SetModifiedAt(t time.Time) *AdminUpdate {
 	au.mutation.SetModifiedAt(t)
 	return au
 }
 
-// Mutation returns the AccountMutation object of the builder.
-func (au *AccountUpdate) Mutation() *AccountMutation {
+// Mutation returns the AdminMutation object of the builder.
+func (au *AdminUpdate) Mutation() *AdminMutation {
 	return au.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (au *AccountUpdate) Save(ctx context.Context) (int, error) {
+func (au *AdminUpdate) Save(ctx context.Context) (int, error) {
 	au.defaults()
 	return withHooks(ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (au *AccountUpdate) SaveX(ctx context.Context) int {
+func (au *AdminUpdate) SaveX(ctx context.Context) int {
 	affected, err := au.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -73,51 +73,51 @@ func (au *AccountUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (au *AccountUpdate) Exec(ctx context.Context) error {
+func (au *AdminUpdate) Exec(ctx context.Context) error {
 	_, err := au.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (au *AccountUpdate) ExecX(ctx context.Context) {
+func (au *AdminUpdate) ExecX(ctx context.Context) {
 	if err := au.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (au *AccountUpdate) defaults() {
+func (au *AdminUpdate) defaults() {
 	if _, ok := au.mutation.ModifiedAt(); !ok {
-		v := account.UpdateDefaultModifiedAt()
+		v := admin.UpdateDefaultModifiedAt()
 		au.mutation.SetModifiedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (au *AccountUpdate) check() error {
+func (au *AdminUpdate) check() error {
 	if v, ok := au.mutation.Name(); ok {
-		if err := account.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Account.name": %w`, err)}
+		if err := admin.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Admin.name": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.Password(); ok {
-		if err := account.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
+		if err := admin.PasswordValidator(v); err != nil {
+			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Admin.password": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.TotpSecret(); ok {
-		if err := account.TotpSecretValidator(v); err != nil {
-			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Account.totp_secret": %w`, err)}
+		if err := admin.TotpSecretValidator(v); err != nil {
+			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Admin.totp_secret": %w`, err)}
 		}
 	}
 	return nil
 }
 
-func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := au.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(account.Table, account.Columns, sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -126,20 +126,20 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := au.mutation.Name(); ok {
-		_spec.SetField(account.FieldName, field.TypeString, value)
+		_spec.SetField(admin.FieldName, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Password(); ok {
-		_spec.SetField(account.FieldPassword, field.TypeString, value)
+		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 	}
 	if value, ok := au.mutation.TotpSecret(); ok {
-		_spec.SetField(account.FieldTotpSecret, field.TypeString, value)
+		_spec.SetField(admin.FieldTotpSecret, field.TypeString, value)
 	}
 	if value, ok := au.mutation.ModifiedAt(); ok {
-		_spec.SetField(account.FieldModifiedAt, field.TypeTime, value)
+		_spec.SetField(admin.FieldModifiedAt, field.TypeTime, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{account.Label}
+			err = &NotFoundError{admin.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -149,64 +149,64 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// AccountUpdateOne is the builder for updating a single Account entity.
-type AccountUpdateOne struct {
+// AdminUpdateOne is the builder for updating a single Admin entity.
+type AdminUpdateOne struct {
 	config
 	fields   []string
 	hooks    []Hook
-	mutation *AccountMutation
+	mutation *AdminMutation
 }
 
 // SetName sets the "name" field.
-func (auo *AccountUpdateOne) SetName(s string) *AccountUpdateOne {
+func (auo *AdminUpdateOne) SetName(s string) *AdminUpdateOne {
 	auo.mutation.SetName(s)
 	return auo
 }
 
 // SetPassword sets the "password" field.
-func (auo *AccountUpdateOne) SetPassword(s string) *AccountUpdateOne {
+func (auo *AdminUpdateOne) SetPassword(s string) *AdminUpdateOne {
 	auo.mutation.SetPassword(s)
 	return auo
 }
 
 // SetTotpSecret sets the "totp_secret" field.
-func (auo *AccountUpdateOne) SetTotpSecret(s string) *AccountUpdateOne {
+func (auo *AdminUpdateOne) SetTotpSecret(s string) *AdminUpdateOne {
 	auo.mutation.SetTotpSecret(s)
 	return auo
 }
 
 // SetModifiedAt sets the "modified_at" field.
-func (auo *AccountUpdateOne) SetModifiedAt(t time.Time) *AccountUpdateOne {
+func (auo *AdminUpdateOne) SetModifiedAt(t time.Time) *AdminUpdateOne {
 	auo.mutation.SetModifiedAt(t)
 	return auo
 }
 
-// Mutation returns the AccountMutation object of the builder.
-func (auo *AccountUpdateOne) Mutation() *AccountMutation {
+// Mutation returns the AdminMutation object of the builder.
+func (auo *AdminUpdateOne) Mutation() *AdminMutation {
 	return auo.mutation
 }
 
-// Where appends a list predicates to the AccountUpdate builder.
-func (auo *AccountUpdateOne) Where(ps ...predicate.Account) *AccountUpdateOne {
+// Where appends a list predicates to the AdminUpdate builder.
+func (auo *AdminUpdateOne) Where(ps ...predicate.Admin) *AdminUpdateOne {
 	auo.mutation.Where(ps...)
 	return auo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (auo *AccountUpdateOne) Select(field string, fields ...string) *AccountUpdateOne {
+func (auo *AdminUpdateOne) Select(field string, fields ...string) *AdminUpdateOne {
 	auo.fields = append([]string{field}, fields...)
 	return auo
 }
 
-// Save executes the query and returns the updated Account entity.
-func (auo *AccountUpdateOne) Save(ctx context.Context) (*Account, error) {
+// Save executes the query and returns the updated Admin entity.
+func (auo *AdminUpdateOne) Save(ctx context.Context) (*Admin, error) {
 	auo.defaults()
 	return withHooks(ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (auo *AccountUpdateOne) SaveX(ctx context.Context) *Account {
+func (auo *AdminUpdateOne) SaveX(ctx context.Context) *Admin {
 	node, err := auo.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -215,64 +215,64 @@ func (auo *AccountUpdateOne) SaveX(ctx context.Context) *Account {
 }
 
 // Exec executes the query on the entity.
-func (auo *AccountUpdateOne) Exec(ctx context.Context) error {
+func (auo *AdminUpdateOne) Exec(ctx context.Context) error {
 	_, err := auo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (auo *AccountUpdateOne) ExecX(ctx context.Context) {
+func (auo *AdminUpdateOne) ExecX(ctx context.Context) {
 	if err := auo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (auo *AccountUpdateOne) defaults() {
+func (auo *AdminUpdateOne) defaults() {
 	if _, ok := auo.mutation.ModifiedAt(); !ok {
-		v := account.UpdateDefaultModifiedAt()
+		v := admin.UpdateDefaultModifiedAt()
 		auo.mutation.SetModifiedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (auo *AccountUpdateOne) check() error {
+func (auo *AdminUpdateOne) check() error {
 	if v, ok := auo.mutation.Name(); ok {
-		if err := account.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Account.name": %w`, err)}
+		if err := admin.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Admin.name": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.Password(); ok {
-		if err := account.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
+		if err := admin.PasswordValidator(v); err != nil {
+			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Admin.password": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.TotpSecret(); ok {
-		if err := account.TotpSecretValidator(v); err != nil {
-			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Account.totp_secret": %w`, err)}
+		if err := admin.TotpSecretValidator(v); err != nil {
+			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Admin.totp_secret": %w`, err)}
 		}
 	}
 	return nil
 }
 
-func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err error) {
+func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error) {
 	if err := auo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(account.Table, account.Columns, sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
 	id, ok := auo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Account.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Admin.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := auo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, account.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, admin.FieldID)
 		for _, f := range fields {
-			if !account.ValidColumn(f) {
+			if !admin.ValidColumn(f) {
 				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 			}
-			if f != account.FieldID {
+			if f != admin.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)
 			}
 		}
@@ -285,23 +285,23 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 		}
 	}
 	if value, ok := auo.mutation.Name(); ok {
-		_spec.SetField(account.FieldName, field.TypeString, value)
+		_spec.SetField(admin.FieldName, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Password(); ok {
-		_spec.SetField(account.FieldPassword, field.TypeString, value)
+		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.TotpSecret(); ok {
-		_spec.SetField(account.FieldTotpSecret, field.TypeString, value)
+		_spec.SetField(admin.FieldTotpSecret, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.ModifiedAt(); ok {
-		_spec.SetField(account.FieldModifiedAt, field.TypeTime, value)
+		_spec.SetField(admin.FieldModifiedAt, field.TypeTime, value)
 	}
-	_node = &Account{config: auo.config}
+	_node = &Admin{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
 	if err = sqlgraph.UpdateNode(ctx, auo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{account.Label}
+			err = &NotFoundError{admin.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}

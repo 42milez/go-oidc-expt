@@ -10,42 +10,42 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent/account"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 )
 
-// AccountCreate is the builder for creating a Account entity.
-type AccountCreate struct {
+// AdminCreate is the builder for creating a Admin entity.
+type AdminCreate struct {
 	config
-	mutation *AccountMutation
+	mutation *AdminMutation
 	hooks    []Hook
 }
 
 // SetName sets the "name" field.
-func (ac *AccountCreate) SetName(s string) *AccountCreate {
+func (ac *AdminCreate) SetName(s string) *AdminCreate {
 	ac.mutation.SetName(s)
 	return ac
 }
 
 // SetPassword sets the "password" field.
-func (ac *AccountCreate) SetPassword(s string) *AccountCreate {
+func (ac *AdminCreate) SetPassword(s string) *AdminCreate {
 	ac.mutation.SetPassword(s)
 	return ac
 }
 
 // SetTotpSecret sets the "totp_secret" field.
-func (ac *AccountCreate) SetTotpSecret(s string) *AccountCreate {
+func (ac *AdminCreate) SetTotpSecret(s string) *AdminCreate {
 	ac.mutation.SetTotpSecret(s)
 	return ac
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (ac *AccountCreate) SetCreatedAt(t time.Time) *AccountCreate {
+func (ac *AdminCreate) SetCreatedAt(t time.Time) *AdminCreate {
 	ac.mutation.SetCreatedAt(t)
 	return ac
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ac *AccountCreate) SetNillableCreatedAt(t *time.Time) *AccountCreate {
+func (ac *AdminCreate) SetNillableCreatedAt(t *time.Time) *AdminCreate {
 	if t != nil {
 		ac.SetCreatedAt(*t)
 	}
@@ -53,32 +53,32 @@ func (ac *AccountCreate) SetNillableCreatedAt(t *time.Time) *AccountCreate {
 }
 
 // SetModifiedAt sets the "modified_at" field.
-func (ac *AccountCreate) SetModifiedAt(t time.Time) *AccountCreate {
+func (ac *AdminCreate) SetModifiedAt(t time.Time) *AdminCreate {
 	ac.mutation.SetModifiedAt(t)
 	return ac
 }
 
 // SetNillableModifiedAt sets the "modified_at" field if the given value is not nil.
-func (ac *AccountCreate) SetNillableModifiedAt(t *time.Time) *AccountCreate {
+func (ac *AdminCreate) SetNillableModifiedAt(t *time.Time) *AdminCreate {
 	if t != nil {
 		ac.SetModifiedAt(*t)
 	}
 	return ac
 }
 
-// Mutation returns the AccountMutation object of the builder.
-func (ac *AccountCreate) Mutation() *AccountMutation {
+// Mutation returns the AdminMutation object of the builder.
+func (ac *AdminCreate) Mutation() *AdminMutation {
 	return ac.mutation
 }
 
-// Save creates the Account in the database.
-func (ac *AccountCreate) Save(ctx context.Context) (*Account, error) {
+// Save creates the Admin in the database.
+func (ac *AdminCreate) Save(ctx context.Context) (*Admin, error) {
 	ac.defaults()
 	return withHooks(ctx, ac.sqlSave, ac.mutation, ac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ac *AccountCreate) SaveX(ctx context.Context) *Account {
+func (ac *AdminCreate) SaveX(ctx context.Context) *Admin {
 	v, err := ac.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -87,66 +87,66 @@ func (ac *AccountCreate) SaveX(ctx context.Context) *Account {
 }
 
 // Exec executes the query.
-func (ac *AccountCreate) Exec(ctx context.Context) error {
+func (ac *AdminCreate) Exec(ctx context.Context) error {
 	_, err := ac.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ac *AccountCreate) ExecX(ctx context.Context) {
+func (ac *AdminCreate) ExecX(ctx context.Context) {
 	if err := ac.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ac *AccountCreate) defaults() {
+func (ac *AdminCreate) defaults() {
 	if _, ok := ac.mutation.CreatedAt(); !ok {
-		v := account.DefaultCreatedAt()
+		v := admin.DefaultCreatedAt()
 		ac.mutation.SetCreatedAt(v)
 	}
 	if _, ok := ac.mutation.ModifiedAt(); !ok {
-		v := account.DefaultModifiedAt()
+		v := admin.DefaultModifiedAt()
 		ac.mutation.SetModifiedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ac *AccountCreate) check() error {
+func (ac *AdminCreate) check() error {
 	if _, ok := ac.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Account.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Admin.name"`)}
 	}
 	if v, ok := ac.mutation.Name(); ok {
-		if err := account.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Account.name": %w`, err)}
+		if err := admin.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Admin.name": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "Account.password"`)}
+		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "Admin.password"`)}
 	}
 	if v, ok := ac.mutation.Password(); ok {
-		if err := account.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
+		if err := admin.PasswordValidator(v); err != nil {
+			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Admin.password": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.TotpSecret(); !ok {
-		return &ValidationError{Name: "totp_secret", err: errors.New(`ent: missing required field "Account.totp_secret"`)}
+		return &ValidationError{Name: "totp_secret", err: errors.New(`ent: missing required field "Admin.totp_secret"`)}
 	}
 	if v, ok := ac.mutation.TotpSecret(); ok {
-		if err := account.TotpSecretValidator(v); err != nil {
-			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Account.totp_secret": %w`, err)}
+		if err := admin.TotpSecretValidator(v); err != nil {
+			return &ValidationError{Name: "totp_secret", err: fmt.Errorf(`ent: validator failed for field "Admin.totp_secret": %w`, err)}
 		}
 	}
 	if _, ok := ac.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Account.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Admin.created_at"`)}
 	}
 	if _, ok := ac.mutation.ModifiedAt(); !ok {
-		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "Account.modified_at"`)}
+		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "Admin.modified_at"`)}
 	}
 	return nil
 }
 
-func (ac *AccountCreate) sqlSave(ctx context.Context) (*Account, error) {
+func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 	if err := ac.check(); err != nil {
 		return nil, err
 	}
@@ -164,51 +164,51 @@ func (ac *AccountCreate) sqlSave(ctx context.Context) (*Account, error) {
 	return _node, nil
 }
 
-func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
+func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Account{config: ac.config}
-		_spec = sqlgraph.NewCreateSpec(account.Table, sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt))
+		_node = &Admin{config: ac.config}
+		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
 	)
 	if value, ok := ac.mutation.Name(); ok {
-		_spec.SetField(account.FieldName, field.TypeString, value)
+		_spec.SetField(admin.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ac.mutation.Password(); ok {
-		_spec.SetField(account.FieldPassword, field.TypeString, value)
+		_spec.SetField(admin.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
 	if value, ok := ac.mutation.TotpSecret(); ok {
-		_spec.SetField(account.FieldTotpSecret, field.TypeString, value)
+		_spec.SetField(admin.FieldTotpSecret, field.TypeString, value)
 		_node.TotpSecret = &value
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
-		_spec.SetField(account.FieldCreatedAt, field.TypeTime, value)
+		_spec.SetField(admin.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ac.mutation.ModifiedAt(); ok {
-		_spec.SetField(account.FieldModifiedAt, field.TypeTime, value)
+		_spec.SetField(admin.FieldModifiedAt, field.TypeTime, value)
 		_node.ModifiedAt = value
 	}
 	return _node, _spec
 }
 
-// AccountCreateBulk is the builder for creating many Account entities in bulk.
-type AccountCreateBulk struct {
+// AdminCreateBulk is the builder for creating many Admin entities in bulk.
+type AdminCreateBulk struct {
 	config
-	builders []*AccountCreate
+	builders []*AdminCreate
 }
 
-// Save creates the Account entities in the database.
-func (acb *AccountCreateBulk) Save(ctx context.Context) ([]*Account, error) {
+// Save creates the Admin entities in the database.
+func (acb *AdminCreateBulk) Save(ctx context.Context) ([]*Admin, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
-	nodes := make([]*Account, len(acb.builders))
+	nodes := make([]*Admin, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))
 	for i := range acb.builders {
 		func(i int, root context.Context) {
 			builder := acb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*AccountMutation)
+				mutation, ok := m.(*AdminMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -255,7 +255,7 @@ func (acb *AccountCreateBulk) Save(ctx context.Context) ([]*Account, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (acb *AccountCreateBulk) SaveX(ctx context.Context) []*Account {
+func (acb *AdminCreateBulk) SaveX(ctx context.Context) []*Admin {
 	v, err := acb.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -264,13 +264,13 @@ func (acb *AccountCreateBulk) SaveX(ctx context.Context) []*Account {
 }
 
 // Exec executes the query.
-func (acb *AccountCreateBulk) Exec(ctx context.Context) error {
+func (acb *AdminCreateBulk) Exec(ctx context.Context) error {
 	_, err := acb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (acb *AccountCreateBulk) ExecX(ctx context.Context) {
+func (acb *AdminCreateBulk) ExecX(ctx context.Context) {
 	if err := acb.Exec(ctx); err != nil {
 		panic(err)
 	}

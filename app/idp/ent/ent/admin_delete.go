@@ -8,30 +8,30 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent/account"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
 )
 
-// AccountDelete is the builder for deleting a Account entity.
-type AccountDelete struct {
+// AdminDelete is the builder for deleting a Admin entity.
+type AdminDelete struct {
 	config
 	hooks    []Hook
-	mutation *AccountMutation
+	mutation *AdminMutation
 }
 
-// Where appends a list predicates to the AccountDelete builder.
-func (ad *AccountDelete) Where(ps ...predicate.Account) *AccountDelete {
+// Where appends a list predicates to the AdminDelete builder.
+func (ad *AdminDelete) Where(ps ...predicate.Admin) *AdminDelete {
 	ad.mutation.Where(ps...)
 	return ad
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (ad *AccountDelete) Exec(ctx context.Context) (int, error) {
+func (ad *AdminDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, ad.sqlExec, ad.mutation, ad.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ad *AccountDelete) ExecX(ctx context.Context) int {
+func (ad *AdminDelete) ExecX(ctx context.Context) int {
 	n, err := ad.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ func (ad *AccountDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (ad *AccountDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(account.Table, sqlgraph.NewFieldSpec(account.FieldID, field.TypeInt))
+func (ad *AdminDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeInt))
 	if ps := ad.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -56,32 +56,32 @@ func (ad *AccountDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// AccountDeleteOne is the builder for deleting a single Account entity.
-type AccountDeleteOne struct {
-	ad *AccountDelete
+// AdminDeleteOne is the builder for deleting a single Admin entity.
+type AdminDeleteOne struct {
+	ad *AdminDelete
 }
 
-// Where appends a list predicates to the AccountDelete builder.
-func (ado *AccountDeleteOne) Where(ps ...predicate.Account) *AccountDeleteOne {
+// Where appends a list predicates to the AdminDelete builder.
+func (ado *AdminDeleteOne) Where(ps ...predicate.Admin) *AdminDeleteOne {
 	ado.ad.mutation.Where(ps...)
 	return ado
 }
 
 // Exec executes the deletion query.
-func (ado *AccountDeleteOne) Exec(ctx context.Context) error {
+func (ado *AdminDeleteOne) Exec(ctx context.Context) error {
 	n, err := ado.ad.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{account.Label}
+		return &NotFoundError{admin.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ado *AccountDeleteOne) ExecX(ctx context.Context) {
+func (ado *AdminDeleteOne) ExecX(ctx context.Context) {
 	if err := ado.Exec(ctx); err != nil {
 		panic(err)
 	}

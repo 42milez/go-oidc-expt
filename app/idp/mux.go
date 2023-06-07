@@ -34,30 +34,30 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	}
 	mux.HandleFunc("/health", checkHealthHdlr.ServeHTTP)
 
-	//  user
+	//  admin
 	// --------------------------------------------------
 
-	readUserHdlr := &handler2.ReadUser{
-		Service: &service2.ReadUser{
+	readAdminHdlr := &handler2.ReadAdmin{
+		Service: &service2.ReadAdmin{
 			DB:   client,
 			Repo: &repo,
 		},
 	}
-	mux.Route("/user", func(r chi.Router) {
-		r.Get("/", readUserHdlr.ServeHTTP)
+	mux.Route("/admin", func(r chi.Router) {
+		r.Get("/", readAdminHdlr.ServeHTTP)
 	})
 
-	//  users
+	//  admins
 	// --------------------------------------------------
 
-	readUsersHdlr := &handler2.ReadUsers{
-		Service: &service2.ReadUsers{
+	readAdminsHdlr := &handler2.ReadAdmins{
+		Service: &service2.ReadAdmins{
 			DB:   client,
 			Repo: &repo,
 		},
 	}
-	mux.Route("/users", func(r chi.Router) {
-		r.Get("/", readUsersHdlr.ServeHTTP)
+	mux.Route("/admins", func(r chi.Router) {
+		r.Get("/", readAdminsHdlr.ServeHTTP)
 	})
 
 	return mux, cleanup, nil

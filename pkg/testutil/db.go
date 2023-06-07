@@ -15,11 +15,11 @@ import (
 )
 
 func OpenDB(t *testing.T) (*ent.Client, *sql.DB) {
-	dbUser := "test"
-	dbPassword := "test"
+	dbUser := "idp_test"
+	dbPassword := "idp_test"
 	dbHost := "127.0.0.1"
 	dbPort := 13306
-	dbName := "test"
+	dbName := "idp_test"
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", dbUser, dbPassword, dbHost, dbPort, dbName)
 
 	db, err := sql.Open(dialect.MySQL, dataSrc)

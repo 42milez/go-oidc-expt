@@ -5,8 +5,7 @@ package ent
 import (
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent/account"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/schema"
 )
 
@@ -14,13 +13,13 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	accountFields := schema.Account{}.Fields()
-	_ = accountFields
-	// accountDescName is the schema descriptor for name field.
-	accountDescName := accountFields[0].Descriptor()
-	// account.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	account.NameValidator = func() func(string) error {
-		validators := accountDescName.Validators
+	adminFields := schema.Admin{}.Fields()
+	_ = adminFields
+	// adminDescName is the schema descriptor for name field.
+	adminDescName := adminFields[0].Descriptor()
+	// admin.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	admin.NameValidator = func() func(string) error {
+		validators := adminDescName.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
@@ -36,11 +35,11 @@ func init() {
 			return nil
 		}
 	}()
-	// accountDescPassword is the schema descriptor for password field.
-	accountDescPassword := accountFields[1].Descriptor()
-	// account.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
-	account.PasswordValidator = func() func(string) error {
-		validators := accountDescPassword.Validators
+	// adminDescPassword is the schema descriptor for password field.
+	adminDescPassword := adminFields[1].Descriptor()
+	// admin.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	admin.PasswordValidator = func() func(string) error {
+		validators := adminDescPassword.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
@@ -55,73 +54,18 @@ func init() {
 			return nil
 		}
 	}()
-	// accountDescTotpSecret is the schema descriptor for totp_secret field.
-	accountDescTotpSecret := accountFields[2].Descriptor()
-	// account.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
-	account.TotpSecretValidator = accountDescTotpSecret.Validators[0].(func(string) error)
-	// accountDescCreatedAt is the schema descriptor for created_at field.
-	accountDescCreatedAt := accountFields[3].Descriptor()
-	// account.DefaultCreatedAt holds the default value on creation for the created_at field.
-	account.DefaultCreatedAt = accountDescCreatedAt.Default.(func() time.Time)
-	// accountDescModifiedAt is the schema descriptor for modified_at field.
-	accountDescModifiedAt := accountFields[4].Descriptor()
-	// account.DefaultModifiedAt holds the default value on creation for the modified_at field.
-	account.DefaultModifiedAt = accountDescModifiedAt.Default.(func() time.Time)
-	// account.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
-	account.UpdateDefaultModifiedAt = accountDescModifiedAt.UpdateDefault.(func() time.Time)
-	userFields := schema.User{}.Fields()
-	_ = userFields
-	// userDescName is the schema descriptor for name field.
-	userDescName := userFields[0].Descriptor()
-	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	user.NameValidator = func() func(string) error {
-		validators := userDescName.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-			validators[2].(func(string) error),
-			validators[3].(func(string) error),
-		}
-		return func(name string) error {
-			for _, fn := range fns {
-				if err := fn(name); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
-	// userDescPassword is the schema descriptor for password field.
-	userDescPassword := userFields[1].Descriptor()
-	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
-	user.PasswordValidator = func() func(string) error {
-		validators := userDescPassword.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-			validators[2].(func(string) error),
-		}
-		return func(password string) error {
-			for _, fn := range fns {
-				if err := fn(password); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
-	// userDescTotpSecret is the schema descriptor for totp_secret field.
-	userDescTotpSecret := userFields[2].Descriptor()
-	// user.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
-	user.TotpSecretValidator = userDescTotpSecret.Validators[0].(func(string) error)
-	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[3].Descriptor()
-	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
-	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
-	// userDescModifiedAt is the schema descriptor for modified_at field.
-	userDescModifiedAt := userFields[4].Descriptor()
-	// user.DefaultModifiedAt holds the default value on creation for the modified_at field.
-	user.DefaultModifiedAt = userDescModifiedAt.Default.(func() time.Time)
-	// user.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
-	user.UpdateDefaultModifiedAt = userDescModifiedAt.UpdateDefault.(func() time.Time)
+	// adminDescTotpSecret is the schema descriptor for totp_secret field.
+	adminDescTotpSecret := adminFields[2].Descriptor()
+	// admin.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
+	admin.TotpSecretValidator = adminDescTotpSecret.Validators[0].(func(string) error)
+	// adminDescCreatedAt is the schema descriptor for created_at field.
+	adminDescCreatedAt := adminFields[3].Descriptor()
+	// admin.DefaultCreatedAt holds the default value on creation for the created_at field.
+	admin.DefaultCreatedAt = adminDescCreatedAt.Default.(func() time.Time)
+	// adminDescModifiedAt is the schema descriptor for modified_at field.
+	adminDescModifiedAt := adminFields[4].Descriptor()
+	// admin.DefaultModifiedAt holds the default value on creation for the modified_at field.
+	admin.DefaultModifiedAt = adminDescModifiedAt.Default.(func() time.Time)
+	// admin.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
+	admin.UpdateDefaultModifiedAt = adminDescModifiedAt.UpdateDefault.(func() time.Time)
 }
