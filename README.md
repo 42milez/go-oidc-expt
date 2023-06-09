@@ -8,66 +8,77 @@ TBD
 
 ## TRY FOR NOW :zap:
 
-### Setup
+TBD ( Use the image upload to Docker Hub )
 
-#### Install required packages:
+## Setup for development
+
+### Install required packages
 
 ```
-brew install docker-buildx docker-compose golangci-lint lima
+brew install ariga/tap/atlas docker-buildx docker-compose golangci-lint lima
 ```
 
-#### Enable `docker-buildx`:
+### Enable docker-buildx
 
 ```
 mkdir -p ~/.docker/cli-plugins
 ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
 ```
 
-#### Create and start the virtual machine:
+### Create and start the virtual machine
 
 ```
-limactl start --tty=false --name=go-oidc-server lima.yml
+limactl start --name=go-oidc-server lima.yml
 ```
 
-- Note:
-  - The VM:
-    - can be stopped with `limactl stop go-oidc-server`
-    - can be deleted with `limactl delete go-oidc-server`
+The virtual machine:
 
-#### Create and switch docker context:
+  - can be stopped with `limactl stop go-oidc-server`
+  - can be deleted with `limactl delete go-oidc-server`
+
+### Create and switch docker context:
 
 ```
 docker context create lima-go-oidc-server --docker "host=unix:///${HOME}/.lima/go-oidc-server/sock/docker.sock"
 docker context use lima-go-oidc-server
 ```
 
-#### Create and run containers
+#### Run containers
 
 ```
 make up
 ```
 
-#### Execute migration files
+The containers:
+
+  - can be stopped with `make stop`
+    - The stopped containers can be started with `make start`
+  - can be stopped and removed with `make down`
+
+#### Apply migrations
 
 ```
-brew install ariga/tap/atlas
-
+./script/atlas/migrate-apply
 ```
 
 ## Commands
 
-### Generate assets
+### Generating assets
 
 ```
 go generate ./...
 ```
 
-Note:
+### Generating versioned migration files
 
-- The containers:
-  - can be stopped with `make stop`
-    - The stopped containers can be started with `make start`
-  - can be stopped and removed with `make down`
+```
+./script/atlas/migrate-diff <APP_NAME> <MIGRATION_NAME>
+```
+
+| Parameter      | Detail                                                                                                                 |
+|----------------|------------------------------------------------------------------------------------------------------------------------|
+| APP_NAME       | Application name ( `idp` or `auth` )                                                                                   |
+| MIGRATION_NAME | A part of migration file name. The filename is determined according to the format `%Y%m%d%H%i%S_<MIGRATION_NAME>.sql`. |
 
 ## References
 
