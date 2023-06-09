@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 set -eu
 
-readonly APP_NAME="${1}"
+. config
 
-readonly DB_HOST="127.0.0.1"
-readonly DB_PORT=13306
-readonly DB_USER="atlas"
-readonly DB_PASSWORD="atlas"
+readonly APP_NAME="${1}"
 
 atlas migrate apply \
   --dir "file://app/${APP_NAME}/ent/migrations" \

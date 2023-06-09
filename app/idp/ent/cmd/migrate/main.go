@@ -49,15 +49,14 @@ func main() {
 		schema.WithFormatter(atlas.DefaultFormatter),
 	}
 	if len(os.Args) != 2 {
-		log.Fatal("migration name is required. Use: 'go run -mod=mod app/idp/ent/cmd/migrate/main.go <name>'")
+		log.Fatal("migration name is required. Use: 'go run -mod=mod app/<APP_NAME>/ent/cmd/migrate/main.go <MIGRATION_NAME>'")
 	}
 
 	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
-	dbPort := 13306
-	dbAdmin := "atlas"
-	dbPassword := "atlas"
 	dbName := "atlas"
-	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", dbAdmin, dbPassword, cfg.DBHost, dbPort, dbName)
+	dbAdmin := dbName
+	dbPassword := dbName
+	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", dbAdmin, dbPassword, cfg.DBHost, cfg.DBPort, dbName)
 	if err = migrate.NamedDiff(ctx, url, os.Args[1], opts...); err != nil {
 		log.Fatalf("failed generating migration file: %v", err)
 	}

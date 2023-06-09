@@ -19,8 +19,8 @@ services:
         source: .
         target: /workspace
     environment:
-      DB_HOST: idp-db
-      REDIS_HOST: idp-cache
+      DB_HOST: db
+      REDIS_HOST: cache
     deploy:
       resources:
         limits:
@@ -30,17 +30,17 @@ services:
         condition: on-failure
         max_attempts: 3
     depends_on:
-      - idp-cache
-      - idp-db
+      - cache
+      - db
     cap_add:
       - SYS_PTRACE
     security_opt:
       - apparmor:unconfined
-  idp-cache:
+  cache:
     build:
       context: docker/cache/idp
-    container_name: go-oidc-server-idp-cache
-    image: go-oidc-server-idp-cache:latest
+    container_name: go-oidc-server-cache
+    image: go-oidc-server-cache:latest
     networks:
       - dev
     ports:
@@ -59,11 +59,11 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
-  idp-db:
+  db:
     build:
       context: docker/db/idp
-    container_name: go-oidc-server-idp-db
-    image: go-oidc-server-idp-db:latest
+    container_name: go-oidc-server-db
+    image: go-oidc-server-db:latest
     networks:
       - dev
     ports:
