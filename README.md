@@ -86,8 +86,10 @@ go generate ./...
 ### Verifying and linting migrations
 
 ```
-./script/atlas/migrate-lint.sh <APP_NAME> <N_LATEST>
+./script/atlas/migrate-lint.sh <APP_NAME> [<N_LATEST>]
 ```
+
+If `N_LATEST` isn't specified, the diff between `main` branch and the current one is selected as the changeset.
 
 ## References
 
