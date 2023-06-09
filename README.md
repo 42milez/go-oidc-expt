@@ -61,7 +61,7 @@ The containers:
 ./script/atlas/migrate-apply.sh
 ```
 
-## Commands
+## Commands and scripts
 
 The commands described later require the following parameters:
 
@@ -69,6 +69,7 @@ The commands described later require the following parameters:
 |----------------|------------------------------------------------------------------------------------------------------------------------|
 | APP_NAME       | Application name ( `idp` or `auth` )                                                                                   |
 | MIGRATION_NAME | A part of migration file name. The filename is determined according to the format `%Y%m%d%H%i%S_<MIGRATION_NAME>.sql`. |
+| N_LATEST       | The number of latest migration files to be analyzed. `migrate-list.sh` runs analysis on them.                          |
 
 ### Generating assets
 
@@ -85,7 +86,7 @@ go generate ./...
 ### Verifying and linting migrations
 
 ```
-./script/atlas/migrate-lint.sh <APP_NAME>
+./script/atlas/migrate-lint.sh <APP_NAME> <N_LATEST>
 ```
 
 ## References
