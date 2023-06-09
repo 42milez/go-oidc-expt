@@ -58,10 +58,17 @@ The containers:
 #### Apply migrations
 
 ```
-./script/atlas/migrate-apply
+./script/atlas/migrate-apply.sh
 ```
 
 ## Commands
+
+The commands described later require the following parameters:
+
+| Parameter      | Detail                                                                                                                 |
+|----------------|------------------------------------------------------------------------------------------------------------------------|
+| APP_NAME       | Application name ( `idp` or `auth` )                                                                                   |
+| MIGRATION_NAME | A part of migration file name. The filename is determined according to the format `%Y%m%d%H%i%S_<MIGRATION_NAME>.sql`. |
 
 ### Generating assets
 
@@ -72,13 +79,14 @@ go generate ./...
 ### Generating versioned migration files
 
 ```
-./script/atlas/migrate-diff <APP_NAME> <MIGRATION_NAME>
+./script/atlas/migrate-diff.sh <APP_NAME> <MIGRATION_NAME>
 ```
 
-| Parameter      | Detail                                                                                                                 |
-|----------------|------------------------------------------------------------------------------------------------------------------------|
-| APP_NAME       | Application name ( `idp` or `auth` )                                                                                   |
-| MIGRATION_NAME | A part of migration file name. The filename is determined according to the format `%Y%m%d%H%i%S_<MIGRATION_NAME>.sql`. |
+### Verifying and linting migrations
+
+```
+./script/atlas/migrate-lint.sh <APP_NAME>
+```
 
 ## References
 
