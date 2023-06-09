@@ -34,7 +34,7 @@ jobs:
       - name: Start services
         run: docker-compose up -d cache db
       - name: Wait for database to be available
-        run: .github/scripts/waiter/db
+        run: .github/scripts/waiter/db.sh
       - name: Run all tests
         run: make test
   notify:
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Post CI status to Slack
         run: |
-          .github/scripts/notifier/post-ci-status-to-slack
+          .github/scripts/notifier/post-ci-status-to-slack.sh
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           TEST_RESULT: ${{ needs.test.result }}
