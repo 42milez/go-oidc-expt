@@ -32,7 +32,7 @@ type AdminMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uint64
 	name          *string
 	password      *string
 	totp_secret   *string
@@ -64,7 +64,7 @@ func newAdminMutation(c config, op Op, opts ...adminOption) *AdminMutation {
 }
 
 // withAdminID sets the ID field of the mutation.
-func withAdminID(id int) adminOption {
+func withAdminID(id uint64) adminOption {
 	return func(m *AdminMutation) {
 		var (
 			err   error
@@ -114,9 +114,15 @@ func (m AdminMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Admin entities.
+func (m *AdminMutation) SetID(id uint64) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *AdminMutation) ID() (id int, exists bool) {
+func (m *AdminMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -127,12 +133,12 @@ func (m *AdminMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *AdminMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *AdminMutation) IDs(ctx context.Context) ([]uint64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []uint64{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):

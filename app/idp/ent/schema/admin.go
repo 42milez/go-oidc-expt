@@ -17,6 +17,7 @@ type Admin struct {
 // Fields of the Account.
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
+		field.Uint64("id"),
 		field.String("name").
 			MinLen(6).
 			MaxLen(30).

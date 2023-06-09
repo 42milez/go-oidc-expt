@@ -16,7 +16,7 @@ func init() {
 	adminFields := schema.Admin{}.Fields()
 	_ = adminFields
 	// adminDescName is the schema descriptor for name field.
-	adminDescName := adminFields[0].Descriptor()
+	adminDescName := adminFields[1].Descriptor()
 	// admin.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	admin.NameValidator = func() func(string) error {
 		validators := adminDescName.Validators
@@ -36,7 +36,7 @@ func init() {
 		}
 	}()
 	// adminDescPassword is the schema descriptor for password field.
-	adminDescPassword := adminFields[1].Descriptor()
+	adminDescPassword := adminFields[2].Descriptor()
 	// admin.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	admin.PasswordValidator = func() func(string) error {
 		validators := adminDescPassword.Validators
@@ -55,15 +55,15 @@ func init() {
 		}
 	}()
 	// adminDescTotpSecret is the schema descriptor for totp_secret field.
-	adminDescTotpSecret := adminFields[2].Descriptor()
+	adminDescTotpSecret := adminFields[3].Descriptor()
 	// admin.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
 	admin.TotpSecretValidator = adminDescTotpSecret.Validators[0].(func(string) error)
 	// adminDescCreatedAt is the schema descriptor for created_at field.
-	adminDescCreatedAt := adminFields[3].Descriptor()
+	adminDescCreatedAt := adminFields[4].Descriptor()
 	// admin.DefaultCreatedAt holds the default value on creation for the created_at field.
 	admin.DefaultCreatedAt = adminDescCreatedAt.Default.(func() time.Time)
 	// adminDescModifiedAt is the schema descriptor for modified_at field.
-	adminDescModifiedAt := adminFields[4].Descriptor()
+	adminDescModifiedAt := adminFields[5].Descriptor()
 	// admin.DefaultModifiedAt holds the default value on creation for the modified_at field.
 	admin.DefaultModifiedAt = adminDescModifiedAt.Default.(func() time.Time)
 	// admin.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
