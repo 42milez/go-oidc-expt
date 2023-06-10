@@ -15,7 +15,7 @@ TBD ( Use the image upload to Docker Hub )
 ### Install required packages
 
 ```
-brew install ariga/tap/atlas docker-buildx docker-compose golangci-lint lima
+brew install ariga/tap/atlas docker-buildx docker-compose golangci-lint lima openssl@3
 ```
 
 ### Enable docker-buildx
@@ -23,6 +23,14 @@ brew install ariga/tap/atlas docker-buildx docker-compose golangci-lint lima
 ```
 mkdir -p ~/.docker/cli-plugins
 ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
+```
+
+### Generate key pair for signing access token
+
+```
+mkdir -p app/idp/cert
+openssl genpkey -algorithm ed25519 -out app/idp/cert/secret.pem
+openssl pkey -in app/idp/cert/secret.pem -pubout -out app/idp/cert/public.pem
 ```
 
 ### Create and start the virtual machine
@@ -43,7 +51,7 @@ docker context create lima-go-oidc-server --docker "host=unix:///${HOME}/.lima/g
 docker context use lima-go-oidc-server
 ```
 
-#### Run containers
+### Run containers
 
 ```
 make up
@@ -55,7 +63,7 @@ The containers:
     - The stopped containers can be started with `make start`
   - can be stopped and removed with `make down`
 
-#### Apply migrations
+### Apply migrations
 
 ```
 ./script/atlas/migrate-apply.sh
