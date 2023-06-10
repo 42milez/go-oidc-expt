@@ -11,6 +11,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
 )
@@ -32,7 +33,7 @@ type AdminMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uint64
+	id            *alias.AdminID
 	name          *string
 	password      *string
 	totp_secret   *string
@@ -64,7 +65,7 @@ func newAdminMutation(c config, op Op, opts ...adminOption) *AdminMutation {
 }
 
 // withAdminID sets the ID field of the mutation.
-func withAdminID(id uint64) adminOption {
+func withAdminID(id alias.AdminID) adminOption {
 	return func(m *AdminMutation) {
 		var (
 			err   error
@@ -116,13 +117,13 @@ func (m AdminMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Admin entities.
-func (m *AdminMutation) SetID(id uint64) {
+func (m *AdminMutation) SetID(id alias.AdminID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *AdminMutation) ID() (id uint64, exists bool) {
+func (m *AdminMutation) ID() (id alias.AdminID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -133,12 +134,12 @@ func (m *AdminMutation) ID() (id uint64, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *AdminMutation) IDs(ctx context.Context) ([]uint64, error) {
+func (m *AdminMutation) IDs(ctx context.Context) ([]alias.AdminID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uint64{id}, nil
+			return []alias.AdminID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):

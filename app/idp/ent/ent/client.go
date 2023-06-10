@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/migrate"
 
 	"entgo.io/ent"
@@ -233,7 +234,7 @@ func (c *AdminClient) UpdateOne(a *Admin) *AdminUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *AdminClient) UpdateOneID(id uint64) *AdminUpdateOne {
+func (c *AdminClient) UpdateOneID(id alias.AdminID) *AdminUpdateOne {
 	mutation := newAdminMutation(c.config, OpUpdateOne, withAdminID(id))
 	return &AdminUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -250,7 +251,7 @@ func (c *AdminClient) DeleteOne(a *Admin) *AdminDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AdminClient) DeleteOneID(id uint64) *AdminDeleteOne {
+func (c *AdminClient) DeleteOneID(id alias.AdminID) *AdminDeleteOne {
 	builder := c.Delete().Where(admin.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -267,12 +268,12 @@ func (c *AdminClient) Query() *AdminQuery {
 }
 
 // Get returns a Admin entity by its id.
-func (c *AdminClient) Get(ctx context.Context, id uint64) (*Admin, error) {
+func (c *AdminClient) Get(ctx context.Context, id alias.AdminID) (*Admin, error) {
 	return c.Query().Where(admin.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *AdminClient) GetX(ctx context.Context, id uint64) *Admin {
+func (c *AdminClient) GetX(ctx context.Context, id alias.AdminID) *Admin {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 )
@@ -17,7 +19,7 @@ type Admin struct {
 // Fields of the Account.
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("id"),
+		field.Uint64("id").GoType(alias.AdminID(0)),
 		field.String("name").
 			MinLen(6).
 			MaxLen(30).

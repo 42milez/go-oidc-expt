@@ -17,6 +17,6 @@ func TestCheckHealth_PingDB(t *testing.T) {
 		DB: db,
 	}
 	if err := ch.PingDB(context.Background()); err != nil {
-		t.Fatalf("failed to ping database: %+v", err)
+		t.Errorf("failed to ping database: %+v", err)
 	}
 }

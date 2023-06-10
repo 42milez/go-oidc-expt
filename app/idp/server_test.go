@@ -18,7 +18,7 @@ func TestServer_Run(t *testing.T) {
 	// https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
-		t.Fatalf("failed to listen port %v", err)
+		t.Errorf("failed to listen port %v", err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -42,12 +42,12 @@ func TestServer_Run(t *testing.T) {
 	resp, err := http.Get(url)
 	defer util.CloseHTTPConn(resp)
 	if err != nil {
-		t.Fatalf("failed to get: %+v", err)
+		t.Errorf("failed to get: %+v", err)
 	}
 
 	got, err := io.ReadAll(resp.Body)
 	if err != nil {
-		t.Fatalf("failed to read body: %+v", err)
+		t.Errorf("failed to read body: %+v", err)
 	}
 
 	want := fmt.Sprintf("path requested: %s", path)
@@ -57,6 +57,6 @@ func TestServer_Run(t *testing.T) {
 
 	cancel()
 	if err := eg.Wait(); err != nil {
-		t.Fatalf("failed to shutdown: %+v", err)
+		t.Errorf("failed to shutdown: %+v", err)
 	}
 }

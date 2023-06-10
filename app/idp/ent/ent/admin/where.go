@@ -6,51 +6,52 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uint64) predicate.Admin {
+func ID(id alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uint64) predicate.Admin {
+func IDEQ(id alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uint64) predicate.Admin {
+func IDNEQ(id alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uint64) predicate.Admin {
+func IDIn(ids ...alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uint64) predicate.Admin {
+func IDNotIn(ids ...alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uint64) predicate.Admin {
+func IDGT(id alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uint64) predicate.Admin {
+func IDGTE(id alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uint64) predicate.Admin {
+func IDLT(id alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uint64) predicate.Admin {
+func IDLTE(id alias.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldID, id))
 }
 

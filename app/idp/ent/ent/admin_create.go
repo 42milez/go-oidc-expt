@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 )
 
@@ -67,8 +68,8 @@ func (ac *AdminCreate) SetNillableModifiedAt(t *time.Time) *AdminCreate {
 }
 
 // SetID sets the "id" field.
-func (ac *AdminCreate) SetID(u uint64) *AdminCreate {
-	ac.mutation.SetID(u)
+func (ac *AdminCreate) SetID(ai alias.AdminID) *AdminCreate {
+	ac.mutation.SetID(ai)
 	return ac
 }
 
@@ -165,7 +166,7 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
+		_node.ID = alias.AdminID(id)
 	}
 	ac.mutation.id = &_node.ID
 	ac.mutation.done = true
@@ -247,7 +248,7 @@ func (acb *AdminCreateBulk) Save(ctx context.Context) ([]*Admin, error) {
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = uint64(id)
+					nodes[i].ID = alias.AdminID(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
