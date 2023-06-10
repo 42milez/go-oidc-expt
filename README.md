@@ -29,8 +29,8 @@ ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/
 
 ```
 mkdir -p app/idp/cert
-openssl genpkey -algorithm ed25519 -out app/idp/cert/secret.pem
-openssl pkey -in app/idp/cert/secret.pem -pubout -out app/idp/cert/public.pem
+openssl genpkey -algorithm ed25519 -out app/idp/auth/cert/secret.pem
+openssl pkey -in app/idp/auth/cert/secret.pem -pubout -out app/idp/auth/cert/public.pem
 ```
 
 ### Create and start the virtual machine
