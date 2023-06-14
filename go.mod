@@ -9,7 +9,7 @@ require (
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/rs/zerolog v1.29.1
-	golang.org/x/sync v0.2.0
+	golang.org/x/sync v0.3.0
 )
 
 require (
