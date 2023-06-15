@@ -29,9 +29,13 @@ ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/
 
 ```
 mkdir -p app/idp/cert
-openssl genpkey -algorithm ed25519 -out app/idp/auth/cert/secret.pem
-openssl pkey -in app/idp/auth/cert/secret.pem -pubout -out app/idp/auth/cert/public.pem
+openssl ecparam -genkey -name prime256v1 -noout -out app/idp/auth/cert/secret.pem
+openssl ec -in app/idp/auth/cert/secret.pem -pubout -out app/idp/auth/cert/public.pem
 ```
+
+References:
+
+- [Generating an Elliptic Curve keys](https://cloud.google.com/iot/docs/how-tos/credentials/keys#generating_an_elliptic_curve_keys)
 
 ### Create and start the virtual machine
 
