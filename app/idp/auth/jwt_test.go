@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
+	"github.com/42milez/go-oidc-server/pkg/testutil"
 	"github.com/42milez/go-oidc-server/pkg/testutil/fixture"
 	"github.com/42milez/go-oidc-server/pkg/util"
 	"github.com/google/uuid"
@@ -50,7 +51,7 @@ func TestJWT_GenerateAdminAccessToken(t *testing.T) {
 func TestJWT_ParseRequest(t *testing.T) {
 	t.Parallel()
 
-	c := util.FixedClocker{}
+	c := testutil.FixedClocker{}
 
 	want, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
@@ -100,7 +101,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 func TestJWT_Validate(t *testing.T) {
 	t.Parallel()
 
-	c := util.FixedClocker{}
+	c := testutil.FixedClocker{}
 
 	validToken, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
@@ -123,5 +124,32 @@ func TestJWT_Validate(t *testing.T) {
 
 	if err := j.Validate(validToken); err != nil {
 		t.Error(err)
+	}
+}
+
+func TestJWT_Validate_NG(t *testing.T) {
+	t.Parallel()
+
+	token, err := jwt.NewBuilder().
+		JwtID(uuid.New().String()).
+		Issuer(issuer).
+		Subject(accessTokenSubject).
+		IssuedAt(testutil.FixedClocker{}.Now()).
+		Expiration(testutil.FixedClocker{}.Now().Add(30*time.Minute)).
+		Claim(nameKey, "test_admin").
+		Build()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	j, err := NewJWT(testutil.FixedTomorrowClocker{})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := j.Validate(token); err == nil {
+		t.Errorf("want = ( error ); got = nil")
 	}
 }
