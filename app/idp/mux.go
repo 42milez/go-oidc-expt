@@ -2,14 +2,13 @@ package main
 
 import (
 	"context"
+	"github.com/42milez/go-oidc-server/pkg/util"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	handler2 "github.com/42milez/go-oidc-server/app/idp/handler"
 	service2 "github.com/42milez/go-oidc-server/app/idp/service"
 	"github.com/42milez/go-oidc-server/app/idp/store"
-	"github.com/42milez/go-oidc-server/pkg/clock"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
@@ -22,7 +21,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, cleanup, err
 	}
 
-	repo := store.Repository{Clocker: clock.RealClocker{}}
+	repo := store.Repository{Clocker: util.RealClocker{}}
 
 	mux := chi.NewRouter()
 

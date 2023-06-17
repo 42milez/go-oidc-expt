@@ -4,12 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/42milez/go-oidc-server/pkg/util"
 	"time"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/pkg/clock"
-
 	"github.com/rs/zerolog/log"
 
 	"entgo.io/ent/dialect"
@@ -49,5 +48,5 @@ func New(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(),
 }
 
 type Repository struct {
-	Clocker clock.Clocker
+	Clocker util.Clocker
 }

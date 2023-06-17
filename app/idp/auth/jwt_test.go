@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/pkg/clock"
 	"github.com/42milez/go-oidc-server/pkg/testutil/fixture"
+	"github.com/42milez/go-oidc-server/pkg/util"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -30,7 +30,7 @@ func TestEmbed(t *testing.T) {
 
 func TestJWT_GenerateAdminAccessToken(t *testing.T) {
 	admin := fixture.Admin(&ent.Admin{})
-	j, err := NewJWT(clock.RealClocker{})
+	j, err := NewJWT(util.RealClocker{})
 
 	if err != nil {
 		t.Fatal(err)
@@ -50,7 +50,7 @@ func TestJWT_GenerateAdminAccessToken(t *testing.T) {
 func TestJWT_ParseRequest(t *testing.T) {
 	t.Parallel()
 
-	c := clock.FixedClocker{}
+	c := util.FixedClocker{}
 
 	want, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
@@ -100,7 +100,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 func TestJWT_Validate(t *testing.T) {
 	t.Parallel()
 
-	c := clock.FixedClocker{}
+	c := util.FixedClocker{}
 
 	validToken, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).

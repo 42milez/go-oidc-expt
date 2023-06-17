@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/pkg/clock"
+	"github.com/42milez/go-oidc-server/pkg/util"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -21,10 +21,10 @@ var rawPublicKey []byte
 
 type JWT struct {
 	privateKey, publicKey jwk.Key
-	clock                 clock.Clocker
+	clock                 util.Clocker
 }
 
-func NewJWT(clock clock.Clocker) (*JWT, error){
+func NewJWT(clock util.Clocker) (*JWT, error){
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse private key: %w", err)

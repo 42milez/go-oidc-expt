@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/42milez/go-oidc-server/app/idp/auth"
-	"github.com/42milez/go-oidc-server/pkg/clock"
+	"github.com/42milez/go-oidc-server/pkg/util"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 	"net/http"
 	"time"
@@ -65,7 +65,7 @@ func (p *AdminSession) DeleteID(ctx context.Context, key string) error {
 }
 
 func (p *AdminSession) ExtractToken(ctx context.Context, r *http.Request) (jwt.Token, error) {
-	j, err := auth.NewJWT(clock.RealClocker{})
+	j, err := auth.NewJWT(util.RealClocker{})
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create jwt: %w", err)
