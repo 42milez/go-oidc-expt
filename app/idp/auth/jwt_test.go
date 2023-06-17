@@ -3,6 +3,12 @@ package auth
 import (
 	"bytes"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"reflect"
+	"testing"
+	"time"
+
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/42milez/go-oidc-server/pkg/testutil"
 	"github.com/42milez/go-oidc-server/pkg/testutil/fixture"
@@ -11,11 +17,6 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 	"github.com/lestrrat-go/jwx/v2/jwt"
-	"net/http"
-	"net/http/httptest"
-	"reflect"
-	"testing"
-	"time"
 )
 
 func TestEmbed(t *testing.T) {
@@ -103,53 +104,55 @@ func TestJWT_Validate(t *testing.T) {
 
 	c := testutil.FixedClocker{}
 
-	validToken, err := jwt.NewBuilder().
-		JwtID(uuid.New().String()).
-		Issuer(issuer).
-		Subject(accessTokenSubject).
-		IssuedAt(c.Now()).
-		Expiration(c.Now().Add(30*time.Minute)).
-		Claim(nameKey, "test_admin").
-		Build()
+	t.Run("OK", func(t *testing.T) {
+		validToken, err := jwt.NewBuilder().
+			JwtID(uuid.New().String()).
+			Issuer(issuer).
+			Subject(accessTokenSubject).
+			IssuedAt(c.Now()).
+			Expiration(c.Now().Add(30*time.Minute)).
+			Claim(nameKey, "test_admin").
+			Build()
 
-	if err != nil {
-		t.Fatal(err)
-	}
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	j, err := NewJWT(c)
+		j, err := NewJWT(c)
 
-	if err != nil {
-		t.Fatal(err)
-	}
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	if err := j.Validate(validToken); err != nil {
-		t.Error(err)
-	}
-}
+		if err := j.Validate(validToken); err != nil {
+			t.Error(err)
+		}
+	})
 
-func TestJWT_Validate_NG(t *testing.T) {
-	t.Parallel()
+	t.Run("NG", func(t *testing.T) {
+		t.Parallel()
 
-	token, err := jwt.NewBuilder().
-		JwtID(uuid.New().String()).
-		Issuer(issuer).
-		Subject(accessTokenSubject).
-		IssuedAt(testutil.FixedClocker{}.Now()).
-		Expiration(testutil.FixedClocker{}.Now().Add(30*time.Minute)).
-		Claim(nameKey, "test_admin").
-		Build()
+		token, err := jwt.NewBuilder().
+			JwtID(uuid.New().String()).
+			Issuer(issuer).
+			Subject(accessTokenSubject).
+			IssuedAt(c.Now()).
+			Expiration(c.Now().Add(30*time.Minute)).
+			Claim(nameKey, "test_admin").
+			Build()
 
-	if err != nil {
-		t.Fatal(err)
-	}
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	j, err := NewJWT(testutil.FixedTomorrowClocker{})
+		j, err := NewJWT(testutil.FixedTomorrowClocker{})
 
-	if err != nil {
-		t.Fatal(err)
-	}
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	if err := j.Validate(token); err == nil {
-		t.Errorf("want = ( error ); got = nil")
-	}
+		if err := j.Validate(token); err == nil {
+			t.Errorf("want = ( error ); got = nil")
+		}
+	})
 }

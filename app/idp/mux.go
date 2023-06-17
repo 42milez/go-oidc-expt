@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"github.com/42milez/go-oidc-server/pkg/util"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/pkg/util"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	handler2 "github.com/42milez/go-oidc-server/app/idp/handler"

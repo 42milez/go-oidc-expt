@@ -3,14 +3,15 @@ package auth
 import (
 	_ "embed"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/42milez/go-oidc-server/pkg/util"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 	"github.com/lestrrat-go/jwx/v2/jwt"
-	"net/http"
-	"time"
 )
 
 //go:embed cert/secret.pem
@@ -24,7 +25,7 @@ type JWT struct {
 	clock                 util.Clocker
 }
 
-func NewJWT(clock util.Clocker) (*JWT, error){
+func NewJWT(clock util.Clocker) (*JWT, error) {
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse private key: %w", err)
@@ -77,7 +78,7 @@ func parseKey(key []byte) (jwk.Key, error) {
 	return k, nil
 }
 
-func (p *JWT) ParseRequest(r *http.Request) (jwt.Token, error ) {
+func (p *JWT) ParseRequest(r *http.Request) (jwt.Token, error) {
 	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
 }
 

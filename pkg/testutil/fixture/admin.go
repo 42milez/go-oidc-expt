@@ -1,19 +1,20 @@
 package fixture
 
 import (
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 )
 
 func Admin(admin *ent.Admin) *ent.Admin {
 	ret := &ent.Admin{
-		ID: alias.AdminID(rand.Uint64()),
-		Name: "42milez" + strconv.Itoa(rand.Int())[:5],
-		Password: "42milez",
-		CreatedAt: time.Now(),
+		ID:         alias.AdminID(rand.Uint64()),
+		Name:       "42milez" + strconv.Itoa(rand.Int())[:5],
+		Password:   "42milez",
+		CreatedAt:  time.Now(),
 		ModifiedAt: time.Now(),
 	}
 

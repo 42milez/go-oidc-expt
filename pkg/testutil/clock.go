@@ -13,5 +13,5 @@ func (v FixedClocker) Now() time.Time {
 type FixedTomorrowClocker struct{}
 
 func (v FixedTomorrowClocker) Now() time.Time {
-	return FixedClocker{}.Now().Add(24*time.Hour)
+	return FixedClocker{}.Now().Add(24 * time.Hour)
 }

@@ -4,8 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/42milez/go-oidc-server/pkg/util"
 	"time"
+
+	"github.com/42milez/go-oidc-server/pkg/util"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
