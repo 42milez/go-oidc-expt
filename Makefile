@@ -72,6 +72,10 @@ up:
 down:
 	@docker-compose down
 
+## destroy: Destroy all resources
+destroy:
+	@docker-compose down --volumes
+
 ## start: Start containers
 start:
 	@docker-compose start
