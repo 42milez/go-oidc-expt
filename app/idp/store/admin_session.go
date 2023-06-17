@@ -3,6 +3,10 @@ package store
 import (
 	"context"
 	"fmt"
+	"github.com/42milez/go-oidc-server/app/idp/auth"
+	"github.com/42milez/go-oidc-server/pkg/clock"
+	"github.com/lestrrat-go/jwx/v2/jwt"
+	"net/http"
 	"time"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
@@ -58,4 +62,28 @@ func (p *AdminSession) LoadID(ctx context.Context, key string) (alias.AdminID, e
 
 func (p *AdminSession) DeleteID(ctx context.Context, key string) error {
 	return p.client.Del(ctx, key).Err()
+}
+
+func (p *AdminSession) ExtractToken(ctx context.Context, r *http.Request) (jwt.Token, error) {
+	j, err := auth.NewJWT(clock.RealClocker{})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create jwt: %w", err)
+	}
+
+	token, err := j.ParseRequest(r)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse request: %w", err)
+	}
+
+	if err := j.Validate(token); err != nil {
+		return nil, fmt.Errorf("invalid token %q: %w", token, err)
+	}
+
+	if _, err := p.LoadID(ctx, token.JwtID()); err != nil {
+		return nil, fmt.Errorf("%q already expired: %w", token.JwtID(), err)
+	}
+
+	return token, nil
 }
