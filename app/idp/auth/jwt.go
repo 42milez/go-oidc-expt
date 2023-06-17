@@ -9,6 +9,7 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
 	"github.com/lestrrat-go/jwx/v2/jwt"
+	"net/http"
 	"time"
 )
 
@@ -41,7 +42,8 @@ func NewJWT(clock clock.Clocker) (*JWT, error){
 	}, nil
 }
 
-const issuer = ""
+const issuer = "github.com/42milez/go-oidc-server"
+const accessTokenSubject = "access_token"
 const nameKey = "name"
 
 func (p *JWT) GenerateAdminAccessToken(admin *ent.Admin) ([]byte, error) {
@@ -49,7 +51,7 @@ func (p *JWT) GenerateAdminAccessToken(admin *ent.Admin) ([]byte, error) {
 		NewBuilder().
 		JwtID(uuid.New().String()).
 		Issuer(issuer).
-		Subject("access_token").
+		Subject(accessTokenSubject).
 		IssuedAt(p.clock.Now().Add(30*time.Minute)).
 		Claim(nameKey, admin.Name).
 		Build()
@@ -70,7 +72,12 @@ func (p *JWT) GenerateAdminAccessToken(admin *ent.Admin) ([]byte, error) {
 func parseKey(key []byte) (jwk.Key, error) {
 	k, err := jwk.ParseKey(key, jwk.WithPEM(true))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse key: %w", err)
 	}
 	return k, nil
 }
+
+func (p *JWT) ParseRequest(r *http.Request) (jwt.Token, error ) {
+	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
+}
+
