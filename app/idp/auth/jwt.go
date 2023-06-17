@@ -81,3 +81,6 @@ func (p *JWT) ParseRequest(r *http.Request) (jwt.Token, error ) {
 	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
 }
 
+func (p *JWT) Validate(token jwt.Token) error {
+	return jwt.Validate(token, jwt.WithClock(p.clock))
+}

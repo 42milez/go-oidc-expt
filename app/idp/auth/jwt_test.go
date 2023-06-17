@@ -97,3 +97,31 @@ func TestJWT_ParseRequest(t *testing.T) {
 	}
 }
 
+func TestJWT_Validate(t *testing.T) {
+	t.Parallel()
+
+	c := clock.FixedClocker{}
+
+	validToken, err := jwt.NewBuilder().
+		JwtID(uuid.New().String()).
+		Issuer(issuer).
+		Subject(accessTokenSubject).
+		IssuedAt(c.Now()).
+		Expiration(c.Now().Add(30*time.Minute)).
+		Claim(nameKey, "test_admin").
+		Build()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	j, err := NewJWT(c)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := j.Validate(validToken); err != nil {
+		t.Error(err)
+	}
+}
