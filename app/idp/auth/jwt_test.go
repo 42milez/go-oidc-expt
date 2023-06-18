@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
+	"github.com/42milez/go-oidc-server/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/pkg/testutil"
-	"github.com/42milez/go-oidc-server/pkg/testutil/fixture"
 	"github.com/42milez/go-oidc-server/pkg/util"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
@@ -22,30 +22,29 @@ import (
 func TestEmbed(t *testing.T) {
 	want := []byte("-----BEGIN EC PRIVATE KEY-----")
 	if !bytes.Contains(rawPrivateKey, want) {
-		t.Errorf("want = %s; got = %s", want, rawPrivateKey)
+		t.Errorf("invalid format: want = %s; got = %s", want, rawPrivateKey)
 	}
 	want = []byte("-----BEGIN PUBLIC KEY-----")
 	if !bytes.Contains(rawPublicKey, want) {
-		t.Errorf("want = %s; got = %s", want, rawPublicKey)
+		t.Errorf("invalid format: want = %s; got = %s", want, rawPublicKey)
 	}
 }
 
-func TestJWT_GenerateAdminAccessToken(t *testing.T) {
-	admin := fixture.Admin(&ent.Admin{})
-	j, err := NewJWT(util.RealClocker{})
+func TestJWT_GenerateAccessToken(t *testing.T) {
+	jwtUtil, err := NewJWTUtil(util.RealClocker{})
 
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("%v: %v", xerr.FailedToInitialize, err)
 	}
 
-	got, err := j.GenerateAdminAccessToken(admin)
+	got, err := jwtUtil.GenerateAccessToken("test_user")
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if len(got) == 0 {
-		t.Errorf("empty token")
+		t.Errorf("want = ( not empty ); got = ( empty )")
 	}
 }
 
@@ -64,7 +63,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		Build()
 
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("%v: %v", ErrFailedToBuildToken, err)
 	}
 
 	privateKey, err := jwk.ParseKey(rawPrivateKey, jwk.WithPEM(true))
@@ -79,7 +78,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	j, err := NewJWT(c)
+	jwtUtil, err := NewJWTUtil(c)
 
 	if err != nil {
 		t.Fatal(err)
@@ -88,7 +87,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "https://github.com/42milez", nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", signed))
 
-	got, err := j.ParseRequest(req)
+	got, err := jwtUtil.ParseRequest(req)
 
 	if err != nil {
 		t.Fatal(err)
@@ -105,7 +104,7 @@ func TestJWT_Validate(t *testing.T) {
 	c := testutil.FixedClocker{}
 
 	t.Run("OK", func(t *testing.T) {
-		validToken, err := jwt.NewBuilder().
+		token, err := jwt.NewBuilder().
 			JwtID(uuid.New().String()).
 			Issuer(issuer).
 			Subject(accessTokenSubject).
@@ -115,16 +114,16 @@ func TestJWT_Validate(t *testing.T) {
 			Build()
 
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("%v: %v", ErrFailedToBuildToken, err)
 		}
 
-		j, err := NewJWT(c)
+		jwtUtil, err := NewJWTUtil(c)
 
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("%v: %v", xerr.FailedToInitialize, err)
 		}
 
-		if err := j.Validate(validToken); err != nil {
+		if err = jwtUtil.Validate(token); err != nil {
 			t.Error(err)
 		}
 	})
@@ -142,17 +141,71 @@ func TestJWT_Validate(t *testing.T) {
 			Build()
 
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("%v: %v", ErrFailedToBuildToken, err)
 		}
 
-		j, err := NewJWT(testutil.FixedTomorrowClocker{})
+		jwtUtil, err := NewJWTUtil(testutil.FixedTomorrowClocker{})
 
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("%v: %v", xerr.FailedToInitialize, err)
 		}
 
-		if err := j.Validate(token); err == nil {
+		if err = jwtUtil.Validate(token); err == nil {
 			t.Errorf("want = ( error ); got = nil")
 		}
 	})
+}
+
+func TestJWT_ExtractToken(t *testing.T) {
+	t.Parallel()
+
+	c := testutil.FixedClocker{}
+
+	want, err := jwt.NewBuilder().
+		JwtID(uuid.New().String()).
+		Issuer(issuer).
+		Subject(accessTokenSubject).
+		IssuedAt(c.Now()).
+		Expiration(c.Now().Add(30*time.Minute)).
+		Claim(nameKey, "test_admin").
+		Build()
+
+	if err != nil {
+		t.Fatalf("%v: %v", ErrFailedToBuildToken, err)
+	}
+
+	privateKey, err := jwk.ParseKey(rawPrivateKey, jwk.WithPEM(true))
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	signed, err := jwt.Sign(want, jwt.WithKey(jwa.ES256, privateKey))
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "https://github.com/42milez", nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", signed))
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	jwtUtil, err := NewJWTUtil(c)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := jwtUtil.ExtractToken(req)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("want = %v; got =%v", want, got)
+	}
 }
