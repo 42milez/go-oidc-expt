@@ -78,6 +78,10 @@ func parseKey(key []byte) (jwk.Key, error) {
 	return k, nil
 }
 
+func (p *JWT) Parse(signed []byte) (jwt.Token, error) {
+	return jwt.Parse(signed, jwt.WithKey(jwa.ES256, p.publicKey))
+}
+
 func (p *JWT) ParseRequest(r *http.Request) (jwt.Token, error) {
 	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
 }

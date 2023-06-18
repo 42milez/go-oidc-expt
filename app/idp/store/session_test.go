@@ -3,16 +3,22 @@ package store
 import (
 	"context"
 	"errors"
-	"os"
-	"strconv"
-	"testing"
-
+	"fmt"
+	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/42milez/go-oidc-server/pkg/testutil"
+	"github.com/42milez/go-oidc-server/pkg/testutil/fixture"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"reflect"
+	"strconv"
+	"testing"
 )
 
-func TestNewSession(t *testing.T) {
+func TestNewAdminSession(t *testing.T) {
 	t.Parallel()
 
 	if err := os.Setenv("REDIS_DB", strconv.Itoa(testutil.TestRedisDB)); err != nil {
@@ -117,5 +123,62 @@ func TestSession_DeleteID(t *testing.T) {
 
 	if err := repo.DeleteID(ctx, key); err != nil {
 		t.Errorf("failed to delete id ( key = %s ): want = ( no error ); got = %v", key, err)
+	}
+}
+
+func TestSession_ExtractToken(t *testing.T) {
+	t.Parallel()
+
+	j, err := auth.NewJWT(testutil.FixedClocker{})
+
+	if err != nil {
+		t.Fatalf("failed to create jwt: %v", err)
+	}
+
+	admin := fixture.Admin(&ent.Admin{})
+	signed, err := j.GenerateAdminAccessToken(admin)
+	want, err := j.Parse(signed)
+
+	req := httptest.NewRequest(http.MethodGet, "https://github.com/42milez", nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", signed))
+
+	cfg, err := config.New()
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	ctx := context.Background()
+	sess, err := NewAdminSession(ctx, cfg)
+
+	if err != nil {
+		t.Fatalf("failed to create session: %v", err)
+	}
+
+	if err := sess.SaveID(ctx, want.JwtID(), admin.ID); err != nil {
+		t.Fatalf("failed to save id: %v", err)
+	}
+
+	t.Cleanup(func() {
+		if err := sess.DeleteID(ctx, want.JwtID()); err != nil {
+			t.Errorf("failed to delete id: %v", err)
+		}
+		if err := sess.Close(); err != nil {
+			t.Errorf("failed to close connection: %v", err)
+		}
+	})
+
+	if err != nil {
+		t.Fatalf("failed to parse token: %v", err)
+	}
+
+	got, err := sess.ExtractToken(ctx, req)
+
+	if err != nil {
+		t.Fatalf("failed to extract token: %v", err)
+	}
+
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("token not matched: want = %v; got = %v", want, got)
 	}
 }
