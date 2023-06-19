@@ -161,3 +161,37 @@ func TestSession_SetID(t *testing.T) {
 		t.Errorf("want = %v; got = %v", want, got)
 	}
 }
+
+func TestSession_GetID(t *testing.T) {
+	t.Parallel()
+
+	if err := os.Setenv("REDIS_DB", strconv.Itoa(testutil.TestRedisDB)); err != nil {
+		t.Error(err)
+	}
+
+	cfg, err := config.New()
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	ctx := context.Background()
+	sess, err := NewAdminSession(ctx, cfg)
+
+	if err != nil {
+		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
+	}
+
+	want := alias.AdminID(123)
+	ctx = context.WithValue(ctx, IDKey{}, want)
+
+	got, ok := sess.GetID(ctx)
+
+	if !ok {
+		t.Fatalf("%v", xerr.FailedToReadContextValue)
+	}
+
+	if want != got {
+		t.Errorf("want = %v; got = %v", want, got)
+	}
+}

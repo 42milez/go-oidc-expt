@@ -74,3 +74,7 @@ func (p *Session[T]) SetID(ctx context.Context, id T) context.Context {
 	return context.WithValue(ctx, IDKey{}, id)
 }
 
+func (p *Session[T]) GetID(ctx context.Context) (T, bool) {
+	id, ok := ctx.Value(IDKey{}).(T)
+	return id, ok
+}
