@@ -154,7 +154,7 @@ func TestSession_SetID(t *testing.T) {
 	got, ok := ctx.Value(IDKey{}).(alias.AdminID)
 
 	if !ok {
-		t.Fatalf("%v", xerr.FailedToReadContextValue)
+		t.Fatalf("%s", xerr.FailedToReadContextValue)
 	}
 
 	if want != got {
@@ -188,7 +188,7 @@ func TestSession_GetID(t *testing.T) {
 	got, ok := sess.GetID(ctx)
 
 	if !ok {
-		t.Fatalf("%v", xerr.FailedToReadContextValue)
+		t.Fatalf("%s", xerr.FailedToReadContextValue)
 	}
 
 	if want != got {
