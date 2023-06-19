@@ -67,3 +67,10 @@ func (p *Session[T]) Delete(ctx context.Context, key string) error {
 	}
 	return nil
 }
+
+type IDKey struct{}
+
+func (p *Session[T]) SetID(ctx context.Context, id T) context.Context {
+	return context.WithValue(ctx, IDKey{}, id)
+}
+

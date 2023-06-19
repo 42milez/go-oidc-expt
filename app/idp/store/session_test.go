@@ -23,6 +23,7 @@ func TestNewAdminSession(t *testing.T) {
 	}
 
 	cfg, err := config.New()
+
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,6 +31,7 @@ func TestNewAdminSession(t *testing.T) {
 	ctx := context.Background()
 
 	repo, err := NewAdminSession(ctx, cfg)
+
 	if err != nil {
 		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
 	}
@@ -82,9 +84,11 @@ func TestSession_Load(t *testing.T) {
 		})
 
 		got, err := repo.Load(ctx, key)
+
 		if err != nil {
 			t.Fatal(err)
 		}
+
 		if got != id {
 			t.Errorf("want = %d; got = %d", id, got)
 		}
@@ -97,6 +101,7 @@ func TestSession_Load(t *testing.T) {
 		key := "TestSession_Load_NotFound"
 
 		_, err := repo.Load(ctx, key)
+
 		if err == nil || !errors.Is(err, ErrFailedToLoad) {
 			t.Errorf("want = %s; got = %v", fmt.Sprintf("%s ( %s ): redis: nil", ErrFailedToLoad, key), err)
 		}
@@ -120,5 +125,39 @@ func TestSession_Delete(t *testing.T) {
 
 	if err := repo.Delete(ctx, key); err != nil {
 		t.Error(err)
+	}
+}
+
+func TestSession_SetID(t *testing.T) {
+	t.Parallel()
+
+	if err := os.Setenv("REDIS_DB", strconv.Itoa(testutil.TestRedisDB)); err != nil {
+		t.Error(err)
+	}
+
+	cfg, err := config.New()
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	ctx := context.Background()
+	sess, err := NewAdminSession(ctx, cfg)
+
+	if err != nil {
+		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
+	}
+
+	want := alias.AdminID(123)
+	ctx = sess.SetID(ctx, want)
+
+	got, ok := ctx.Value(IDKey{}).(alias.AdminID)
+
+	if !ok {
+		t.Fatalf("%v", xerr.FailedToReadContextValue)
+	}
+
+	if want != got {
+		t.Errorf("want = %v; got = %v", want, got)
 	}
 }
