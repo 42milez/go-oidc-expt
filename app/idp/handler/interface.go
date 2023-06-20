@@ -11,6 +11,10 @@ type CheckHealthService interface {
 	PingDB(ctx context.Context) error
 }
 
+type SignInService interface {
+	SignIn(ctx context.Context, name, pw string) (string, error)
+}
+
 type ReadAdminService interface {
 	ReadAdmin(ctx context.Context) (entity.Admin, error)
 }
