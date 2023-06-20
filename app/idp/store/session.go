@@ -3,6 +3,9 @@ package store
 import (
 	"context"
 	"fmt"
+	"github.com/42milez/go-oidc-server/app/idp/auth"
+	"github.com/42milez/go-oidc-server/pkg/util"
+	"net/http"
 	"time"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
@@ -18,6 +21,7 @@ type SessionErr string
 
 const (
 	ErrFailedToDelete SessionErr = "failed to delete"
+	ErrFailedToExtractToken SessionErr = "failed to extract token"
 	ErrFailedToSaveID SessionErr = "failed to save id"
 	ErrFailedToLoad   SessionErr = "failed to load"
 )
@@ -30,16 +34,26 @@ func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[alias.Ad
 	client := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
 	})
+
 	if err := client.Ping(ctx).Err(); err != nil {
 		return nil, fmt.Errorf("%s: %w", xerr.FailedToReachHost, err)
 	}
+
+	jwtUtil, err := auth.NewJWTUtil(util.RealClocker{})
+
+	if err != nil {
+		return nil, fmt.Errorf("%w", xerr.FailedToInitialize)
+	}
+
 	return &Session[alias.AdminID]{
 		client: client,
+		jwt: jwtUtil,
 	}, nil
 }
 
 type Session[T alias.AdminID | alias.UserID] struct {
 	client *redis.Client
+	jwt    *auth.JWTUtil
 }
 
 func (p *Session[T]) Close() error {
@@ -77,4 +91,22 @@ func (p *Session[T]) SetID(ctx context.Context, id T) context.Context {
 func (p *Session[T]) GetID(ctx context.Context) (T, bool) {
 	id, ok := ctx.Value(IDKey{}).(T)
 	return id, ok
+}
+
+func (p *Session[T]) FillContext(r *http.Request) (*http.Request, error) {
+	token, err := p.jwt.ExtractToken(r)
+
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", ErrFailedToExtractToken, err)
+	}
+
+	id, err := p.Load(r.Context(), token.JwtID())
+
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := p.SetID(r.Context(), id)
+
+	return r.Clone(ctx), nil
 }
