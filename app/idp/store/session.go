@@ -3,10 +3,11 @@ package store
 import (
 	"context"
 	"fmt"
-	"github.com/42milez/go-oidc-server/app/idp/auth"
-	"github.com/42milez/go-oidc-server/pkg/util"
 	"net/http"
 	"time"
+
+	"github.com/42milez/go-oidc-server/app/idp/auth"
+	"github.com/42milez/go-oidc-server/pkg/util"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
@@ -20,10 +21,10 @@ const sessionTTL = 30 * time.Minute
 type SessionErr string
 
 const (
-	ErrFailedToDelete SessionErr = "failed to delete"
+	ErrFailedToDelete       SessionErr = "failed to delete"
 	ErrFailedToExtractToken SessionErr = "failed to extract token"
-	ErrFailedToSaveID SessionErr = "failed to save id"
-	ErrFailedToLoad   SessionErr = "failed to load"
+	ErrFailedToSaveID       SessionErr = "failed to save id"
+	ErrFailedToLoad         SessionErr = "failed to load"
 )
 
 func (v SessionErr) Error() string {
@@ -47,7 +48,7 @@ func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[alias.Ad
 
 	return &Session[alias.AdminID]{
 		client: client,
-		jwt: jwtUtil,
+		jwt:    jwtUtil,
 	}, nil
 }
 
@@ -60,14 +61,14 @@ func (p *Session[T]) Close() error {
 	return p.client.Close()
 }
 
-func (p *Session[T]) SaveID(ctx context.Context, key string, id T) error {
+func (p *Session[T]) saveID(ctx context.Context, key string, id T) error {
 	if err := p.client.Set(ctx, key, uint64(id), sessionTTL).Err(); err != nil {
 		return fmt.Errorf("%w ( key = %s, id = %d): %w", ErrFailedToSaveID, key, id, err)
 	}
 	return nil
 }
 
-func (p *Session[T]) Load(ctx context.Context, key string) (T, error) {
+func (p *Session[T]) load(ctx context.Context, key string) (T, error) {
 	id, err := p.client.Get(ctx, key).Uint64()
 	if err != nil {
 		return 0, fmt.Errorf("%w ( %s ): %w", ErrFailedToLoad, key, err)
@@ -75,7 +76,7 @@ func (p *Session[T]) Load(ctx context.Context, key string) (T, error) {
 	return T(id), nil
 }
 
-func (p *Session[T]) Delete(ctx context.Context, key string) error {
+func (p *Session[T]) delete(ctx context.Context, key string) error {
 	if err := p.client.Del(ctx, key).Err(); err != nil {
 		return fmt.Errorf("%w ( %s ): %w", ErrFailedToDelete, key, err)
 	}
@@ -84,11 +85,11 @@ func (p *Session[T]) Delete(ctx context.Context, key string) error {
 
 type IDKey struct{}
 
-func (p *Session[T]) SetID(ctx context.Context, id T) context.Context {
+func (p *Session[T]) setID(ctx context.Context, id T) context.Context {
 	return context.WithValue(ctx, IDKey{}, id)
 }
 
-func (p *Session[T]) GetID(ctx context.Context) (T, bool) {
+func (p *Session[T]) getID(ctx context.Context) (T, bool) {
 	id, ok := ctx.Value(IDKey{}).(T)
 	return id, ok
 }
@@ -100,13 +101,13 @@ func (p *Session[T]) FillContext(r *http.Request) (*http.Request, error) {
 		return nil, fmt.Errorf("%w: %w", ErrFailedToExtractToken, err)
 	}
 
-	id, err := p.Load(r.Context(), token.JwtID())
+	id, err := p.load(r.Context(), token.JwtID())
 
 	if err != nil {
 		return nil, err
 	}
 
-	ctx := p.SetID(r.Context(), id)
+	ctx := p.setID(r.Context(), id)
 
 	return r.Clone(ctx), nil
 }

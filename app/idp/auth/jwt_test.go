@@ -87,7 +87,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "https://github.com/42milez", nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", signed))
 
-	got, err := jwtUtil.ParseRequest(req)
+	got, err := jwtUtil.parseRequest(req)
 
 	if err != nil {
 		t.Fatal(err)
@@ -123,7 +123,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatalf("%v: %v", xerr.FailedToInitialize, err)
 		}
 
-		if err = jwtUtil.Validate(token); err != nil {
+		if err = jwtUtil.validate(token); err != nil {
 			t.Error(err)
 		}
 	})
@@ -150,7 +150,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatalf("%v: %v", xerr.FailedToInitialize, err)
 		}
 
-		if err = jwtUtil.Validate(token); err == nil {
+		if err = jwtUtil.validate(token); err == nil {
 			t.Errorf("want = ( error ); got = nil")
 		}
 	})

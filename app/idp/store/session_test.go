@@ -30,13 +30,13 @@ func TestNewAdminSession(t *testing.T) {
 
 	ctx := context.Background()
 
-	repo, err := NewAdminSession(ctx, cfg)
+	sess, err := NewAdminSession(ctx, cfg)
 
 	if err != nil {
 		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
 	}
 
-	if err = repo.Close(); err != nil {
+	if err = sess.Close(); err != nil {
 		t.Errorf("%s: %v", xerr.FailedToCloseConnection, err)
 	}
 }
@@ -57,7 +57,7 @@ func TestSession_SaveID(t *testing.T) {
 
 	id := alias.AdminID(123)
 
-	if err := repo.SaveID(ctx, key, id); err != nil {
+	if err := repo.saveID(ctx, key, id); err != nil {
 		t.Error(err)
 	}
 }
@@ -83,7 +83,7 @@ func TestSession_Load(t *testing.T) {
 			client.Del(ctx, key)
 		})
 
-		got, err := repo.Load(ctx, key)
+		got, err := repo.load(ctx, key)
 
 		if err != nil {
 			t.Fatal(err)
@@ -100,7 +100,7 @@ func TestSession_Load(t *testing.T) {
 		ctx := context.Background()
 		key := "TestSession_Load_NotFound"
 
-		_, err := repo.Load(ctx, key)
+		_, err := repo.load(ctx, key)
 
 		if err == nil || !errors.Is(err, ErrFailedToLoad) {
 			t.Errorf("want = %s; got = %v", fmt.Sprintf("%s ( %s ): redis: nil", ErrFailedToLoad, key), err)
@@ -119,11 +119,11 @@ func TestSession_Delete(t *testing.T) {
 
 	id := alias.AdminID(123)
 
-	if err := repo.SaveID(ctx, key, id); err != nil {
+	if err := repo.saveID(ctx, key, id); err != nil {
 		t.Fatal(err)
 	}
 
-	if err := repo.Delete(ctx, key); err != nil {
+	if err := repo.delete(ctx, key); err != nil {
 		t.Error(err)
 	}
 }
@@ -148,8 +148,14 @@ func TestSession_SetID(t *testing.T) {
 		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
 	}
 
+	t.Cleanup(func() {
+		if err = sess.Close(); err != nil {
+			t.Errorf("%s: %v", xerr.FailedToCloseConnection, err)
+		}
+	})
+
 	want := alias.AdminID(123)
-	ctx = sess.SetID(ctx, want)
+	ctx = sess.setID(ctx, want)
 
 	got, ok := ctx.Value(IDKey{}).(alias.AdminID)
 
@@ -182,10 +188,16 @@ func TestSession_GetID(t *testing.T) {
 		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
 	}
 
+	t.Cleanup(func() {
+		if err = sess.Close(); err != nil {
+			t.Errorf("%s: %v", xerr.FailedToCloseConnection, err)
+		}
+	})
+
 	want := alias.AdminID(123)
 	ctx = context.WithValue(ctx, IDKey{}, want)
 
-	got, ok := sess.GetID(ctx)
+	got, ok := sess.getID(ctx)
 
 	if !ok {
 		t.Fatalf("%s", xerr.FailedToReadContextValue)

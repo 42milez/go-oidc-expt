@@ -89,7 +89,7 @@ func parseKey(key []byte) (jwk.Key, error) {
 	return jwk.ParseKey(key, jwk.WithPEM(true))
 }
 
-func (p *JWTUtil) Parse(signed []byte) (jwt.Token, error) {
+func (p *JWTUtil) parse(signed []byte) (jwt.Token, error) {
 	ret, err := jwt.Parse(signed, jwt.WithKey(jwa.ES256, p.publicKey))
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrFailedToParseToken, err)
@@ -97,7 +97,7 @@ func (p *JWTUtil) Parse(signed []byte) (jwt.Token, error) {
 	return ret, nil
 }
 
-func (p *JWTUtil) ParseRequest(r *http.Request) (jwt.Token, error) {
+func (p *JWTUtil) parseRequest(r *http.Request) (jwt.Token, error) {
 	ret, err := jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrFailedToParseRequest, err)
@@ -105,7 +105,7 @@ func (p *JWTUtil) ParseRequest(r *http.Request) (jwt.Token, error) {
 	return ret, nil
 }
 
-func (p *JWTUtil) Validate(token jwt.Token) error {
+func (p *JWTUtil) validate(token jwt.Token) error {
 	if err := jwt.Validate(token, jwt.WithClock(p.clock)); err != nil {
 		return fmt.Errorf("%w: %w", ErrInvalidToken, err)
 	}
@@ -113,13 +113,13 @@ func (p *JWTUtil) Validate(token jwt.Token) error {
 }
 
 func (p *JWTUtil) ExtractToken(r *http.Request) (jwt.Token, error) {
-	token, err := p.ParseRequest(r)
+	token, err := p.parseRequest(r)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if err = p.Validate(token); err != nil {
+	if err = p.validate(token); err != nil {
 		return nil, err
 	}
 
