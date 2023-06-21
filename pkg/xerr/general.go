@@ -4,6 +4,8 @@ const (
 	FailedToCloseConnection   GeneralErr = "failed to close connection"
 	FailedToCloseResponseBody GeneralErr = "failed to close response body"
 	FailedToInitialize        GeneralErr = "failed to initialize"
+	FailedToPingCache         GeneralErr = "failed to ping cache"
+	FailedToPingDatabase      GeneralErr = "failed to ping database"
 	FailedToReachHost         GeneralErr = "failed to reach host"
 	FailedToReadContextValue  GeneralErr = "failed to read context value"
 	FailedToReadFile          GeneralErr = "failed to read file"

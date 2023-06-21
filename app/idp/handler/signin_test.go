@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bytes"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -61,7 +60,7 @@ func TestSignIn_ServeHTTP(t *testing.T) {
 			reqFile: testDataSignInRequest200,
 			resp: mockResp{
 				token: "",
-				err:   xerr.ErrInternalServerError,
+				err:   testutil.DummyError,
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,

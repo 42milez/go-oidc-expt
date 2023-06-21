@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 )
 
@@ -15,9 +17,9 @@ func (p *ReadAdmin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	admin, err := p.Service.ReadAdmin(ctx)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
+		})
 	}
 
 	resp := entity.AdminResponse{
@@ -25,7 +27,7 @@ func (p *ReadAdmin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Name: admin.Name,
 	}
 
-	RespondJSON(ctx, w, resp, http.StatusOK)
+	RespondJSON(w, http.StatusOK, resp)
 }
 
 type ReadAdmins struct {
@@ -37,9 +39,9 @@ func (p *ReadAdmins) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	admins, err := p.Service.ReadAdmins(ctx)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
+		})
 	}
 
 	resp := make([]entity.AdminResponse, len(admins), len(admins))
@@ -50,5 +52,5 @@ func (p *ReadAdmins) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	RespondJSON(ctx, w, resp, http.StatusOK)
+	RespondJSON(w, http.StatusOK, resp)
 }

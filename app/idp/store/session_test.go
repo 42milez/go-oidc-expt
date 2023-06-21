@@ -33,11 +33,11 @@ func TestNewAdminSession(t *testing.T) {
 	sess, err := NewAdminSession(ctx, cfg)
 
 	if err != nil {
-		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
+		t.Fatalf("%s: %+v", xerr.FailedToInitialize, err)
 	}
 
 	if err = sess.Close(); err != nil {
-		t.Errorf("%s: %v", xerr.FailedToCloseConnection, err)
+		t.Errorf("%s: %+v", xerr.FailedToCloseConnection, err)
 	}
 }
 
@@ -103,7 +103,7 @@ func TestSession_Load(t *testing.T) {
 		_, err := repo.load(ctx, key)
 
 		if err == nil || !errors.Is(err, ErrFailedToLoad) {
-			t.Errorf("want = %s; got = %v", fmt.Sprintf("%s ( %s ): redis: nil", ErrFailedToLoad, key), err)
+			t.Errorf("want = %s; got = %+v", fmt.Sprintf("%s ( %s ): redis: nil", ErrFailedToLoad, key), err)
 		}
 	})
 }
@@ -145,12 +145,12 @@ func TestSession_SetID(t *testing.T) {
 	sess, err := NewAdminSession(ctx, cfg)
 
 	if err != nil {
-		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
+		t.Fatalf("%s: %+v", xerr.FailedToInitialize, err)
 	}
 
 	t.Cleanup(func() {
 		if err = sess.Close(); err != nil {
-			t.Errorf("%s: %v", xerr.FailedToCloseConnection, err)
+			t.Errorf("%s: %+v", xerr.FailedToCloseConnection, err)
 		}
 	})
 
@@ -164,7 +164,7 @@ func TestSession_SetID(t *testing.T) {
 	}
 
 	if want != got {
-		t.Errorf("want = %v; got = %v", want, got)
+		t.Errorf("want = %+v; got = %+v", want, got)
 	}
 }
 
@@ -185,12 +185,12 @@ func TestSession_GetID(t *testing.T) {
 	sess, err := NewAdminSession(ctx, cfg)
 
 	if err != nil {
-		t.Fatalf("%s: %v", xerr.FailedToInitialize, err)
+		t.Fatalf("%s: %+v", xerr.FailedToInitialize, err)
 	}
 
 	t.Cleanup(func() {
 		if err = sess.Close(); err != nil {
-			t.Errorf("%s: %v", xerr.FailedToCloseConnection, err)
+			t.Errorf("%s: %+v", xerr.FailedToCloseConnection, err)
 		}
 	})
 
@@ -204,6 +204,6 @@ func TestSession_GetID(t *testing.T) {
 	}
 
 	if want != got {
-		t.Errorf("want = %v; got = %v", want, got)
+		t.Errorf("want = %+v; got = %+v", want, got)
 	}
 }

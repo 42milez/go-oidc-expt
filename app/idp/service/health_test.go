@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/pkg/testutil"
 )
 
@@ -17,6 +19,6 @@ func TestCheckHealth_PingDB(t *testing.T) {
 		DB: db,
 	}
 	if err := ch.PingDB(context.Background()); err != nil {
-		t.Errorf("failed to ping database: %+v", err)
+		t.Errorf("%s: %+v", xerr.FailedToPingDatabase, err)
 	}
 }

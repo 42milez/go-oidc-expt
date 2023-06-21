@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/pkg/xerr"
+
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,18 +16,18 @@ func (p *CheckHealth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	if err := p.Service.PingCache(ctx); err != nil {
-		log.Error().Err(err).Msg("failed to ping cache storage")
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		log.Error().Err(err).Msgf("%s: %+v", xerr.FailedToPingCache, err)
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.ServiceCurrentlyUnavailable,
+		})
 		return
 	}
 
 	if err := p.Service.PingDB(ctx); err != nil {
-		log.Error().Err(err).Msg("failed to ping database")
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		log.Error().Err(err).Msgf("%s: %+v", xerr.FailedToPingDatabase, err)
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.ServiceCurrentlyUnavailable,
+		})
 		return
 	}
 
@@ -34,5 +36,6 @@ func (p *CheckHealth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}{
 		http.StatusText(http.StatusOK),
 	}
-	RespondJSON(ctx, w, &body, http.StatusOK)
+
+	RespondJSON(w, http.StatusOK, &body)
 }

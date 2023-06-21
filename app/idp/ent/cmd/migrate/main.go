@@ -38,7 +38,7 @@ func main() {
 	// Create a local migration directory able to understand Atlas migration file format for replay.
 	dir, err := atlas.NewLocalDir(migrationDir)
 	if err != nil {
-		log.Fatalf("failed creating atlas migration directory: %v", err)
+		log.Fatalf("failed creating atlas migration directory: %+v", err)
 	}
 
 	// Migrate diff options.
@@ -58,6 +58,6 @@ func main() {
 	dbPassword := dbName
 	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", dbAdmin, dbPassword, cfg.DBHost, cfg.DBPort, dbName)
 	if err = migrate.NamedDiff(ctx, url, os.Args[1], opts...); err != nil {
-		log.Fatalf("failed generating migration file: %v", err)
+		log.Fatalf("failed generating migration file: %+v", err)
 	}
 }

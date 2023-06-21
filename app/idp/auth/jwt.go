@@ -21,7 +21,6 @@ var rawPublicKey []byte
 
 const (
 	ErrFailedToBuildToken      JWTErr = "failed to build token"
-	ErrFailedToParseToken      JWTErr = "failed to parse token"
 	ErrFailedToParsePrivateKey JWTErr = "failed to parse private key"
 	ErrFailedToParsePublicKey  JWTErr = "failed to parse public key"
 	ErrFailedToParseRequest    JWTErr = "failed to parse request"
@@ -89,13 +88,13 @@ func parseKey(key []byte) (jwk.Key, error) {
 	return jwk.ParseKey(key, jwk.WithPEM(true))
 }
 
-func (p *JWTUtil) parse(signed []byte) (jwt.Token, error) {
-	ret, err := jwt.Parse(signed, jwt.WithKey(jwa.ES256, p.publicKey))
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrFailedToParseToken, err)
-	}
-	return ret, nil
-}
+//func (p *JWTUtil) parse(signed []byte) (jwt.Token, error) {
+//	ret, err := jwt.Parse(signed, jwt.WithKey(jwa.ES256, p.publicKey))
+//	if err != nil {
+//		return nil, fmt.Errorf("%w: %w", ErrFailedToParseToken, err)
+//	}
+//	return ret, nil
+//}
 
 func (p *JWTUtil) parseRequest(r *http.Request) (jwt.Token, error) {
 	ret, err := jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))

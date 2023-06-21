@@ -41,6 +41,6 @@ func TestNew(t *testing.T) {
 	_, err = New()
 
 	if !errors.As(err, &wantErr) {
-		t.Errorf("got = %v; want = %v", reflect.TypeOf(err), reflect.TypeOf(wantErr))
+		t.Errorf("got = %+v; want = %+v", reflect.TypeOf(err), reflect.TypeOf(wantErr))
 	}
 }

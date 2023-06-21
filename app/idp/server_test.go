@@ -18,7 +18,7 @@ func TestServer_Run(t *testing.T) {
 	// https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers#Well-known_ports
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
-		t.Errorf("failed to listen port %v", err)
+		t.Errorf("failed to listen port %+v", err)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())

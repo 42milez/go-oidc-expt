@@ -34,7 +34,7 @@ func TestJWT_GenerateAccessToken(t *testing.T) {
 	jwtUtil, err := NewJWTUtil(xutil.RealClocker{})
 
 	if err != nil {
-		t.Fatalf("%v: %v", xerr.FailedToInitialize, err)
+		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 	}
 
 	got, err := jwtUtil.GenerateAccessToken("test_user")
@@ -63,7 +63,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		Build()
 
 	if err != nil {
-		t.Fatalf("%v: %v", ErrFailedToBuildToken, err)
+		t.Fatalf("%+v: %+v", ErrFailedToBuildToken, err)
 	}
 
 	privateKey, err := jwk.ParseKey(rawPrivateKey, jwk.WithPEM(true))
@@ -94,7 +94,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(got, want) {
-		t.Errorf("want = %v; got = %v", want, got)
+		t.Errorf("want = %+v; got = %+v", want, got)
 	}
 }
 
@@ -114,13 +114,13 @@ func TestJWT_Validate(t *testing.T) {
 			Build()
 
 		if err != nil {
-			t.Fatalf("%v: %v", ErrFailedToBuildToken, err)
+			t.Fatalf("%+v: %+v", ErrFailedToBuildToken, err)
 		}
 
 		jwtUtil, err := NewJWTUtil(c)
 
 		if err != nil {
-			t.Fatalf("%v: %v", xerr.FailedToInitialize, err)
+			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 		}
 
 		if err = jwtUtil.validate(token); err != nil {
@@ -141,13 +141,13 @@ func TestJWT_Validate(t *testing.T) {
 			Build()
 
 		if err != nil {
-			t.Fatalf("%v: %v", ErrFailedToBuildToken, err)
+			t.Fatalf("%+v: %+v", ErrFailedToBuildToken, err)
 		}
 
 		jwtUtil, err := NewJWTUtil(testutil.FixedTomorrowClocker{})
 
 		if err != nil {
-			t.Fatalf("%v: %v", xerr.FailedToInitialize, err)
+			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 		}
 
 		if err = jwtUtil.validate(token); err == nil {

@@ -37,7 +37,7 @@ func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[alias.Ad
 	})
 
 	if err := client.Ping(ctx).Err(); err != nil {
-		return nil, fmt.Errorf("%s: %w", xerr.FailedToReachHost, err)
+		return nil, fmt.Errorf("%w: %w", xerr.FailedToReachHost, err)
 	}
 
 	jwtUtil, err := auth.NewJWTUtil(xutil.RealClocker{})

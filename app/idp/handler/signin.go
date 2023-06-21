@@ -2,8 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -23,28 +24,27 @@ func (p *SignIn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		// TODO: Print error message with logger
-		RespondJSON(ctx, w, &ErrResponse{
-			// TODO: change the type of Message from string to error
-			Message: xerr.ErrInternalServerError.Error(),
-		}, http.StatusInternalServerError)
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
+		})
 		return
 	}
 
 	err := p.Validator.Struct(body)
 
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: xerr.ErrFailedToAuthenticate.Error(),
-		}, http.StatusBadRequest)
+		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
+			Error: xerr.AuthenticationFailed,
+		})
 		return
 	}
 
 	token, err := p.Service.SignIn(ctx, body.Name, body.Password)
 
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{
-			Message: xerr.ErrInternalServerError.Error(),
-		}, http.StatusInternalServerError)
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
+		})
 		return
 	}
 
@@ -54,5 +54,5 @@ func (p *SignIn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		AccessToken: token,
 	}
 
-	RespondJSON(r.Context(), w, resp, http.StatusOK)
+	RespondJSON(w, http.StatusOK, resp)
 }

@@ -1,9 +1,9 @@
 package xerr
 
 const (
-	OK HTTPErr = "ok"
-	ErrFailedToAuthenticate HTTPErr = "failed to authenticate"
-	ErrInternalServerError HTTPErr = "internal server error"
+	AuthenticationFailed        HTTPErr = "authentication failed"
+	ServiceCurrentlyUnavailable HTTPErr = "service currently unavailable"
+	UnexpectedErrorOccurred     HTTPErr = "unexpected error occurred"
 )
 
 type HTTPErr string
