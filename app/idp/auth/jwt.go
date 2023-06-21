@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/util"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -37,10 +37,10 @@ func (v JWTErr) Error() string {
 
 type JWTUtil struct {
 	privateKey, publicKey jwk.Key
-	clock                 util.Clocker
+	clock                 xutil.Clocker
 }
 
-func NewJWTUtil(clock util.Clocker) (*JWTUtil, error) {
+func NewJWTUtil(clock xutil.Clocker) (*JWTUtil, error) {
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", ErrFailedToParsePrivateKey, err)

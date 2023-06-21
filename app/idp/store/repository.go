@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/util"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
@@ -49,5 +49,5 @@ func New(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(),
 }
 
 type Repository struct {
-	Clocker util.Clocker
+	Clocker xutil.Clocker
 }

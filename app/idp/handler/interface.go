@@ -6,6 +6,8 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 )
 
+//go:generate mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
+
 type CheckHealthService interface {
 	PingCache(ctx context.Context) error
 	PingDB(ctx context.Context) error

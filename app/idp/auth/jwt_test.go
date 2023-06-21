@@ -12,7 +12,7 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/pkg/testutil"
-	"github.com/42milez/go-oidc-server/pkg/util"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -31,7 +31,7 @@ func TestEmbed(t *testing.T) {
 }
 
 func TestJWT_GenerateAccessToken(t *testing.T) {
-	jwtUtil, err := NewJWTUtil(util.RealClocker{})
+	jwtUtil, err := NewJWTUtil(xutil.RealClocker{})
 
 	if err != nil {
 		t.Fatalf("%v: %v", xerr.FailedToInitialize, err)

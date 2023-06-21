@@ -30,7 +30,7 @@ func (p *CheckHealth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	body := struct {
-		Status string `json:"status"`
+		StatusCode string `json:"statusCode"`
 	}{
 		http.StatusText(http.StatusOK),
 	}

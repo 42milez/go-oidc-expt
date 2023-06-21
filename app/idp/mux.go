@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/pkg/util"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	handler2 "github.com/42milez/go-oidc-server/app/idp/handler"
@@ -22,7 +22,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, cleanup, err
 	}
 
-	repo := store.Repository{Clocker: util.RealClocker{}}
+	repo := store.Repository{Clocker: xutil.RealClocker{}}
 
 	mux := chi.NewRouter()
 

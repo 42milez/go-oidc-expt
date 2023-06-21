@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/42milez/go-oidc-server/app/idp/auth"
-	"github.com/42milez/go-oidc-server/pkg/util"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
@@ -40,7 +40,7 @@ func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[alias.Ad
 		return nil, fmt.Errorf("%s: %w", xerr.FailedToReachHost, err)
 	}
 
-	jwtUtil, err := auth.NewJWTUtil(util.RealClocker{})
+	jwtUtil, err := auth.NewJWTUtil(xutil.RealClocker{})
 
 	if err != nil {
 		return nil, fmt.Errorf("%w", xerr.FailedToInitialize)

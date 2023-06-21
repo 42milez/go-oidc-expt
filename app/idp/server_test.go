@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/pkg/util"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -40,7 +40,7 @@ func TestServer_Run(t *testing.T) {
 	url := fmt.Sprintf("http://%s/%s", lis.Addr().String(), path)
 	t.Logf("try request to %q", url)
 	resp, err := http.Get(url)
-	defer util.CloseHTTPConn(resp)
+	defer xutil.CloseHTTPConn(resp)
 	if err != nil {
 		t.Errorf("failed to get: %+v", err)
 	}

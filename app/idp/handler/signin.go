@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/go-playground/validator/v10"
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type SignIn struct {
-	Service SignInService
+	Service   SignInService
 	Validator *validator.Validate
 }
 
@@ -15,13 +17,15 @@ func (p *SignIn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var body struct {
-		Name string `json:"name" validate:"required"`
+		Name     string `json:"name" validate:"required"`
 		Password string `json:"password" validate:"required"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		// TODO: Print error message with logger
 		RespondJSON(ctx, w, &ErrResponse{
-			Message: "",
+			// TODO: change the type of Message from string to error
+			Message: xerr.ErrInternalServerError.Error(),
 		}, http.StatusInternalServerError)
 		return
 	}
@@ -30,7 +34,7 @@ func (p *SignIn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
-			Message: "",
+			Message: xerr.ErrFailedToAuthenticate.Error(),
 		}, http.StatusBadRequest)
 		return
 	}
@@ -39,7 +43,7 @@ func (p *SignIn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
-			Message: "",
+			Message: xerr.ErrInternalServerError.Error(),
 		}, http.StatusInternalServerError)
 		return
 	}
