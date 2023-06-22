@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/app/idp/entity"
 )
 
 type CreateAdmin struct {
@@ -22,7 +21,7 @@ type ReadAdmin struct {
 	Repo AdminReader
 }
 
-func (p *ReadAdmin) ReadAdmin(ctx context.Context) (entity.Admin, error) {
+func (p *ReadAdmin) ReadAdmin(ctx context.Context) (*ent.Admin, error) {
 	return nil, errors.New("not implemented")
 }
 
@@ -31,6 +30,6 @@ type ReadAdmins struct {
 	Repo AdminsReader
 }
 
-func (p *ReadAdmins) ReadAdmins(ctx context.Context) (entity.Admins, error) {
+func (p *ReadAdmins) ReadAdmins(ctx context.Context) ([]*ent.Admin, error) {
 	return nil, errors.New("not implemented")
 }

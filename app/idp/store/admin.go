@@ -2,16 +2,18 @@ package store
 
 import (
 	"context"
-	"errors"
+
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/app/idp/entity"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 )
 
-func (p *Repository) ReadAdmin(ctx context.Context, db *ent.Client) (entity.Admin, error) {
-	return nil, errors.New("not implemented")
+type AdminRepository struct {
+	Clock xutil.Clocker
+	DB    *ent.Client
 }
 
-func (p *Repository) ReadAdmins(ctx context.Context, db *ent.Client) (entity.Admins, error) {
-	return nil, errors.New("not implemented")
+func (p *AdminRepository) SelectByName(ctx context.Context, name string) (*ent.Admin, error) {
+	return p.DB.Admin.Query().Where(admin.NameEQ(name)).First(ctx)
 }

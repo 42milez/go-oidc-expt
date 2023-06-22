@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/idp/model"
 
-	"github.com/42milez/go-oidc-server/app/idp/entity"
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
 type ReadAdmin struct {
@@ -22,7 +22,7 @@ func (p *ReadAdmin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resp := entity.AdminResponse{
+	resp := model.AdminResponse{
 		ID:   admin.ID,
 		Name: admin.Name,
 	}
@@ -44,9 +44,9 @@ func (p *ReadAdmins) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resp := make([]entity.AdminResponse, len(admins), len(admins))
+	resp := make([]model.AdminResponse, len(admins), len(admins))
 	for i, admin := range admins {
-		resp[i] = entity.AdminResponse{
+		resp[i] = model.AdminResponse{
 			ID:   admin.ID,
 			Name: admin.Name,
 		}

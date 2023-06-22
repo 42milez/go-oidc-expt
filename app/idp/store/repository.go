@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
-
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/rs/zerolog/log"
@@ -46,8 +44,4 @@ func New(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(),
 			log.Error().Err(err).Msg("failed to close database connection")
 		}
 	}, nil
-}
-
-type Repository struct {
-	Clocker xutil.Clocker
 }

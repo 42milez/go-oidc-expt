@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/app/idp/entity"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 )
 
 //go:generate mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
@@ -18,9 +18,9 @@ type SignInService interface {
 }
 
 type ReadAdminService interface {
-	ReadAdmin(ctx context.Context) (entity.Admin, error)
+	ReadAdmin(ctx context.Context) (*ent.Admin, error)
 }
 
 type ReadAdminsService interface {
-	ReadAdmins(ctx context.Context) (entity.Admins, error)
+	ReadAdmins(ctx context.Context) ([]*ent.Admin, error)
 }

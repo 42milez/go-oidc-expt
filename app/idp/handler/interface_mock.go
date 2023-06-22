@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entity "github.com/42milez/go-oidc-server/app/idp/entity"
+	ent "github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -125,10 +125,10 @@ func (m *MockReadAdminService) EXPECT() *MockReadAdminServiceMockRecorder {
 }
 
 // ReadAdmin mocks base method.
-func (m *MockReadAdminService) ReadAdmin(ctx context.Context) (entity.Admin, error) {
+func (m *MockReadAdminService) ReadAdmin(ctx context.Context) (*ent.Admin, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAdmin", ctx)
-	ret0, _ := ret[0].(entity.Admin)
+	ret0, _ := ret[0].(*ent.Admin)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -163,10 +163,10 @@ func (m *MockReadAdminsService) EXPECT() *MockReadAdminsServiceMockRecorder {
 }
 
 // ReadAdmins mocks base method.
-func (m *MockReadAdminsService) ReadAdmins(ctx context.Context) (entity.Admins, error) {
+func (m *MockReadAdminsService) ReadAdmins(ctx context.Context) ([]*ent.Admin, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAdmins", ctx)
-	ret0, _ := ret[0].(entity.Admins)
+	ret0, _ := ret[0].([]*ent.Admin)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

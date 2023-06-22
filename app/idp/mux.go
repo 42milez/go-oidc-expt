@@ -2,13 +2,17 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/idp/auth"
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
-	handler2 "github.com/42milez/go-oidc-server/app/idp/handler"
-	service2 "github.com/42milez/go-oidc-server/app/idp/service"
+	"github.com/42milez/go-oidc-server/app/idp/handler"
+	"github.com/42milez/go-oidc-server/app/idp/service"
 	"github.com/42milez/go-oidc-server/app/idp/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
@@ -22,43 +26,55 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, cleanup, err
 	}
 
-	repo := store.Repository{Clocker: xutil.RealClocker{}}
-
 	mux := chi.NewRouter()
 
 	//  health
 	// --------------------------------------------------
 
-	checkHealthHdlr := &handler2.CheckHealth{
-		Service: &service2.CheckHealth{DB: db},
+	checkHealthHdlr := &handler.CheckHealth{
+		Service: &service.CheckHealth{DB: db},
 	}
 	mux.HandleFunc("/health", checkHealthHdlr.ServeHTTP)
 
 	//  admin
 	// --------------------------------------------------
 
-	readAdminHdlr := &handler2.ReadAdmin{
-		Service: &service2.ReadAdmin{
-			DB:   client,
-			Repo: &repo,
+	adminRepo := &store.AdminRepository{Clock: xutil.RealClocker{}, DB: client}
+	jwtUtil, err := auth.NewJWTUtil(xutil.RealClocker{})
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
+	}
+
+	adminSigninHdlr := &handler.SignIn{
+		Service: &service.AdminSignIn{
+			Repo:           adminRepo,
+			TokenGenerator: jwtUtil,
 		},
 	}
-	mux.Route("/admin", func(r chi.Router) {
-		r.Get("/", readAdminHdlr.ServeHTTP)
+	mux.Route("/admin/signin", func(r chi.Router) {
+		r.Post("/", adminSigninHdlr.ServeHTTP)
 	})
 
-	//  admins
-	// --------------------------------------------------
+	//readAdminHdlr := &handler.ReadAdmin{
+	//	Service: &service.ReadAdmin{
+	//		DB:   client,
+	//		Repo: &repo,
+	//	},
+	//}
+	//mux.Route("/admin", func(r chi.Router) {
+	//	r.Get("/", readAdminHdlr.ServeHTTP)
+	//})
 
-	readAdminsHdlr := &handler2.ReadAdmins{
-		Service: &service2.ReadAdmins{
-			DB:   client,
-			Repo: &repo,
-		},
-	}
-	mux.Route("/admins", func(r chi.Router) {
-		r.Get("/", readAdminsHdlr.ServeHTTP)
-	})
+	//readAdminsHdlr := &handler.ReadAdmins{
+	//	Service: &service.ReadAdmins{
+	//		DB:   client,
+	//		Repo: &repo,
+	//	},
+	//}
+	//mux.Route("/admins", func(r chi.Router) {
+	//	r.Get("/", readAdminsHdlr.ServeHTTP)
+	//})
 
 	return mux, cleanup, nil
 }

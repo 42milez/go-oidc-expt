@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/app/idp/entity"
 )
 
 type AdminCreater interface {
@@ -12,9 +11,21 @@ type AdminCreater interface {
 }
 
 type AdminReader interface {
-	ReadAdmin(ctx context.Context, db *ent.Client) (entity.Admin, error)
+	SelectAdmin(ctx context.Context, db *ent.Client) (*ent.Admin, error)
 }
 
 type AdminsReader interface {
-	ReadAdmins(ctx context.Context, db *ent.Client) (entity.Admins, error)
+	ReadAdmins(ctx context.Context, db *ent.Client) ([]*ent.Admin, error)
+}
+
+type Identity interface {
+	ent.Admin
+}
+
+type IdentitySelector[T Identity] interface {
+	SelectByName(ctx context.Context, name string) (*T, error)
+}
+
+type TokenGenerator interface {
+	GenerateAccessToken(name string) ([]byte, error)
 }
