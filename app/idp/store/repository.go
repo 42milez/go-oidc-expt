@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/42milez/go-oidc-server/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/rs/zerolog/log"
@@ -19,7 +21,7 @@ func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 	db, err := sql.Open(dialect.MySQL, dataSrc)
 	if err != nil {
-		return nil, nil, func() {}, err
+		return nil, nil, nil, fmt.Errorf("%w: %w", xerr.FailToEstablishConnection, err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
@@ -32,6 +34,7 @@ func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(
 		}, err
 	}
 
+	// TODO: Define as environment variable
 	db.SetMaxIdleConns(10)
 	db.SetMaxOpenConns(100)
 	db.SetConnMaxLifetime(time.Hour)

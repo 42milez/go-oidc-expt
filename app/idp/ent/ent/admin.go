@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 // Admin is the model entity for the Admin schema.
@@ -20,10 +21,10 @@ type Admin struct {
 	ID alias.AdminID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// Password holds the value of the "password" field.
-	Password string `json:"password,omitempty"`
+	// PasswordHash holds the value of the "password_hash" field.
+	PasswordHash xutil.PasswordHash `json:"password_hash,omitempty"`
 	// TotpSecret holds the value of the "totp_secret" field.
-	TotpSecret *string `json:"totp_secret,omitempty"`
+	TotpSecret string `json:"totp_secret,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
@@ -36,9 +37,7 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case admin.FieldID:
-			values[i] = new(alias.AdminID)
-		case admin.FieldName, admin.FieldPassword, admin.FieldTotpSecret:
+		case admin.FieldID, admin.FieldName, admin.FieldPasswordHash, admin.FieldTotpSecret:
 			values[i] = new(sql.NullString)
 		case admin.FieldCreatedAt, admin.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
@@ -58,10 +57,10 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case admin.FieldID:
-			if value, ok := values[i].(*alias.AdminID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				a.ID = *value
+			} else if value.Valid {
+				a.ID = alias.AdminID(value.String)
 			}
 		case admin.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -69,18 +68,17 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Name = value.String
 			}
-		case admin.FieldPassword:
+		case admin.FieldPasswordHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field password", values[i])
+				return fmt.Errorf("unexpected type %T for field password_hash", values[i])
 			} else if value.Valid {
-				a.Password = value.String
+				a.PasswordHash = xutil.PasswordHash(value.String)
 			}
 		case admin.FieldTotpSecret:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field totp_secret", values[i])
 			} else if value.Valid {
-				a.TotpSecret = new(string)
-				*a.TotpSecret = value.String
+				a.TotpSecret = value.String
 			}
 		case admin.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -133,13 +131,11 @@ func (a *Admin) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(a.Name)
 	builder.WriteString(", ")
-	builder.WriteString("password=")
-	builder.WriteString(a.Password)
+	builder.WriteString("password_hash=")
+	builder.WriteString(fmt.Sprintf("%v", a.PasswordHash))
 	builder.WriteString(", ")
-	if v := a.TotpSecret; v != nil {
-		builder.WriteString("totp_secret=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("totp_secret=")
+	builder.WriteString(a.TotpSecret)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(a.CreatedAt.Format(time.ANSIC))

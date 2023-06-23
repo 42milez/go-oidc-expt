@@ -1,29 +1,15 @@
 package alias
 
 import (
-	"database/sql/driver"
-
 	"github.com/oklog/ulid/v2"
 )
 
-type AdminID ulid.ULID
+type AdminID string
 
 func (v AdminID) IsZero() bool {
-	return v.IsZero()
-}
-
-func (v AdminID) MarshalBinary() ([]byte, error) {
-	return v[:], nil
-}
-
-func (v AdminID) Scan(src any) error {
-	return v.Scan(src)
-}
-
-func (v AdminID) Value() (driver.Value, error) {
-	return v.Value()
+	return len(v) == 0
 }
 
 func MakeAdminID() AdminID {
-	return AdminID(ulid.Make())
+	return AdminID(ulid.Make().String())
 }

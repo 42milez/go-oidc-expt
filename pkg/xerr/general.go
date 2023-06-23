@@ -3,6 +3,7 @@ package xerr
 const (
 	FailedToCloseConnection   GeneralErr = "failed to close connection"
 	FailedToCloseResponseBody GeneralErr = "failed to close response body"
+	FailToEstablishConnection GeneralErr = "failed to establish connection"
 	FailedToInitialize        GeneralErr = "failed to initialize"
 	FailedToPingCache         GeneralErr = "failed to ping cache"
 	FailedToPingDatabase      GeneralErr = "failed to ping database"
@@ -11,6 +12,7 @@ const (
 	FailedToReadFile          GeneralErr = "failed to read file"
 	FailedToResponseBody      GeneralErr = "failed to response body"
 	FailedToUnmarshalJSON     GeneralErr = "failed to unmarshal json"
+	UnexpectedValue           GeneralErr = "unexpected value"
 )
 
 type GeneralErr string

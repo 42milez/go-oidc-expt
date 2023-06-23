@@ -1,12 +1,12 @@
 version: "3.9"
 services:
-  idp:
+  idp-app:
     build:
       context: .
       dockerfile: docker/app/idp/Dockerfile
       target: dev
-    container_name: go-oidc-server-idp
-    image: go-oidc-server-idp:latest
+    container_name: go-oidc-server-idp-app
+    image: go-oidc-server-idp-app:latest
     networks:
       - dev
     ports:
@@ -18,9 +18,15 @@ services:
       - type: bind
         source: .
         target: /workspace
+      - type: volume
+        source: idp_app_cache_build
+        target: /root/.cache/go-build
+      - type: volume
+        source: idp_app_cache_mod
+        target: /go/pkg/mod
     environment:
-      DB_HOST: db
-      REDIS_HOST: cache
+      DB_HOST: idp-db
+      REDIS_HOST: idp-cache
     deploy:
       resources:
         limits:
@@ -30,17 +36,17 @@ services:
         condition: on-failure
         max_attempts: 3
     depends_on:
-      - cache
-      - db
+      - idp-cache
+      - idp-db
     cap_add:
       - SYS_PTRACE
     security_opt:
       - apparmor:unconfined
-  cache:
+  idp-cache:
     build:
       context: docker/cache/idp
-    container_name: go-oidc-server-cache
-    image: go-oidc-server-cache:latest
+    container_name: go-oidc-server-idp-cache
+    image: go-oidc-server-idp-cache:latest
     networks:
       - dev
     ports:
@@ -59,11 +65,11 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
-  db:
+  idp-db:
     build:
       context: docker/db/idp
-    container_name: go-oidc-server-db
-    image: go-oidc-server-db:latest
+    container_name: go-oidc-server-idp-db
+    image: go-oidc-server-idp-db:latest
     networks:
       - dev
     ports:
@@ -97,6 +103,10 @@ networks:
   dev:
     driver: bridge
 volumes:
+  idp_app_cache_build:
+    driver: local
+  idp_app_cache_mod:
+    driver: local
   idp_cache_data:
     driver: local
   idp_db_data:

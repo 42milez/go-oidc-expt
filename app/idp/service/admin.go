@@ -22,25 +22,24 @@ const (
 	errInvalidPassword          Err = "invalid password"
 )
 
-type AdminSignUp struct {
-	Repo           IdentityCreator[ent.Admin]
-	TokenGenerator TokenGenerator
+type AdminCreator struct {
+	Repo IdentityCreator[ent.Admin]
 }
 
-func (p *AdminSignUp) SignUp(ctx context.Context, name, pw string) (*ent.Admin, error) {
+func (p *AdminCreator) Create(ctx context.Context, name, pw string) (*ent.Admin, error) {
 	hash, err := xutil.GeneratePasswordHash(pw)
 
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", errFailedToGeneratePassword, err)
 	}
 
-	admin, err := p.Repo.Create(ctx, name, hash)
+	ret, err := p.Repo.Create(ctx, name, hash)
 
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", errFailedToCreateAdmin, err)
 	}
 
-	return admin, nil
+	return ret, nil
 }
 
 type AdminSignIn struct {
@@ -55,7 +54,13 @@ func (p *AdminSignIn) SignIn(ctx context.Context, name, pw string) (string, erro
 		return "", fmt.Errorf("%w: %w", errFailedToSelectAdmin, err)
 	}
 
-	if err = xutil.ComparePassword(admin.Password, pw); err != nil {
+	ok, err := xutil.ComparePassword(pw, admin.PasswordHash)
+
+	if err != nil {
+		return "", err
+	}
+
+	if !ok {
 		return "", fmt.Errorf("%w: %w", errInvalidPassword, err)
 	}
 

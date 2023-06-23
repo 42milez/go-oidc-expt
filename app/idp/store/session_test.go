@@ -57,7 +57,7 @@ func TestSession_SaveID(t *testing.T) {
 		client.Del(ctx, key)
 	})
 
-	id := alias.AdminID([]byte(adminULID))
+	id := alias.AdminID(adminULID)
 
 	if err := repo.saveID(ctx, key, id); err != nil {
 		t.Error(err)
@@ -77,7 +77,7 @@ func TestSession_Load(t *testing.T) {
 
 		ctx := context.Background()
 		key := "TestSession_Load_OK"
-		id := alias.AdminID([]byte(adminULID))
+		id := alias.AdminID(adminULID)
 
 		if err := client.Set(ctx, key, id, sessionTTL).Err(); err != nil {
 			t.Fatal(err)
@@ -94,7 +94,7 @@ func TestSession_Load(t *testing.T) {
 		}
 
 		if got != id {
-			t.Errorf("want = %d; got = %d", id, got)
+			t.Errorf("want = %s; got = %s", id, got)
 		}
 	})
 
@@ -121,7 +121,7 @@ func TestSession_Delete(t *testing.T) {
 	ctx := context.Background()
 	key := "TestSession_Delete"
 
-	id := alias.AdminID([]byte(adminULID))
+	id := alias.AdminID(adminULID)
 
 	if err := repo.saveID(ctx, key, id); err != nil {
 		t.Fatal(err)
@@ -158,7 +158,7 @@ func TestSession_SetID(t *testing.T) {
 		}
 	})
 
-	want := alias.AdminID([]byte(adminULID))
+	want := alias.AdminID(adminULID)
 	ctx = sess.setID(ctx, want)
 
 	got, ok := ctx.Value(IDKey{}).(alias.AdminID)
@@ -198,7 +198,7 @@ func TestSession_GetID(t *testing.T) {
 		}
 	})
 
-	want := alias.AdminID([]byte(adminULID))
+	want := alias.AdminID(adminULID)
 	ctx = context.WithValue(ctx, IDKey{}, want)
 
 	got, ok := sess.getID(ctx)

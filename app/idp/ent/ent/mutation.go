@@ -14,6 +14,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 const (
@@ -35,7 +36,7 @@ type AdminMutation struct {
 	typ           string
 	id            *alias.AdminID
 	name          *string
-	password      *string
+	password_hash *xutil.PasswordHash
 	totp_secret   *string
 	created_at    *time.Time
 	modified_at   *time.Time
@@ -185,40 +186,40 @@ func (m *AdminMutation) ResetName() {
 	m.name = nil
 }
 
-// SetPassword sets the "password" field.
-func (m *AdminMutation) SetPassword(s string) {
-	m.password = &s
+// SetPasswordHash sets the "password_hash" field.
+func (m *AdminMutation) SetPasswordHash(xh xutil.PasswordHash) {
+	m.password_hash = &xh
 }
 
-// Password returns the value of the "password" field in the mutation.
-func (m *AdminMutation) Password() (r string, exists bool) {
-	v := m.password
+// PasswordHash returns the value of the "password_hash" field in the mutation.
+func (m *AdminMutation) PasswordHash() (r xutil.PasswordHash, exists bool) {
+	v := m.password_hash
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldPassword returns the old "password" field's value of the Admin entity.
+// OldPasswordHash returns the old "password_hash" field's value of the Admin entity.
 // If the Admin object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdminMutation) OldPassword(ctx context.Context) (v string, err error) {
+func (m *AdminMutation) OldPasswordHash(ctx context.Context) (v xutil.PasswordHash, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
+		return v, errors.New("OldPasswordHash is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPassword requires an ID field in the mutation")
+		return v, errors.New("OldPasswordHash requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPassword: %w", err)
+		return v, fmt.Errorf("querying old value for OldPasswordHash: %w", err)
 	}
-	return oldValue.Password, nil
+	return oldValue.PasswordHash, nil
 }
 
-// ResetPassword resets all changes to the "password" field.
-func (m *AdminMutation) ResetPassword() {
-	m.password = nil
+// ResetPasswordHash resets all changes to the "password_hash" field.
+func (m *AdminMutation) ResetPasswordHash() {
+	m.password_hash = nil
 }
 
 // SetTotpSecret sets the "totp_secret" field.
@@ -238,7 +239,7 @@ func (m *AdminMutation) TotpSecret() (r string, exists bool) {
 // OldTotpSecret returns the old "totp_secret" field's value of the Admin entity.
 // If the Admin object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdminMutation) OldTotpSecret(ctx context.Context) (v *string, err error) {
+func (m *AdminMutation) OldTotpSecret(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTotpSecret is only allowed on UpdateOne operations")
 	}
@@ -252,9 +253,22 @@ func (m *AdminMutation) OldTotpSecret(ctx context.Context) (v *string, err error
 	return oldValue.TotpSecret, nil
 }
 
+// ClearTotpSecret clears the value of the "totp_secret" field.
+func (m *AdminMutation) ClearTotpSecret() {
+	m.totp_secret = nil
+	m.clearedFields[admin.FieldTotpSecret] = struct{}{}
+}
+
+// TotpSecretCleared returns if the "totp_secret" field was cleared in this mutation.
+func (m *AdminMutation) TotpSecretCleared() bool {
+	_, ok := m.clearedFields[admin.FieldTotpSecret]
+	return ok
+}
+
 // ResetTotpSecret resets all changes to the "totp_secret" field.
 func (m *AdminMutation) ResetTotpSecret() {
 	m.totp_secret = nil
+	delete(m.clearedFields, admin.FieldTotpSecret)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -367,8 +381,8 @@ func (m *AdminMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, admin.FieldName)
 	}
-	if m.password != nil {
-		fields = append(fields, admin.FieldPassword)
+	if m.password_hash != nil {
+		fields = append(fields, admin.FieldPasswordHash)
 	}
 	if m.totp_secret != nil {
 		fields = append(fields, admin.FieldTotpSecret)
@@ -389,8 +403,8 @@ func (m *AdminMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case admin.FieldName:
 		return m.Name()
-	case admin.FieldPassword:
-		return m.Password()
+	case admin.FieldPasswordHash:
+		return m.PasswordHash()
 	case admin.FieldTotpSecret:
 		return m.TotpSecret()
 	case admin.FieldCreatedAt:
@@ -408,8 +422,8 @@ func (m *AdminMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	switch name {
 	case admin.FieldName:
 		return m.OldName(ctx)
-	case admin.FieldPassword:
-		return m.OldPassword(ctx)
+	case admin.FieldPasswordHash:
+		return m.OldPasswordHash(ctx)
 	case admin.FieldTotpSecret:
 		return m.OldTotpSecret(ctx)
 	case admin.FieldCreatedAt:
@@ -432,12 +446,12 @@ func (m *AdminMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case admin.FieldPassword:
-		v, ok := value.(string)
+	case admin.FieldPasswordHash:
+		v, ok := value.(xutil.PasswordHash)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetPassword(v)
+		m.SetPasswordHash(v)
 		return nil
 	case admin.FieldTotpSecret:
 		v, ok := value.(string)
@@ -489,7 +503,11 @@ func (m *AdminMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AdminMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(admin.FieldTotpSecret) {
+		fields = append(fields, admin.FieldTotpSecret)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -502,6 +520,11 @@ func (m *AdminMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AdminMutation) ClearField(name string) error {
+	switch name {
+	case admin.FieldTotpSecret:
+		m.ClearTotpSecret()
+		return nil
+	}
 	return fmt.Errorf("unknown Admin nullable field %s", name)
 }
 
@@ -512,8 +535,8 @@ func (m *AdminMutation) ResetField(name string) error {
 	case admin.FieldName:
 		m.ResetName()
 		return nil
-	case admin.FieldPassword:
-		m.ResetPassword()
+	case admin.FieldPasswordHash:
+		m.ResetPasswordHash()
 		return nil
 	case admin.FieldTotpSecret:
 		m.ResetTotpSecret()

@@ -2,8 +2,8 @@
 set -eu
 
 readonly APP_NAME="${1}"
-readonly SCRIPT_DIR="$(dirname "$0")"
 
+readonly SCRIPT_DIR="$(dirname "$0")"
 . "${SCRIPT_DIR}/config.sh"
 
 atlas migrate apply \

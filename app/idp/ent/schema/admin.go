@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/ent/dialect"
 	"fmt"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"regexp"
 	"time"
 
@@ -12,10 +14,15 @@ import (
 )
 
 const (
-	nameMaxLength    = 30
-	nameMinLength    = 6
-	passwordLength   = 256
-	totpSecretLength = 160
+	nameMaxLength      = 30
+	nameMinLength      = 6
+	passwordHashLength = 751
+	totpSecretLength   = 160
+)
+
+const (
+	idType = "CHAR(26)"
+	passwordHashType = "VARCHAR(751)"
 )
 
 // Admin holds the schema definition for the Admin entity.
@@ -26,20 +33,29 @@ type Admin struct {
 // Fields of the Account.
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", alias.AdminID{}).
-			Unique().
-			Default(alias.MakeAdminID),
+		field.String("id").
+			GoType(alias.AdminID("")).
+			SchemaType(map[string]string{
+				dialect.MySQL: idType,
+			}).
+			Immutable().
+			DefaultFunc(func() alias.AdminID {
+				return alias.MakeAdminID()
+		}),
 		field.String("name").
 			MaxLen(nameMaxLength).
 			MinLen(nameMinLength).
 			Match(regexp.MustCompile("^\\D[0-9a-z_]+")).
 			Unique().
 			NotEmpty(),
-		field.String("password").
-			MaxLen(passwordLength).
+		field.String("password_hash").
+			GoType(xutil.PasswordHash("")).
+			SchemaType(map[string]string{
+				dialect.MySQL: passwordHashType,
+			}).
 			Validate(func(s string) error {
-				if len(s) != passwordLength {
-					return fmt.Errorf("password must be %d characters", passwordLength)
+				if len(s) > passwordHashLength {
+					return fmt.Errorf("password must be %d characters", passwordHashLength)
 				}
 				return nil
 			}).
@@ -52,7 +68,7 @@ func (Admin) Fields() []ent.Field {
 				}
 				return nil
 			}).
-			Nillable(),
+			Optional(),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

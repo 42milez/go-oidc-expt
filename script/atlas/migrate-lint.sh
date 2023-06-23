@@ -10,7 +10,6 @@ if [[ -z "${APP_NAME}" ]]; then
 fi
 
 readonly SCRIPT_DIR="$(dirname "$0")"
-
 . "${SCRIPT_DIR}/config.sh"
 
 cmd="atlas migrate lint --dir file://app/${APP_NAME}/ent/migrations --dev-url mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"

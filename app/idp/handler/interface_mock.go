@@ -101,6 +101,44 @@ func (mr *MockSignInServiceMockRecorder) SignIn(ctx, name, pw interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignIn", reflect.TypeOf((*MockSignInService)(nil).SignIn), ctx, name, pw)
 }
 
+// MockAdminCreateService is a mock of AdminCreateService interface.
+type MockAdminCreateService struct {
+	ctrl     *gomock.Controller
+	recorder *MockAdminCreateServiceMockRecorder
+}
+
+// MockAdminCreateServiceMockRecorder is the mock recorder for MockAdminCreateService.
+type MockAdminCreateServiceMockRecorder struct {
+	mock *MockAdminCreateService
+}
+
+// NewMockAdminCreateService creates a new mock instance.
+func NewMockAdminCreateService(ctrl *gomock.Controller) *MockAdminCreateService {
+	mock := &MockAdminCreateService{ctrl: ctrl}
+	mock.recorder = &MockAdminCreateServiceMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAdminCreateService) EXPECT() *MockAdminCreateServiceMockRecorder {
+	return m.recorder
+}
+
+// Create mocks base method.
+func (m *MockAdminCreateService) Create(ctx context.Context, name, pw string) (*ent.Admin, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Create", ctx, name, pw)
+	ret0, _ := ret[0].(*ent.Admin)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Create indicates an expected call of Create.
+func (mr *MockAdminCreateServiceMockRecorder) Create(ctx, name, pw interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockAdminCreateService)(nil).Create), ctx, name, pw)
+}
+
 // MockReadAdminService is a mock of ReadAdminService interface.
 type MockReadAdminService struct {
 	ctrl     *gomock.Controller

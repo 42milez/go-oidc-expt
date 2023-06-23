@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 // AdminUpdate is the builder for updating Admin entities.
@@ -34,15 +35,29 @@ func (au *AdminUpdate) SetName(s string) *AdminUpdate {
 	return au
 }
 
-// SetPassword sets the "password" field.
-func (au *AdminUpdate) SetPassword(s string) *AdminUpdate {
-	au.mutation.SetPassword(s)
+// SetPasswordHash sets the "password_hash" field.
+func (au *AdminUpdate) SetPasswordHash(xh xutil.PasswordHash) *AdminUpdate {
+	au.mutation.SetPasswordHash(xh)
 	return au
 }
 
 // SetTotpSecret sets the "totp_secret" field.
 func (au *AdminUpdate) SetTotpSecret(s string) *AdminUpdate {
 	au.mutation.SetTotpSecret(s)
+	return au
+}
+
+// SetNillableTotpSecret sets the "totp_secret" field if the given value is not nil.
+func (au *AdminUpdate) SetNillableTotpSecret(s *string) *AdminUpdate {
+	if s != nil {
+		au.SetTotpSecret(*s)
+	}
+	return au
+}
+
+// ClearTotpSecret clears the value of the "totp_secret" field.
+func (au *AdminUpdate) ClearTotpSecret() *AdminUpdate {
+	au.mutation.ClearTotpSecret()
 	return au
 }
 
@@ -100,9 +115,9 @@ func (au *AdminUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Admin.name": %w`, err)}
 		}
 	}
-	if v, ok := au.mutation.Password(); ok {
-		if err := admin.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Admin.password": %w`, err)}
+	if v, ok := au.mutation.PasswordHash(); ok {
+		if err := admin.PasswordHashValidator(string(v)); err != nil {
+			return &ValidationError{Name: "password_hash", err: fmt.Errorf(`ent: validator failed for field "Admin.password_hash": %w`, err)}
 		}
 	}
 	if v, ok := au.mutation.TotpSecret(); ok {
@@ -117,7 +132,7 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := au.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -128,11 +143,14 @@ func (au *AdminUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := au.mutation.Name(); ok {
 		_spec.SetField(admin.FieldName, field.TypeString, value)
 	}
-	if value, ok := au.mutation.Password(); ok {
-		_spec.SetField(admin.FieldPassword, field.TypeString, value)
+	if value, ok := au.mutation.PasswordHash(); ok {
+		_spec.SetField(admin.FieldPasswordHash, field.TypeString, value)
 	}
 	if value, ok := au.mutation.TotpSecret(); ok {
 		_spec.SetField(admin.FieldTotpSecret, field.TypeString, value)
+	}
+	if au.mutation.TotpSecretCleared() {
+		_spec.ClearField(admin.FieldTotpSecret, field.TypeString)
 	}
 	if value, ok := au.mutation.ModifiedAt(); ok {
 		_spec.SetField(admin.FieldModifiedAt, field.TypeTime, value)
@@ -163,15 +181,29 @@ func (auo *AdminUpdateOne) SetName(s string) *AdminUpdateOne {
 	return auo
 }
 
-// SetPassword sets the "password" field.
-func (auo *AdminUpdateOne) SetPassword(s string) *AdminUpdateOne {
-	auo.mutation.SetPassword(s)
+// SetPasswordHash sets the "password_hash" field.
+func (auo *AdminUpdateOne) SetPasswordHash(xh xutil.PasswordHash) *AdminUpdateOne {
+	auo.mutation.SetPasswordHash(xh)
 	return auo
 }
 
 // SetTotpSecret sets the "totp_secret" field.
 func (auo *AdminUpdateOne) SetTotpSecret(s string) *AdminUpdateOne {
 	auo.mutation.SetTotpSecret(s)
+	return auo
+}
+
+// SetNillableTotpSecret sets the "totp_secret" field if the given value is not nil.
+func (auo *AdminUpdateOne) SetNillableTotpSecret(s *string) *AdminUpdateOne {
+	if s != nil {
+		auo.SetTotpSecret(*s)
+	}
+	return auo
+}
+
+// ClearTotpSecret clears the value of the "totp_secret" field.
+func (auo *AdminUpdateOne) ClearTotpSecret() *AdminUpdateOne {
+	auo.mutation.ClearTotpSecret()
 	return auo
 }
 
@@ -242,9 +274,9 @@ func (auo *AdminUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Admin.name": %w`, err)}
 		}
 	}
-	if v, ok := auo.mutation.Password(); ok {
-		if err := admin.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Admin.password": %w`, err)}
+	if v, ok := auo.mutation.PasswordHash(); ok {
+		if err := admin.PasswordHashValidator(string(v)); err != nil {
+			return &ValidationError{Name: "password_hash", err: fmt.Errorf(`ent: validator failed for field "Admin.password_hash": %w`, err)}
 		}
 	}
 	if v, ok := auo.mutation.TotpSecret(); ok {
@@ -259,7 +291,7 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 	if err := auo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
 	id, ok := auo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Admin.id" for update`)}
@@ -287,11 +319,14 @@ func (auo *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error
 	if value, ok := auo.mutation.Name(); ok {
 		_spec.SetField(admin.FieldName, field.TypeString, value)
 	}
-	if value, ok := auo.mutation.Password(); ok {
-		_spec.SetField(admin.FieldPassword, field.TypeString, value)
+	if value, ok := auo.mutation.PasswordHash(); ok {
+		_spec.SetField(admin.FieldPasswordHash, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.TotpSecret(); ok {
 		_spec.SetField(admin.FieldTotpSecret, field.TypeString, value)
+	}
+	if auo.mutation.TotpSecretCleared() {
+		_spec.ClearField(admin.FieldTotpSecret, field.TypeString)
 	}
 	if value, ok := auo.mutation.ModifiedAt(); ok {
 		_spec.SetField(admin.FieldModifiedAt, field.TypeTime, value)

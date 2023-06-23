@@ -17,6 +17,10 @@ type SignInService interface {
 	SignIn(ctx context.Context, name, pw string) (string, error)
 }
 
+type AdminCreateService interface {
+	Create(ctx context.Context, name, pw string) (*ent.Admin, error)
+}
+
 type ReadAdminService interface {
 	ReadAdmin(ctx context.Context) (*ent.Admin, error)
 }

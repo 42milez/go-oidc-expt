@@ -36,19 +36,18 @@ func init() {
 			return nil
 		}
 	}()
-	// adminDescPassword is the schema descriptor for password field.
-	adminDescPassword := adminFields[2].Descriptor()
-	// admin.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
-	admin.PasswordValidator = func() func(string) error {
-		validators := adminDescPassword.Validators
+	// adminDescPasswordHash is the schema descriptor for password_hash field.
+	adminDescPasswordHash := adminFields[2].Descriptor()
+	// admin.PasswordHashValidator is a validator for the "password_hash" field. It is called by the builders before save.
+	admin.PasswordHashValidator = func() func(string) error {
+		validators := adminDescPasswordHash.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
-			validators[2].(func(string) error),
 		}
-		return func(password string) error {
+		return func(password_hash string) error {
 			for _, fn := range fns {
-				if err := fn(password); err != nil {
+				if err := fn(password_hash); err != nil {
 					return err
 				}
 			}

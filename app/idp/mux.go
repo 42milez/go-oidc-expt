@@ -46,14 +46,24 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	adminSigninHdlr := &handler.SignIn{
+	adminCreateHdlr := &handler.Create{
+		Service: &service.AdminCreator{
+			Repo: adminRepo,
+		},
+		Validator: validator.New(),
+	}
+	mux.Route("/admin/create", func(r chi.Router) {
+		r.Post("/", adminCreateHdlr.ServeHTTP)
+	})
+
+	adminSignInHdlr := &handler.SignIn{
 		Service: &service.AdminSignIn{
 			Repo:           adminRepo,
 			TokenGenerator: jwtUtil,
 		},
 	}
 	mux.Route("/admin/signin", func(r chi.Router) {
-		r.Post("/", adminSigninHdlr.ServeHTTP)
+		r.Post("/", adminSignInHdlr.ServeHTTP)
 	})
 
 	//readAdminHdlr := &handler.ReadAdmin{

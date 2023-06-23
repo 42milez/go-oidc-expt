@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/oklog/ulid/v2"
-
 	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 
@@ -64,18 +62,18 @@ func (p *Session[T]) Close() error {
 }
 
 func (p *Session[T]) saveID(ctx context.Context, key string, id T) error {
-	if err := p.client.Set(ctx, key, ulid.ULID(id).String(), sessionTTL).Err(); err != nil {
-		return fmt.Errorf("%w ( key = %s, id = %d): %w", ErrFailedToSaveID, key, id, err)
+	if err := p.client.Set(ctx, key, id, sessionTTL).Err(); err != nil {
+		return fmt.Errorf("%w ( key = %s, id = %s): %w", ErrFailedToSaveID, key, id, err)
 	}
 	return nil
 }
 
 func (p *Session[T]) load(ctx context.Context, key string) (T, error) {
-	id, err := p.client.Get(ctx, key).Bytes()
+	ret, err := p.client.Get(ctx, key).Result()
 	if err != nil {
-		return T{}, fmt.Errorf("%w ( %s ): %w", ErrFailedToLoad, key, err)
+		return "", fmt.Errorf("%w ( %s ): %w", ErrFailedToLoad, key, err)
 	}
-	return T(id), nil
+	return T(ret), nil
 }
 
 func (p *Session[T]) delete(ctx context.Context, key string) error {

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 // AdminCreate is the builder for creating a Admin entity.
@@ -27,15 +28,23 @@ func (ac *AdminCreate) SetName(s string) *AdminCreate {
 	return ac
 }
 
-// SetPassword sets the "password" field.
-func (ac *AdminCreate) SetPassword(s string) *AdminCreate {
-	ac.mutation.SetPassword(s)
+// SetPasswordHash sets the "password_hash" field.
+func (ac *AdminCreate) SetPasswordHash(xh xutil.PasswordHash) *AdminCreate {
+	ac.mutation.SetPasswordHash(xh)
 	return ac
 }
 
 // SetTotpSecret sets the "totp_secret" field.
 func (ac *AdminCreate) SetTotpSecret(s string) *AdminCreate {
 	ac.mutation.SetTotpSecret(s)
+	return ac
+}
+
+// SetNillableTotpSecret sets the "totp_secret" field if the given value is not nil.
+func (ac *AdminCreate) SetNillableTotpSecret(s *string) *AdminCreate {
+	if s != nil {
+		ac.SetTotpSecret(*s)
+	}
 	return ac
 }
 
@@ -140,16 +149,13 @@ func (ac *AdminCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Admin.name": %w`, err)}
 		}
 	}
-	if _, ok := ac.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "Admin.password"`)}
+	if _, ok := ac.mutation.PasswordHash(); !ok {
+		return &ValidationError{Name: "password_hash", err: errors.New(`ent: missing required field "Admin.password_hash"`)}
 	}
-	if v, ok := ac.mutation.Password(); ok {
-		if err := admin.PasswordValidator(v); err != nil {
-			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Admin.password": %w`, err)}
+	if v, ok := ac.mutation.PasswordHash(); ok {
+		if err := admin.PasswordHashValidator(string(v)); err != nil {
+			return &ValidationError{Name: "password_hash", err: fmt.Errorf(`ent: validator failed for field "Admin.password_hash": %w`, err)}
 		}
-	}
-	if _, ok := ac.mutation.TotpSecret(); !ok {
-		return &ValidationError{Name: "totp_secret", err: errors.New(`ent: missing required field "Admin.totp_secret"`)}
 	}
 	if v, ok := ac.mutation.TotpSecret(); ok {
 		if err := admin.TotpSecretValidator(v); err != nil {
@@ -177,10 +183,10 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*alias.AdminID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
+		if id, ok := _spec.ID.Value.(alias.AdminID); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Admin.ID type: %T", _spec.ID.Value)
 		}
 	}
 	ac.mutation.id = &_node.ID
@@ -191,23 +197,23 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Admin{config: ac.config}
-		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
 	)
 	if id, ok := ac.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := ac.mutation.Name(); ok {
 		_spec.SetField(admin.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := ac.mutation.Password(); ok {
-		_spec.SetField(admin.FieldPassword, field.TypeString, value)
-		_node.Password = value
+	if value, ok := ac.mutation.PasswordHash(); ok {
+		_spec.SetField(admin.FieldPasswordHash, field.TypeString, value)
+		_node.PasswordHash = value
 	}
 	if value, ok := ac.mutation.TotpSecret(); ok {
 		_spec.SetField(admin.FieldTotpSecret, field.TypeString, value)
-		_node.TotpSecret = &value
+		_node.TotpSecret = value
 	}
 	if value, ok := ac.mutation.CreatedAt(); ok {
 		_spec.SetField(admin.FieldCreatedAt, field.TypeTime, value)

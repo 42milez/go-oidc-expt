@@ -1,13 +1,7 @@
 package alias
 
-import (
-	"database/sql/driver"
+type UserID string
 
-	"github.com/oklog/ulid/v2"
-)
-
-type UserID ulid.ULID
-
-func (v UserID) Value() (driver.Value, error) {
-	return v.Value()
-}
+//func (v UserID) Value() (driver.Value, error) {
+//	return v.Value()
+//}

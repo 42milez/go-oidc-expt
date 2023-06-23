@@ -10,10 +10,10 @@ import (
 var (
 	// AdminsColumns holds the columns for the "admins" table.
 	AdminsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
-		{Name: "password", Type: field.TypeString, Size: 256},
-		{Name: "totp_secret", Type: field.TypeString, Size: 160},
+		{Name: "password_hash", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(751)"}},
+		{Name: "totp_secret", Type: field.TypeString, Nullable: true, Size: 160},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},
 	}

@@ -365,7 +365,7 @@ func (aq *AdminQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (aq *AdminQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewQuerySpec(admin.Table, admin.Columns, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeString))
 	_spec.From = aq.sql
 	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

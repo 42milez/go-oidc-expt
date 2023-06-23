@@ -35,6 +35,6 @@ FROM golang:1.20.2 as dev
 WORKDIR /workspace
 
 RUN go install github.com/go-delve/delve/cmd/dlv@v1.20.2
-RUN go install github.com/cosmtrek/air@v1.42.0
+RUN go install github.com/cosmtrek/air@v1.44.0
 
 CMD [ "air", "-c", ".air.toml" ]
