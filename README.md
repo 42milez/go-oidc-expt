@@ -115,6 +115,8 @@ If `N_LATEST` isn't specified, the diff between `main` branch and the current on
   - [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
 - Password
   - [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+- ULID
+  - [Universally Unique Lexicographically Sortable Identifier](https://github.com/ulid/spec)
 
 ## Notes
 
