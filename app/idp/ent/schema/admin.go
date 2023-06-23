@@ -2,20 +2,20 @@ package schema
 
 import (
 	"fmt"
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"regexp"
 	"time"
+
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 )
 
 const (
-	nameMaxLength     = 30
-	nameMinLength     = 6
-	passwordMaxLength = 100
-	passwordMinLength = 8
-	totpSecretLength  = 160
+	nameMaxLength    = 30
+	nameMinLength    = 6
+	passwordLength   = 256
+	totpSecretLength = 160
 )
 
 // Admin holds the schema definition for the Admin entity.
@@ -36,8 +36,13 @@ func (Admin) Fields() []ent.Field {
 			Unique().
 			NotEmpty(),
 		field.String("password").
-			MaxLen(passwordMaxLength).
-			MinLen(passwordMinLength).
+			MaxLen(passwordLength).
+			Validate(func(s string) error {
+				if len(s) != passwordLength {
+					return fmt.Errorf("password must be %d characters", passwordLength)
+				}
+				return nil
+			}).
 			NotEmpty(),
 		field.String("totp_secret").
 			MaxLen(totpSecretLength).

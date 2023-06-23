@@ -2,6 +2,7 @@ package alias
 
 import (
 	"database/sql/driver"
+
 	"github.com/oklog/ulid/v2"
 )
 

@@ -15,10 +15,11 @@ func (v Err) Error() string {
 }
 
 const (
-	errFailedToCreateAdmin   Err = "failed to create admin"
-	errFailedToGenerateToken Err = "failed to generate token"
-	errFailedToSelectAdmin   Err = "failed to select admin"
-	errInvalidPassword       Err = "invalid password"
+	errFailedToCreateAdmin      Err = "failed to create admin"
+	errFailedToGeneratePassword Err = "failed to generate password"
+	errFailedToGenerateToken    Err = "failed to generate token"
+	errFailedToSelectAdmin      Err = "failed to select admin"
+	errInvalidPassword          Err = "invalid password"
 )
 
 type AdminSignUp struct {
@@ -27,8 +28,11 @@ type AdminSignUp struct {
 }
 
 func (p *AdminSignUp) SignUp(ctx context.Context, name, pw string) (*ent.Admin, error) {
-	// TODO: Generate password hash
-	hash := pw
+	hash, err := xutil.GeneratePasswordHash(pw)
+
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", errFailedToGeneratePassword, err)
+	}
 
 	admin, err := p.Repo.Create(ctx, name, hash)
 

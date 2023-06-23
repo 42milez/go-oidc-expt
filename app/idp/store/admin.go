@@ -15,7 +15,7 @@ type AdminRepository struct {
 }
 
 func (p *AdminRepository) Create(ctx context.Context, name, pw string) (*ent.Admin, error) {
-	return nil, nil
+	return p.DB.Admin.Create().SetName(name).SetPassword(pw).Save(ctx)
 }
 
 func (p *AdminRepository) SelectByName(ctx context.Context, name string) (*ent.Admin, error) {

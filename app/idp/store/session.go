@@ -3,9 +3,10 @@ package store
 import (
 	"context"
 	"fmt"
-	"github.com/oklog/ulid/v2"
 	"net/http"
 	"time"
+
+	"github.com/oklog/ulid/v2"
 
 	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
