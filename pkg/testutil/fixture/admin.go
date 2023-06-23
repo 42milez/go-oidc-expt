@@ -11,7 +11,7 @@ import (
 
 func Admin(admin *ent.Admin) *ent.Admin {
 	ret := &ent.Admin{
-		ID:         alias.AdminID(rand.Uint64()),
+		ID:         alias.MakeAdminID(),
 		Name:       "42milez" + strconv.Itoa(rand.Int())[:5],
 		Password:   "42milez",
 		CreatedAt:  time.Now(),
@@ -22,7 +22,7 @@ func Admin(admin *ent.Admin) *ent.Admin {
 		return ret
 	}
 
-	if admin.ID != 0 {
+	if !admin.ID.IsZero() {
 		ret.ID = admin.ID
 	}
 

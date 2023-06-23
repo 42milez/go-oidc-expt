@@ -15,7 +15,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func New(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(), error) {
+func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(), error) {
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 	db, err := sql.Open(dialect.MySQL, dataSrc)
 	if err != nil {

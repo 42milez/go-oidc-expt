@@ -2,34 +2,64 @@ package service
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
-type CreateAdmin struct {
-	DB   *ent.Client
-	Repo AdminCreater
+type Err string
+
+func (v Err) Error() string {
+	return string(v)
 }
 
-func (p *CreateAdmin) Create(ctx context.Context) error {
-	return nil
+const (
+	errFailedToCreateAdmin   Err = "failed to create admin"
+	errFailedToGenerateToken Err = "failed to generate token"
+	errFailedToSelectAdmin   Err = "failed to select admin"
+	errInvalidPassword       Err = "invalid password"
+)
+
+type AdminSignUp struct {
+	Repo           IdentityCreator[ent.Admin]
+	TokenGenerator TokenGenerator
 }
 
-type ReadAdmin struct {
-	DB   *ent.Client
-	Repo AdminReader
+func (p *AdminSignUp) SignUp(ctx context.Context, name, pw string) (*ent.Admin, error) {
+	// TODO: Generate password hash
+	hash := pw
+
+	admin, err := p.Repo.Create(ctx, name, hash)
+
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", errFailedToCreateAdmin, err)
+	}
+
+	return admin, nil
 }
 
-func (p *ReadAdmin) ReadAdmin(ctx context.Context) (*ent.Admin, error) {
-	return nil, errors.New("not implemented")
+type AdminSignIn struct {
+	Repo           IdentitySelector[ent.Admin]
+	TokenGenerator TokenGenerator
 }
 
-type ReadAdmins struct {
-	DB   *ent.Client
-	Repo AdminsReader
-}
+func (p *AdminSignIn) SignIn(ctx context.Context, name, pw string) (string, error) {
+	admin, err := p.Repo.SelectByName(ctx, name)
 
-func (p *ReadAdmins) ReadAdmins(ctx context.Context) ([]*ent.Admin, error) {
-	return nil, errors.New("not implemented")
+	if err != nil {
+		return "", fmt.Errorf("%w: %w", errFailedToSelectAdmin, err)
+	}
+
+	if err = xutil.ComparePassword(admin.Password, pw); err != nil {
+		return "", fmt.Errorf("%w: %w", errInvalidPassword, err)
+	}
+
+	token, err := p.TokenGenerator.GenerateAccessToken(admin.Name)
+
+	if err != nil {
+		return "", fmt.Errorf("%w: %w", errFailedToGenerateToken, err)
+	}
+
+	return string(token), nil
 }

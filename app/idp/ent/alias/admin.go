@@ -7,6 +7,14 @@ import (
 
 type AdminID ulid.ULID
 
+func (v AdminID) IsZero() bool {
+	return v.IsZero()
+}
+
+func (v AdminID) MarshalBinary() ([]byte, error) {
+	return v[:], nil
+}
+
 func (v AdminID) Scan(src any) error {
 	return v.Scan(src)
 }

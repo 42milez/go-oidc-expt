@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"github.com/oklog/ulid/v2"
 	"net/http"
 	"time"
 
@@ -62,16 +63,16 @@ func (p *Session[T]) Close() error {
 }
 
 func (p *Session[T]) saveID(ctx context.Context, key string, id T) error {
-	if err := p.client.Set(ctx, key, uint64(id), sessionTTL).Err(); err != nil {
+	if err := p.client.Set(ctx, key, ulid.ULID(id).String(), sessionTTL).Err(); err != nil {
 		return fmt.Errorf("%w ( key = %s, id = %d): %w", ErrFailedToSaveID, key, id, err)
 	}
 	return nil
 }
 
 func (p *Session[T]) load(ctx context.Context, key string) (T, error) {
-	id, err := p.client.Get(ctx, key).Uint64()
+	id, err := p.client.Get(ctx, key).Bytes()
 	if err != nil {
-		return 0, fmt.Errorf("%w ( %s ): %w", ErrFailedToLoad, key, err)
+		return T{}, fmt.Errorf("%w ( %s ): %w", ErrFailedToLoad, key, err)
 	}
 	return T(id), nil
 }

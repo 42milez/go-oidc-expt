@@ -15,6 +15,8 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/testutil"
 )
 
+const adminULID = "01H3M514Q0KGDS7PCKE9VVEMT4"
+
 func TestNewAdminSession(t *testing.T) {
 	t.Parallel()
 
@@ -55,7 +57,7 @@ func TestSession_SaveID(t *testing.T) {
 		client.Del(ctx, key)
 	})
 
-	id := alias.AdminID(123)
+	id := alias.AdminID([]byte(adminULID))
 
 	if err := repo.saveID(ctx, key, id); err != nil {
 		t.Error(err)
@@ -75,9 +77,11 @@ func TestSession_Load(t *testing.T) {
 
 		ctx := context.Background()
 		key := "TestSession_Load_OK"
-		id := alias.AdminID(123)
+		id := alias.AdminID([]byte(adminULID))
 
-		client.Set(ctx, key, uint64(id), sessionTTL)
+		if err := client.Set(ctx, key, id, sessionTTL).Err(); err != nil {
+			t.Fatal(err)
+		}
 
 		t.Cleanup(func() {
 			client.Del(ctx, key)
@@ -117,7 +121,7 @@ func TestSession_Delete(t *testing.T) {
 	ctx := context.Background()
 	key := "TestSession_Delete"
 
-	id := alias.AdminID(123)
+	id := alias.AdminID([]byte(adminULID))
 
 	if err := repo.saveID(ctx, key, id); err != nil {
 		t.Fatal(err)
@@ -154,7 +158,7 @@ func TestSession_SetID(t *testing.T) {
 		}
 	})
 
-	want := alias.AdminID(123)
+	want := alias.AdminID([]byte(adminULID))
 	ctx = sess.setID(ctx, want)
 
 	got, ok := ctx.Value(IDKey{}).(alias.AdminID)
@@ -194,7 +198,7 @@ func TestSession_GetID(t *testing.T) {
 		}
 	})
 
-	want := alias.AdminID(123)
+	want := alias.AdminID([]byte(adminULID))
 	ctx = context.WithValue(ctx, IDKey{}, want)
 
 	got, ok := sess.getID(ctx)

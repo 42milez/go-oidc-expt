@@ -21,7 +21,7 @@ import (
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
 	_ = validator.New()
 
-	client, db, cleanup, err := store.New(ctx, cfg)
+	client, db, cleanup, err := store.NewDB(ctx, cfg)
 	if err != nil {
 		return nil, cleanup, err
 	}
