@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 )
 
 const (
@@ -60,6 +61,8 @@ var (
 	DefaultModifiedAt func() time.Time
 	// UpdateDefaultModifiedAt holds the default value on update for the "modified_at" field.
 	UpdateDefaultModifiedAt func() time.Time
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() alias.AdminID
 )
 
 // OrderOption defines the ordering options for the Admin queries.

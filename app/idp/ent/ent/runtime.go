@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/schema"
 )
@@ -57,7 +58,21 @@ func init() {
 	// adminDescTotpSecret is the schema descriptor for totp_secret field.
 	adminDescTotpSecret := adminFields[3].Descriptor()
 	// admin.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
-	admin.TotpSecretValidator = adminDescTotpSecret.Validators[0].(func(string) error)
+	admin.TotpSecretValidator = func() func(string) error {
+		validators := adminDescTotpSecret.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(totp_secret string) error {
+			for _, fn := range fns {
+				if err := fn(totp_secret); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// adminDescCreatedAt is the schema descriptor for created_at field.
 	adminDescCreatedAt := adminFields[4].Descriptor()
 	// admin.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -68,4 +83,8 @@ func init() {
 	admin.DefaultModifiedAt = adminDescModifiedAt.Default.(func() time.Time)
 	// admin.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
 	admin.UpdateDefaultModifiedAt = adminDescModifiedAt.UpdateDefault.(func() time.Time)
+	// adminDescID is the schema descriptor for id field.
+	adminDescID := adminFields[0].Descriptor()
+	// admin.DefaultID holds the default value on creation for the id field.
+	admin.DefaultID = adminDescID.Default.(func() alias.AdminID)
 }

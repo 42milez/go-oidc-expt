@@ -70,7 +70,7 @@ The containers:
 ### Apply migrations
 
 ```
-./script/atlas/migrate-apply.sh
+./script/atlas/migrate-apply.sh idp
 ```
 
 ## Commands and scripts
@@ -99,6 +99,12 @@ go generate ./...
 
 ```
 ./script/atlas/migrate-lint.sh <APP_NAME> [<N_LATEST>]
+```
+
+### Applying migrations
+
+```
+./script/atlas/migrate-apply.sh <APP_NAME>
 ```
 
 If `N_LATEST` isn't specified, the diff between `main` branch and the current one is selected as the changeset.

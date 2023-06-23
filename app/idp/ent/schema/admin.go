@@ -1,14 +1,21 @@
 package schema
 
 import (
-	"errors"
+	"fmt"
+	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"regexp"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+)
+
+const (
+	nameMaxLength     = 30
+	nameMinLength     = 6
+	passwordMaxLength = 100
+	passwordMinLength = 8
+	totpSecretLength  = 160
 )
 
 // Admin holds the schema definition for the Admin entity.
@@ -19,21 +26,24 @@ type Admin struct {
 // Fields of the Account.
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("id").GoType(alias.AdminID(0)),
+		field.UUID("id", alias.AdminID{}).
+			Unique().
+			Default(alias.MakeAdminID),
 		field.String("name").
-			MinLen(6).
-			MaxLen(30).
+			MaxLen(nameMaxLength).
+			MinLen(nameMinLength).
 			Match(regexp.MustCompile("^\\D[0-9a-z_]+")).
 			Unique().
 			NotEmpty(),
 		field.String("password").
-			MinLen(8).
-			MaxLen(100).
+			MaxLen(passwordMaxLength).
+			MinLen(passwordMinLength).
 			NotEmpty(),
 		field.String("totp_secret").
+			MaxLen(totpSecretLength).
 			Validate(func(s string) error {
-				if len(s) != 160 {
-					return errors.New("totp_secret must be 160 characters")
+				if len(s) != totpSecretLength {
+					return fmt.Errorf("totp_secret must be %d characters", totpSecretLength)
 				}
 				return nil
 			}).

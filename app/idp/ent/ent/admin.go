@@ -37,7 +37,7 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case admin.FieldID:
-			values[i] = new(sql.NullInt64)
+			values[i] = new(alias.AdminID)
 		case admin.FieldName, admin.FieldPassword, admin.FieldTotpSecret:
 			values[i] = new(sql.NullString)
 		case admin.FieldCreatedAt, admin.FieldModifiedAt:
@@ -58,10 +58,10 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case admin.FieldID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*alias.AdminID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value.Valid {
-				a.ID = alias.AdminID(value.Int64)
+			} else if value != nil {
+				a.ID = *value
 			}
 		case admin.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {

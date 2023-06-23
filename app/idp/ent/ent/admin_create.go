@@ -73,6 +73,14 @@ func (ac *AdminCreate) SetID(ai alias.AdminID) *AdminCreate {
 	return ac
 }
 
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ac *AdminCreate) SetNillableID(ai *alias.AdminID) *AdminCreate {
+	if ai != nil {
+		ac.SetID(*ai)
+	}
+	return ac
+}
+
 // Mutation returns the AdminMutation object of the builder.
 func (ac *AdminCreate) Mutation() *AdminMutation {
 	return ac.mutation
@@ -115,6 +123,10 @@ func (ac *AdminCreate) defaults() {
 	if _, ok := ac.mutation.ModifiedAt(); !ok {
 		v := admin.DefaultModifiedAt()
 		ac.mutation.SetModifiedAt(v)
+	}
+	if _, ok := ac.mutation.ID(); !ok {
+		v := admin.DefaultID()
+		ac.mutation.SetID(v)
 	}
 }
 
@@ -164,9 +176,12 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = alias.AdminID(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(*alias.AdminID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	ac.mutation.id = &_node.ID
 	ac.mutation.done = true
@@ -176,11 +191,11 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 func (ac *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Admin{config: ac.config}
-		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeUint64))
+		_spec = sqlgraph.NewCreateSpec(admin.Table, sqlgraph.NewFieldSpec(admin.FieldID, field.TypeUUID))
 	)
 	if id, ok := ac.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ac.mutation.Name(); ok {
 		_spec.SetField(admin.FieldName, field.TypeString, value)
@@ -246,10 +261,6 @@ func (acb *AdminCreateBulk) Save(ctx context.Context) ([]*Admin, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = alias.AdminID(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})
