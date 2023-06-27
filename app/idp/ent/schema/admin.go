@@ -1,13 +1,14 @@
 package schema
 
 import (
-	"entgo.io/ent/dialect"
 	"fmt"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"regexp"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
+
+	"entgo.io/ent/dialect"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -21,8 +22,9 @@ const (
 )
 
 const (
-	idType = "CHAR(26)"
+	idType           = "CHAR(26)"
 	passwordHashType = "VARCHAR(751)"
+	totpSecretType   = "CHAR(160)"
 )
 
 // Admin holds the schema definition for the Admin entity.
@@ -34,14 +36,14 @@ type Admin struct {
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
-			GoType(alias.AdminID("")).
+			GoType(typedef.AdminID("")).
 			SchemaType(map[string]string{
 				dialect.MySQL: idType,
 			}).
 			Immutable().
-			DefaultFunc(func() alias.AdminID {
-				return alias.MakeAdminID()
-		}),
+			DefaultFunc(func() typedef.AdminID {
+				return xutil.MakeAdminID()
+			}),
 		field.String("name").
 			MaxLen(nameMaxLength).
 			MinLen(nameMinLength).
@@ -49,7 +51,7 @@ func (Admin) Fields() []ent.Field {
 			Unique().
 			NotEmpty(),
 		field.String("password_hash").
-			GoType(xutil.PasswordHash("")).
+			GoType(typedef.PasswordHash("")).
 			SchemaType(map[string]string{
 				dialect.MySQL: passwordHashType,
 			}).
@@ -61,6 +63,9 @@ func (Admin) Fields() []ent.Field {
 			}).
 			NotEmpty(),
 		field.String("totp_secret").
+			SchemaType(map[string]string{
+				dialect.MySQL: totpSecretType,
+			}).
 			MaxLen(totpSecretLength).
 			Validate(func(s string) error {
 				if len(s) != totpSecretLength {

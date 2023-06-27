@@ -1,8 +1,6 @@
-package alias
+package typedef
 
-import (
-	"github.com/oklog/ulid/v2"
-)
+type PasswordHash string
 
 type AdminID string
 
@@ -14,6 +12,4 @@ func (v AdminID) MarshalBinary() ([]byte, error) {
 	return []byte(v), nil
 }
 
-func MakeAdminID() AdminID {
-	return AdminID(ulid.Make().String())
-}
+type UserID string

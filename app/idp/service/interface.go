@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 type Identity interface {
@@ -12,7 +12,7 @@ type Identity interface {
 }
 
 type IdentityCreator[T Identity] interface {
-	Create(ctx context.Context, name string, pw xutil.PasswordHash) (*T, error)
+	Create(ctx context.Context, name string, pw typedef.PasswordHash) (*T, error)
 }
 
 type IdentitySelector[T Identity] interface {

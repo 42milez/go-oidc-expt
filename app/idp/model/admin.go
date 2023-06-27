@@ -1,6 +1,8 @@
 package model
 
-import "github.com/42milez/go-oidc-server/app/idp/ent/alias"
+import (
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+)
 
 type AdminCreateRequest struct {
 	Name     string `json:"name" validate:"required"`
@@ -8,6 +10,6 @@ type AdminCreateRequest struct {
 }
 
 type AdminResponse struct {
-	ID   alias.AdminID
+	ID   typedef.AdminID
 	Name string
 }

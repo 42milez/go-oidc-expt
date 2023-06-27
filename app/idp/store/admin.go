@@ -3,6 +3,8 @@ package store
 import (
 	"context"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
@@ -14,7 +16,7 @@ type AdminRepository struct {
 	DB    *ent.Client
 }
 
-func (p *AdminRepository) Create(ctx context.Context, name string, pw xutil.PasswordHash) (*ent.Admin, error) {
+func (p *AdminRepository) Create(ctx context.Context, name string, pw typedef.PasswordHash) (*ent.Admin, error) {
 	return p.DB.Admin.Create().SetName(name).SetPasswordHash(pw).Save(ctx)
 }
 

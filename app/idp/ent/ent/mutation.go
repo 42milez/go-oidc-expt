@@ -11,10 +11,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 const (
@@ -34,9 +33,9 @@ type AdminMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *alias.AdminID
+	id            *typedef.AdminID
 	name          *string
-	password_hash *xutil.PasswordHash
+	password_hash *typedef.PasswordHash
 	totp_secret   *string
 	created_at    *time.Time
 	modified_at   *time.Time
@@ -66,7 +65,7 @@ func newAdminMutation(c config, op Op, opts ...adminOption) *AdminMutation {
 }
 
 // withAdminID sets the ID field of the mutation.
-func withAdminID(id alias.AdminID) adminOption {
+func withAdminID(id typedef.AdminID) adminOption {
 	return func(m *AdminMutation) {
 		var (
 			err   error
@@ -118,13 +117,13 @@ func (m AdminMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Admin entities.
-func (m *AdminMutation) SetID(id alias.AdminID) {
+func (m *AdminMutation) SetID(id typedef.AdminID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *AdminMutation) ID() (id alias.AdminID, exists bool) {
+func (m *AdminMutation) ID() (id typedef.AdminID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -135,12 +134,12 @@ func (m *AdminMutation) ID() (id alias.AdminID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *AdminMutation) IDs(ctx context.Context) ([]alias.AdminID, error) {
+func (m *AdminMutation) IDs(ctx context.Context) ([]typedef.AdminID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []alias.AdminID{id}, nil
+			return []typedef.AdminID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -187,12 +186,12 @@ func (m *AdminMutation) ResetName() {
 }
 
 // SetPasswordHash sets the "password_hash" field.
-func (m *AdminMutation) SetPasswordHash(xh xutil.PasswordHash) {
-	m.password_hash = &xh
+func (m *AdminMutation) SetPasswordHash(th typedef.PasswordHash) {
+	m.password_hash = &th
 }
 
 // PasswordHash returns the value of the "password_hash" field in the mutation.
-func (m *AdminMutation) PasswordHash() (r xutil.PasswordHash, exists bool) {
+func (m *AdminMutation) PasswordHash() (r typedef.PasswordHash, exists bool) {
 	v := m.password_hash
 	if v == nil {
 		return
@@ -203,7 +202,7 @@ func (m *AdminMutation) PasswordHash() (r xutil.PasswordHash, exists bool) {
 // OldPasswordHash returns the old "password_hash" field's value of the Admin entity.
 // If the Admin object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdminMutation) OldPasswordHash(ctx context.Context) (v xutil.PasswordHash, err error) {
+func (m *AdminMutation) OldPasswordHash(ctx context.Context) (v typedef.PasswordHash, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPasswordHash is only allowed on UpdateOne operations")
 	}
@@ -447,7 +446,7 @@ func (m *AdminMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case admin.FieldPasswordHash:
-		v, ok := value.(xutil.PasswordHash)
+		v, ok := value.(typedef.PasswordHash)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

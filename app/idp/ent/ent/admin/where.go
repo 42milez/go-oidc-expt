@@ -6,53 +6,52 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id alias.AdminID) predicate.Admin {
+func ID(id typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id alias.AdminID) predicate.Admin {
+func IDEQ(id typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id alias.AdminID) predicate.Admin {
+func IDNEQ(id typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...alias.AdminID) predicate.Admin {
+func IDIn(ids ...typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...alias.AdminID) predicate.Admin {
+func IDNotIn(ids ...typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id alias.AdminID) predicate.Admin {
+func IDGT(id typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id alias.AdminID) predicate.Admin {
+func IDGTE(id typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id alias.AdminID) predicate.Admin {
+func IDLT(id typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id alias.AdminID) predicate.Admin {
+func IDLTE(id typedef.AdminID) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldID, id))
 }
 
@@ -62,7 +61,7 @@ func Name(v string) predicate.Admin {
 }
 
 // PasswordHash applies equality check predicate on the "password_hash" field. It's identical to PasswordHashEQ.
-func PasswordHash(v xutil.PasswordHash) predicate.Admin {
+func PasswordHash(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldEQ(FieldPasswordHash, vc))
 }
@@ -148,19 +147,19 @@ func NameContainsFold(v string) predicate.Admin {
 }
 
 // PasswordHashEQ applies the EQ predicate on the "password_hash" field.
-func PasswordHashEQ(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashEQ(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldEQ(FieldPasswordHash, vc))
 }
 
 // PasswordHashNEQ applies the NEQ predicate on the "password_hash" field.
-func PasswordHashNEQ(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashNEQ(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldNEQ(FieldPasswordHash, vc))
 }
 
 // PasswordHashIn applies the In predicate on the "password_hash" field.
-func PasswordHashIn(vs ...xutil.PasswordHash) predicate.Admin {
+func PasswordHashIn(vs ...typedef.PasswordHash) predicate.Admin {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = string(vs[i])
@@ -169,7 +168,7 @@ func PasswordHashIn(vs ...xutil.PasswordHash) predicate.Admin {
 }
 
 // PasswordHashNotIn applies the NotIn predicate on the "password_hash" field.
-func PasswordHashNotIn(vs ...xutil.PasswordHash) predicate.Admin {
+func PasswordHashNotIn(vs ...typedef.PasswordHash) predicate.Admin {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = string(vs[i])
@@ -178,55 +177,55 @@ func PasswordHashNotIn(vs ...xutil.PasswordHash) predicate.Admin {
 }
 
 // PasswordHashGT applies the GT predicate on the "password_hash" field.
-func PasswordHashGT(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashGT(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldGT(FieldPasswordHash, vc))
 }
 
 // PasswordHashGTE applies the GTE predicate on the "password_hash" field.
-func PasswordHashGTE(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashGTE(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldGTE(FieldPasswordHash, vc))
 }
 
 // PasswordHashLT applies the LT predicate on the "password_hash" field.
-func PasswordHashLT(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashLT(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldLT(FieldPasswordHash, vc))
 }
 
 // PasswordHashLTE applies the LTE predicate on the "password_hash" field.
-func PasswordHashLTE(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashLTE(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldLTE(FieldPasswordHash, vc))
 }
 
 // PasswordHashContains applies the Contains predicate on the "password_hash" field.
-func PasswordHashContains(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashContains(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldContains(FieldPasswordHash, vc))
 }
 
 // PasswordHashHasPrefix applies the HasPrefix predicate on the "password_hash" field.
-func PasswordHashHasPrefix(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashHasPrefix(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldHasPrefix(FieldPasswordHash, vc))
 }
 
 // PasswordHashHasSuffix applies the HasSuffix predicate on the "password_hash" field.
-func PasswordHashHasSuffix(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashHasSuffix(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldHasSuffix(FieldPasswordHash, vc))
 }
 
 // PasswordHashEqualFold applies the EqualFold predicate on the "password_hash" field.
-func PasswordHashEqualFold(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashEqualFold(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldEqualFold(FieldPasswordHash, vc))
 }
 
 // PasswordHashContainsFold applies the ContainsFold predicate on the "password_hash" field.
-func PasswordHashContainsFold(v xutil.PasswordHash) predicate.Admin {
+func PasswordHashContainsFold(v typedef.PasswordHash) predicate.Admin {
 	vc := string(v)
 	return predicate.Admin(sql.FieldContainsFold(FieldPasswordHash, vc))
 }

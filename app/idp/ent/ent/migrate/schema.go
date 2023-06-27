@@ -13,7 +13,7 @@ var (
 		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
 		{Name: "password_hash", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(751)"}},
-		{Name: "totp_secret", Type: field.TypeString, Nullable: true, Size: 160},
+		{Name: "totp_secret", Type: field.TypeString, Nullable: true, Size: 160, SchemaType: map[string]string{"mysql": "CHAR(160)"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},
 	}

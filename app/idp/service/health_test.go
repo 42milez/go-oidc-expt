@@ -6,7 +6,7 @@ import (
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
-	"github.com/42milez/go-oidc-server/pkg/testutil"
+	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 )
 
 func TestCheckHealth_PingCache(t *testing.T) {
@@ -14,7 +14,7 @@ func TestCheckHealth_PingCache(t *testing.T) {
 }
 
 func TestCheckHealth_PingDB(t *testing.T) {
-	_, db := testutil.OpenDB(t)
+	_, db := xtestutil.OpenDB(t)
 	ch := CheckHealth{
 		DB: db,
 	}

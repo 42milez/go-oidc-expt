@@ -1,10 +1,12 @@
-package xutil
+package auth
 
 import (
 	"bytes"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/gob"
+
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -17,17 +19,15 @@ const (
 )
 
 type passwordHashRepr struct {
-	Variant      argon2Variant
-	Version      int
-	Memory       uint32
-	Iterations   uint32
-	Parallelism  uint8
-	KeyLength    uint32
-	Salt []byte
-	Hash []byte
+	Variant     argon2Variant
+	Version     int
+	Memory      uint32
+	Iterations  uint32
+	Parallelism uint8
+	KeyLength   uint32
+	Salt        []byte
+	Hash        []byte
 }
-
-type PasswordHash string
 
 // The parameters below are recommended in https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-argon2-13 as SECOND
 // RECOMMENDED option.
@@ -37,7 +37,7 @@ const parallelism uint8 = 4
 const saltLength uint32 = 128
 const keyLength uint32 = 256
 
-func GeneratePasswordHash(raw string) (PasswordHash, error) {
+func GeneratePasswordHash(raw string) (typedef.PasswordHash, error) {
 	salt := make([]byte, saltLength)
 
 	_, err := rand.Read(salt)
@@ -54,7 +54,7 @@ func GeneratePasswordHash(raw string) (PasswordHash, error) {
 		Memory:      memory,
 		Iterations:  iterations,
 		Parallelism: parallelism,
-		KeyLength: keyLength,
+		KeyLength:   keyLength,
 		Salt:        salt,
 		Hash:        hash,
 	}
@@ -68,10 +68,10 @@ func GeneratePasswordHash(raw string) (PasswordHash, error) {
 
 	ret := base64.RawStdEncoding.EncodeToString(buf.Bytes())
 
-	return PasswordHash(ret), nil
+	return typedef.PasswordHash(ret), nil
 }
 
-func ComparePassword(raw string, encoded PasswordHash) (bool, error) {
+func ComparePassword(raw string, encoded typedef.PasswordHash) (bool, error) {
 	b, err := base64.RawStdEncoding.DecodeString(string(encoded))
 
 	if err != nil {

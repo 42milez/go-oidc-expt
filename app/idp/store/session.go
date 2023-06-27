@@ -6,13 +6,14 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+
 	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -31,7 +32,7 @@ func (v SessionErr) Error() string {
 	return string(v)
 }
 
-func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[alias.AdminID], error) {
+func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[typedef.AdminID], error) {
 	client := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
 	})
@@ -46,13 +47,13 @@ func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[alias.Ad
 		return nil, fmt.Errorf("%w", xerr.FailedToInitialize)
 	}
 
-	return &Session[alias.AdminID]{
+	return &Session[typedef.AdminID]{
 		client: client,
 		jwt:    jwtUtil,
 	}, nil
 }
 
-type Session[T alias.AdminID | alias.UserID] struct {
+type Session[T typedef.AdminID | typedef.UserID] struct {
 	client *redis.Client
 	jwt    *auth.JWTUtil
 }

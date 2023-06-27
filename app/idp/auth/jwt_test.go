@@ -11,7 +11,7 @@ import (
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
-	"github.com/42milez/go-oidc-server/pkg/testutil"
+	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
@@ -51,7 +51,7 @@ func TestJWT_GenerateAccessToken(t *testing.T) {
 func TestJWT_ParseRequest(t *testing.T) {
 	t.Parallel()
 
-	c := testutil.FixedClocker{}
+	c := xtestutil.FixedClocker{}
 
 	want, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
@@ -101,7 +101,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 func TestJWT_Validate(t *testing.T) {
 	t.Parallel()
 
-	c := testutil.FixedClocker{}
+	c := xtestutil.FixedClocker{}
 
 	t.Run("OK", func(t *testing.T) {
 		token, err := jwt.NewBuilder().
@@ -144,7 +144,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatalf("%+v: %+v", ErrFailedToBuildToken, err)
 		}
 
-		jwtUtil, err := NewJWTUtil(testutil.FixedTomorrowClocker{})
+		jwtUtil, err := NewJWTUtil(xtestutil.FixedTomorrowClocker{})
 
 		if err != nil {
 			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)

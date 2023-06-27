@@ -5,9 +5,9 @@ package ent
 import (
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/schema"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -85,5 +85,5 @@ func init() {
 	// adminDescID is the schema descriptor for id field.
 	adminDescID := adminFields[0].Descriptor()
 	// admin.DefaultID holds the default value on creation for the id field.
-	admin.DefaultID = adminDescID.Default.(func() alias.AdminID)
+	admin.DefaultID = adminDescID.Default.(func() typedef.AdminID)
 }

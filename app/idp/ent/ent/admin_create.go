@@ -10,9 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 // AdminCreate is the builder for creating a Admin entity.
@@ -29,8 +28,8 @@ func (ac *AdminCreate) SetName(s string) *AdminCreate {
 }
 
 // SetPasswordHash sets the "password_hash" field.
-func (ac *AdminCreate) SetPasswordHash(xh xutil.PasswordHash) *AdminCreate {
-	ac.mutation.SetPasswordHash(xh)
+func (ac *AdminCreate) SetPasswordHash(th typedef.PasswordHash) *AdminCreate {
+	ac.mutation.SetPasswordHash(th)
 	return ac
 }
 
@@ -77,15 +76,15 @@ func (ac *AdminCreate) SetNillableModifiedAt(t *time.Time) *AdminCreate {
 }
 
 // SetID sets the "id" field.
-func (ac *AdminCreate) SetID(ai alias.AdminID) *AdminCreate {
-	ac.mutation.SetID(ai)
+func (ac *AdminCreate) SetID(ti typedef.AdminID) *AdminCreate {
+	ac.mutation.SetID(ti)
 	return ac
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ac *AdminCreate) SetNillableID(ai *alias.AdminID) *AdminCreate {
-	if ai != nil {
-		ac.SetID(*ai)
+func (ac *AdminCreate) SetNillableID(ti *typedef.AdminID) *AdminCreate {
+	if ti != nil {
+		ac.SetID(*ti)
 	}
 	return ac
 }
@@ -183,7 +182,7 @@ func (ac *AdminCreate) sqlSave(ctx context.Context) (*Admin, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(alias.AdminID); ok {
+		if id, ok := _spec.ID.Value.(typedef.AdminID); ok {
 			_node.ID = id
 		} else {
 			return nil, fmt.Errorf("unexpected Admin.ID type: %T", _spec.ID.Value)

@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/pkg/testutil"
+	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang/mock/gomock"
 )
@@ -60,7 +60,7 @@ func TestSignIn_ServeHTTP(t *testing.T) {
 			reqFile: testDataSignInRequest200,
 			resp: mockResp{
 				token: "",
-				err:   testutil.DummyError,
+				err:   xtestutil.DummyError,
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,
@@ -79,7 +79,7 @@ func TestSignIn_ServeHTTP(t *testing.T) {
 			r := httptest.NewRequest(
 				http.MethodPost,
 				"/signin",
-				bytes.NewReader(testutil.LoadFile(t, tt.reqFile)))
+				bytes.NewReader(xtestutil.LoadFile(t, tt.reqFile)))
 
 			svcMock := NewMockSignInService(gomock.NewController(t))
 			svcMock.
@@ -96,7 +96,7 @@ func TestSignIn_ServeHTTP(t *testing.T) {
 
 			resp := w.Result()
 
-			testutil.AssertResponse(t, resp, tt.want.statusCode, testutil.LoadFile(t, tt.want.respFile))
+			xtestutil.AssertResponse(t, resp, tt.want.statusCode, xtestutil.LoadFile(t, tt.want.respFile))
 		})
 	}
 }

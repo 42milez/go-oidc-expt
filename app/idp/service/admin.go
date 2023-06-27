@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/idp/auth"
+
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 type Err string
@@ -27,7 +28,7 @@ type AdminCreator struct {
 }
 
 func (p *AdminCreator) Create(ctx context.Context, name, pw string) (*ent.Admin, error) {
-	hash, err := xutil.GeneratePasswordHash(pw)
+	hash, err := auth.GeneratePasswordHash(pw)
 
 	if err != nil {
 		return nil, fmt.Errorf("%w: %w", errFailedToGeneratePassword, err)
@@ -54,7 +55,7 @@ func (p *AdminSignIn) SignIn(ctx context.Context, name, pw string) (string, erro
 		return "", fmt.Errorf("%w: %w", errFailedToSelectAdmin, err)
 	}
 
-	ok, err := xutil.ComparePassword(pw, admin.PasswordHash)
+	ok, err := auth.ComparePassword(pw, admin.PasswordHash)
 
 	if err != nil {
 		return "", err

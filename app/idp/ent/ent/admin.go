@@ -9,20 +9,19 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 // Admin is the model entity for the Admin schema.
 type Admin struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID alias.AdminID `json:"id,omitempty"`
+	ID typedef.AdminID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// PasswordHash holds the value of the "password_hash" field.
-	PasswordHash xutil.PasswordHash `json:"password_hash,omitempty"`
+	PasswordHash typedef.PasswordHash `json:"password_hash,omitempty"`
 	// TotpSecret holds the value of the "totp_secret" field.
 	TotpSecret string `json:"totp_secret,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -60,7 +59,7 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				a.ID = alias.AdminID(value.String)
+				a.ID = typedef.AdminID(value.String)
 			}
 		case admin.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -72,7 +71,7 @@ func (a *Admin) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field password_hash", values[i])
 			} else if value.Valid {
-				a.PasswordHash = xutil.PasswordHash(value.String)
+				a.PasswordHash = typedef.PasswordHash(value.String)
 			}
 		case admin.FieldTotpSecret:
 			if value, ok := values[i].(*sql.NullString); !ok {

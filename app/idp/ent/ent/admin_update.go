@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 // AdminUpdate is the builder for updating Admin entities.
@@ -36,8 +36,8 @@ func (au *AdminUpdate) SetName(s string) *AdminUpdate {
 }
 
 // SetPasswordHash sets the "password_hash" field.
-func (au *AdminUpdate) SetPasswordHash(xh xutil.PasswordHash) *AdminUpdate {
-	au.mutation.SetPasswordHash(xh)
+func (au *AdminUpdate) SetPasswordHash(th typedef.PasswordHash) *AdminUpdate {
+	au.mutation.SetPasswordHash(th)
 	return au
 }
 
@@ -182,8 +182,8 @@ func (auo *AdminUpdateOne) SetName(s string) *AdminUpdateOne {
 }
 
 // SetPasswordHash sets the "password_hash" field.
-func (auo *AdminUpdateOne) SetPasswordHash(xh xutil.PasswordHash) *AdminUpdateOne {
-	auo.mutation.SetPasswordHash(xh)
+func (auo *AdminUpdateOne) SetPasswordHash(th typedef.PasswordHash) *AdminUpdateOne {
+	auo.mutation.SetPasswordHash(th)
 	return auo
 }
 

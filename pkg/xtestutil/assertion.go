@@ -1,4 +1,4 @@
-package testutil
+package xtestutil
 
 import (
 	"encoding/json"
@@ -14,6 +14,24 @@ import (
 const (
 	ErrResponseBodyNotMatched = "response body not matched"
 )
+
+func AssertJSON(t *testing.T, wantBody, gotBody []byte) {
+	t.Helper()
+
+	var wantJSON, gotJSON any
+
+	if err := json.Unmarshal(wantBody, &wantJSON); err != nil {
+		t.Fatalf("%s", xerr.FailedToUnmarshalJSON)
+	}
+
+	if err := json.Unmarshal(gotBody, &gotJSON); err != nil {
+		t.Fatalf("%s", xerr.FailedToUnmarshalJSON)
+	}
+
+	if d := cmp.Diff(wantJSON, gotJSON); !xutil.IsEmpty(d) {
+		t.Fatalf("%s (-got +want)\n%s", ErrResponseBodyNotMatched, d)
+	}
+}
 
 func AssertResponse(t *testing.T, got *http.Response, wantStatusCode int, wantBody []byte) {
 	t.Helper()
@@ -38,22 +56,4 @@ func AssertResponse(t *testing.T, got *http.Response, wantStatusCode int, wantBo
 	}
 
 	AssertJSON(t, wantBody, gotBody)
-}
-
-func AssertJSON(t *testing.T, wantBody, gotBody []byte) {
-	t.Helper()
-
-	var wantJSON, gotJSON any
-
-	if err := json.Unmarshal(wantBody, &wantJSON); err != nil {
-		t.Fatalf("%s", xerr.FailedToUnmarshalJSON)
-	}
-
-	if err := json.Unmarshal(gotBody, &gotJSON); err != nil {
-		t.Fatalf("%s", xerr.FailedToUnmarshalJSON)
-	}
-
-	if d := cmp.Diff(wantJSON, gotJSON); !xutil.IsEmpty(d) {
-		t.Fatalf("%s (-got +want)\n%s", ErrResponseBodyNotMatched, d)
-	}
 }

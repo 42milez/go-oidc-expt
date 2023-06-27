@@ -8,11 +8,12 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/42milez/go-oidc-server/app/idp/ent/alias"
-	"github.com/42milez/go-oidc-server/pkg/testutil"
+	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 )
 
 const adminULID = "01H3M514Q0KGDS7PCKE9VVEMT4"
@@ -20,7 +21,7 @@ const adminULID = "01H3M514Q0KGDS7PCKE9VVEMT4"
 func TestNewAdminSession(t *testing.T) {
 	t.Parallel()
 
-	if err := os.Setenv("REDIS_DB", strconv.Itoa(testutil.TestRedisDB)); err != nil {
+	if err := os.Setenv("REDIS_DB", strconv.Itoa(xtestutil.TestRedisDB)); err != nil {
 		t.Error(err)
 	}
 
@@ -46,8 +47,8 @@ func TestNewAdminSession(t *testing.T) {
 func TestSession_SaveID(t *testing.T) {
 	t.Parallel()
 
-	client := testutil.OpenRedis(t)
-	repo := Session[alias.AdminID]{
+	client := xtestutil.OpenRedis(t)
+	repo := Session[typedef.AdminID]{
 		client: client,
 	}
 	ctx := context.Background()
@@ -57,7 +58,7 @@ func TestSession_SaveID(t *testing.T) {
 		client.Del(ctx, key)
 	})
 
-	id := alias.AdminID(adminULID)
+	id := typedef.AdminID(adminULID)
 
 	if err := repo.saveID(ctx, key, id); err != nil {
 		t.Error(err)
@@ -67,8 +68,8 @@ func TestSession_SaveID(t *testing.T) {
 func TestSession_Load(t *testing.T) {
 	t.Parallel()
 
-	client := testutil.OpenRedis(t)
-	repo := Session[alias.AdminID]{
+	client := xtestutil.OpenRedis(t)
+	repo := Session[typedef.AdminID]{
 		client: client,
 	}
 
@@ -77,7 +78,7 @@ func TestSession_Load(t *testing.T) {
 
 		ctx := context.Background()
 		key := "TestSession_Load_OK"
-		id := alias.AdminID(adminULID)
+		id := typedef.AdminID(adminULID)
 
 		if err := client.Set(ctx, key, id, sessionTTL).Err(); err != nil {
 			t.Fatal(err)
@@ -115,13 +116,13 @@ func TestSession_Load(t *testing.T) {
 func TestSession_Delete(t *testing.T) {
 	t.Parallel()
 
-	repo := Session[alias.AdminID]{
-		client: testutil.OpenRedis(t),
+	repo := Session[typedef.AdminID]{
+		client: xtestutil.OpenRedis(t),
 	}
 	ctx := context.Background()
 	key := "TestSession_Delete"
 
-	id := alias.AdminID(adminULID)
+	id := typedef.AdminID(adminULID)
 
 	if err := repo.saveID(ctx, key, id); err != nil {
 		t.Fatal(err)
@@ -135,7 +136,7 @@ func TestSession_Delete(t *testing.T) {
 func TestSession_SetID(t *testing.T) {
 	t.Parallel()
 
-	if err := os.Setenv("REDIS_DB", strconv.Itoa(testutil.TestRedisDB)); err != nil {
+	if err := os.Setenv("REDIS_DB", strconv.Itoa(xtestutil.TestRedisDB)); err != nil {
 		t.Error(err)
 	}
 
@@ -158,10 +159,10 @@ func TestSession_SetID(t *testing.T) {
 		}
 	})
 
-	want := alias.AdminID(adminULID)
+	want := typedef.AdminID(adminULID)
 	ctx = sess.setID(ctx, want)
 
-	got, ok := ctx.Value(IDKey{}).(alias.AdminID)
+	got, ok := ctx.Value(IDKey{}).(typedef.AdminID)
 
 	if !ok {
 		t.Fatalf("%s", xerr.FailedToReadContextValue)
@@ -175,7 +176,7 @@ func TestSession_SetID(t *testing.T) {
 func TestSession_GetID(t *testing.T) {
 	t.Parallel()
 
-	if err := os.Setenv("REDIS_DB", strconv.Itoa(testutil.TestRedisDB)); err != nil {
+	if err := os.Setenv("REDIS_DB", strconv.Itoa(xtestutil.TestRedisDB)); err != nil {
 		t.Error(err)
 	}
 
@@ -198,7 +199,7 @@ func TestSession_GetID(t *testing.T) {
 		}
 	})
 
-	want := alias.AdminID(adminULID)
+	want := typedef.AdminID(adminULID)
 	ctx = context.WithValue(ctx, IDKey{}, want)
 
 	got, ok := sess.getID(ctx)
