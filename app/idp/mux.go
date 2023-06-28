@@ -61,6 +61,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 			Repo:           adminRepo,
 			TokenGenerator: jwtUtil,
 		},
+		Validator: validator.New(),
 	}
 	mux.Route("/admin/signin", func(r chi.Router) {
 		r.Post("/", adminSignInHdlr.ServeHTTP)
