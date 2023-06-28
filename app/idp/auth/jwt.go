@@ -2,7 +2,6 @@ package auth
 
 import (
 	_ "embed"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -13,26 +12,11 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
-//go:embed cert/secret.pem
+//go:embed cert/private.pem
 var rawPrivateKey []byte
 
 //go:embed cert/public.pem
 var rawPublicKey []byte
-
-const (
-	ErrFailedToBuildToken      JWTErr = "failed to build token"
-	ErrFailedToParsePrivateKey JWTErr = "failed to parse private key"
-	ErrFailedToParsePublicKey  JWTErr = "failed to parse public key"
-	ErrFailedToParseRequest    JWTErr = "failed to parse request"
-	ErrFailedToSignToken       JWTErr = "failed to sign token"
-	ErrInvalidToken            JWTErr = "invalid token"
-)
-
-type JWTErr string
-
-func (v JWTErr) Error() string {
-	return string(v)
-}
 
 type JWTUtil struct {
 	privateKey, publicKey jwk.Key
@@ -42,12 +26,12 @@ type JWTUtil struct {
 func NewJWTUtil(clock xutil.Clocker) (*JWTUtil, error) {
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrFailedToParsePrivateKey, err)
+		return nil, err
 	}
 
 	pubKey, err := parseKey(rawPublicKey)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrFailedToParsePublicKey, err)
+		return nil, err
 	}
 
 	return &JWTUtil{
@@ -72,13 +56,13 @@ func (p *JWTUtil) GenerateAccessToken(name string) ([]byte, error) {
 		Build()
 
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrFailedToBuildToken, err)
+		return nil, err
 	}
 
 	signed, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, p.privateKey))
 
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrFailedToSignToken, err)
+		return nil, err
 	}
 
 	return signed, nil
@@ -88,27 +72,12 @@ func parseKey(key []byte) (jwk.Key, error) {
 	return jwk.ParseKey(key, jwk.WithPEM(true))
 }
 
-//func (p *JWTUtil) parse(signed []byte) (jwt.Token, error) {
-//	ret, err := jwt.Parse(signed, jwt.WithKey(jwa.ES256, p.publicKey))
-//	if err != nil {
-//		return nil, fmt.Errorf("%w: %w", ErrFailedToParseToken, err)
-//	}
-//	return ret, nil
-//}
-
 func (p *JWTUtil) parseRequest(r *http.Request) (jwt.Token, error) {
-	ret, err := jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrFailedToParseRequest, err)
-	}
-	return ret, nil
+	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
 }
 
 func (p *JWTUtil) validate(token jwt.Token) error {
-	if err := jwt.Validate(token, jwt.WithClock(p.clock)); err != nil {
-		return fmt.Errorf("%w: %w", ErrInvalidToken, err)
-	}
-	return nil
+	return jwt.Validate(token, jwt.WithClock(p.clock))
 }
 
 func (p *JWTUtil) ExtractToken(r *http.Request) (jwt.Token, error) {

@@ -19,6 +19,16 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
+const (
+	ErrFailedToBuildToken Err = "failed to build token"
+)
+
+type Err string
+
+func (v Err) Error() string {
+	return string(v)
+}
+
 func TestEmbed(t *testing.T) {
 	want := []byte("-----BEGIN EC PRIVATE KEY-----")
 	if !bytes.Contains(rawPrivateKey, want) {

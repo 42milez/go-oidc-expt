@@ -1,4 +1,4 @@
-package store
+package repository
 
 import (
 	"context"
@@ -17,6 +17,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const (
+	dbDialect             = "mysql"
+	maxOpenConnection     = 100
+	maxIdleConnection     = 10
+	connectionMaxLifetime = time.Hour
+)
+
 func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(), error) {
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 	db, err := sql.Open(dialect.MySQL, dataSrc)
@@ -29,22 +36,21 @@ func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(
 	if err := db.PingContext(ctx); err != nil {
 		return nil, nil, func() {
 			if err := db.Close(); err != nil {
-				log.Error().Err(err).Msg("failed to close database connection")
+				log.Error().Err(err).Msg(xerr.FailedToCloseConnection.Error())
 			}
 		}, err
 	}
 
-	// TODO: Define as environment variable
-	db.SetMaxIdleConns(10)
-	db.SetMaxOpenConns(100)
-	db.SetConnMaxLifetime(time.Hour)
+	db.SetConnMaxLifetime(connectionMaxLifetime)
+	db.SetMaxIdleConns(maxIdleConnection)
+	db.SetMaxOpenConns(maxOpenConnection)
 
-	drv := entsql.OpenDB("mysql", db)
+	drv := entsql.OpenDB(dbDialect, db)
 	entClient := ent.NewClient(ent.Driver(drv))
 
 	return entClient, db, func() {
 		if err := entClient.Close(); err != nil {
-			log.Error().Err(err).Msg("failed to close database connection")
+			log.Error().Err(err).Msg(xerr.FailedToCloseConnection.Error())
 		}
 	}, nil
 }

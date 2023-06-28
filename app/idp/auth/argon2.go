@@ -40,9 +40,7 @@ const keyLength uint32 = 256
 func GeneratePasswordHash(raw string) (typedef.PasswordHash, error) {
 	salt := make([]byte, saltLength)
 
-	_, err := rand.Read(salt)
-
-	if err != nil {
+	if _, err := rand.Read(salt); err != nil {
 		return "", err
 	}
 
@@ -82,7 +80,7 @@ func ComparePassword(raw string, encoded typedef.PasswordHash) (bool, error) {
 	dec := gob.NewDecoder(buf)
 	repr := &passwordHashRepr{}
 
-	if err := dec.Decode(&repr); err != nil {
+	if err = dec.Decode(&repr); err != nil {
 		return false, err
 	}
 

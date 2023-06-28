@@ -29,8 +29,8 @@ ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/
 
 ```
 mkdir -p app/idp/cert
-openssl ecparam -genkey -name prime256v1 -noout -out app/idp/auth/cert/secret.pem
-openssl ec -in app/idp/auth/cert/secret.pem -pubout -out app/idp/auth/cert/public.pem
+openssl ecparam -genkey -name prime256v1 -noout -out app/idp/auth/cert/private.pem
+openssl ec -in app/idp/auth/cert/private.pem -pubout -out app/idp/auth/cert/public.pem
 ```
 
 References:

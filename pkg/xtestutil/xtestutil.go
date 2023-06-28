@@ -1,10 +1,11 @@
 package xtestutil
 
 import (
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
 const DummyError DummyErr = "DUMMY ERROR"

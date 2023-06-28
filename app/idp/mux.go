@@ -12,8 +12,8 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/handler"
+	"github.com/42milez/go-oidc-server/app/idp/repository"
 	"github.com/42milez/go-oidc-server/app/idp/service"
-	"github.com/42milez/go-oidc-server/app/idp/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
@@ -21,7 +21,7 @@ import (
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
 	_ = validator.New()
 
-	client, db, cleanup, err := store.NewDB(ctx, cfg)
+	client, db, cleanup, err := repository.NewDB(ctx, cfg)
 	if err != nil {
 		return nil, cleanup, err
 	}
@@ -39,7 +39,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  admin
 	// --------------------------------------------------
 
-	adminRepo := &store.AdminRepository{Clock: xutil.RealClocker{}, DB: client}
+	adminRepo := &repository.Admin{Clock: xutil.RealClocker{}, DB: client}
 	jwtUtil, err := auth.NewJWTUtil(xutil.RealClocker{})
 
 	if err != nil {

@@ -1,4 +1,4 @@
-package store
+package repository
 
 import (
 	"context"
@@ -11,15 +11,15 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/admin"
 )
 
-type AdminRepository struct {
+type Admin struct {
 	Clock xutil.Clocker
 	DB    *ent.Client
 }
 
-func (p *AdminRepository) Create(ctx context.Context, name string, pw typedef.PasswordHash) (*ent.Admin, error) {
+func (p *Admin) Create(ctx context.Context, name string, pw typedef.PasswordHash) (*ent.Admin, error) {
 	return p.DB.Admin.Create().SetName(name).SetPasswordHash(pw).Save(ctx)
 }
 
-func (p *AdminRepository) SelectByName(ctx context.Context, name string) (*ent.Admin, error) {
+func (p *Admin) SelectByName(ctx context.Context, name string) (*ent.Admin, error) {
 	return p.DB.Admin.Query().Where(admin.NameEQ(name)).First(ctx)
 }
