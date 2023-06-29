@@ -107,8 +107,8 @@ func TestSession_Load(t *testing.T) {
 
 		_, err := repo.load(ctx, key)
 
-		if err == nil || !errors.Is(err, ErrFailedToLoad) {
-			t.Errorf("want = %s; got = %+v", fmt.Sprintf("%s ( %s ): redis: nil", ErrFailedToLoad, key), err)
+		if err == nil || !errors.Is(err, ErrFailedToLoadItem) {
+			t.Errorf("want = %s; got = %+v", fmt.Sprintf("%s ( %s ): redis: nil", ErrFailedToLoadItem, key), err)
 		}
 	})
 }

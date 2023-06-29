@@ -19,18 +19,12 @@ import (
 
 const sessionTTL = 30 * time.Minute
 
-type SessionErr string
-
 const (
-	ErrFailedToDelete       SessionErr = "failed to delete"
-	ErrFailedToExtractToken SessionErr = "failed to extract token"
-	ErrFailedToSaveID       SessionErr = "failed to save id"
-	ErrFailedToLoad         SessionErr = "failed to load"
+	ErrFailedToDeleteItem   xerr.Err = "failed to delete item"
+	ErrFailedToExtractToken xerr.Err = "failed to extract token"
+	ErrFailedToSaveItem     xerr.Err = "failed to save item"
+	ErrFailedToLoadItem     xerr.Err = "failed to load item"
 )
-
-func (v SessionErr) Error() string {
-	return string(v)
-}
 
 func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[typedef.AdminID], error) {
 	client := redis.NewClient(&redis.Options{
@@ -38,13 +32,13 @@ func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[typedef.
 	})
 
 	if err := client.Ping(ctx).Err(); err != nil {
-		return nil, fmt.Errorf("%w: %w", xerr.FailedToReachHost, err)
+		return nil, xerr.WrapErr(xerr.FailedToReachHost, err)
 	}
 
 	jwtUtil, err := auth.NewJWTUtil(xutil.RealClocker{})
 
 	if err != nil {
-		return nil, fmt.Errorf("%w", xerr.FailedToInitialize)
+		return nil, xerr.WrapErr(xerr.FailedToInitialize, err)
 	}
 
 	return &Session[typedef.AdminID]{
@@ -64,7 +58,7 @@ func (p *Session[T]) Close() error {
 
 func (p *Session[T]) saveID(ctx context.Context, key string, id T) error {
 	if err := p.client.Set(ctx, key, id, sessionTTL).Err(); err != nil {
-		return fmt.Errorf("%w ( key = %s, id = %s): %w", ErrFailedToSaveID, key, id, err)
+		return xerr.WrapErr(fmt.Errorf("%w : key=%s, id=%s", ErrFailedToSaveItem, key, id), err)
 	}
 	return nil
 }
@@ -72,14 +66,14 @@ func (p *Session[T]) saveID(ctx context.Context, key string, id T) error {
 func (p *Session[T]) load(ctx context.Context, key string) (T, error) {
 	ret, err := p.client.Get(ctx, key).Result()
 	if err != nil {
-		return "", fmt.Errorf("%w ( %s ): %w", ErrFailedToLoad, key, err)
+		return "", xerr.WrapErr(ErrFailedToLoadItem, err)
 	}
 	return T(ret), nil
 }
 
 func (p *Session[T]) delete(ctx context.Context, key string) error {
 	if err := p.client.Del(ctx, key).Err(); err != nil {
-		return fmt.Errorf("%w ( %s ): %w", ErrFailedToDelete, key, err)
+		return xerr.WrapErr(fmt.Errorf("%w : key=%s", ErrFailedToDeleteItem, key), err)
 	}
 	return nil
 }
@@ -99,13 +93,13 @@ func (p *Session[T]) FillContext(r *http.Request) (*http.Request, error) {
 	token, err := p.jwt.ExtractToken(r)
 
 	if err != nil {
-		return nil, fmt.Errorf("%w: %w", ErrFailedToExtractToken, err)
+		return nil, xerr.WrapErr(ErrFailedToExtractToken, err)
 	}
 
 	id, err := p.load(r.Context(), token.JwtID())
 
 	if err != nil {
-		return nil, err
+		return nil, xerr.WrapErr(ErrFailedToLoadItem, err)
 	}
 
 	ctx := p.setID(r.Context(), id)

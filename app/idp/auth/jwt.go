@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
@@ -18,6 +20,15 @@ var rawPrivateKey []byte
 //go:embed cert/public.pem
 var rawPublicKey []byte
 
+const (
+	errFailedToBuildToken      xerr.Err = "failed to build token"
+	errFailedToParsePrivateKey xerr.Err = "failed to parse private key"
+	errFailedToParsePublicKey  xerr.Err = "failed to parse public key"
+	errFailedToParseRequest    xerr.Err = "failed to parse request"
+	errFailedToSignToken       xerr.Err = "failed to sign token"
+	errInvalidToken            xerr.Err = "invalid token"
+)
+
 type JWTUtil struct {
 	privateKey, publicKey jwk.Key
 	clock                 xutil.Clocker
@@ -26,12 +37,12 @@ type JWTUtil struct {
 func NewJWTUtil(clock xutil.Clocker) (*JWTUtil, error) {
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
-		return nil, err
+		return nil, xerr.WrapErr(errFailedToParsePrivateKey, err)
 	}
 
 	pubKey, err := parseKey(rawPublicKey)
 	if err != nil {
-		return nil, err
+		return nil, xerr.WrapErr(errFailedToParsePublicKey, err)
 	}
 
 	return &JWTUtil{
@@ -56,13 +67,13 @@ func (p *JWTUtil) GenerateAccessToken(name string) ([]byte, error) {
 		Build()
 
 	if err != nil {
-		return nil, err
+		return nil, xerr.WrapErr(errFailedToBuildToken, err)
 	}
 
 	signed, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, p.privateKey))
 
 	if err != nil {
-		return nil, err
+		return nil, xerr.WrapErr(errFailedToSignToken, err)
 	}
 
 	return signed, nil
@@ -84,11 +95,11 @@ func (p *JWTUtil) ExtractToken(r *http.Request) (jwt.Token, error) {
 	token, err := p.parseRequest(r)
 
 	if err != nil {
-		return nil, err
+		return nil, xerr.WrapErr(errFailedToParseRequest, err)
 	}
 
 	if err = p.validate(token); err != nil {
-		return nil, err
+		return nil, xerr.WrapErr(errInvalidToken, err)
 	}
 
 	return token, nil

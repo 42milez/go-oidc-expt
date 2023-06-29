@@ -27,18 +27,19 @@ const (
 func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(), error) {
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 	db, err := sql.Open(dialect.MySQL, dataSrc)
+
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("%w: %w", xerr.FailToEstablishConnection, err)
+		return nil, nil, nil, xerr.WrapErr(xerr.FailToEstablishConnection, err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
-	if err := db.PingContext(ctx); err != nil {
-		return nil, nil, func() {
-			if err := db.Close(); err != nil {
-				log.Error().Err(err).Msg(xerr.FailedToCloseConnection.Error())
-			}
-		}, err
+
+	if err = db.PingContext(ctx); err != nil {
+		if err = db.Close(); err != nil {
+			log.Error().Err(err).Msg(xerr.FailedToCloseConnection.Error())
+		}
+		return nil, nil, nil, err
 	}
 
 	db.SetConnMaxLifetime(connectionMaxLifetime)
@@ -49,7 +50,7 @@ func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(
 	entClient := ent.NewClient(ent.Driver(drv))
 
 	return entClient, db, func() {
-		if err := entClient.Close(); err != nil {
+		if err = entClient.Close(); err != nil {
 			log.Error().Err(err).Msg(xerr.FailedToCloseConnection.Error())
 		}
 	}, nil

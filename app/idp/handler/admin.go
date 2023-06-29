@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/go-playground/validator/v10"
 
 	"github.com/42milez/go-oidc-server/app/idp/model"
@@ -27,6 +29,7 @@ func (p *Create) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := p.Validator.Struct(req); err != nil {
+		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.AuthenticationFailed,
 		})
@@ -51,6 +54,7 @@ func (p *ReadAdmin) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	admin, err := p.Service.ReadAdmin(ctx)
+
 	if err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 			Error: xerr.UnexpectedErrorOccurred,
@@ -73,6 +77,7 @@ func (p *ReadAdmins) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	admins, err := p.Service.ReadAdmins(ctx)
+
 	if err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 			Error: xerr.UnexpectedErrorOccurred,
@@ -80,6 +85,7 @@ func (p *ReadAdmins) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := make([]model.AdminResponse, len(admins), len(admins))
+
 	for i, admin := range admins {
 		resp[i] = model.AdminResponse{
 			ID:   admin.ID,

@@ -1,6 +1,13 @@
 package config
 
-import "github.com/caarlos0/env/v8"
+import (
+	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/caarlos0/env/v8"
+)
+
+const (
+	errFailedToParseEnvVal xerr.Err = "failed to parse environment variable"
+)
 
 type Config struct {
 	Env           string `env:"ENV" envDefault:"dev"`
@@ -19,7 +26,7 @@ type Config struct {
 func New() (*Config, error) {
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
-		return nil, err
+		return nil, xerr.WrapErr(errFailedToParseEnvVal, err)
 	}
 	return cfg, nil
 }

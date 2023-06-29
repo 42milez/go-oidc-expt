@@ -19,16 +19,6 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
-const (
-	ErrFailedToBuildToken Err = "failed to build token"
-)
-
-type Err string
-
-func (v Err) Error() string {
-	return string(v)
-}
-
 func TestEmbed(t *testing.T) {
 	want := []byte("-----BEGIN EC PRIVATE KEY-----")
 	if !bytes.Contains(rawPrivateKey, want) {
@@ -73,7 +63,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		Build()
 
 	if err != nil {
-		t.Fatalf("%+v: %+v", ErrFailedToBuildToken, err)
+		t.Fatalf("%+v: %+v", errFailedToBuildToken, err)
 	}
 
 	privateKey, err := jwk.ParseKey(rawPrivateKey, jwk.WithPEM(true))
@@ -124,7 +114,7 @@ func TestJWT_Validate(t *testing.T) {
 			Build()
 
 		if err != nil {
-			t.Fatalf("%+v: %+v", ErrFailedToBuildToken, err)
+			t.Fatalf("%+v: %+v", errFailedToBuildToken, err)
 		}
 
 		jwtUtil, err := NewJWTUtil(c)
@@ -151,7 +141,7 @@ func TestJWT_Validate(t *testing.T) {
 			Build()
 
 		if err != nil {
-			t.Fatalf("%+v: %+v", ErrFailedToBuildToken, err)
+			t.Fatalf("%+v: %+v", errFailedToBuildToken, err)
 		}
 
 		jwtUtil, err := NewJWTUtil(xtestutil.FixedTomorrowClocker{})

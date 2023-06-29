@@ -13,6 +13,8 @@ import (
 const (
 	errFailedToEncodeHTTPResponse = "failed to encode http response"
 	errFailedToWriteHTTPResponse  = "failed to write http response"
+	errFailedToDecodeRequestBody  = "failed to decode request body"
+	errValidationError            = "validation error"
 )
 
 type ErrResponse struct {
@@ -34,7 +36,7 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 			Error: xerr.UnexpectedErrorOccurred,
 		}
 
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
+		if err = json.NewEncoder(w).Encode(resp); err != nil {
 			log.Error().Err(err).Msg(errFailedToWriteHTTPResponse)
 		}
 
@@ -43,7 +45,7 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 
 	w.WriteHeader(statusCode)
 
-	if _, err := fmt.Fprintf(w, "%s", bodyBytes); err != nil {
+	if _, err = fmt.Fprintf(w, "%s", bodyBytes); err != nil {
 		log.Error().Err(err).Msg(errFailedToWriteHTTPResponse)
 	}
 }

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/go-playground/validator/v10"
@@ -23,16 +25,15 @@ func (p *SignIn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		// TODO: Print error message with logger
+		log.Error().Err(err).Msg(errFailedToDecodeRequestBody)
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 			Error: xerr.UnexpectedErrorOccurred,
 		})
 		return
 	}
 
-	err := p.Validator.Struct(body)
-
-	if err != nil {
+	if err := p.Validator.Struct(body); err != nil {
+		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.AuthenticationFailed,
 		})
