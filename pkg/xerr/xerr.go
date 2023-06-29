@@ -1,5 +1,7 @@
 package xerr
 
+import "fmt"
+
 const (
 	FailedToCloseConnection   GeneralErr = "failed to close connection"
 	FailedToCloseResponseBody GeneralErr = "failed to close response body"
@@ -31,4 +33,8 @@ type HTTPErr string
 
 func (v HTTPErr) Error() string {
 	return string(v)
+}
+
+func WrapErr(e1, e2 error) error {
+	return fmt.Errorf("%w:%w", e1, e2)
 }
