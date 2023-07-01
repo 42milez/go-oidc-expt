@@ -15,15 +15,15 @@ import (
 )
 
 const (
-	nameMaxLength      = 30
-	nameMinLength      = 6
-	passwordHashLength = 751
-	totpSecretLength   = 160
+	nameMaxLength         = 30
+	nameMinLength         = 6
+	passwordHashMaxLength = 1000
+	totpSecretLength      = 160
 )
 
 const (
 	idType           = "CHAR(26)"
-	passwordHashType = "VARCHAR(751)"
+	passwordHashType = "VARCHAR(1000)"
 	totpSecretType   = "CHAR(160)"
 )
 
@@ -56,8 +56,8 @@ func (Admin) Fields() []ent.Field {
 				dialect.MySQL: passwordHashType,
 			}).
 			Validate(func(s string) error {
-				if len(s) > passwordHashLength {
-					return fmt.Errorf("password must be %d characters", passwordHashLength)
+				if len(s) > passwordHashMaxLength {
+					return fmt.Errorf("password must be %d characters", passwordHashMaxLength)
 				}
 				return nil
 			}).

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"github.com/rs/zerolog/log"
 
