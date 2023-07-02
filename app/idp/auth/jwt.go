@@ -37,12 +37,12 @@ type JWTUtil struct {
 func NewJWTUtil(clock xutil.Clocker) (*JWTUtil, error) {
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
-		return nil, xerr.WrapErr(errFailedToParsePrivateKey, err)
+		return nil, xerr.Wrap(errFailedToParsePrivateKey, err)
 	}
 
 	pubKey, err := parseKey(rawPublicKey)
 	if err != nil {
-		return nil, xerr.WrapErr(errFailedToParsePublicKey, err)
+		return nil, xerr.Wrap(errFailedToParsePublicKey, err)
 	}
 
 	return &JWTUtil{
@@ -67,13 +67,13 @@ func (p *JWTUtil) GenerateAccessToken(name string) ([]byte, error) {
 		Build()
 
 	if err != nil {
-		return nil, xerr.WrapErr(errFailedToBuildToken, err)
+		return nil, xerr.Wrap(errFailedToBuildToken, err)
 	}
 
 	signed, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, p.privateKey))
 
 	if err != nil {
-		return nil, xerr.WrapErr(errFailedToSignToken, err)
+		return nil, xerr.Wrap(errFailedToSignToken, err)
 	}
 
 	return signed, nil
@@ -95,11 +95,11 @@ func (p *JWTUtil) ExtractToken(r *http.Request) (jwt.Token, error) {
 	token, err := p.parseRequest(r)
 
 	if err != nil {
-		return nil, xerr.WrapErr(errFailedToParseRequest, err)
+		return nil, xerr.Wrap(errFailedToParseRequest, err)
 	}
 
 	if err = p.validate(token); err != nil {
-		return nil, xerr.WrapErr(errInvalidToken, err)
+		return nil, xerr.Wrap(errInvalidToken, err)
 	}
 
 	return token, nil

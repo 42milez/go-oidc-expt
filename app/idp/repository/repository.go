@@ -29,7 +29,7 @@ func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(
 	db, err := sql.Open(dialect.MySQL, dataSrc)
 
 	if err != nil {
-		return nil, nil, nil, xerr.WrapErr(xerr.FailToEstablishConnection, err)
+		return nil, nil, nil, xerr.Wrap(xerr.FailToEstablishConnection, err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)

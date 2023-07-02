@@ -28,14 +28,14 @@ func (p *AdminCreator) Create(ctx context.Context, name, pw string) (*ent.Admin,
 	hash, err := auth.GeneratePasswordHash(pw)
 
 	if err != nil {
-		log.Error().Err(err).Msg(xerr.WrapErr(errFailedToGeneratePassword, err).Error())
+		log.Error().Err(err).Msg(xerr.Wrap(errFailedToGeneratePassword, err).Error())
 		return nil, err
 	}
 
 	ret, err := p.Repo.Create(ctx, name, hash)
 
 	if err != nil {
-		log.Error().Err(err).Msg(xerr.WrapErr(errFailedToCreateAdmin, err).Error())
+		log.Error().Err(err).Msg(xerr.Wrap(errFailedToCreateAdmin, err).Error())
 		return nil, err
 	}
 
@@ -51,26 +51,26 @@ func (p *AdminSignIn) SignIn(ctx context.Context, name, pw string) (string, erro
 	admin, err := p.Repo.SelectByName(ctx, name)
 
 	if err != nil {
-		log.Error().Err(err).Msg(xerr.WrapErr(errFailedToSelectAdmin, err).Error())
+		log.Error().Err(err).Msg(xerr.Wrap(errFailedToSelectAdmin, err).Error())
 		return "", err
 	}
 
 	ok, err := auth.ComparePassword(pw, admin.PasswordHash)
 
 	if err != nil {
-		log.Error().Err(err).Msg(xerr.WrapErr(errPasswordNotMatched, err).Error())
+		log.Error().Err(err).Msg(xerr.Wrap(errPasswordNotMatched, err).Error())
 		return "", err
 	}
 
 	if !ok {
-		log.Error().Err(err).Msg(xerr.WrapErr(errInvalidPassword, err).Error())
+		log.Error().Err(err).Msg(xerr.Wrap(errInvalidPassword, err).Error())
 		return "", err
 	}
 
 	token, err := p.TokenGenerator.GenerateAccessToken(admin.Name)
 
 	if err != nil {
-		log.Error().Err(err).Msg(xerr.WrapErr(errFailedToGenerateToken, err).Error())
+		log.Error().Err(err).Msg(xerr.Wrap(errFailedToGenerateToken, err).Error())
 		return "", err
 	}
 

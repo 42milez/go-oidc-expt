@@ -44,6 +44,6 @@ func (v Err) Error() string {
 	return string(v)
 }
 
-func WrapErr(e1, e2 error) error {
+func Wrap(e1, e2 error) error {
 	return fmt.Errorf("%w (%w)", e1, e2)
 }

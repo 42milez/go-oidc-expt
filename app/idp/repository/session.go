@@ -32,13 +32,13 @@ func NewAdminSession(ctx context.Context, cfg *config.Config) (*Session[typedef.
 	})
 
 	if err := client.Ping(ctx).Err(); err != nil {
-		return nil, xerr.WrapErr(xerr.FailedToReachHost, err)
+		return nil, xerr.Wrap(xerr.FailedToReachHost, err)
 	}
 
 	jwtUtil, err := auth.NewJWTUtil(xutil.RealClocker{})
 
 	if err != nil {
-		return nil, xerr.WrapErr(xerr.FailedToInitialize, err)
+		return nil, xerr.Wrap(xerr.FailedToInitialize, err)
 	}
 
 	return &Session[typedef.AdminID]{
@@ -58,7 +58,7 @@ func (p *Session[T]) Close() error {
 
 func (p *Session[T]) saveID(ctx context.Context, key string, id T) error {
 	if err := p.client.Set(ctx, key, id, sessionTTL).Err(); err != nil {
-		return xerr.WrapErr(fmt.Errorf("%w : key=%s, id=%s", ErrFailedToSaveItem, key, id), err)
+		return xerr.Wrap(fmt.Errorf("%w : key=%s, id=%s", ErrFailedToSaveItem, key, id), err)
 	}
 	return nil
 }
@@ -66,14 +66,14 @@ func (p *Session[T]) saveID(ctx context.Context, key string, id T) error {
 func (p *Session[T]) load(ctx context.Context, key string) (T, error) {
 	ret, err := p.client.Get(ctx, key).Result()
 	if err != nil {
-		return "", xerr.WrapErr(ErrFailedToLoadItem, err)
+		return "", xerr.Wrap(ErrFailedToLoadItem, err)
 	}
 	return T(ret), nil
 }
 
 func (p *Session[T]) delete(ctx context.Context, key string) error {
 	if err := p.client.Del(ctx, key).Err(); err != nil {
-		return xerr.WrapErr(fmt.Errorf("%w : key=%s", ErrFailedToDeleteItem, key), err)
+		return xerr.Wrap(fmt.Errorf("%w : key=%s", ErrFailedToDeleteItem, key), err)
 	}
 	return nil
 }
@@ -93,13 +93,13 @@ func (p *Session[T]) FillContext(r *http.Request) (*http.Request, error) {
 	token, err := p.jwt.ExtractToken(r)
 
 	if err != nil {
-		return nil, xerr.WrapErr(ErrFailedToExtractToken, err)
+		return nil, xerr.Wrap(ErrFailedToExtractToken, err)
 	}
 
 	id, err := p.load(r.Context(), token.JwtID())
 
 	if err != nil {
-		return nil, xerr.WrapErr(ErrFailedToLoadItem, err)
+		return nil, xerr.Wrap(ErrFailedToLoadItem, err)
 	}
 
 	ctx := p.setID(r.Context(), id)

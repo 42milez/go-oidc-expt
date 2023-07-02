@@ -26,7 +26,7 @@ type Config struct {
 func New() (*Config, error) {
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
-		return nil, xerr.WrapErr(errFailedToParseEnvVal, err)
+		return nil, xerr.Wrap(errFailedToParseEnvVal, err)
 	}
 	return cfg, nil
 }
