@@ -57,7 +57,10 @@ resolve:
 
 ## test: Run all tests
 test:
-	@go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent"`
+	@\
+	DB_PORT=13306 \
+	REDIS_PORT=16379 \
+	go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent"`
 
 #  Docker
 # --------------------------------------------------
@@ -71,6 +74,10 @@ up:
 ## down: Stop and remove containers
 down:
 	@docker-compose down
+
+## destroy: Destroy all resources
+destroy:
+	@docker-compose down --volumes
 
 ## start: Start containers
 start:
