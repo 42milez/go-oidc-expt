@@ -28,7 +28,7 @@ ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/
 ### Generate key pair for signing access token
 
 ```
-mkdir -p app/idp/cert
+mkdir -p app/idp/auth/cert
 openssl ecparam -genkey -name prime256v1 -noout -out app/idp/auth/cert/private.pem
 openssl ec -in app/idp/auth/cert/private.pem -pubout -out app/idp/auth/cert/public.pem
 ```

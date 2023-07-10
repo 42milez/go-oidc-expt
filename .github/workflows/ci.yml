@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
+      - name: Create key pair
+        run: .github/scripts/generator/key-pair.sh
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
@@ -32,9 +34,11 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: Start services
-        run: docker-compose up -d cache db
+        run: docker-compose up -d idp-cache idp-db
       - name: Wait for database to be available
         run: .github/scripts/waiter/db.sh
+      - name: Create key pair
+        run: .github/scripts/generator/key-pair.sh
       - name: Run all tests
         run: make test
   notify:
