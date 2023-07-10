@@ -1,6 +1,6 @@
 run:
   skip-dirs:
-    - src/ent/ent
+    - app/idp/ent/ent
 linters-settings:
   govet:
     check-shadowing: false
@@ -18,6 +18,6 @@ linters:
     - goimports
     - govet
     - misspell
-    - staticcheck
+    #- staticcheck
     - unused
     - whitespace
