@@ -16,6 +16,9 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
+
+	_ "github.com/42milez/go-oidc-server/app/idp/docs"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
@@ -28,7 +31,13 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 
 	mux := chi.NewRouter()
 
-	//  health
+	//  API document
+	// --------------------------------------------------
+
+	swaggerURL := fmt.Sprintf("http://%s:%d/%s/doc.json", cfg.SwaggerHost, cfg.SwaggerPort, cfg.SwaggerPath)
+	mux.HandleFunc("/swagger/*", httpSwagger.Handler(httpSwagger.URL(swaggerURL)))
+
+	//  Health
 	// --------------------------------------------------
 
 	checkHealthHdlr := &handler.CheckHealth{
@@ -36,7 +45,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	}
 	mux.HandleFunc("/health", checkHealthHdlr.ServeHTTP)
 
-	//  admin
+	//  Admin
 	// --------------------------------------------------
 
 	adminRepo := &repository.Admin{Clock: xutil.RealClocker{}, DB: client}

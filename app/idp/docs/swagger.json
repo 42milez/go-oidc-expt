@@ -1,0 +1,16 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "TBD",
+        "title": "go-oidc-server",
+        "contact": {},
+        "license": {
+            "name": "MIT",
+            "url": "TBD"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {}
+}

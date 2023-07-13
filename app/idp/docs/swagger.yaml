@@ -1,0 +1,12 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact: {}
+  description: TBD
+  license:
+    name: MIT
+    url: TBD
+  title: go-oidc-server
+  version: "1.0"
+paths: {}
+swagger: "2.0"

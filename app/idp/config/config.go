@@ -21,6 +21,9 @@ type Config struct {
 	RedisPort     int    `env:"REDIS_PORT" envDefault:"6379"`
 	RedisPassword string `env:"REDIS_PASSWORD" envDefault:""`
 	RedisDB       int    `env:"REDIS_DB" envDefault:"0"`
+	SwaggerHost   string `env:"SWAGGER_HOST" envDefault:"localhost"`
+	SwaggerPort   int    `env:"SWAGGER_PORT" envDefault:"8080"`
+	SwaggerPath   string `env:"SWAGGER_PATH" envDefault:"swagger"`
 }
 
 func New() (*Config, error) {

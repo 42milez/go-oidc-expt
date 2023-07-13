@@ -13,6 +13,10 @@ type CheckHealthService interface {
 	PingDB(ctx context.Context) error
 }
 
+type AuthorizationService interface {
+	Do(ctx context.Context) error
+}
+
 type SignInService interface {
 	SignIn(ctx context.Context, name, pw string) (string, error)
 }

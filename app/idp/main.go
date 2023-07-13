@@ -14,6 +14,14 @@ import (
 
 var version = "dev"
 
+//	@title			go-oidc-server
+//	@version		1.0
+//	@description	TBD
+//	@license.name	MIT
+//	@license.url	TBD
+//	@host			localhost:8080
+//	@BasePath		/api/v1
+
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Str("role", "idp").Logger()
