@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/auth"
@@ -18,7 +19,6 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	_ "github.com/42milez/go-oidc-server/app/idp/docs"
-	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
@@ -34,8 +34,10 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  API document
 	// --------------------------------------------------
 
-	swaggerURL := fmt.Sprintf("http://%s:%d/%s/doc.json", cfg.SwaggerHost, cfg.SwaggerPort, cfg.SwaggerPath)
-	mux.HandleFunc("/swagger/*", httpSwagger.Handler(httpSwagger.URL(swaggerURL)))
+	if cfg.IsDevelopment() {
+		swaggerURL := fmt.Sprintf("http://%s:%d/%s/doc.json", cfg.SwaggerHost, cfg.SwaggerPort, cfg.SwaggerPath)
+		mux.HandleFunc("/swagger/*", httpSwagger.Handler(httpSwagger.URL(swaggerURL)))
+	}
 
 	//  Health
 	// --------------------------------------------------

@@ -26,6 +26,10 @@ type Config struct {
 	SwaggerPath   string `env:"SWAGGER_PATH" envDefault:"swagger"`
 }
 
+func (p *Config) IsDevelopment() bool {
+	return p.Env == "dev"
+}
+
 func New() (*Config, error) {
 	cfg := &Config{}
 	if err := env.Parse(cfg); err != nil {
