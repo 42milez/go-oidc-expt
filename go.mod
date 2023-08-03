@@ -6,7 +6,7 @@ require (
 	ariga.io/atlas v0.12.1
 	entgo.io/ent v0.12.3
 	github.com/caarlos0/env/v8 v8.0.0
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang/mock v1.6.0
