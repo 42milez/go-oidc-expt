@@ -3,10 +3,10 @@ module github.com/42milez/go-oidc-server
 go 1.20
 
 require (
-	ariga.io/atlas v0.12.0
+	ariga.io/atlas v0.12.1
 	entgo.io/ent v0.12.3
 	github.com/caarlos0/env/v8 v8.0.0
-	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.14.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang/mock v1.6.0
@@ -15,10 +15,10 @@ require (
 	github.com/lestrrat-go/jwx/v2 v2.0.11
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/redis/go-redis/v9 v9.0.5
-	github.com/rs/zerolog v1.29.1
+	github.com/rs/zerolog v1.30.0
 	github.com/swaggo/http-swagger/v2 v2.0.1
 	github.com/swaggo/swag v1.16.1
-	golang.org/x/crypto v0.11.0
+	golang.org/x/crypto v0.12.0
 	golang.org/x/sync v0.3.0
 )
 
@@ -57,7 +57,7 @@ require (
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/tools v0.11.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
