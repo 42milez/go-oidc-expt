@@ -1,15 +1,28 @@
 package handler
 
 import (
+	"database/sql"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/idp/service"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/rs/zerolog/log"
 )
 
+func NewCheckHealth(cacheClient *redis.Client, dbClient *sql.DB) *CheckHealth {
+	return &CheckHealth{
+		Service: &service.CheckHealth{
+			Cache: cacheClient,
+			DB:    dbClient,
+		},
+	}
+}
+
 type CheckHealth struct {
-	Service CheckHealthService
+	Service HealthChecker
 }
 
 func (p *CheckHealth) ServeHTTP(w http.ResponseWriter, r *http.Request) {

@@ -27,22 +27,22 @@ const (
 	totpSecretType   = "CHAR(160)"
 )
 
-// Admin holds the schema definition for the Admin entity.
-type Admin struct {
+// User holds the schema definition for the User entity.
+type User struct {
 	ent.Schema
 }
 
 // Fields of the Account.
-func (Admin) Fields() []ent.Field {
+func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
-			GoType(typedef.AdminID("")).
+			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{
 				dialect.MySQL: idType,
 			}).
 			Immutable().
-			DefaultFunc(func() typedef.AdminID {
-				return xutil.MakeAdminID()
+			DefaultFunc(func() typedef.UserID {
+				return xutil.MakeUserID()
 			}),
 		field.String("name").
 			MaxLen(nameMaxLength).
@@ -84,6 +84,6 @@ func (Admin) Fields() []ent.Field {
 }
 
 // Edges of the Account.
-func (Admin) Edges() []ent.Edge {
+func (User) Edges() []ent.Edge {
 	return nil
 }

@@ -46,9 +46,13 @@ func run(ctx context.Context) error {
 	log.Info().Msgf("application starting in %s (version: %s)\n", cfg.Env, version)
 
 	mux, cleanup, err := NewMux(ctx, cfg)
-	defer cleanup()
+
 	if err != nil {
 		log.Fatal().Stack().Err(err).Msg("failed to build routes")
+	}
+
+	if cleanup != nil {
+		defer cleanup()
 	}
 
 	srv := NewServer(lis, mux)

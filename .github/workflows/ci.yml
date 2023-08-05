@@ -34,7 +34,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
       - name: Start services
-        run: docker-compose up -d idp-cache idp-db
+        run: docker-compose up -d idp-epstore idp-db
       - name: Wait for database to be available
         run: .github/scripts/waiter/db.sh
       - name: Create key pair

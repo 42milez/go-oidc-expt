@@ -7,7 +7,7 @@ import (
 )
 
 type Authorization struct {
-	Service   AuthorizationService
+	Service   Authorizer
 	Validator *validator.Validate
 }
 

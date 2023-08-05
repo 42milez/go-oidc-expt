@@ -10,7 +10,7 @@ const (
 	FailedToEncodeInToBytes     GeneralErr = "failed to encode struct"
 	FailedToGenerateRandomBytes GeneralErr = "failed to generate random bytes"
 	FailedToInitialize          GeneralErr = "failed to initialize"
-	FailedToPingCache           GeneralErr = "failed to ping cache"
+	FailedToPingCache           GeneralErr = "failed to ping epstore"
 	FailedToPingDatabase        GeneralErr = "failed to ping database"
 	FailedToReachHost           GeneralErr = "failed to reach host"
 	FailedToReadContextValue    GeneralErr = "failed to read context value"

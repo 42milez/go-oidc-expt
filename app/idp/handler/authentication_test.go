@@ -81,14 +81,14 @@ func TestSignIn_ServeHTTP(t *testing.T) {
 				"/signin",
 				bytes.NewReader(xtestutil.LoadFile(t, tt.reqFile)))
 
-			svcMock := NewMockSignInService(gomock.NewController(t))
+			svcMock := NewMockAuthenticator(gomock.NewController(t))
 			svcMock.
 				EXPECT().
-				SignIn(r.Context(), gomock.Any(), gomock.Any()).
+				Authenticate(r.Context(), gomock.Any(), gomock.Any()).
 				Return(tt.resp.token, tt.resp.err).
 				AnyTimes()
 
-			sut := SignIn{
+			sut := Authenticate{
 				Service:   svcMock,
 				Validator: validator.New(),
 			}

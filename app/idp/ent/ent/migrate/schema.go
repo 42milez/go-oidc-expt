@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	// AdminsColumns holds the columns for the "admins" table.
-	AdminsColumns = []*schema.Column{
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
 		{Name: "password_hash", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(1000)"}},
@@ -17,15 +17,15 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},
 	}
-	// AdminsTable holds the schema information for the "admins" table.
-	AdminsTable = &schema.Table{
-		Name:       "admins",
-		Columns:    AdminsColumns,
-		PrimaryKey: []*schema.Column{AdminsColumns[0]},
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		AdminsTable,
+		UsersTable,
 	}
 )
 

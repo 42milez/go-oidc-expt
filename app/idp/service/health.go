@@ -4,10 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type CheckHealth struct {
-	DB *sql.DB
+	Cache *redis.Client
+	DB    *sql.DB
 }
 
 func (p *CheckHealth) PingCache(ctx context.Context) error {

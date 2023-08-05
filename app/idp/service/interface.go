@@ -7,16 +7,12 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
-type Identity interface {
-	ent.Admin
+type UserCreator interface {
+	Create(ctx context.Context, name string, pw typedef.PasswordHash) (*ent.User, error)
 }
 
-type IdentityCreator[T Identity] interface {
-	Create(ctx context.Context, name string, pw typedef.PasswordHash) (*T, error)
-}
-
-type IdentitySelector[T Identity] interface {
-	SelectByName(ctx context.Context, name string) (*T, error)
+type UserSelector interface {
+	SelectByName(ctx context.Context, name string) (*ent.User, error)
 }
 
 type TokenGenerator interface {

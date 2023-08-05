@@ -2,7 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/idp/auth"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
+	"github.com/42milez/go-oidc-server/app/idp/repository"
+	"github.com/42milez/go-oidc-server/app/idp/service"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/rs/zerolog/log"
 
@@ -11,12 +18,31 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type SignIn struct {
-	Service   SignInService
+func NewAuthenticate(entClient *ent.Client) (*Authenticate, error) {
+	jwtUtil, err := auth.NewJWTUtil(&xutil.RealClocker{})
+
+	if err != nil {
+		return nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
+	}
+
+	return &Authenticate{
+		Service: &service.Authenticate{
+			Repo: &repository.User{
+				Clock: &xutil.RealClocker{},
+				DB:    entClient,
+			},
+			TokenGenerator: jwtUtil,
+		},
+		Validator: validator.New(),
+	}, nil
+}
+
+type Authenticate struct {
+	Service   Authenticator
 	Validator *validator.Validate
 }
 
-func (p *SignIn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var body struct {
@@ -40,7 +66,7 @@ func (p *SignIn) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := p.Service.SignIn(ctx, body.Name, body.Password)
+	token, err := p.Service.Authenticate(ctx, body.Name, body.Password)
 
 	if err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{

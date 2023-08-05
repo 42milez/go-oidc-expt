@@ -6,52 +6,62 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/redis/go-redis/v9"
 
-	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/rs/zerolog/log"
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
+	"github.com/42milez/go-oidc-server/app/idp/config"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
-	dbDialect             = "mysql"
-	maxOpenConnection     = 100
-	maxIdleConnection     = 10
-	connectionMaxLifetime = time.Hour
+	dbDialect               = "mysql"
+	dbMaxOpenConnection     = 100
+	dbMaxIdleConnection     = 10
+	dbConnectionMaxLifetime = time.Hour
 )
 
-func NewDB(ctx context.Context, cfg *config.Config) (*ent.Client, *sql.DB, func(), error) {
+func NewDBClient(ctx context.Context, cfg *config.Config) (*sql.DB, error) {
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 	db, err := sql.Open(dialect.MySQL, dataSrc)
 
 	if err != nil {
-		return nil, nil, nil, xerr.Wrap(xerr.FailToEstablishConnection, err)
+		xutil.CloseConnection(db)
+		return nil, xerr.Wrap(xerr.FailToEstablishConnection, err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
 	if err = db.PingContext(ctx); err != nil {
-		if err = db.Close(); err != nil {
-			log.Error().Err(err).Msg(xerr.FailedToCloseConnection.Error())
-		}
-		return nil, nil, nil, err
+		return nil, err
 	}
 
-	db.SetConnMaxLifetime(connectionMaxLifetime)
-	db.SetMaxIdleConns(maxIdleConnection)
-	db.SetMaxOpenConns(maxOpenConnection)
+	db.SetConnMaxLifetime(dbConnectionMaxLifetime)
+	db.SetMaxIdleConns(dbMaxIdleConnection)
+	db.SetMaxOpenConns(dbMaxOpenConnection)
 
+	return db, nil
+}
+
+func NewEntClient(db *sql.DB) *ent.Client {
 	drv := entsql.OpenDB(dbDialect, db)
-	entClient := ent.NewClient(ent.Driver(drv))
+	return ent.NewClient(ent.Driver(drv))
+}
 
-	return entClient, db, func() {
-		if err = entClient.Close(); err != nil {
-			log.Error().Err(err).Msg(xerr.FailedToCloseConnection.Error())
-		}
-	}, nil
+func NewRedisClient(ctx context.Context, cfg *config.Config) (*redis.Client, error) {
+	client := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
+	})
+
+	if err := client.Ping(ctx).Err(); err != nil {
+		xutil.CloseConnection(client)
+		return nil, xerr.Wrap(xerr.FailedToReachHost, err)
+	}
+
+	return client, nil
 }

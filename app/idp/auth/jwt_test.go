@@ -31,7 +31,7 @@ func TestEmbed(t *testing.T) {
 }
 
 func TestJWT_GenerateAccessToken(t *testing.T) {
-	jwtUtil, err := NewJWTUtil(xutil.RealClocker{})
+	jwtUtil, err := NewJWTUtil(&xutil.RealClocker{})
 
 	if err != nil {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
@@ -59,7 +59,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		Subject(accessTokenSubject).
 		IssuedAt(c.Now()).
 		Expiration(c.Now().Add(30*time.Minute)).
-		Claim(nameKey, "test_admin").
+		Claim(nameKey, "test_user").
 		Build()
 
 	if err != nil {
@@ -110,7 +110,7 @@ func TestJWT_Validate(t *testing.T) {
 			Subject(accessTokenSubject).
 			IssuedAt(c.Now()).
 			Expiration(c.Now().Add(30*time.Minute)).
-			Claim(nameKey, "test_admin").
+			Claim(nameKey, "test_user").
 			Build()
 
 		if err != nil {
@@ -137,7 +137,7 @@ func TestJWT_Validate(t *testing.T) {
 			Subject(accessTokenSubject).
 			IssuedAt(c.Now()).
 			Expiration(c.Now().Add(30*time.Minute)).
-			Claim(nameKey, "test_admin").
+			Claim(nameKey, "test_user").
 			Build()
 
 		if err != nil {
