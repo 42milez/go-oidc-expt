@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 	"database/sql"
-	"errors"
-
 	"github.com/redis/go-redis/v9"
 )
 
@@ -14,7 +12,10 @@ type CheckHealth struct {
 }
 
 func (p *CheckHealth) PingCache(ctx context.Context) error {
-	return errors.New("not implemented")
+	if err := p.Cache.Ping(ctx).Err(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (p *CheckHealth) PingDB(ctx context.Context) error {
