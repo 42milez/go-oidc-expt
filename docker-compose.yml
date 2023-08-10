@@ -26,7 +26,7 @@ services:
         target: /go/pkg/mod
     environment:
       DB_HOST: idp-db
-      REDIS_HOST: idp-epstore
+      REDIS_HOST: idp-cache
     deploy:
       resources:
         limits:
@@ -36,17 +36,17 @@ services:
         condition: on-failure
         max_attempts: 3
     depends_on:
-      - idp-epstore
+      - idp-cache
       - idp-db
     cap_add:
       - SYS_PTRACE
     security_opt:
       - apparmor:unconfined
-  idp-epstore:
+  idp-cache:
     build:
-      context: docker/epstore/idp
-    container_name: go-oidc-server-idp-epstore
-    image: go-oidc-server-idp-epstore:latest
+      context: docker/cache/idp
+    container_name: go-oidc-server-idp-cache
+    image: go-oidc-server-idp-cache:latest
     networks:
       - dev
     ports:
@@ -55,7 +55,7 @@ services:
     tty: true
     volumes:
       - type: volume
-        source: idp_epstore_data
+        source: idp_cache_data
         target: /data
     deploy:
       resources:
@@ -107,7 +107,7 @@ volumes:
     driver: local
   idp_app_mod_cache:
     driver: local
-  idp_epstore_data:
+  idp_cache_data:
     driver: local
   idp_db_data:
     driver: local

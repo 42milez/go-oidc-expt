@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/idp/repository"
+
 	"github.com/42milez/go-oidc-server/app/idp/service"
 	"github.com/redis/go-redis/v9"
 
@@ -15,8 +17,10 @@ import (
 func NewCheckHealth(cacheClient *redis.Client, dbClient *sql.DB) *CheckHealth {
 	return &CheckHealth{
 		Service: &service.CheckHealth{
-			Cache: cacheClient,
-			DB:    dbClient,
+			Repo: &repository.CheckHealth{
+				Cache: cacheClient,
+				DB:    dbClient,
+			},
 		},
 	}
 }
@@ -28,7 +32,7 @@ type CheckHealth struct {
 func (p *CheckHealth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	if err := p.Service.PingCache(ctx); err != nil {
+	if err := p.Service.CheckCacheStatus(ctx); err != nil {
 		log.Error().Err(err).Msgf("%s: %+v", xerr.FailedToPingCache, err)
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 			Error: xerr.ServiceCurrentlyUnavailable,
@@ -36,7 +40,7 @@ func (p *CheckHealth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := p.Service.PingDB(ctx); err != nil {
+	if err := p.Service.CheckDBStatus(ctx); err != nil {
 		log.Error().Err(err).Msgf("%s: %+v", xerr.FailedToPingDatabase, err)
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 			Error: xerr.ServiceCurrentlyUnavailable,

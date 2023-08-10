@@ -38,8 +38,8 @@ func NewCreateUser(entClient *ent.Client, redisClient *redis.Client) (*CreateUse
 		Session: &service.Session{
 			Repo: &repository.Session{
 				Cache: redisClient,
-				JWT:   jwtUtil,
 			},
+			Token: jwtUtil,
 		},
 		Validator: validator.New(),
 	}, nil

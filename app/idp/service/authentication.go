@@ -9,8 +9,8 @@ import (
 )
 
 type Authenticate struct {
-	Repo           UserSelector
-	TokenGenerator TokenGenerator
+	Repo  UserSelector
+	Token TokenGenerator
 }
 
 func (p *Authenticate) Authenticate(ctx context.Context, name, pw string) (string, error) {
@@ -33,7 +33,7 @@ func (p *Authenticate) Authenticate(ctx context.Context, name, pw string) (strin
 		return "", err
 	}
 
-	token, err := p.TokenGenerator.GenerateAccessToken(user.Name)
+	token, err := p.Token.GenerateAccessToken(user.Name)
 
 	if err != nil {
 		log.Error().Err(err).Msg(xerr.Wrap(errFailedToGenerateToken, err).Error())

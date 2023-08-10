@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	ent "github.com/42milez/go-oidc-server/app/idp/ent/ent"
+	typedef "github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -35,32 +36,32 @@ func (m *MockHealthChecker) EXPECT() *MockHealthCheckerMockRecorder {
 	return m.recorder
 }
 
-// PingCache mocks base method.
-func (m *MockHealthChecker) PingCache(ctx context.Context) error {
+// CheckCacheStatus mocks base method.
+func (m *MockHealthChecker) CheckCacheStatus(ctx context.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PingCache", ctx)
+	ret := m.ctrl.Call(m, "CheckCacheStatus", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// PingCache indicates an expected call of PingCache.
-func (mr *MockHealthCheckerMockRecorder) PingCache(ctx interface{}) *gomock.Call {
+// CheckCacheStatus indicates an expected call of CheckCacheStatus.
+func (mr *MockHealthCheckerMockRecorder) CheckCacheStatus(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingCache", reflect.TypeOf((*MockHealthChecker)(nil).PingCache), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckCacheStatus", reflect.TypeOf((*MockHealthChecker)(nil).CheckCacheStatus), ctx)
 }
 
-// PingDB mocks base method.
-func (m *MockHealthChecker) PingDB(ctx context.Context) error {
+// CheckDBStatus mocks base method.
+func (m *MockHealthChecker) CheckDBStatus(ctx context.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PingDB", ctx)
+	ret := m.ctrl.Call(m, "CheckDBStatus", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// PingDB indicates an expected call of PingDB.
-func (mr *MockHealthCheckerMockRecorder) PingDB(ctx interface{}) *gomock.Call {
+// CheckDBStatus indicates an expected call of CheckDBStatus.
+func (mr *MockHealthCheckerMockRecorder) CheckDBStatus(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingDB", reflect.TypeOf((*MockHealthChecker)(nil).PingDB), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckDBStatus", reflect.TypeOf((*MockHealthChecker)(nil).CheckDBStatus), ctx)
 }
 
 // MockAuthorizer is a mock of Authorizer interface.
@@ -237,26 +238,31 @@ func (m *MockSessionManager) EXPECT() *MockSessionManagerMockRecorder {
 	return m.recorder
 }
 
-// LoadID mocks base method.
-func (m *MockSessionManager) LoadID(ctx context.Context) {
+// GetID mocks base method.
+func (m *MockSessionManager) GetID(ctx context.Context) (typedef.UserID, bool) {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "LoadID", ctx)
+	ret := m.ctrl.Call(m, "GetID", ctx)
+	ret0, _ := ret[0].(typedef.UserID)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
 }
 
-// LoadID indicates an expected call of LoadID.
-func (mr *MockSessionManagerMockRecorder) LoadID(ctx interface{}) *gomock.Call {
+// GetID indicates an expected call of GetID.
+func (mr *MockSessionManagerMockRecorder) GetID(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoadID", reflect.TypeOf((*MockSessionManager)(nil).LoadID), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetID", reflect.TypeOf((*MockSessionManager)(nil).GetID), ctx)
 }
 
-// SaveID mocks base method.
-func (m *MockSessionManager) SaveID(ctx context.Context) {
+// SetID mocks base method.
+func (m *MockSessionManager) SetID(ctx context.Context, id typedef.UserID) context.Context {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SaveID", ctx)
+	ret := m.ctrl.Call(m, "SetID", ctx, id)
+	ret0, _ := ret[0].(context.Context)
+	return ret0
 }
 
-// SaveID indicates an expected call of SaveID.
-func (mr *MockSessionManagerMockRecorder) SaveID(ctx interface{}) *gomock.Call {
+// SetID indicates an expected call of SetID.
+func (mr *MockSessionManagerMockRecorder) SetID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveID", reflect.TypeOf((*MockSessionManager)(nil).SaveID), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetID", reflect.TypeOf((*MockSessionManager)(nil).SetID), ctx, id)
 }

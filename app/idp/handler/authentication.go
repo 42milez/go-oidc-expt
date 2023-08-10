@@ -31,7 +31,7 @@ func NewAuthenticate(entClient *ent.Client) (*Authenticate, error) {
 				Clock: &xutil.RealClocker{},
 				DB:    entClient,
 			},
-			TokenGenerator: jwtUtil,
+			Token: jwtUtil,
 		},
 		Validator: validator.New(),
 	}, nil
