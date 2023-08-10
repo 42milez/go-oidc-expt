@@ -53,7 +53,7 @@ func NewEntClient(db *sql.DB) *ent.Client {
 	return ent.NewClient(ent.Driver(drv))
 }
 
-func NewRedisClient(ctx context.Context, cfg *config.Config) (*redis.Client, error) {
+func NewCacheClient(ctx context.Context, cfg *config.Config) (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
 	})

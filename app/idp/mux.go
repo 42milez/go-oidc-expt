@@ -33,7 +33,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	}
 
 	entClient := repository.NewEntClient(dbClient)
-	redisClient, err := repository.NewRedisClient(ctx, cfg)
+	redisClient, err := repository.NewCacheClient(ctx, cfg)
 
 	if err != nil {
 		return nil, nil, err

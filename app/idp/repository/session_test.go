@@ -31,7 +31,7 @@ func TestNewSession(t *testing.T) {
 
 	ctx := context.Background()
 
-	sess, err := NewRedisClient(ctx, cfg)
+	sess, err := NewCacheClient(ctx, cfg)
 
 	if err != nil {
 		t.Fatalf("%s: %+v", xerr.FailedToInitialize, err)
