@@ -12,13 +12,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 )
 
-func NewUser(clock xutil.Clocker, db *ent.Client) *User {
-	return &User{
-		Clock: clock,
-		DB:    db,
-	}
-}
-
 type User struct {
 	Clock xutil.Clocker
 	DB    *ent.Client
