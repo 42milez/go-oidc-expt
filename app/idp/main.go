@@ -14,13 +14,28 @@ import (
 
 var version = "dev"
 
-//	@title			go-oidc-server
-//	@version		1.0
-//	@description	TBD
-//	@license.name	MIT
-//	@license.url	TBD
-//	@host			localhost:8080
-//	@BasePath		/api/v1
+//	@title						go-oidc-server
+//	@version					1.0
+//	@description				TBD
+//	@tag.name					TBD
+//	@tag.description			TBD
+//	@tag.docs.url				TBD
+//	@tag.docs.description		TBD
+//	@termsOfService				TBD
+//	@contact.name				TBD
+//	@contact.url				TBD
+//	@contact.email				TBD
+//	@license.name				MIT
+//	@license.url				TBD
+//	@host						TBD
+//	@BasePath					/v1
+//	@accept						json
+//	@produce					json
+//	@query.collection.format	TBD
+//	@schemes					http https
+//	@externalDocs.description	TBD
+//	@externalDocs.url			TBD
+//	@x-name						TBD
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
