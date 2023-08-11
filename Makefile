@@ -38,10 +38,12 @@ clean:
 ## fmt: Run formatter
 fmt:
 	@go fmt ./...
+	@swag fmt -d app/idp
 
 ## gen: Run generator
 gen:
 	@go generate ./...
+	@swag init -d app/idp -o app/idp/docs
 
 ## lint: Run linters
 lint:

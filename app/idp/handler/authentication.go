@@ -50,11 +50,11 @@ type Authenticate struct {
 //	@tags			authentication
 //	@accept			json
 //	@produce		json
-//	@param			name	body	string	true	"TBD"
-//	@param			password	body	string	true	"TBD"
-//	@success		200	{object}	model.Authenticate
-//	@failure		500	{object}	model.BadRequest
-//	@failure		500	{object}	model.InternalServerError
+//	@param			name		body		string	true	"TBD"
+//	@param			password	body		string	true	"TBD"
+//	@success		200			{object}	model.Authenticate
+//	@failure		500			{object}	model.BadRequest
+//	@failure		500			{object}	model.InternalServerError
 //	@router			/v1/authenticate [post]
 func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
