@@ -6,11 +6,22 @@ import "github.com/swaggo/swag"
 
 const docTemplate = `{
     "schemes": {{ marshal .Schemes }},
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
     "swagger": "2.0",
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "termsOfService": "TBD",
+        "contact": {
+            "name": "TBD",
+            "url": "TBD",
+            "email": "TBD"
+        },
         "license": {
             "name": "MIT",
             "url": "TBD"
@@ -19,15 +30,91 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/v1/authenticate": {
+            "post": {
+                "description": "TBD",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "TBD",
+                "operationId": "Authenticate.ServeHTTP",
+                "parameters": [
+                    {
+                        "description": "TBD",
+                        "name": "name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "TBD",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Authenticate"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.InternalServerError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.Authenticate": {
+            "type": "object"
+        },
+        "model.BadRequest": {
+            "type": "object"
+        },
+        "model.InternalServerError": {
+            "type": "object"
+        }
+    },
+    "tags": [
+        {
+            "description": "TBD",
+            "name": "TBD",
+            "externalDocs": {
+                "description": "TBD",
+                "url": "TBD"
+            }
+        }
+    ],
+    "externalDocs": {
+        "description": "TBD",
+        "url": "TBD"
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
-	Schemes:          []string{},
+	Host:             "TBD",
+	BasePath:         "/v1",
+	Schemes:          []string{"http", "https"},
 	Title:            "go-oidc-server",
 	Description:      "TBD",
 	InfoInstanceName: "swagger",

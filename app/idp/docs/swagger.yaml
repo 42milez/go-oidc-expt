@@ -1,12 +1,72 @@
-basePath: /api/v1
-host: localhost:8080
+basePath: /v1
+consumes:
+- application/json
+definitions:
+  model.Authenticate:
+    type: object
+  model.BadRequest:
+    type: object
+  model.InternalServerError:
+    type: object
+externalDocs:
+  description: TBD
+  url: TBD
+host: TBD
 info:
-  contact: {}
+  contact:
+    email: TBD
+    name: TBD
+    url: TBD
   description: TBD
   license:
     name: MIT
     url: TBD
+  termsOfService: TBD
   title: go-oidc-server
   version: "1.0"
-paths: {}
+paths:
+  /v1/authenticate:
+    post:
+      consumes:
+      - application/json
+      description: TBD
+      operationId: Authenticate.ServeHTTP
+      parameters:
+      - description: TBD
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: TBD
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Authenticate'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.InternalServerError'
+      summary: TBD
+      tags:
+      - authentication
+produces:
+- application/json
+schemes:
+- http
+- https
 swagger: "2.0"
+tags:
+- description: TBD
+  externalDocs:
+    description: TBD
+    url: TBD
+  name: TBD

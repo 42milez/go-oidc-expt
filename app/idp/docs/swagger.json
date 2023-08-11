@@ -1,16 +1,107 @@
 {
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "schemes": [
+        "http",
+        "https"
+    ],
     "swagger": "2.0",
     "info": {
         "description": "TBD",
         "title": "go-oidc-server",
-        "contact": {},
+        "termsOfService": "TBD",
+        "contact": {
+            "name": "TBD",
+            "url": "TBD",
+            "email": "TBD"
+        },
         "license": {
             "name": "MIT",
             "url": "TBD"
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
-    "basePath": "/api/v1",
-    "paths": {}
+    "host": "TBD",
+    "basePath": "/v1",
+    "paths": {
+        "/v1/authenticate": {
+            "post": {
+                "description": "TBD",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "TBD",
+                "operationId": "Authenticate.ServeHTTP",
+                "parameters": [
+                    {
+                        "description": "TBD",
+                        "name": "name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "TBD",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Authenticate"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.InternalServerError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.Authenticate": {
+            "type": "object"
+        },
+        "model.BadRequest": {
+            "type": "object"
+        },
+        "model.InternalServerError": {
+            "type": "object"
+        }
+    },
+    "tags": [
+        {
+            "description": "TBD",
+            "name": "TBD",
+            "externalDocs": {
+                "description": "TBD",
+                "url": "TBD"
+            }
+        }
+    ],
+    "externalDocs": {
+        "description": "TBD",
+        "url": "TBD"
+    }
 }

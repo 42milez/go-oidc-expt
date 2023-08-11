@@ -42,23 +42,20 @@ type Authenticate struct {
 	Validator *validator.Validate
 }
 
+// ServeHTTP authenticates a user
+//
 //	@summary		TBD
 //	@description	TBD
-//	@id				TBD
-//	@tags			TBD
-//	@accept			TBD
-//	@produce		TBD
-//	@param			TBD
-//	@security		TBD
-//	@success		TBD
-//	@failure		TBD
-//	@response		TBD
-//	@header			TBD
-//	@router			TBD
-//	@x-name			TBD
-//	@x-codeSample	TBD
-
-// ServeHTTP authenticates a user.
+//	@id				Authenticate.ServeHTTP
+//	@tags			authentication
+//	@accept			json
+//	@produce		json
+//	@param			name	body	string	true	"TBD"
+//	@param			password	body	string	true	"TBD"
+//	@success		200	{object}	model.Authenticate
+//	@failure		500	{object}	model.BadRequest
+//	@failure		500	{object}	model.InternalServerError
+//	@router			/v1/authenticate [post]
 func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

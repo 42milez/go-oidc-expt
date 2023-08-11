@@ -35,7 +35,6 @@ var version = "dev"
 //	@schemes					http https
 //	@externalDocs.description	TBD
 //	@externalDocs.url			TBD
-//	@x-name						TBD
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
