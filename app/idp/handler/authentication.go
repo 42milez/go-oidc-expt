@@ -42,6 +42,23 @@ type Authenticate struct {
 	Validator *validator.Validate
 }
 
+//	@summary		TBD
+//	@description	TBD
+//	@id				TBD
+//	@tags			TBD
+//	@accept			TBD
+//	@produce		TBD
+//	@param			TBD
+//	@security		TBD
+//	@success		TBD
+//	@failure		TBD
+//	@response		TBD
+//	@header			TBD
+//	@router			TBD
+//	@x-name			TBD
+//	@x-codeSample	TBD
+
+// ServeHTTP authenticates a user.
 func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
