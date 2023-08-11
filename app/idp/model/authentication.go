@@ -1,3 +1,3 @@
 package model
 
-type Authenticate struct {}
+type Authenticate struct{}
