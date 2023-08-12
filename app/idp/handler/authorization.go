@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"github.com/42milez/go-oidc-server/app/idp/model"
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/schema"
 )
 
 func NewAuthorizeGet() *AuthorizeGet {
@@ -30,7 +33,16 @@ type AuthorizeGet struct {
 //	@failure		500			{object}	model.InternalServerError
 //	@router			/v1/authorization [get]
 func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// NOT IMPLEMENTED YET
+	decoder := schema.NewDecoder()
+	q := &model.Authorize{}
+
+	if err := decoder.Decode(q, r.URL.Query()); err != nil {
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
+		})
+	}
+
+	// ...
 }
 
 func NewAuthorizePost() *AuthorizePost {
