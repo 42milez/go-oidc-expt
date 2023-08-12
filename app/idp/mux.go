@@ -81,6 +81,17 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		r.Post("/", authenticateUserHdlr.ServeHTTP)
 	})
 
+	//  OpenID Endpoint
+	// --------------------------------------------------
+
+	authorizeGet := handler.NewAuthorizeGet()
+	authorizePost := handler.NewAuthorizePost()
+
+	mux.Route("/authorization", func(r chi.Router) {
+		r.Get("/", authorizeGet.ServeHTTP)
+		r.Post("/", authorizePost.ServeHTTP)
+	})
+
 	return mux, func() {
 		xutil.CloseConnection(entClient)
 		xutil.CloseConnection(redisClient)

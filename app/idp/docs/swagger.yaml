@@ -58,6 +58,71 @@ paths:
       summary: TBD
       tags:
       - authentication
+  /v1/authorization:
+    get:
+      consumes:
+      - application/json
+      description: TBD
+      operationId: AuthorizeGet.ServeHTTP
+      parameters:
+      - description: TBD
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: TBD
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Authenticate'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.InternalServerError'
+      summary: TBD
+      tags:
+      - authorization
+    post:
+      consumes:
+      - application/json
+      description: TBD
+      operationId: AuthorizePost.ServeHTTP
+      parameters:
+      - description: TBD
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: TBD
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Authenticate'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.InternalServerError'
+      summary: TBD
+      tags:
+      - authorization
 produces:
 - application/json
 schemes:
