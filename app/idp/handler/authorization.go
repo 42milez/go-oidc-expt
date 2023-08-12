@@ -23,8 +23,8 @@ type AuthorizeGet struct {
 //	@tags			authorization
 //	@accept			json
 //	@produce		json
-//	@param			name		body		string	true	"TBD"
-//	@param			password	body		string	true	"TBD"
+//	@param			name		query		string	true	"TBD"
+//	@param			password	query		string	true	"TBD"
 //	@success		200			{object}	model.Authenticate
 //	@failure		500			{object}	model.BadRequest
 //	@failure		500			{object}	model.InternalServerError
@@ -50,8 +50,8 @@ type AuthorizePost struct {
 //	@tags			authorization
 //	@accept			json
 //	@produce		json
-//	@param			name		body		string	true	"TBD"
-//	@param			password	body		string	true	"TBD"
+//	@param			name		formData	string	true	"TBD"
+//	@param			password	formData	string	true	"TBD"
 //	@success		200			{object}	model.Authenticate
 //	@failure		500			{object}	model.BadRequest
 //	@failure		500			{object}	model.InternalServerError

@@ -97,22 +97,18 @@ const docTemplate = `{
                 "operationId": "AuthorizeGet.ServeHTTP",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "TBD",
                         "name": "name",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "TBD",
                         "name": "password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -145,22 +141,18 @@ const docTemplate = `{
                 "operationId": "AuthorizePost.ServeHTTP",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "TBD",
                         "name": "name",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "formData",
+                        "required": true
                     },
                     {
+                        "type": "string",
                         "description": "TBD",
                         "name": "password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {

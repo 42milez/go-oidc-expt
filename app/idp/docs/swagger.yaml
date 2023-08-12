@@ -66,17 +66,15 @@ paths:
       operationId: AuthorizeGet.ServeHTTP
       parameters:
       - description: TBD
-        in: body
+        in: query
         name: name
         required: true
-        schema:
-          type: string
+        type: string
       - description: TBD
-        in: body
+        in: query
         name: password
         required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:
@@ -98,17 +96,15 @@ paths:
       operationId: AuthorizePost.ServeHTTP
       parameters:
       - description: TBD
-        in: body
+        in: formData
         name: name
         required: true
-        schema:
-          type: string
+        type: string
       - description: TBD
-        in: body
+        in: formData
         name: password
         required: true
-        schema:
-          type: string
+        type: string
       produces:
       - application/json
       responses:
