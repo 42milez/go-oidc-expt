@@ -25,7 +25,7 @@ type AuthorizeGet struct {
 //	@produce		json
 //	@param			name		query		string	true	"TBD"
 //	@param			password	query		string	true	"TBD"
-//	@success		200			{object}	model.Authenticate
+//	@success		200			{object}	model.Authorize
 //	@failure		500			{object}	model.BadRequest
 //	@failure		500			{object}	model.InternalServerError
 //	@router			/v1/authorization [get]
@@ -52,7 +52,7 @@ type AuthorizePost struct {
 //	@produce		json
 //	@param			name		formData	string	true	"TBD"
 //	@param			password	formData	string	true	"TBD"
-//	@success		200			{object}	model.Authenticate
+//	@success		200			{object}	model.Authorize
 //	@failure		500			{object}	model.BadRequest
 //	@failure		500			{object}	model.InternalServerError
 //	@router			/v1/authorization [post]

@@ -23,7 +23,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	mux := chi.NewRouter()
 
 	// ==================================================
-	//  Database / Ephemeral Store
+	//  Database and Ephemeral Store
 	// ==================================================
 
 	dbClient, err := repository.NewDBClient(ctx, cfg)
@@ -81,7 +81,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		r.Post("/", authenticateUserHdlr.ServeHTTP)
 	})
 
-	//  OpenID Endpoint
+	//  OpenID/OAuth Endpoint
 	// --------------------------------------------------
 
 	authorizeGet := handler.NewAuthorizeGet()
