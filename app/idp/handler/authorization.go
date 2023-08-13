@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/42milez/go-oidc-server/app/idp/model"
 	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"net/http"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
