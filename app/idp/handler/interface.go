@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/42milez/go-oidc-server/app/idp/model"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 
@@ -16,7 +17,7 @@ type HealthChecker interface {
 }
 
 type Authorizer interface {
-	Authorize(ctx context.Context) error
+	Authorize(ctx context.Context, param *model.Authorize) error
 }
 
 type Authenticator interface {

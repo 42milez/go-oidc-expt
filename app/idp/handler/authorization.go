@@ -41,8 +41,27 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 			Error: xerr.UnexpectedErrorOccurred,
 		})
+		return
 	}
 
+	if err := p.Validator.Struct(q); err != nil {
+		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
+			Error: xerr.InvalidRequest,
+		})
+		return
+	}
+
+	if err := p.Service.Authorize(r.Context(), q); err != nil {
+		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
+			Error: xerr.InvalidParameter,
+		})
+		return
+	}
+
+	// TODO: Redirect unauthenticated user to the authentication endpoint
+	// ...
+
+	// TODO: Redirect authenticated user to the consent endpoint
 	// ...
 }
 

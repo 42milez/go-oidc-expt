@@ -1,6 +1,8 @@
 package xerr
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const (
 	FailToEstablishConnection   GeneralErr = "failed to establish connection"
@@ -28,6 +30,8 @@ func (v GeneralErr) Error() string {
 
 const (
 	AuthenticationFailed        HTTPErr = "authentication failed"
+	InvalidParameter            HTTPErr = "invalid parameter"
+	InvalidRequest              HTTPErr = "invalid request"
 	ServiceCurrentlyUnavailable HTTPErr = "service currently unavailable"
 	UnexpectedErrorOccurred     HTTPErr = "unexpected error occurred"
 )
