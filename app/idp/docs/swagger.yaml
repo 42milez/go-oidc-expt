@@ -39,7 +39,6 @@ definitions:
     - redirectURI
     - responseMode
     - responseType
-    - scope
     - state
     type: object
   model.BadRequest:

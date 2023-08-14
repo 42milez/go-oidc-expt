@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/idp/validation"
+
 	"github.com/42milez/go-oidc-server/app/idp/model"
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
@@ -10,8 +12,18 @@ import (
 	"github.com/gorilla/schema"
 )
 
-func NewAuthorizeGet() *AuthorizeGet {
-	return &AuthorizeGet{}
+func NewAuthorizeGet() (*AuthorizeGet, error) {
+	v, err := validation.NewAuthorizeValidator()
+
+	if err != nil {
+		return nil, err
+	}
+
+	ret := &AuthorizeGet{
+		Validator: v,
+	}
+
+	return ret, nil
 }
 
 type AuthorizeGet struct {
@@ -91,8 +103,3 @@ type AuthorizePost struct {
 func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// NOT IMPLEMENTED YET
 }
-
-// authorizationCore
-//func authorizationCore(w http.ResponseWriter, r *http.Request) {
-//	// NOT IMPLEMENTED YET
-//}

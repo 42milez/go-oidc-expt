@@ -10,6 +10,7 @@ import (
 
 	ent "github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	typedef "github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+	model "github.com/42milez/go-oidc-server/app/idp/model"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -88,17 +89,17 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // Authorize mocks base method.
-func (m *MockAuthorizer) Authorize(ctx context.Context) error {
+func (m *MockAuthorizer) Authorize(ctx context.Context, param *model.Authorize) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Authorize", ctx)
+	ret := m.ctrl.Call(m, "Authorize", ctx, param)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Authorize indicates an expected call of Authorize.
-func (mr *MockAuthorizerMockRecorder) Authorize(ctx interface{}) *gomock.Call {
+func (mr *MockAuthorizerMockRecorder) Authorize(ctx, param interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAuthorizer)(nil).Authorize), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAuthorizer)(nil).Authorize), ctx, param)
 }
 
 // MockAuthenticator is a mock of Authenticator interface.

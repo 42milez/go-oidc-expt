@@ -1,6 +1,7 @@
 package xerr
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -41,6 +42,12 @@ type HTTPErr string
 func (v HTTPErr) Error() string {
 	return string(v)
 }
+
+type OpenIDErr error
+
+var (
+	InvalidScope = errors.New("invalid scope")
+)
 
 type Err string
 

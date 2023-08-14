@@ -187,7 +187,6 @@ const docTemplate = `{
                 "redirectURI",
                 "responseMode",
                 "responseType",
-                "scope",
                 "state"
             ],
             "properties": {

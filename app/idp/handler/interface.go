@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+
 	"github.com/42milez/go-oidc-server/app/idp/model"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"

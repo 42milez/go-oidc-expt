@@ -1,7 +1,7 @@
 package model
 
 type Authorize struct {
-	Scope        string `json:"scope" validate:"required,alpha"`
+	Scope        string `json:"scope" validate:"ScopeValidator"`
 	ResponseType string `json:"responseType" validate:"required,alpha"`
 	ClientID     string `json:"clientID" validate:"required,alphanum"`
 	RedirectURI  string `json:"redirectURI" validate:"required,printascii"`

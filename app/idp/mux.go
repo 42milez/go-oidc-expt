@@ -84,7 +84,12 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  OpenID/OAuth Endpoint
 	// --------------------------------------------------
 
-	authorizeGet := handler.NewAuthorizeGet()
+	authorizeGet, err := handler.NewAuthorizeGet()
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
+	}
+
 	authorizePost := handler.NewAuthorizePost()
 
 	mux.Route("/authorization", func(r chi.Router) {
