@@ -1,16 +1,14 @@
 package model
 
 type Authorize struct {
-	Scope        string `json:"scope" validate:"required,scope-validator"`
-	ResponseType string `json:"responseType" validate:"required,response-type-validator"`
 	ClientID     string `json:"clientID" validate:"required,alphanum"`
-	RedirectURI  string `json:"redirectURI" validate:"required,printascii"`
-	State        string `json:"state" validate:"required,alphanum"`
-	ResponseMode string `json:"responseMode" validate:"required,alpha"`
-	Nonce        string `json:"nonce" validate:"required,alphanum"`
 	Display      string `json:"display" validate:"required"`
-	Prompt       string `json:"prompt" validate:"required"`
-	MaxAge       int    `json:"maxAge" validate:"required"`
-	UILocales    string `json:"uiLocales" validate:"alpha"`
 	IDTokenHint  string `json:"idTokenHint" validate:"alpha"`
+	MaxAge       int    `json:"maxAge" validate:"required"`
+	Nonce        string `json:"nonce" validate:"required,alphanum"`
+	Prompt       string `json:"prompt" validate:"required"`
+	RedirectURI  string `json:"redirectURI" validate:"required,printascii"`
+	ResponseType string `json:"responseType" validate:"required,response-type-validator"`
+	Scope        string `json:"scope" validate:"required,scope-validator"`
+	State        string `json:"state" validate:"required,alphanum"`
 }
