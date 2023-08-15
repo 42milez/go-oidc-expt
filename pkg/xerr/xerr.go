@@ -46,7 +46,7 @@ func (v HTTPErr) Error() string {
 type OpenIDErr error
 
 var (
-	InvalidScope = errors.New("invalid scope")
+	InvalidResponseType = errors.New("invalid response type")
 )
 
 type Err string
