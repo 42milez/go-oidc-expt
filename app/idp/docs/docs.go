@@ -115,7 +115,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Authorize"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -159,7 +159,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Authorize"
+                            "type": "string"
                         }
                     },
                     "500": {
@@ -175,52 +175,6 @@ const docTemplate = `{
     "definitions": {
         "model.Authenticate": {
             "type": "object"
-        },
-        "model.Authorize": {
-            "type": "object",
-            "required": [
-                "clientID",
-                "display",
-                "maxAge",
-                "nonce",
-                "prompt",
-                "redirectURI",
-                "responseType",
-                "scope",
-                "state"
-            ],
-            "properties": {
-                "clientID": {
-                    "type": "string"
-                },
-                "display": {
-                    "type": "string"
-                },
-                "idTokenHint": {
-                    "type": "string"
-                },
-                "maxAge": {
-                    "type": "integer"
-                },
-                "nonce": {
-                    "type": "string"
-                },
-                "prompt": {
-                    "type": "string"
-                },
-                "redirectURI": {
-                    "type": "string"
-                },
-                "responseType": {
-                    "type": "string"
-                },
-                "scope": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                }
-            }
         },
         "model.BadRequest": {
             "type": "object"

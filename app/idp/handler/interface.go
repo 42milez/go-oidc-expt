@@ -18,7 +18,7 @@ type HealthChecker interface {
 }
 
 type Authorizer interface {
-	Authorize(ctx context.Context, param *model.Authorize) error
+	Authorize(ctx context.Context, param *model.AuthorizeRequest) (string, error)
 }
 
 type Authenticator interface {

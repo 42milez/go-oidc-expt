@@ -92,7 +92,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 
 	authorizePost := handler.NewAuthorizePost()
 
-	mux.Route("/authorization", func(r chi.Router) {
+	mux.Route("/idp/v1/authorize", func(r chi.Router) {
 		r.Get("/", authorizeGet.ServeHTTP)
 		r.Post("/", authorizePost.ServeHTTP)
 	})

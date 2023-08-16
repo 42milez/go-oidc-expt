@@ -6,21 +6,22 @@ import (
 )
 
 const (
-	FailToEstablishConnection   GeneralErr = "failed to establish connection"
-	FailedToCloseConnection     GeneralErr = "failed to close connection"
-	FailedToCloseResponseBody   GeneralErr = "failed to close response body"
-	FailedToDecodeInToBytes     GeneralErr = "failed to decode string"
-	FailedToEncodeInToBytes     GeneralErr = "failed to encode struct"
-	FailedToGenerateRandomBytes GeneralErr = "failed to generate random bytes"
-	FailedToInitialize          GeneralErr = "failed to initialize"
-	FailedToPingCache           GeneralErr = "failed to ping cache"
-	FailedToPingDatabase        GeneralErr = "failed to ping database"
-	FailedToReachHost           GeneralErr = "failed to reach host"
-	FailedToReadContextValue    GeneralErr = "failed to read context value"
-	FailedToReadFile            GeneralErr = "failed to read file"
-	FailedToResponseBody        GeneralErr = "failed to response body"
-	FailedToUnmarshalJSON       GeneralErr = "failed to unmarshal json"
-	FailedToDecodeInToStruct    GeneralErr = "failed to decode into struct"
+	FailToEstablishConnection    GeneralErr = "failed to establish connection"
+	FailedToCloseConnection      GeneralErr = "failed to close connection"
+	FailedToCloseResponseBody    GeneralErr = "failed to close response body"
+	FailedToDecodeInToBytes      GeneralErr = "failed to decode string"
+	FailedToEncodeInToBytes      GeneralErr = "failed to encode struct"
+	FailedToGenerateRandomBytes  GeneralErr = "failed to generate random bytes"
+	FailedToInitialize           GeneralErr = "failed to initialize"
+	FailedToPingCache            GeneralErr = "failed to ping cache"
+	FailedToPingDatabase         GeneralErr = "failed to ping database"
+	FailedToReachHost            GeneralErr = "failed to reach host"
+	FailedToReadContextValue     GeneralErr = "failed to read context value"
+	FailedToReadFile             GeneralErr = "failed to read file"
+	FailedToReadResponseBody     GeneralErr = "failed to read response body"
+	FailedToReadResponseLocation GeneralErr = "failed to read response location"
+	FailedToUnmarshalJSON        GeneralErr = "failed to unmarshal json"
+	FailedToDecodeInToStruct     GeneralErr = "failed to decode into struct"
 )
 
 type GeneralErr string

@@ -24,6 +24,8 @@ func NewAuthorizeValidator() (*validator.Validate, error) {
 
 var validScopes = []string{
 	"openid",
+	"profile",
+	"email",
 }
 
 func validateScope(fl validator.FieldLevel) bool {

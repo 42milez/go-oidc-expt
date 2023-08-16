@@ -1,0 +1,10 @@
+client_id=s6BhdRkqt3&
+display=page&
+id_token_hint=TBD&
+max_age=86400&
+nonce=n-0S6_WzA2Mj&
+prompt=consent&
+redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb&
+response_type=code&
+scope=openid%20profile%20email&
+state=af0ifjsldkj

@@ -96,7 +96,12 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 
 			resp := w.Result()
 
-			xtestutil.AssertResponse(t, resp, tt.want.statusCode, xtestutil.LoadFile(t, tt.want.respFile))
+			wantResp := &xtestutil.Response{
+				StatusCode: tt.want.statusCode,
+				Body:       xtestutil.LoadFile(t, tt.want.respFile),
+			}
+
+			xtestutil.AssertResponseJSON(t, resp, wantResp)
 		})
 	}
 }
