@@ -12,12 +12,12 @@ import (
 )
 
 const (
-	testDataAuthenticationDir         = "testdata/authentication/"
-	testDataAuthenticationRequest200  = testDataAuthenticationDir + "200_req.json"
-	testDataAuthenticationResponse200 = testDataAuthenticationDir + "200_resp.json"
-	testDataAuthenticationRequest400  = testDataAuthenticationDir + "400_req.json"
-	testDataAuthenticationResponse400 = testDataAuthenticationDir + "400_resp.json"
-	testDataAuthenticationResponse500 = testDataAuthenticationDir + "500_resp.json"
+	tdAuthenticationDir         = "testdata/authentication/"
+	tdAuthenticationRequest200  = tdAuthenticationDir + "200_req.json"
+	tdAuthenticationResponse200 = tdAuthenticationDir + "200_resp.json"
+	tdAuthenticationRequest400  = tdAuthenticationDir + "400_req.json"
+	tdAuthenticationResponse400 = tdAuthenticationDir + "400_resp.json"
+	tdAuthenticationResponse500 = tdAuthenticationDir + "500_resp.json"
 )
 
 const dummyAccessToken = "DUMMY ACCESS TOKEN"
@@ -39,32 +39,32 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		want    want
 	}{
 		"OK": {
-			reqFile: testDataAuthenticationRequest200,
+			reqFile: tdAuthenticationRequest200,
 			resp: mockResp{
 				token: dummyAccessToken,
 				err:   nil,
 			},
 			want: want{
 				statusCode: http.StatusOK,
-				respFile:   testDataAuthenticationResponse200,
+				respFile:   tdAuthenticationResponse200,
 			},
 		},
 		"BadRequest": {
-			reqFile: testDataAuthenticationRequest400,
+			reqFile: tdAuthenticationRequest400,
 			want: want{
 				statusCode: http.StatusBadRequest,
-				respFile:   testDataAuthenticationResponse400,
+				respFile:   tdAuthenticationResponse400,
 			},
 		},
 		"InternalServerError": {
-			reqFile: testDataAuthenticationRequest200,
+			reqFile: tdAuthenticationRequest200,
 			resp: mockResp{
 				token: "",
 				err:   xtestutil.DummyError,
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,
-				respFile:   testDataAuthenticationResponse500,
+				respFile:   tdAuthenticationResponse500,
 			},
 		},
 	}
