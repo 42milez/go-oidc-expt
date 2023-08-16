@@ -185,8 +185,8 @@ const docTemplate = `{
                 "nonce",
                 "prompt",
                 "redirectURI",
-                "responseMode",
                 "responseType",
+                "scope",
                 "state"
             ],
             "properties": {
@@ -211,9 +211,6 @@ const docTemplate = `{
                 "redirectURI": {
                     "type": "string"
                 },
-                "responseMode": {
-                    "type": "string"
-                },
                 "responseType": {
                     "type": "string"
                 },
@@ -221,9 +218,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "state": {
-                    "type": "string"
-                },
-                "uiLocales": {
                     "type": "string"
                 }
             }

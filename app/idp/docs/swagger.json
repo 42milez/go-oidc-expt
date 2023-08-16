@@ -182,8 +182,8 @@
                 "nonce",
                 "prompt",
                 "redirectURI",
-                "responseMode",
                 "responseType",
+                "scope",
                 "state"
             ],
             "properties": {
@@ -208,9 +208,6 @@
                 "redirectURI": {
                     "type": "string"
                 },
-                "responseMode": {
-                    "type": "string"
-                },
                 "responseType": {
                     "type": "string"
                 },
@@ -218,9 +215,6 @@
                     "type": "string"
                 },
                 "state": {
-                    "type": "string"
-                },
-                "uiLocales": {
                     "type": "string"
                 }
             }

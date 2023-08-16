@@ -14,21 +14,21 @@ func BenchmarkNewBuffer(b *testing.B) {
 	}
 }
 
-func BenchmarkSprintf(b *testing.B){
+func BenchmarkSprintf(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = fmt.Sprintf("%s", data)
 	}
 }
 
-func BenchmarkString(b *testing.B){
+func BenchmarkString(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_= string(data)
+		_ = string(data)
 	}
 }
 
-func BenchmarkByteToString(b *testing.B){
+func BenchmarkByteToString(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = ByteToString(data)
