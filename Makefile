@@ -7,8 +7,9 @@ GITHUB_ID := 42milez
 help: Makefile
 	@sed -n "s/^##//p" $< | column -t -s ":" |  sed -e "s/^/ /"
 
+# ==================================================
 #  Build
-# --------------------------------------------------
+# ==================================================
 
 .PHONY: build build-local
 
@@ -26,10 +27,15 @@ build:
 build-local:
 	@docker-compose build --no-cache
 
+# ==================================================
 #  Utility
-# --------------------------------------------------
+# ==================================================
 
-.PHONY: clean debug fmt gen lint migrate resolve test
+.PHONY: clean debug fmt gen lint migrate resolve test benchmark
+
+## benchmark: Run all benchmarks
+benchmark:
+	@go test -bench . -skip Test.+ -benchmem `go list ./... | grep -v "/ent" | grep -v "/docs"`
 
 ## clean: Clean up caches
 clean:
@@ -62,10 +68,11 @@ test:
 	@\
 	DB_PORT=13306 \
 	REDIS_PORT=16379 \
-	go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent"`
+	go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`
 
+# ==================================================
 #  Docker
-# --------------------------------------------------
+# ==================================================
 
 .PHONY: up down start stop
 
