@@ -72,14 +72,13 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: temporary
+	// TODO: Redirect unauthenticated user to the authentication endpoint with the posted parameters
+	// ...
+
+	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
+	// ...
+
 	http.Redirect(w, r, location, http.StatusFound)
-
-	// TODO: Redirect unauthenticated user to the authentication endpoint
-	// ...
-
-	// TODO: Redirect authenticated user to the consent endpoint
-	// ...
 }
 
 func NewAuthorizePost() *AuthorizePost {
