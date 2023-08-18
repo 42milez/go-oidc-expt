@@ -6,7 +6,9 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/model"
 )
 
-type Authorize struct{}
+type Authorize struct {
+	Endpoint string
+}
 
 func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest) (string, error) {
 	// TODO: Generate authorization code

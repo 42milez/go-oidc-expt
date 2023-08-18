@@ -47,8 +47,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	// --------------------------------------------------
 
 	if cfg.IsDevelopment() {
-		swaggerURL := fmt.Sprintf("http://%s:%d/%s/doc.json", cfg.SwaggerHost, cfg.SwaggerPort, cfg.SwaggerPath)
-		mux.HandleFunc("/swagger/*", httpSwagger.Handler(httpSwagger.URL(swaggerURL)))
+		mux.HandleFunc("/swagger/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8080/swagger/doc.json")))
 	}
 
 	//  Health Check Endpoint
