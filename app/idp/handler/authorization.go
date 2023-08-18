@@ -63,6 +63,12 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: Redirect unauthenticated user to the authentication endpoint with the posted parameters
+	// ...
+
+	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
+	// ...
+
 	location, err := p.Service.Authorize(r.Context(), q)
 
 	if err != nil {
@@ -71,12 +77,6 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
-	// TODO: Redirect unauthenticated user to the authentication endpoint with the posted parameters
-	// ...
-
-	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
-	// ...
 
 	http.Redirect(w, r, location, http.StatusFound)
 }
