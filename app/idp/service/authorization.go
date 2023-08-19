@@ -14,6 +14,12 @@ func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest
 	// TODO: Generate authorization code
 	// ...
 
+	// TODO: Save authorization code
+	// ...
+
+	// TODO: Read redirect uri from database
+	// ...
+
 	// TODO: Return the authorization code and state
 	return "http://client.example.org/cb?code=SplxlOBeZQQYbYS6WxSbIA&state=af0ifjsldk", nil
 }

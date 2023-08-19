@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/schema/edge"
 	"fmt"
 	"regexp"
 	"time"
@@ -32,7 +34,7 @@ type User struct {
 	ent.Schema
 }
 
-// Fields of the Account.
+// Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
@@ -83,7 +85,10 @@ func (User) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Account.
+// Edges of the User.
 func (User) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("auth_codes", AuthCode.Type).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+	}
 }
