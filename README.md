@@ -97,6 +97,14 @@ The commands described later require the following parameters:
 go generate ./...
 ```
 
+### Generating database schema
+
+e.g. The following command generates `AuthCode` schema.
+
+```
+go run -mod=mod entgo.io/ent/cmd/ent new --target app/idp/ent/schema AuthCode
+```
+
 ### Generating versioned migration files
 
 ```
