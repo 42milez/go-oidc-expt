@@ -8,6 +8,34 @@ import (
 )
 
 var (
+	// AuthCodesColumns holds the columns for the "auth_codes" table.
+	AuthCodesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(20)"}},
+		{Name: "user_id", Type: field.TypeString, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// AuthCodesTable holds the schema information for the "auth_codes" table.
+	AuthCodesTable = &schema.Table{
+		Name:       "auth_codes",
+		Columns:    AuthCodesColumns,
+		PrimaryKey: []*schema.Column{AuthCodesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "auth_codes_users_auth_codes",
+				Columns:    []*schema.Column{AuthCodesColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authcode_user_id_code",
+				Unique:  true,
+				Columns: []*schema.Column{AuthCodesColumns[2], AuthCodesColumns[1]},
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
@@ -25,9 +53,11 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AuthCodesTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	AuthCodesTable.ForeignKeys[0].RefTable = UsersTable
 }

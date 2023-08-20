@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
@@ -67,9 +68,45 @@ func (uu *UserUpdate) SetModifiedAt(t time.Time) *UserUpdate {
 	return uu
 }
 
+// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
+func (uu *UserUpdate) AddAuthCodeIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddAuthCodeIDs(ids...)
+	return uu
+}
+
+// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
+func (uu *UserUpdate) AddAuthCodes(a ...*AuthCode) *UserUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uu.AddAuthCodeIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
+}
+
+// ClearAuthCodes clears all "auth_codes" edges to the AuthCode entity.
+func (uu *UserUpdate) ClearAuthCodes() *UserUpdate {
+	uu.mutation.ClearAuthCodes()
+	return uu
+}
+
+// RemoveAuthCodeIDs removes the "auth_codes" edge to AuthCode entities by IDs.
+func (uu *UserUpdate) RemoveAuthCodeIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveAuthCodeIDs(ids...)
+	return uu
+}
+
+// RemoveAuthCodes removes "auth_codes" edges to AuthCode entities.
+func (uu *UserUpdate) RemoveAuthCodes(a ...*AuthCode) *UserUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uu.RemoveAuthCodeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -155,6 +192,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.ModifiedAt(); ok {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)
 	}
+	if uu.mutation.AuthCodesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuthCodesTable,
+			Columns: []string{user.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedAuthCodesIDs(); len(nodes) > 0 && !uu.mutation.AuthCodesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuthCodesTable,
+			Columns: []string{user.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.AuthCodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuthCodesTable,
+			Columns: []string{user.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -213,9 +295,45 @@ func (uuo *UserUpdateOne) SetModifiedAt(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
+// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
+func (uuo *UserUpdateOne) AddAuthCodeIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddAuthCodeIDs(ids...)
+	return uuo
+}
+
+// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
+func (uuo *UserUpdateOne) AddAuthCodes(a ...*AuthCode) *UserUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uuo.AddAuthCodeIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
+}
+
+// ClearAuthCodes clears all "auth_codes" edges to the AuthCode entity.
+func (uuo *UserUpdateOne) ClearAuthCodes() *UserUpdateOne {
+	uuo.mutation.ClearAuthCodes()
+	return uuo
+}
+
+// RemoveAuthCodeIDs removes the "auth_codes" edge to AuthCode entities by IDs.
+func (uuo *UserUpdateOne) RemoveAuthCodeIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveAuthCodeIDs(ids...)
+	return uuo
+}
+
+// RemoveAuthCodes removes "auth_codes" edges to AuthCode entities.
+func (uuo *UserUpdateOne) RemoveAuthCodes(a ...*AuthCode) *UserUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uuo.RemoveAuthCodeIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -330,6 +448,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.ModifiedAt(); ok {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)
+	}
+	if uuo.mutation.AuthCodesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuthCodesTable,
+			Columns: []string{user.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedAuthCodesIDs(); len(nodes) > 0 && !uuo.mutation.AuthCodesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuthCodesTable,
+			Columns: []string{user.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.AuthCodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuthCodesTable,
+			Columns: []string{user.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

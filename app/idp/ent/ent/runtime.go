@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/idp/ent/schema"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
@@ -14,6 +15,16 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	authcodeFields := schema.AuthCode{}.Fields()
+	_ = authcodeFields
+	// authcodeDescCode is the schema descriptor for code field.
+	authcodeDescCode := authcodeFields[0].Descriptor()
+	// authcode.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	authcode.CodeValidator = authcodeDescCode.Validators[0].(func(string) error)
+	// authcodeDescCreatedAt is the schema descriptor for created_at field.
+	authcodeDescCreatedAt := authcodeFields[2].Descriptor()
+	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.
+	authcode.DefaultCreatedAt = authcodeDescCreatedAt.Default.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

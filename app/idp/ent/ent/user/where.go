@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
@@ -383,6 +384,29 @@ func ModifiedAtLT(v time.Time) predicate.User {
 // ModifiedAtLTE applies the LTE predicate on the "modified_at" field.
 func ModifiedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldModifiedAt, v))
+}
+
+// HasAuthCodes applies the HasEdge predicate on the "auth_codes" edge.
+func HasAuthCodes() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AuthCodesTable, AuthCodesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAuthCodesWith applies the HasEdge predicate on the "auth_codes" edge with a given conditions (other predicates).
+func HasAuthCodesWith(preds ...predicate.AuthCode) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newAuthCodesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

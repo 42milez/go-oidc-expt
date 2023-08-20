@@ -27,8 +27,29 @@ type User struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
-	ModifiedAt   time.Time `json:"modified_at,omitempty"`
+	ModifiedAt time.Time `json:"modified_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges        UserEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// AuthCodes holds the value of the auth_codes edge.
+	AuthCodes []*AuthCode `json:"auth_codes,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// AuthCodesOrErr returns the AuthCodes value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) AuthCodesOrErr() ([]*AuthCode, error) {
+	if e.loadedTypes[0] {
+		return e.AuthCodes, nil
+	}
+	return nil, &NotLoadedError{edge: "auth_codes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -102,6 +123,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
+}
+
+// QueryAuthCodes queries the "auth_codes" edge of the User entity.
+func (u *User) QueryAuthCodes() *AuthCodeQuery {
+	return NewUserClient(u.config).QueryAuthCodes(u)
 }
 
 // Update returns a builder for updating this User.

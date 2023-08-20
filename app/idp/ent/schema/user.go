@@ -89,6 +89,7 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_codes", AuthCode.Type).
+			StorageKey(edge.Column("user_id")).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

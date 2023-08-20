@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
@@ -24,8 +25,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldModifiedAt holds the string denoting the modified_at field in the database.
 	FieldModifiedAt = "modified_at"
+	// EdgeAuthCodes holds the string denoting the auth_codes edge name in mutations.
+	EdgeAuthCodes = "auth_codes"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// AuthCodesTable is the table that holds the auth_codes relation/edge.
+	AuthCodesTable = "auth_codes"
+	// AuthCodesInverseTable is the table name for the AuthCode entity.
+	// It exists in this package in order to avoid circular dependency with the "authcode" package.
+	AuthCodesInverseTable = "auth_codes"
+	// AuthCodesColumn is the table column denoting the auth_codes relation/edge.
+	AuthCodesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -96,4 +106,25 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByModifiedAt orders the results by the modified_at field.
 func ByModifiedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldModifiedAt, opts...).ToFunc()
+}
+
+// ByAuthCodesCount orders the results by auth_codes count.
+func ByAuthCodesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAuthCodesStep(), opts...)
+	}
+}
+
+// ByAuthCodes orders the results by auth_codes terms.
+func ByAuthCodes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAuthCodesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newAuthCodesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AuthCodesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AuthCodesTable, AuthCodesColumn),
+	)
 }

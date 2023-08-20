@@ -1,11 +1,16 @@
 package schema
 
 import (
-	"entgo.io/ent"
-	"entgo.io/ent/schema/edge"
-	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"time"
+
+	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/schema/field"
+)
+
+const (
+	codeType = "CHAR(20)" // The length of authorization code
 )
 
 // AuthCode holds the schema definition for the AuthCode entity.
@@ -17,7 +22,14 @@ type AuthCode struct {
 func (AuthCode) Fields() []ent.Field {
 	return []ent.Field{
 		// TODO: Set length
-		field.String("auth_code").
+		field.String("code").
+			SchemaType(map[string]string{
+				dialect.MySQL: codeType,
+			}).
+			NotEmpty().
+			Immutable(),
+		field.String("user_id").
+			Optional().
 			Immutable(),
 		field.Time("created_at").
 			Default(time.Now).
@@ -25,20 +37,10 @@ func (AuthCode) Fields() []ent.Field {
 	}
 }
 
-// Edges of the AuthCode.
-func (AuthCode) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.From("owner", User.Type).
-			Ref("auth_codes").
-			Unique().
-			Field("user_name"),
-	}
-}
-
-// Indexes of the AuthCode
+// Indexes of the AuthCode.
 func (AuthCode) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("auth_code", "user_name").
+		index.Fields("user_id", "code").
 			Unique(),
 	}
 }

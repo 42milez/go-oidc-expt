@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
@@ -87,6 +88,21 @@ func (uc *UserCreate) SetNillableID(ti *typedef.UserID) *UserCreate {
 		uc.SetID(*ti)
 	}
 	return uc
+}
+
+// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
+func (uc *UserCreate) AddAuthCodeIDs(ids ...int) *UserCreate {
+	uc.mutation.AddAuthCodeIDs(ids...)
+	return uc
+}
+
+// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
+func (uc *UserCreate) AddAuthCodes(a ...*AuthCode) *UserCreate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return uc.AddAuthCodeIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -221,6 +237,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.ModifiedAt(); ok {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)
 		_node.ModifiedAt = value
+	}
+	if nodes := uc.mutation.AuthCodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AuthCodesTable,
+			Columns: []string{user.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

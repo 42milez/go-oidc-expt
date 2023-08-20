@@ -14,6 +14,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
 )
 
@@ -22,6 +24,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// AuthCode is the client for interacting with the AuthCode builders.
+	AuthCode *AuthCodeClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -37,6 +41,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.AuthCode = NewAuthCodeClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -118,9 +123,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		User:   NewUserClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		AuthCode: NewAuthCodeClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
@@ -138,16 +144,17 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		User:   NewUserClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		AuthCode: NewAuthCodeClient(cfg),
+		User:     NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		User.
+//		AuthCode.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -169,22 +176,144 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.AuthCode.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.AuthCode.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AuthCodeMutation:
+		return c.AuthCode.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AuthCodeClient is a client for the AuthCode schema.
+type AuthCodeClient struct {
+	config
+}
+
+// NewAuthCodeClient returns a client for the AuthCode from the given config.
+func NewAuthCodeClient(c config) *AuthCodeClient {
+	return &AuthCodeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `authcode.Hooks(f(g(h())))`.
+func (c *AuthCodeClient) Use(hooks ...Hook) {
+	c.hooks.AuthCode = append(c.hooks.AuthCode, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `authcode.Intercept(f(g(h())))`.
+func (c *AuthCodeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AuthCode = append(c.inters.AuthCode, interceptors...)
+}
+
+// Create returns a builder for creating a AuthCode entity.
+func (c *AuthCodeClient) Create() *AuthCodeCreate {
+	mutation := newAuthCodeMutation(c.config, OpCreate)
+	return &AuthCodeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AuthCode entities.
+func (c *AuthCodeClient) CreateBulk(builders ...*AuthCodeCreate) *AuthCodeCreateBulk {
+	return &AuthCodeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AuthCode.
+func (c *AuthCodeClient) Update() *AuthCodeUpdate {
+	mutation := newAuthCodeMutation(c.config, OpUpdate)
+	return &AuthCodeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AuthCodeClient) UpdateOne(ac *AuthCode) *AuthCodeUpdateOne {
+	mutation := newAuthCodeMutation(c.config, OpUpdateOne, withAuthCode(ac))
+	return &AuthCodeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AuthCodeClient) UpdateOneID(id int) *AuthCodeUpdateOne {
+	mutation := newAuthCodeMutation(c.config, OpUpdateOne, withAuthCodeID(id))
+	return &AuthCodeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AuthCode.
+func (c *AuthCodeClient) Delete() *AuthCodeDelete {
+	mutation := newAuthCodeMutation(c.config, OpDelete)
+	return &AuthCodeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AuthCodeClient) DeleteOne(ac *AuthCode) *AuthCodeDeleteOne {
+	return c.DeleteOneID(ac.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AuthCodeClient) DeleteOneID(id int) *AuthCodeDeleteOne {
+	builder := c.Delete().Where(authcode.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AuthCodeDeleteOne{builder}
+}
+
+// Query returns a query builder for AuthCode.
+func (c *AuthCodeClient) Query() *AuthCodeQuery {
+	return &AuthCodeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAuthCode},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AuthCode entity by its id.
+func (c *AuthCodeClient) Get(ctx context.Context, id int) (*AuthCode, error) {
+	return c.Query().Where(authcode.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AuthCodeClient) GetX(ctx context.Context, id int) *AuthCode {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AuthCodeClient) Hooks() []Hook {
+	return c.hooks.AuthCode
+}
+
+// Interceptors returns the client interceptors.
+func (c *AuthCodeClient) Interceptors() []Interceptor {
+	return c.inters.AuthCode
+}
+
+func (c *AuthCodeClient) mutate(ctx context.Context, m *AuthCodeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AuthCodeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AuthCodeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AuthCodeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AuthCodeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AuthCode mutation op: %q", m.Op())
 	}
 }
 
@@ -281,6 +410,22 @@ func (c *UserClient) GetX(ctx context.Context, id typedef.UserID) *User {
 	return obj
 }
 
+// QueryAuthCodes queries the auth_codes edge of a User.
+func (c *UserClient) QueryAuthCodes(u *User) *AuthCodeQuery {
+	query := (&AuthCodeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(authcode.Table, authcode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AuthCodesTable, user.AuthCodesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -309,9 +454,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		User []ent.Hook
+		AuthCode, User []ent.Hook
 	}
 	inters struct {
-		User []ent.Interceptor
+		AuthCode, User []ent.Interceptor
 	}
 )

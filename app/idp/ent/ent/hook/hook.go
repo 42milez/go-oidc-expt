@@ -9,6 +9,18 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 )
 
+// The AuthCodeFunc type is an adapter to allow the use of ordinary
+// function as AuthCode mutator.
+type AuthCodeFunc func(context.Context, *ent.AuthCodeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthCodeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AuthCodeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthCodeMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
