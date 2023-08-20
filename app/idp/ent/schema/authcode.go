@@ -1,8 +1,9 @@
 package schema
 
 import (
-	"entgo.io/ent/schema/index"
 	"time"
+
+	"entgo.io/ent/schema/index"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -29,7 +30,10 @@ func (AuthCode) Fields() []ent.Field {
 			NotEmpty().
 			Immutable(),
 		field.String("user_id").
-			Optional().
+			SchemaType(map[string]string{
+				dialect.MySQL: userIDType,
+			}).
+			NotEmpty().
 			Immutable(),
 		field.Time("created_at").
 			Default(time.Now).

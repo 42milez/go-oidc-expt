@@ -189,16 +189,6 @@ func UserIDHasSuffix(v string) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldHasSuffix(FieldUserID, v))
 }
 
-// UserIDIsNil applies the IsNil predicate on the "user_id" field.
-func UserIDIsNil() predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldIsNull(FieldUserID))
-}
-
-// UserIDNotNil applies the NotNil predicate on the "user_id" field.
-func UserIDNotNil() predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNotNull(FieldUserID))
-}
-
 // UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
 func UserIDEqualFold(v string) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEqualFold(FieldUserID, v))

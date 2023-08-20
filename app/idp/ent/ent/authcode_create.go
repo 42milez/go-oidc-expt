@@ -32,14 +32,6 @@ func (acc *AuthCodeCreate) SetUserID(s string) *AuthCodeCreate {
 	return acc
 }
 
-// SetNillableUserID sets the "user_id" field if the given value is not nil.
-func (acc *AuthCodeCreate) SetNillableUserID(s *string) *AuthCodeCreate {
-	if s != nil {
-		acc.SetUserID(*s)
-	}
-	return acc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (acc *AuthCodeCreate) SetCreatedAt(t time.Time) *AuthCodeCreate {
 	acc.mutation.SetCreatedAt(t)
@@ -103,6 +95,14 @@ func (acc *AuthCodeCreate) check() error {
 	if v, ok := acc.mutation.Code(); ok {
 		if err := authcode.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "AuthCode.code": %w`, err)}
+		}
+	}
+	if _, ok := acc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthCode.user_id"`)}
+	}
+	if v, ok := acc.mutation.UserID(); ok {
+		if err := authcode.UserIDValidator(v); err != nil {
+			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "AuthCode.user_id": %w`, err)}
 		}
 	}
 	if _, ok := acc.mutation.CreatedAt(); !ok {

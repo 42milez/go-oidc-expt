@@ -1,11 +1,12 @@
 package schema
 
 import (
-	"entgo.io/ent/dialect/entsql"
-	"entgo.io/ent/schema/edge"
 	"fmt"
 	"regexp"
 	"time"
+
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/schema/edge"
 
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 
@@ -24,7 +25,7 @@ const (
 )
 
 const (
-	idType           = "CHAR(26)"
+	userIDType       = "CHAR(26)"
 	passwordHashType = "VARCHAR(1000)"
 	totpSecretType   = "CHAR(160)"
 )
@@ -40,7 +41,7 @@ func (User) Fields() []ent.Field {
 		field.String("id").
 			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{
-				dialect.MySQL: idType,
+				dialect.MySQL: userIDType,
 			}).
 			Immutable().
 			DefaultFunc(func() typedef.UserID {

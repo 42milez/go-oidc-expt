@@ -68,9 +68,6 @@ func (acu *AuthCodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if acu.mutation.UserIDCleared() {
-		_spec.ClearField(authcode.FieldUserID, field.TypeString)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, acu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{authcode.Label}
@@ -161,9 +158,6 @@ func (acuo *AuthCodeUpdateOne) sqlSave(ctx context.Context) (_node *AuthCode, er
 				ps[i](selector)
 			}
 		}
-	}
-	if acuo.mutation.UserIDCleared() {
-		_spec.ClearField(authcode.FieldUserID, field.TypeString)
 	}
 	_node = &AuthCode{config: acuo.config}
 	_spec.Assign = _node.assignValues

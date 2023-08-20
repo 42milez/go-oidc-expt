@@ -21,6 +21,10 @@ func init() {
 	authcodeDescCode := authcodeFields[0].Descriptor()
 	// authcode.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	authcode.CodeValidator = authcodeDescCode.Validators[0].(func(string) error)
+	// authcodeDescUserID is the schema descriptor for user_id field.
+	authcodeDescUserID := authcodeFields[1].Descriptor()
+	// authcode.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	authcode.UserIDValidator = authcodeDescUserID.Validators[0].(func(string) error)
 	// authcodeDescCreatedAt is the schema descriptor for created_at field.
 	authcodeDescCreatedAt := authcodeFields[2].Descriptor()
 	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.

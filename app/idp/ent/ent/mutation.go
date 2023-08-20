@@ -210,22 +210,9 @@ func (m *AuthCodeMutation) OldUserID(ctx context.Context) (v string, err error) 
 	return oldValue.UserID, nil
 }
 
-// ClearUserID clears the value of the "user_id" field.
-func (m *AuthCodeMutation) ClearUserID() {
-	m.user_id = nil
-	m.clearedFields[authcode.FieldUserID] = struct{}{}
-}
-
-// UserIDCleared returns if the "user_id" field was cleared in this mutation.
-func (m *AuthCodeMutation) UserIDCleared() bool {
-	_, ok := m.clearedFields[authcode.FieldUserID]
-	return ok
-}
-
 // ResetUserID resets all changes to the "user_id" field.
 func (m *AuthCodeMutation) ResetUserID() {
 	m.user_id = nil
-	delete(m.clearedFields, authcode.FieldUserID)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -396,11 +383,7 @@ func (m *AuthCodeMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *AuthCodeMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(authcode.FieldUserID) {
-		fields = append(fields, authcode.FieldUserID)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -413,11 +396,6 @@ func (m *AuthCodeMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *AuthCodeMutation) ClearField(name string) error {
-	switch name {
-	case authcode.FieldUserID:
-		m.ClearUserID()
-		return nil
-	}
 	return fmt.Errorf("unknown AuthCode nullable field %s", name)
 }
 
