@@ -3,19 +3,23 @@ module github.com/42milez/go-oidc-server
 go 1.20
 
 require (
-	ariga.io/atlas v0.12.1
+	ariga.io/atlas v0.13.1
 	entgo.io/ent v0.12.3
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/go-chi/chi/v5 v5.0.10
-	github.com/go-playground/validator/v10 v10.14.1
+	github.com/go-playground/validator/v10 v10.15.1
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang/mock v1.6.0
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
+<<<<<<< HEAD
 	github.com/gorilla/schema v1.2.0
 	github.com/lestrrat-go/jwx/v2 v2.0.11
+=======
+	github.com/lestrrat-go/jwx/v2 v2.0.12
+>>>>>>> main
 	github.com/oklog/ulid/v2 v2.1.0
-	github.com/redis/go-redis/v9 v9.0.5
+	github.com/redis/go-redis/v9 v9.1.0
 	github.com/rs/zerolog v1.30.0
 	github.com/swaggo/http-swagger/v2 v2.0.1
 	github.com/swaggo/swag v1.16.1
