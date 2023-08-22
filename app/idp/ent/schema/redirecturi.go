@@ -3,6 +3,8 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
@@ -12,6 +14,13 @@ import (
 // RedirectURI holds the schema definition for the RedirectURI entity.
 type RedirectURI struct {
 	ent.Schema
+}
+
+// Annotations of the RedirectURI.
+func (User) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.Annotation{Table: "redirect_uris"},
+	}
 }
 
 // Fields of the RedirectURI.

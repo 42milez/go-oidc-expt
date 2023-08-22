@@ -30,7 +30,7 @@ const (
 	// EdgeRedirectUris holds the string denoting the redirect_uris edge name in mutations.
 	EdgeRedirectUris = "redirect_uris"
 	// Table holds the table name of the user in the database.
-	Table = "users"
+	Table = "redirect_uris"
 	// AuthCodesTable is the table that holds the auth_codes relation/edge.
 	AuthCodesTable = "auth_codes"
 	// AuthCodesInverseTable is the table name for the AuthCode entity.
