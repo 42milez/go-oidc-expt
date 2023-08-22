@@ -35,6 +35,7 @@ const (
 	InvalidParameter            HTTPErr = "invalid parameter"
 	InvalidRequest              HTTPErr = "invalid request"
 	ServiceCurrentlyUnavailable HTTPErr = "service currently unavailable"
+	UnauthorizedUser            HTTPErr = "unauthorized user"
 	UnexpectedErrorOccurred     HTTPErr = "unexpected error occurred"
 )
 

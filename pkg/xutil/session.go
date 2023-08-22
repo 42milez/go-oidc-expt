@@ -31,7 +31,7 @@ func (p *Session) FillContext(r *http.Request) (*http.Request, error) {
 		return nil, xerr.Wrap(ErrFailedToExtractToken, err)
 	}
 
-	id, err := p.Repo.LoadID(r.Context(), token.JwtID())
+	id, err := p.Repo.LoadUserID(r.Context(), token.JwtID())
 
 	if err != nil {
 		return nil, err

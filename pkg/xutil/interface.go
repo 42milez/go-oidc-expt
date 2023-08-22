@@ -9,8 +9,8 @@ import (
 )
 
 type SessionManager interface {
-	SaveID(ctx context.Context, key string, id typedef.UserID) error
-	LoadID(ctx context.Context, key string) (typedef.UserID, error)
+	SaveUserID(ctx context.Context, key string, id typedef.UserID) error
+	LoadUserID(ctx context.Context, key string) (typedef.UserID, error)
 }
 
 type TokenExtractor interface {

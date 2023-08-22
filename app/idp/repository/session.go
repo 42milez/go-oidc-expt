@@ -22,14 +22,14 @@ type Session struct {
 	Cache *redis.Client
 }
 
-func (p *Session) SaveID(ctx context.Context, key string, id typedef.UserID) error {
+func (p *Session) SaveUserID(ctx context.Context, key string, id typedef.UserID) error {
 	if err := p.Cache.Set(ctx, key, id, sessionTTL).Err(); err != nil {
 		return xerr.Wrap(fmt.Errorf("%w : key=%s, id=%s", ErrFailedToSaveItem, key, id), err)
 	}
 	return nil
 }
 
-func (p *Session) LoadID(ctx context.Context, key string) (typedef.UserID, error) {
+func (p *Session) LoadUserID(ctx context.Context, key string) (typedef.UserID, error) {
 	ret, err := p.Cache.Get(ctx, key).Result()
 	if err != nil {
 		return "", xerr.Wrap(ErrFailedToLoadItem, err)

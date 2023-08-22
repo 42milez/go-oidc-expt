@@ -58,7 +58,7 @@ func TestSession_SaveID(t *testing.T) {
 
 	id := typedef.UserID(userULID)
 
-	if err := repo.SaveID(ctx, key, id); err != nil {
+	if err := repo.SaveUserID(ctx, key, id); err != nil {
 		t.Error(err)
 	}
 }
@@ -86,7 +86,7 @@ func TestSession_LoadID(t *testing.T) {
 			client.Del(ctx, key)
 		})
 
-		got, err := repo.LoadID(ctx, key)
+		got, err := repo.LoadUserID(ctx, key)
 
 		if err != nil {
 			t.Fatal(err)
@@ -103,7 +103,7 @@ func TestSession_LoadID(t *testing.T) {
 		ctx := context.Background()
 		key := "TestEpStore_Load_NotFound"
 
-		_, err := repo.LoadID(ctx, key)
+		_, err := repo.LoadUserID(ctx, key)
 
 		if err == nil || !errors.Is(err, ErrFailedToLoadItem) {
 			t.Errorf("want = %s; got = %+v", fmt.Sprintf("%s ( %s ): redis: nil", ErrFailedToLoadItem, key), err)
@@ -123,7 +123,7 @@ func TestSession_Delete(t *testing.T) {
 
 	id := typedef.UserID(userULID)
 
-	if err := repo.SaveID(ctx, key, id); err != nil {
+	if err := repo.SaveUserID(ctx, key, id); err != nil {
 		t.Fatal(err)
 	}
 
