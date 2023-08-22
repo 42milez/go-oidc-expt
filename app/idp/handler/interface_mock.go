@@ -240,31 +240,17 @@ func (m *MockSessionManager) EXPECT() *MockSessionManagerMockRecorder {
 	return m.recorder
 }
 
-// GetID mocks base method.
-func (m *MockSessionManager) GetID(ctx context.Context) (typedef.UserID, bool) {
+// GetUserID mocks base method.
+func (m *MockSessionManager) GetUserID(ctx context.Context) (typedef.UserID, bool) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetID", ctx)
+	ret := m.ctrl.Call(m, "GetUserID", ctx)
 	ret0, _ := ret[0].(typedef.UserID)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
 
-// GetID indicates an expected call of GetID.
-func (mr *MockSessionManagerMockRecorder) GetID(ctx interface{}) *gomock.Call {
+// GetUserID indicates an expected call of GetUserID.
+func (mr *MockSessionManagerMockRecorder) GetUserID(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetID", reflect.TypeOf((*MockSessionManager)(nil).GetID), ctx)
-}
-
-// SetID mocks base method.
-func (m *MockSessionManager) SetID(ctx context.Context, id typedef.UserID) context.Context {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SetID", ctx, id)
-	ret0, _ := ret[0].(context.Context)
-	return ret0
-}
-
-// SetID indicates an expected call of SetID.
-func (mr *MockSessionManagerMockRecorder) SetID(ctx, id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetID", reflect.TypeOf((*MockSessionManager)(nil).SetID), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserID", reflect.TypeOf((*MockSessionManager)(nil).GetUserID), ctx)
 }

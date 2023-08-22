@@ -1,4 +1,4 @@
-package service
+package xutil
 
 import (
 	"context"
@@ -19,11 +19,7 @@ type Session struct {
 	Token TokenExtractor
 }
 
-func (p *Session) SetID(ctx context.Context, id typedef.UserID) context.Context {
-	return context.WithValue(ctx, IDKey{}, id)
-}
-
-func (p *Session) GetID(ctx context.Context) (typedef.UserID, bool) {
+func (p *Session) GetUserID(ctx context.Context) (typedef.UserID, bool) {
 	id, ok := ctx.Value(IDKey{}).(typedef.UserID)
 	return id, ok
 }
@@ -41,7 +37,7 @@ func (p *Session) FillContext(r *http.Request) (*http.Request, error) {
 		return nil, err
 	}
 
-	ctx := p.SetID(r.Context(), id)
+	ctx := context.WithValue(r.Context(), IDKey{}, id)
 
 	return r.Clone(ctx), nil
 }

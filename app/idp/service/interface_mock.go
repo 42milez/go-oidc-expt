@@ -6,13 +6,11 @@ package service
 
 import (
 	context "context"
-	http "net/http"
 	reflect "reflect"
 
 	ent "github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	typedef "github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	gomock "github.com/golang/mock/gomock"
-	jwt "github.com/lestrrat-go/jwx/v2/jwt"
 )
 
 // MockHealthChecker is a mock of HealthChecker interface.
@@ -64,96 +62,6 @@ func (m *MockHealthChecker) PingDB(ctx context.Context) error {
 func (mr *MockHealthCheckerMockRecorder) PingDB(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingDB", reflect.TypeOf((*MockHealthChecker)(nil).PingDB), ctx)
-}
-
-// MockSessionManager is a mock of SessionManager interface.
-type MockSessionManager struct {
-	ctrl     *gomock.Controller
-	recorder *MockSessionManagerMockRecorder
-}
-
-// MockSessionManagerMockRecorder is the mock recorder for MockSessionManager.
-type MockSessionManagerMockRecorder struct {
-	mock *MockSessionManager
-}
-
-// NewMockSessionManager creates a new mock instance.
-func NewMockSessionManager(ctrl *gomock.Controller) *MockSessionManager {
-	mock := &MockSessionManager{ctrl: ctrl}
-	mock.recorder = &MockSessionManagerMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionManager) EXPECT() *MockSessionManagerMockRecorder {
-	return m.recorder
-}
-
-// LoadID mocks base method.
-func (m *MockSessionManager) LoadID(ctx context.Context, key string) (typedef.UserID, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LoadID", ctx, key)
-	ret0, _ := ret[0].(typedef.UserID)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// LoadID indicates an expected call of LoadID.
-func (mr *MockSessionManagerMockRecorder) LoadID(ctx, key interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoadID", reflect.TypeOf((*MockSessionManager)(nil).LoadID), ctx, key)
-}
-
-// SaveID mocks base method.
-func (m *MockSessionManager) SaveID(ctx context.Context, key string, id typedef.UserID) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveID", ctx, key, id)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// SaveID indicates an expected call of SaveID.
-func (mr *MockSessionManagerMockRecorder) SaveID(ctx, key, id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveID", reflect.TypeOf((*MockSessionManager)(nil).SaveID), ctx, key, id)
-}
-
-// MockTokenExtractor is a mock of TokenExtractor interface.
-type MockTokenExtractor struct {
-	ctrl     *gomock.Controller
-	recorder *MockTokenExtractorMockRecorder
-}
-
-// MockTokenExtractorMockRecorder is the mock recorder for MockTokenExtractor.
-type MockTokenExtractorMockRecorder struct {
-	mock *MockTokenExtractor
-}
-
-// NewMockTokenExtractor creates a new mock instance.
-func NewMockTokenExtractor(ctrl *gomock.Controller) *MockTokenExtractor {
-	mock := &MockTokenExtractor{ctrl: ctrl}
-	mock.recorder = &MockTokenExtractorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenExtractor) EXPECT() *MockTokenExtractorMockRecorder {
-	return m.recorder
-}
-
-// ExtractToken mocks base method.
-func (m *MockTokenExtractor) ExtractToken(r *http.Request) (jwt.Token, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ExtractToken", r)
-	ret0, _ := ret[0].(jwt.Token)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ExtractToken indicates an expected call of ExtractToken.
-func (mr *MockTokenExtractorMockRecorder) ExtractToken(r interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ExtractToken", reflect.TypeOf((*MockTokenExtractor)(nil).ExtractToken), r)
 }
 
 // MockTokenGenerator is a mock of TokenGenerator interface.

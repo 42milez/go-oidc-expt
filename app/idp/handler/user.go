@@ -35,7 +35,7 @@ func NewCreateUser(entClient *ent.Client, redisClient *redis.Client) (*CreateUse
 				DB:    entClient,
 			},
 		},
-		Session: &service.Session{
+		Session: &xutil.Session{
 			Repo: &repository.Session{
 				Cache: redisClient,
 			},

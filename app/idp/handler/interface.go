@@ -34,6 +34,5 @@ type UserSelector interface {
 }
 
 type SessionManager interface {
-	SetID(ctx context.Context, id typedef.UserID) context.Context
-	GetID(ctx context.Context) (typedef.UserID, bool)
+	GetUserID(ctx context.Context) (typedef.UserID, bool)
 }

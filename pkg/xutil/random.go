@@ -17,7 +17,7 @@ const (
 
 const int64Max = int64(^uint64(0) >> 1)
 
-// MakeCryptoRandomString generates cryptographically secure random string.
+// MakeCryptoRandomString generates a cryptographically secure random string.
 // https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go/22892986#22892986
 func MakeCryptoRandomString(n int) (string, error) {
 	var val *big.Int
@@ -48,7 +48,7 @@ func MakeCryptoRandomString(n int) (string, error) {
 	return *(*string)(unsafe.Pointer(&ret)), nil
 }
 
-// MakeCryptoRandomStringNoCache generates cryptographically secure random string without caching.
+// MakeCryptoRandomStringNoCache generates a cryptographically secure random string without caching.
 func MakeCryptoRandomStringNoCache(n int) (string, error) {
 	ret := make([]byte, n)
 	for i := 0; i < n; i++ {
@@ -67,7 +67,7 @@ func randomInt(n int64) (*big.Int, error) {
 
 var src = mrand.NewSource(time.Now().UnixNano())
 
-// MakeMathRandomString generates random string.
+// MakeMathRandomString generates a random string.
 func MakeMathRandomString(n int) string {
 	ret := make([]byte, n)
 	for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
