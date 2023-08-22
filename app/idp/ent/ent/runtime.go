@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/idp/ent/schema"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
@@ -29,6 +30,20 @@ func init() {
 	authcodeDescCreatedAt := authcodeFields[2].Descriptor()
 	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.
 	authcode.DefaultCreatedAt = authcodeDescCreatedAt.Default.(func() time.Time)
+	redirecturiFields := schema.RedirectURI{}.Fields()
+	_ = redirecturiFields
+	// redirecturiDescURI is the schema descriptor for uri field.
+	redirecturiDescURI := redirecturiFields[0].Descriptor()
+	// redirecturi.URIValidator is a validator for the "uri" field. It is called by the builders before save.
+	redirecturi.URIValidator = redirecturiDescURI.Validators[0].(func(string) error)
+	// redirecturiDescUserID is the schema descriptor for user_id field.
+	redirecturiDescUserID := redirecturiFields[1].Descriptor()
+	// redirecturi.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	redirecturi.UserIDValidator = redirecturiDescUserID.Validators[0].(func(string) error)
+	// redirecturiDescCreatedAt is the schema descriptor for created_at field.
+	redirecturiDescCreatedAt := redirecturiFields[2].Descriptor()
+	// redirecturi.DefaultCreatedAt holds the default value on creation for the created_at field.
+	redirecturi.DefaultCreatedAt = redirecturiDescCreatedAt.Default.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

@@ -2,7 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
+
+	"github.com/42milez/go-oidc-server/app/idp/repository"
 
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 
@@ -12,7 +15,7 @@ import (
 const authCodeLen = 20
 
 type Authorize struct {
-	Endpoint string
+	Repo *repository.User
 }
 
 func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest) (string, error) {
@@ -23,8 +26,15 @@ func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest
 		return "", err
 	}
 
-	// TODO: Save authorization code into database
-	// ...
+	userID, ok := xutil.GetUserID(ctx)
+
+	if !ok {
+		return "", errors.New("user id not found")
+	}
+
+	if _, err = p.Repo.SaveAuthorizationCode(ctx, userID, code); err != nil {
+		return "", err
+	}
 
 	// TODO: Read redirect uri from database and verify it
 	// ...

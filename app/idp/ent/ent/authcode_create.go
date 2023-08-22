@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 // AuthCodeCreate is the builder for creating a AuthCode entity.
@@ -27,8 +28,8 @@ func (acc *AuthCodeCreate) SetCode(s string) *AuthCodeCreate {
 }
 
 // SetUserID sets the "user_id" field.
-func (acc *AuthCodeCreate) SetUserID(s string) *AuthCodeCreate {
-	acc.mutation.SetUserID(s)
+func (acc *AuthCodeCreate) SetUserID(ti typedef.UserID) *AuthCodeCreate {
+	acc.mutation.SetUserID(ti)
 	return acc
 }
 
@@ -101,7 +102,7 @@ func (acc *AuthCodeCreate) check() error {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthCode.user_id"`)}
 	}
 	if v, ok := acc.mutation.UserID(); ok {
-		if err := authcode.UserIDValidator(v); err != nil {
+		if err := authcode.UserIDValidator(string(v)); err != nil {
 			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "AuthCode.user_id": %w`, err)}
 		}
 	}

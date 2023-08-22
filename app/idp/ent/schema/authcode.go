@@ -3,6 +3,8 @@ package schema
 import (
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+
 	"entgo.io/ent/schema/index"
 
 	"entgo.io/ent"
@@ -30,6 +32,7 @@ func (AuthCode) Fields() []ent.Field {
 			NotEmpty().
 			Immutable(),
 		field.String("user_id").
+			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{
 				dialect.MySQL: userIDType,
 			}).

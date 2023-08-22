@@ -16,6 +16,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
 )
 
@@ -26,6 +27,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// AuthCode is the client for interacting with the AuthCode builders.
 	AuthCode *AuthCodeClient
+	// RedirectURI is the client for interacting with the RedirectURI builders.
+	RedirectURI *RedirectURIClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -42,6 +45,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AuthCode = NewAuthCodeClient(c.config)
+	c.RedirectURI = NewRedirectURIClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -123,10 +127,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		AuthCode: NewAuthCodeClient(cfg),
-		User:     NewUserClient(cfg),
+		ctx:         ctx,
+		config:      cfg,
+		AuthCode:    NewAuthCodeClient(cfg),
+		RedirectURI: NewRedirectURIClient(cfg),
+		User:        NewUserClient(cfg),
 	}, nil
 }
 
@@ -144,10 +149,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		AuthCode: NewAuthCodeClient(cfg),
-		User:     NewUserClient(cfg),
+		ctx:         ctx,
+		config:      cfg,
+		AuthCode:    NewAuthCodeClient(cfg),
+		RedirectURI: NewRedirectURIClient(cfg),
+		User:        NewUserClient(cfg),
 	}, nil
 }
 
@@ -177,6 +183,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.AuthCode.Use(hooks...)
+	c.RedirectURI.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -184,6 +191,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.AuthCode.Intercept(interceptors...)
+	c.RedirectURI.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
@@ -192,6 +200,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AuthCodeMutation:
 		return c.AuthCode.mutate(ctx, m)
+	case *RedirectURIMutation:
+		return c.RedirectURI.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -317,6 +327,124 @@ func (c *AuthCodeClient) mutate(ctx context.Context, m *AuthCodeMutation) (Value
 	}
 }
 
+// RedirectURIClient is a client for the RedirectURI schema.
+type RedirectURIClient struct {
+	config
+}
+
+// NewRedirectURIClient returns a client for the RedirectURI from the given config.
+func NewRedirectURIClient(c config) *RedirectURIClient {
+	return &RedirectURIClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `redirecturi.Hooks(f(g(h())))`.
+func (c *RedirectURIClient) Use(hooks ...Hook) {
+	c.hooks.RedirectURI = append(c.hooks.RedirectURI, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `redirecturi.Intercept(f(g(h())))`.
+func (c *RedirectURIClient) Intercept(interceptors ...Interceptor) {
+	c.inters.RedirectURI = append(c.inters.RedirectURI, interceptors...)
+}
+
+// Create returns a builder for creating a RedirectURI entity.
+func (c *RedirectURIClient) Create() *RedirectURICreate {
+	mutation := newRedirectURIMutation(c.config, OpCreate)
+	return &RedirectURICreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of RedirectURI entities.
+func (c *RedirectURIClient) CreateBulk(builders ...*RedirectURICreate) *RedirectURICreateBulk {
+	return &RedirectURICreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for RedirectURI.
+func (c *RedirectURIClient) Update() *RedirectURIUpdate {
+	mutation := newRedirectURIMutation(c.config, OpUpdate)
+	return &RedirectURIUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RedirectURIClient) UpdateOne(ru *RedirectURI) *RedirectURIUpdateOne {
+	mutation := newRedirectURIMutation(c.config, OpUpdateOne, withRedirectURI(ru))
+	return &RedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RedirectURIClient) UpdateOneID(id int) *RedirectURIUpdateOne {
+	mutation := newRedirectURIMutation(c.config, OpUpdateOne, withRedirectURIID(id))
+	return &RedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for RedirectURI.
+func (c *RedirectURIClient) Delete() *RedirectURIDelete {
+	mutation := newRedirectURIMutation(c.config, OpDelete)
+	return &RedirectURIDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RedirectURIClient) DeleteOne(ru *RedirectURI) *RedirectURIDeleteOne {
+	return c.DeleteOneID(ru.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RedirectURIClient) DeleteOneID(id int) *RedirectURIDeleteOne {
+	builder := c.Delete().Where(redirecturi.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RedirectURIDeleteOne{builder}
+}
+
+// Query returns a query builder for RedirectURI.
+func (c *RedirectURIClient) Query() *RedirectURIQuery {
+	return &RedirectURIQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRedirectURI},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a RedirectURI entity by its id.
+func (c *RedirectURIClient) Get(ctx context.Context, id int) (*RedirectURI, error) {
+	return c.Query().Where(redirecturi.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RedirectURIClient) GetX(ctx context.Context, id int) *RedirectURI {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *RedirectURIClient) Hooks() []Hook {
+	return c.hooks.RedirectURI
+}
+
+// Interceptors returns the client interceptors.
+func (c *RedirectURIClient) Interceptors() []Interceptor {
+	return c.inters.RedirectURI
+}
+
+func (c *RedirectURIClient) mutate(ctx context.Context, m *RedirectURIMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RedirectURICreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RedirectURIUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RedirectURIDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown RedirectURI mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -426,6 +554,22 @@ func (c *UserClient) QueryAuthCodes(u *User) *AuthCodeQuery {
 	return query
 }
 
+// QueryRedirectUris queries the redirect_uris edge of a User.
+func (c *UserClient) QueryRedirectUris(u *User) *RedirectURIQuery {
+	query := (&RedirectURIClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(redirecturi.Table, redirecturi.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.RedirectUrisTable, user.RedirectUrisColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -454,9 +598,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AuthCode, User []ent.Hook
+		AuthCode, RedirectURI, User []ent.Hook
 	}
 	inters struct {
-		AuthCode, User []ent.Interceptor
+		AuthCode, RedirectURI, User []ent.Interceptor
 	}
 )

@@ -6,10 +6,10 @@ package handler
 
 import (
 	context "context"
+	http "net/http"
 	reflect "reflect"
 
 	ent "github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	typedef "github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	model "github.com/42milez/go-oidc-server/app/idp/model"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -240,17 +240,17 @@ func (m *MockSessionManager) EXPECT() *MockSessionManagerMockRecorder {
 	return m.recorder
 }
 
-// GetUserID mocks base method.
-func (m *MockSessionManager) GetUserID(ctx context.Context) (typedef.UserID, bool) {
+// FillContext mocks base method.
+func (m *MockSessionManager) FillContext(r *http.Request) (*http.Request, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserID", ctx)
-	ret0, _ := ret[0].(typedef.UserID)
-	ret1, _ := ret[1].(bool)
+	ret := m.ctrl.Call(m, "FillContext", r)
+	ret0, _ := ret[0].(*http.Request)
+	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetUserID indicates an expected call of GetUserID.
-func (mr *MockSessionManagerMockRecorder) GetUserID(ctx interface{}) *gomock.Call {
+// FillContext indicates an expected call of FillContext.
+func (mr *MockSessionManagerMockRecorder) FillContext(r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserID", reflect.TypeOf((*MockSessionManager)(nil).GetUserID), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FillContext", reflect.TypeOf((*MockSessionManager)(nil).FillContext), r)
 }

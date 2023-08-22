@@ -19,11 +19,6 @@ type Session struct {
 	Token TokenExtractor
 }
 
-func (p *Session) GetUserID(ctx context.Context) (typedef.UserID, bool) {
-	id, ok := ctx.Value(IDKey{}).(typedef.UserID)
-	return id, ok
-}
-
 func (p *Session) FillContext(r *http.Request) (*http.Request, error) {
 	token, err := p.Token.ExtractToken(r)
 
@@ -40,4 +35,9 @@ func (p *Session) FillContext(r *http.Request) (*http.Request, error) {
 	ctx := context.WithValue(r.Context(), IDKey{}, id)
 
 	return r.Clone(ctx), nil
+}
+
+func GetUserID(ctx context.Context) (typedef.UserID, bool) {
+	id, ok := ctx.Value(IDKey{}).(typedef.UserID)
+	return id, ok
 }

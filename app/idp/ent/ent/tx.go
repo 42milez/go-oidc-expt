@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// AuthCode is the client for interacting with the AuthCode builders.
 	AuthCode *AuthCodeClient
+	// RedirectURI is the client for interacting with the RedirectURI builders.
+	RedirectURI *RedirectURIClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -148,6 +150,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.AuthCode = NewAuthCodeClient(tx.config)
+	tx.RedirectURI = NewRedirectURIClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

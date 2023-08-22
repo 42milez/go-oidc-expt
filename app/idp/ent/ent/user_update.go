@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
@@ -83,6 +84,21 @@ func (uu *UserUpdate) AddAuthCodes(a ...*AuthCode) *UserUpdate {
 	return uu.AddAuthCodeIDs(ids...)
 }
 
+// AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
+func (uu *UserUpdate) AddRedirectURIIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddRedirectURIIDs(ids...)
+	return uu
+}
+
+// AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
+func (uu *UserUpdate) AddRedirectUris(r ...*RedirectURI) *UserUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.AddRedirectURIIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -107,6 +123,27 @@ func (uu *UserUpdate) RemoveAuthCodes(a ...*AuthCode) *UserUpdate {
 		ids[i] = a[i].ID
 	}
 	return uu.RemoveAuthCodeIDs(ids...)
+}
+
+// ClearRedirectUris clears all "redirect_uris" edges to the RedirectURI entity.
+func (uu *UserUpdate) ClearRedirectUris() *UserUpdate {
+	uu.mutation.ClearRedirectUris()
+	return uu
+}
+
+// RemoveRedirectURIIDs removes the "redirect_uris" edge to RedirectURI entities by IDs.
+func (uu *UserUpdate) RemoveRedirectURIIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveRedirectURIIDs(ids...)
+	return uu
+}
+
+// RemoveRedirectUris removes "redirect_uris" edges to RedirectURI entities.
+func (uu *UserUpdate) RemoveRedirectUris(r ...*RedirectURI) *UserUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.RemoveRedirectURIIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -237,6 +274,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.RedirectUrisCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RedirectUrisTable,
+			Columns: []string{user.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedRedirectUrisIDs(); len(nodes) > 0 && !uu.mutation.RedirectUrisCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RedirectUrisTable,
+			Columns: []string{user.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RedirectUrisIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RedirectUrisTable,
+			Columns: []string{user.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -310,6 +392,21 @@ func (uuo *UserUpdateOne) AddAuthCodes(a ...*AuthCode) *UserUpdateOne {
 	return uuo.AddAuthCodeIDs(ids...)
 }
 
+// AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
+func (uuo *UserUpdateOne) AddRedirectURIIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddRedirectURIIDs(ids...)
+	return uuo
+}
+
+// AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
+func (uuo *UserUpdateOne) AddRedirectUris(r ...*RedirectURI) *UserUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.AddRedirectURIIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -334,6 +431,27 @@ func (uuo *UserUpdateOne) RemoveAuthCodes(a ...*AuthCode) *UserUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return uuo.RemoveAuthCodeIDs(ids...)
+}
+
+// ClearRedirectUris clears all "redirect_uris" edges to the RedirectURI entity.
+func (uuo *UserUpdateOne) ClearRedirectUris() *UserUpdateOne {
+	uuo.mutation.ClearRedirectUris()
+	return uuo
+}
+
+// RemoveRedirectURIIDs removes the "redirect_uris" edge to RedirectURI entities by IDs.
+func (uuo *UserUpdateOne) RemoveRedirectURIIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveRedirectURIIDs(ids...)
+	return uuo
+}
+
+// RemoveRedirectUris removes "redirect_uris" edges to RedirectURI entities.
+func (uuo *UserUpdateOne) RemoveRedirectUris(r ...*RedirectURI) *UserUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.RemoveRedirectURIIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -487,6 +605,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.RedirectUrisCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RedirectUrisTable,
+			Columns: []string{user.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedRedirectUrisIDs(); len(nodes) > 0 && !uuo.mutation.RedirectUrisCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RedirectUrisTable,
+			Columns: []string{user.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RedirectUrisIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RedirectUrisTable,
+			Columns: []string{user.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

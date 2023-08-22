@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 // ID filters vertices based on their ID field.
@@ -60,8 +61,9 @@ func Code(v string) predicate.AuthCode {
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldUserID, v))
+func UserID(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldUserID, vc))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -135,68 +137,87 @@ func CodeContainsFold(v string) predicate.AuthCode {
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldUserID, v))
+func UserIDEQ(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldUserID, vc))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNEQ(FieldUserID, v))
+func UserIDNEQ(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldNEQ(FieldUserID, vc))
 }
 
 // UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldIn(FieldUserID, vs...))
+func UserIDIn(vs ...typedef.UserID) predicate.AuthCode {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = string(vs[i])
+	}
+	return predicate.AuthCode(sql.FieldIn(FieldUserID, v...))
 }
 
 // UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNotIn(FieldUserID, vs...))
+func UserIDNotIn(vs ...typedef.UserID) predicate.AuthCode {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = string(vs[i])
+	}
+	return predicate.AuthCode(sql.FieldNotIn(FieldUserID, v...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGT(FieldUserID, v))
+func UserIDGT(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldGT(FieldUserID, vc))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGTE(FieldUserID, v))
+func UserIDGTE(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldGTE(FieldUserID, vc))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLT(FieldUserID, v))
+func UserIDLT(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldLT(FieldUserID, vc))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLTE(FieldUserID, v))
+func UserIDLTE(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldLTE(FieldUserID, vc))
 }
 
 // UserIDContains applies the Contains predicate on the "user_id" field.
-func UserIDContains(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldContains(FieldUserID, v))
+func UserIDContains(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldContains(FieldUserID, vc))
 }
 
 // UserIDHasPrefix applies the HasPrefix predicate on the "user_id" field.
-func UserIDHasPrefix(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldHasPrefix(FieldUserID, v))
+func UserIDHasPrefix(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldHasPrefix(FieldUserID, vc))
 }
 
 // UserIDHasSuffix applies the HasSuffix predicate on the "user_id" field.
-func UserIDHasSuffix(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldHasSuffix(FieldUserID, v))
+func UserIDHasSuffix(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldHasSuffix(FieldUserID, vc))
 }
 
 // UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
-func UserIDEqualFold(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEqualFold(FieldUserID, v))
+func UserIDEqualFold(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldEqualFold(FieldUserID, vc))
 }
 
 // UserIDContainsFold applies the ContainsFold predicate on the "user_id" field.
-func UserIDContainsFold(v string) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldContainsFold(FieldUserID, v))
+func UserIDContainsFold(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldContainsFold(FieldUserID, vc))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

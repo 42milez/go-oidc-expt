@@ -10,6 +10,7 @@ import (
 //go:generate mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
 
 type HealthChecker interface {
+	// TODO: Combine the following two methods
 	PingCache(ctx context.Context) error
 	PingDB(ctx context.Context) error
 }

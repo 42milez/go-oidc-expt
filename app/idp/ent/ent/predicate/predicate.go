@@ -9,5 +9,8 @@ import (
 // AuthCode is the predicate function for authcode builders.
 type AuthCode func(*sql.Selector)
 
+// RedirectURI is the predicate function for redirecturi builders.
+type RedirectURI func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

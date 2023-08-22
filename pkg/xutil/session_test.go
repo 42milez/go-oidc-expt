@@ -10,17 +10,14 @@ import (
 
 const userULID = "01H3M514Q0KGDS7PCKE9VVEMT4"
 
-func TestSession_GetUserID(t *testing.T) {
+func TestGetUserID(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	sess := &Session{}
-
 	want := typedef.UserID(userULID)
 
 	ctx = context.WithValue(ctx, IDKey{}, want)
-
-	got, ok := sess.GetUserID(ctx)
+	got, ok := GetUserID(ctx)
 
 	if !ok {
 		t.Fatalf("%s", xerr.FailedToReadContextValue)

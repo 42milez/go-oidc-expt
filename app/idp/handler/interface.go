@@ -2,10 +2,9 @@ package handler
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/model"
-
-	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 )
@@ -34,5 +33,5 @@ type UserSelector interface {
 }
 
 type SessionManager interface {
-	GetUserID(ctx context.Context) (typedef.UserID, bool)
+	FillContext(r *http.Request) (*http.Request, error)
 }

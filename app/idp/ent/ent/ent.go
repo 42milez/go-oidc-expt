@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
 )
 
@@ -74,8 +75,9 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			authcode.Table: authcode.ValidColumn,
-			user.Table:     user.ValidColumn,
+			authcode.Table:    authcode.ValidColumn,
+			redirecturi.Table: redirecturi.ValidColumn,
+			user.Table:        user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

@@ -24,3 +24,7 @@ func (p *User) Create(ctx context.Context, name string, pw typedef.PasswordHash)
 func (p *User) SelectByName(ctx context.Context, name string) (*ent.User, error) {
 	return p.DB.User.Query().Where(user.NameEQ(name)).First(ctx)
 }
+
+func (p *User) SaveAuthorizationCode(ctx context.Context, userID typedef.UserID, code string) (*ent.AuthCode, error) {
+	return p.DB.AuthCode.Create().SetUserID(userID).SetCode(code).Save(ctx)
+}

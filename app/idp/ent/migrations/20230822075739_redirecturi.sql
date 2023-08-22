@@ -1,0 +1,2 @@
+-- Create "redirect_ur_is" table
+CREATE TABLE `redirect_ur_is` (`id` bigint NOT NULL AUTO_INCREMENT, `uri` varchar(255) NOT NULL, `user_id` char(26) NOT NULL, `created_at` timestamp NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `redirecturi_user_id_uri` (`user_id`, `uri`), CONSTRAINT `redirect_ur_is_users_redirect_uris` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE) CHARSET utf8mb4 COLLATE utf8mb4_bin;

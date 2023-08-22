@@ -38,9 +38,11 @@ type User struct {
 type UserEdges struct {
 	// AuthCodes holds the value of the auth_codes edge.
 	AuthCodes []*AuthCode `json:"auth_codes,omitempty"`
+	// RedirectUris holds the value of the redirect_uris edge.
+	RedirectUris []*RedirectURI `json:"redirect_uris,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // AuthCodesOrErr returns the AuthCodes value or an error if the edge
@@ -50,6 +52,15 @@ func (e UserEdges) AuthCodesOrErr() ([]*AuthCode, error) {
 		return e.AuthCodes, nil
 	}
 	return nil, &NotLoadedError{edge: "auth_codes"}
+}
+
+// RedirectUrisOrErr returns the RedirectUris value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) RedirectUrisOrErr() ([]*RedirectURI, error) {
+	if e.loadedTypes[1] {
+		return e.RedirectUris, nil
+	}
+	return nil, &NotLoadedError{edge: "redirect_uris"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -128,6 +139,11 @@ func (u *User) Value(name string) (ent.Value, error) {
 // QueryAuthCodes queries the "auth_codes" edge of the User entity.
 func (u *User) QueryAuthCodes() *AuthCodeQuery {
 	return NewUserClient(u.config).QueryAuthCodes(u)
+}
+
+// QueryRedirectUris queries the "redirect_uris" edge of the User entity.
+func (u *User) QueryRedirectUris() *RedirectURIQuery {
+	return NewUserClient(u.config).QueryRedirectUris(u)
 }
 
 // Update returns a builder for updating this User.
