@@ -39,9 +39,9 @@ type AuthCodeMutation struct {
 	typ           string
 	id            *int
 	code          *string
-	user_id       *typedef.UserID
 	expire_at     *time.Time
 	created_at    *time.Time
+	user_id       *typedef.UserID
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*AuthCode, error)
@@ -182,42 +182,6 @@ func (m *AuthCodeMutation) ResetCode() {
 	m.code = nil
 }
 
-// SetUserID sets the "user_id" field.
-func (m *AuthCodeMutation) SetUserID(ti typedef.UserID) {
-	m.user_id = &ti
-}
-
-// UserID returns the value of the "user_id" field in the mutation.
-func (m *AuthCodeMutation) UserID() (r typedef.UserID, exists bool) {
-	v := m.user_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUserID returns the old "user_id" field's value of the AuthCode entity.
-// If the AuthCode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AuthCodeMutation) OldUserID(ctx context.Context) (v typedef.UserID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
-	}
-	return oldValue.UserID, nil
-}
-
-// ResetUserID resets all changes to the "user_id" field.
-func (m *AuthCodeMutation) ResetUserID() {
-	m.user_id = nil
-}
-
 // SetExpireAt sets the "expire_at" field.
 func (m *AuthCodeMutation) SetExpireAt(t time.Time) {
 	m.expire_at = &t
@@ -290,6 +254,42 @@ func (m *AuthCodeMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
+// SetUserID sets the "user_id" field.
+func (m *AuthCodeMutation) SetUserID(ti typedef.UserID) {
+	m.user_id = &ti
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *AuthCodeMutation) UserID() (r typedef.UserID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the AuthCode entity.
+// If the AuthCode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AuthCodeMutation) OldUserID(ctx context.Context) (v typedef.UserID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *AuthCodeMutation) ResetUserID() {
+	m.user_id = nil
+}
+
 // Where appends a list predicates to the AuthCodeMutation builder.
 func (m *AuthCodeMutation) Where(ps ...predicate.AuthCode) {
 	m.predicates = append(m.predicates, ps...)
@@ -328,14 +328,14 @@ func (m *AuthCodeMutation) Fields() []string {
 	if m.code != nil {
 		fields = append(fields, authcode.FieldCode)
 	}
-	if m.user_id != nil {
-		fields = append(fields, authcode.FieldUserID)
-	}
 	if m.expire_at != nil {
 		fields = append(fields, authcode.FieldExpireAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, authcode.FieldCreatedAt)
+	}
+	if m.user_id != nil {
+		fields = append(fields, authcode.FieldUserID)
 	}
 	return fields
 }
@@ -347,12 +347,12 @@ func (m *AuthCodeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case authcode.FieldCode:
 		return m.Code()
-	case authcode.FieldUserID:
-		return m.UserID()
 	case authcode.FieldExpireAt:
 		return m.ExpireAt()
 	case authcode.FieldCreatedAt:
 		return m.CreatedAt()
+	case authcode.FieldUserID:
+		return m.UserID()
 	}
 	return nil, false
 }
@@ -364,12 +364,12 @@ func (m *AuthCodeMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case authcode.FieldCode:
 		return m.OldCode(ctx)
-	case authcode.FieldUserID:
-		return m.OldUserID(ctx)
 	case authcode.FieldExpireAt:
 		return m.OldExpireAt(ctx)
 	case authcode.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case authcode.FieldUserID:
+		return m.OldUserID(ctx)
 	}
 	return nil, fmt.Errorf("unknown AuthCode field %s", name)
 }
@@ -386,13 +386,6 @@ func (m *AuthCodeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCode(v)
 		return nil
-	case authcode.FieldUserID:
-		v, ok := value.(typedef.UserID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
-		return nil
 	case authcode.FieldExpireAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -406,6 +399,13 @@ func (m *AuthCodeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
+		return nil
+	case authcode.FieldUserID:
+		v, ok := value.(typedef.UserID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown AuthCode field %s", name)
@@ -459,14 +459,14 @@ func (m *AuthCodeMutation) ResetField(name string) error {
 	case authcode.FieldCode:
 		m.ResetCode()
 		return nil
-	case authcode.FieldUserID:
-		m.ResetUserID()
-		return nil
 	case authcode.FieldExpireAt:
 		m.ResetExpireAt()
 		return nil
 	case authcode.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case authcode.FieldUserID:
+		m.ResetUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown AuthCode field %s", name)
@@ -527,8 +527,8 @@ type RedirectURIMutation struct {
 	typ           string
 	id            *int
 	uri           *string
-	user_id       *typedef.UserID
 	created_at    *time.Time
+	user_id       *typedef.UserID
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*RedirectURI, error)
@@ -669,42 +669,6 @@ func (m *RedirectURIMutation) ResetURI() {
 	m.uri = nil
 }
 
-// SetUserID sets the "user_id" field.
-func (m *RedirectURIMutation) SetUserID(ti typedef.UserID) {
-	m.user_id = &ti
-}
-
-// UserID returns the value of the "user_id" field in the mutation.
-func (m *RedirectURIMutation) UserID() (r typedef.UserID, exists bool) {
-	v := m.user_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUserID returns the old "user_id" field's value of the RedirectURI entity.
-// If the RedirectURI object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RedirectURIMutation) OldUserID(ctx context.Context) (v typedef.UserID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
-	}
-	return oldValue.UserID, nil
-}
-
-// ResetUserID resets all changes to the "user_id" field.
-func (m *RedirectURIMutation) ResetUserID() {
-	m.user_id = nil
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *RedirectURIMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -739,6 +703,42 @@ func (m *RedirectURIMutation) OldCreatedAt(ctx context.Context) (v time.Time, er
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *RedirectURIMutation) ResetCreatedAt() {
 	m.created_at = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *RedirectURIMutation) SetUserID(ti typedef.UserID) {
+	m.user_id = &ti
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *RedirectURIMutation) UserID() (r typedef.UserID, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the RedirectURI entity.
+// If the RedirectURI object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RedirectURIMutation) OldUserID(ctx context.Context) (v typedef.UserID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *RedirectURIMutation) ResetUserID() {
+	m.user_id = nil
 }
 
 // Where appends a list predicates to the RedirectURIMutation builder.
@@ -779,11 +779,11 @@ func (m *RedirectURIMutation) Fields() []string {
 	if m.uri != nil {
 		fields = append(fields, redirecturi.FieldURI)
 	}
-	if m.user_id != nil {
-		fields = append(fields, redirecturi.FieldUserID)
-	}
 	if m.created_at != nil {
 		fields = append(fields, redirecturi.FieldCreatedAt)
+	}
+	if m.user_id != nil {
+		fields = append(fields, redirecturi.FieldUserID)
 	}
 	return fields
 }
@@ -795,10 +795,10 @@ func (m *RedirectURIMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case redirecturi.FieldURI:
 		return m.URI()
-	case redirecturi.FieldUserID:
-		return m.UserID()
 	case redirecturi.FieldCreatedAt:
 		return m.CreatedAt()
+	case redirecturi.FieldUserID:
+		return m.UserID()
 	}
 	return nil, false
 }
@@ -810,10 +810,10 @@ func (m *RedirectURIMutation) OldField(ctx context.Context, name string) (ent.Va
 	switch name {
 	case redirecturi.FieldURI:
 		return m.OldURI(ctx)
-	case redirecturi.FieldUserID:
-		return m.OldUserID(ctx)
 	case redirecturi.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case redirecturi.FieldUserID:
+		return m.OldUserID(ctx)
 	}
 	return nil, fmt.Errorf("unknown RedirectURI field %s", name)
 }
@@ -830,19 +830,19 @@ func (m *RedirectURIMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetURI(v)
 		return nil
-	case redirecturi.FieldUserID:
-		v, ok := value.(typedef.UserID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
-		return nil
 	case redirecturi.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
+		return nil
+	case redirecturi.FieldUserID:
+		v, ok := value.(typedef.UserID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown RedirectURI field %s", name)
@@ -896,11 +896,11 @@ func (m *RedirectURIMutation) ResetField(name string) error {
 	case redirecturi.FieldURI:
 		m.ResetURI()
 		return nil
-	case redirecturi.FieldUserID:
-		m.ResetUserID()
-		return nil
 	case redirecturi.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case redirecturi.FieldUserID:
+		m.ResetUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown RedirectURI field %s", name)

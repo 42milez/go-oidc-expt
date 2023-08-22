@@ -27,12 +27,6 @@ func (ruc *RedirectURICreate) SetURI(s string) *RedirectURICreate {
 	return ruc
 }
 
-// SetUserID sets the "user_id" field.
-func (ruc *RedirectURICreate) SetUserID(ti typedef.UserID) *RedirectURICreate {
-	ruc.mutation.SetUserID(ti)
-	return ruc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (ruc *RedirectURICreate) SetCreatedAt(t time.Time) *RedirectURICreate {
 	ruc.mutation.SetCreatedAt(t)
@@ -44,6 +38,12 @@ func (ruc *RedirectURICreate) SetNillableCreatedAt(t *time.Time) *RedirectURICre
 	if t != nil {
 		ruc.SetCreatedAt(*t)
 	}
+	return ruc
+}
+
+// SetUserID sets the "user_id" field.
+func (ruc *RedirectURICreate) SetUserID(ti typedef.UserID) *RedirectURICreate {
+	ruc.mutation.SetUserID(ti)
 	return ruc
 }
 
@@ -98,6 +98,9 @@ func (ruc *RedirectURICreate) check() error {
 			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectURI.uri": %w`, err)}
 		}
 	}
+	if _, ok := ruc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "RedirectURI.created_at"`)}
+	}
 	if _, ok := ruc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "RedirectURI.user_id"`)}
 	}
@@ -105,9 +108,6 @@ func (ruc *RedirectURICreate) check() error {
 		if err := redirecturi.UserIDValidator(string(v)); err != nil {
 			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "RedirectURI.user_id": %w`, err)}
 		}
-	}
-	if _, ok := ruc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "RedirectURI.created_at"`)}
 	}
 	return nil
 }
@@ -139,13 +139,13 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 		_spec.SetField(redirecturi.FieldURI, field.TypeString, value)
 		_node.URI = value
 	}
-	if value, ok := ruc.mutation.UserID(); ok {
-		_spec.SetField(redirecturi.FieldUserID, field.TypeString, value)
-		_node.UserID = value
-	}
 	if value, ok := ruc.mutation.CreatedAt(); ok {
 		_spec.SetField(redirecturi.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := ruc.mutation.UserID(); ok {
+		_spec.SetField(redirecturi.FieldUserID, field.TypeString, value)
+		_node.UserID = value
 	}
 	return _node, _spec
 }

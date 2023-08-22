@@ -60,15 +60,15 @@ func URI(v string) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldEQ(FieldURI, v))
 }
 
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldEQ(FieldCreatedAt, v))
+}
+
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
 func UserID(v typedef.UserID) predicate.RedirectURI {
 	vc := string(v)
 	return predicate.RedirectURI(sql.FieldEQ(FieldUserID, vc))
-}
-
-// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
-func CreatedAt(v time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldEQ(FieldCreatedAt, v))
 }
 
 // URIEQ applies the EQ predicate on the "uri" field.
@@ -134,6 +134,46 @@ func URIEqualFold(v string) predicate.RedirectURI {
 // URIContainsFold applies the ContainsFold predicate on the "uri" field.
 func URIContainsFold(v string) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldContainsFold(FieldURI, v))
+}
+
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
@@ -218,46 +258,6 @@ func UserIDEqualFold(v typedef.UserID) predicate.RedirectURI {
 func UserIDContainsFold(v typedef.UserID) predicate.RedirectURI {
 	vc := string(v)
 	return predicate.RedirectURI(sql.FieldContainsFold(FieldUserID, vc))
-}
-
-// CreatedAtEQ applies the EQ predicate on the "created_at" field.
-func CreatedAtEQ(v time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
-func CreatedAtNEQ(v time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldNEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtIn applies the In predicate on the "created_at" field.
-func CreatedAtIn(vs ...time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
-func CreatedAtNotIn(vs ...time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldNotIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtGT applies the GT predicate on the "created_at" field.
-func CreatedAtGT(v time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldGT(FieldCreatedAt, v))
-}
-
-// CreatedAtGTE applies the GTE predicate on the "created_at" field.
-func CreatedAtGTE(v time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldGTE(FieldCreatedAt, v))
-}
-
-// CreatedAtLT applies the LT predicate on the "created_at" field.
-func CreatedAtLT(v time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldLT(FieldCreatedAt, v))
-}
-
-// CreatedAtLTE applies the LTE predicate on the "created_at" field.
-func CreatedAtLTE(v time.Time) predicate.RedirectURI {
-	return predicate.RedirectURI(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // And groups predicates with the AND operator between them.

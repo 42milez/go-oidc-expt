@@ -22,32 +22,32 @@ func init() {
 	authcodeDescCode := authcodeFields[0].Descriptor()
 	// authcode.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	authcode.CodeValidator = authcodeDescCode.Validators[0].(func(string) error)
-	// authcodeDescUserID is the schema descriptor for user_id field.
-	authcodeDescUserID := authcodeFields[1].Descriptor()
-	// authcode.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	authcode.UserIDValidator = authcodeDescUserID.Validators[0].(func(string) error)
 	// authcodeDescExpireAt is the schema descriptor for expire_at field.
-	authcodeDescExpireAt := authcodeFields[2].Descriptor()
+	authcodeDescExpireAt := authcodeFields[1].Descriptor()
 	// authcode.DefaultExpireAt holds the default value on creation for the expire_at field.
 	authcode.DefaultExpireAt = authcodeDescExpireAt.Default.(func() time.Time)
 	// authcodeDescCreatedAt is the schema descriptor for created_at field.
-	authcodeDescCreatedAt := authcodeFields[3].Descriptor()
+	authcodeDescCreatedAt := authcodeFields[2].Descriptor()
 	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.
 	authcode.DefaultCreatedAt = authcodeDescCreatedAt.Default.(func() time.Time)
+	// authcodeDescUserID is the schema descriptor for user_id field.
+	authcodeDescUserID := authcodeFields[3].Descriptor()
+	// authcode.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	authcode.UserIDValidator = authcodeDescUserID.Validators[0].(func(string) error)
 	redirecturiFields := schema.RedirectURI{}.Fields()
 	_ = redirecturiFields
 	// redirecturiDescURI is the schema descriptor for uri field.
 	redirecturiDescURI := redirecturiFields[0].Descriptor()
 	// redirecturi.URIValidator is a validator for the "uri" field. It is called by the builders before save.
 	redirecturi.URIValidator = redirecturiDescURI.Validators[0].(func(string) error)
-	// redirecturiDescUserID is the schema descriptor for user_id field.
-	redirecturiDescUserID := redirecturiFields[1].Descriptor()
-	// redirecturi.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	redirecturi.UserIDValidator = redirecturiDescUserID.Validators[0].(func(string) error)
 	// redirecturiDescCreatedAt is the schema descriptor for created_at field.
-	redirecturiDescCreatedAt := redirecturiFields[2].Descriptor()
+	redirecturiDescCreatedAt := redirecturiFields[1].Descriptor()
 	// redirecturi.DefaultCreatedAt holds the default value on creation for the created_at field.
 	redirecturi.DefaultCreatedAt = redirecturiDescCreatedAt.Default.(func() time.Time)
+	// redirecturiDescUserID is the schema descriptor for user_id field.
+	redirecturiDescUserID := redirecturiFields[2].Descriptor()
+	// redirecturi.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	redirecturi.UserIDValidator = redirecturiDescUserID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

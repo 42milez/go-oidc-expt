@@ -20,10 +20,10 @@ type RedirectURI struct {
 	ID int `json:"id,omitempty"`
 	// URI holds the value of the "uri" field.
 	URI string `json:"uri,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID typedef.UserID `json:"user_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt    time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID       typedef.UserID `json:"user_id,omitempty"`
 	user_id      *typedef.UserID
 	selectValues sql.SelectValues
 }
@@ -68,17 +68,17 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ru.URI = value.String
 			}
-		case redirecturi.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				ru.UserID = typedef.UserID(value.String)
-			}
 		case redirecturi.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				ru.CreatedAt = value.Time
+			}
+		case redirecturi.FieldUserID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				ru.UserID = typedef.UserID(value.String)
 			}
 		case redirecturi.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -126,11 +126,11 @@ func (ru *RedirectURI) String() string {
 	builder.WriteString("uri=")
 	builder.WriteString(ru.URI)
 	builder.WriteString(", ")
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", ru.UserID))
-	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ru.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", ru.UserID))
 	builder.WriteByte(')')
 	return builder.String()
 }

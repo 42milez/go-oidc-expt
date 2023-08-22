@@ -15,10 +15,10 @@ const (
 	FieldID = "id"
 	// FieldURI holds the string denoting the uri field in the database.
 	FieldURI = "uri"
-	// FieldUserID holds the string denoting the user_id field in the database.
-	FieldUserID = "user_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// Table holds the table name of the redirecturi in the database.
 	Table = "redirect_ur_is"
 )
@@ -27,8 +27,8 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldURI,
-	FieldUserID,
 	FieldCreatedAt,
+	FieldUserID,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "redirect_ur_is"
@@ -55,10 +55,10 @@ func ValidColumn(column string) bool {
 var (
 	// URIValidator is a validator for the "uri" field. It is called by the builders before save.
 	URIValidator func(string) error
-	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	UserIDValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	UserIDValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the RedirectURI queries.
@@ -74,12 +74,12 @@ func ByURI(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldURI, opts...).ToFunc()
 }
 
-// ByUserID orders the results by the user_id field.
-func ByUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserID, opts...).ToFunc()
-}
-
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }

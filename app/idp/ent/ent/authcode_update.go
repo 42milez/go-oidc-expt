@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,20 +24,6 @@ type AuthCodeUpdate struct {
 // Where appends a list predicates to the AuthCodeUpdate builder.
 func (acu *AuthCodeUpdate) Where(ps ...predicate.AuthCode) *AuthCodeUpdate {
 	acu.mutation.Where(ps...)
-	return acu
-}
-
-// SetExpireAt sets the "expire_at" field.
-func (acu *AuthCodeUpdate) SetExpireAt(t time.Time) *AuthCodeUpdate {
-	acu.mutation.SetExpireAt(t)
-	return acu
-}
-
-// SetNillableExpireAt sets the "expire_at" field if the given value is not nil.
-func (acu *AuthCodeUpdate) SetNillableExpireAt(t *time.Time) *AuthCodeUpdate {
-	if t != nil {
-		acu.SetExpireAt(*t)
-	}
 	return acu
 }
 
@@ -83,9 +68,6 @@ func (acu *AuthCodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := acu.mutation.ExpireAt(); ok {
-		_spec.SetField(authcode.FieldExpireAt, field.TypeTime, value)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, acu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{authcode.Label}
@@ -104,20 +86,6 @@ type AuthCodeUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *AuthCodeMutation
-}
-
-// SetExpireAt sets the "expire_at" field.
-func (acuo *AuthCodeUpdateOne) SetExpireAt(t time.Time) *AuthCodeUpdateOne {
-	acuo.mutation.SetExpireAt(t)
-	return acuo
-}
-
-// SetNillableExpireAt sets the "expire_at" field if the given value is not nil.
-func (acuo *AuthCodeUpdateOne) SetNillableExpireAt(t *time.Time) *AuthCodeUpdateOne {
-	if t != nil {
-		acuo.SetExpireAt(*t)
-	}
-	return acuo
 }
 
 // Mutation returns the AuthCodeMutation object of the builder.
@@ -190,9 +158,6 @@ func (acuo *AuthCodeUpdateOne) sqlSave(ctx context.Context) (_node *AuthCode, er
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := acuo.mutation.ExpireAt(); ok {
-		_spec.SetField(authcode.FieldExpireAt, field.TypeTime, value)
 	}
 	_node = &AuthCode{config: acuo.config}
 	_spec.Assign = _node.assignValues

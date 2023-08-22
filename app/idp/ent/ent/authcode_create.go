@@ -27,12 +27,6 @@ func (acc *AuthCodeCreate) SetCode(s string) *AuthCodeCreate {
 	return acc
 }
 
-// SetUserID sets the "user_id" field.
-func (acc *AuthCodeCreate) SetUserID(ti typedef.UserID) *AuthCodeCreate {
-	acc.mutation.SetUserID(ti)
-	return acc
-}
-
 // SetExpireAt sets the "expire_at" field.
 func (acc *AuthCodeCreate) SetExpireAt(t time.Time) *AuthCodeCreate {
 	acc.mutation.SetExpireAt(t)
@@ -58,6 +52,12 @@ func (acc *AuthCodeCreate) SetNillableCreatedAt(t *time.Time) *AuthCodeCreate {
 	if t != nil {
 		acc.SetCreatedAt(*t)
 	}
+	return acc
+}
+
+// SetUserID sets the "user_id" field.
+func (acc *AuthCodeCreate) SetUserID(ti typedef.UserID) *AuthCodeCreate {
+	acc.mutation.SetUserID(ti)
 	return acc
 }
 
@@ -116,6 +116,12 @@ func (acc *AuthCodeCreate) check() error {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "AuthCode.code": %w`, err)}
 		}
 	}
+	if _, ok := acc.mutation.ExpireAt(); !ok {
+		return &ValidationError{Name: "expire_at", err: errors.New(`ent: missing required field "AuthCode.expire_at"`)}
+	}
+	if _, ok := acc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AuthCode.created_at"`)}
+	}
 	if _, ok := acc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthCode.user_id"`)}
 	}
@@ -123,12 +129,6 @@ func (acc *AuthCodeCreate) check() error {
 		if err := authcode.UserIDValidator(string(v)); err != nil {
 			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "AuthCode.user_id": %w`, err)}
 		}
-	}
-	if _, ok := acc.mutation.ExpireAt(); !ok {
-		return &ValidationError{Name: "expire_at", err: errors.New(`ent: missing required field "AuthCode.expire_at"`)}
-	}
-	if _, ok := acc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AuthCode.created_at"`)}
 	}
 	return nil
 }
@@ -160,10 +160,6 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 		_spec.SetField(authcode.FieldCode, field.TypeString, value)
 		_node.Code = value
 	}
-	if value, ok := acc.mutation.UserID(); ok {
-		_spec.SetField(authcode.FieldUserID, field.TypeString, value)
-		_node.UserID = value
-	}
 	if value, ok := acc.mutation.ExpireAt(); ok {
 		_spec.SetField(authcode.FieldExpireAt, field.TypeTime, value)
 		_node.ExpireAt = value
@@ -171,6 +167,10 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 	if value, ok := acc.mutation.CreatedAt(); ok {
 		_spec.SetField(authcode.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := acc.mutation.UserID(); ok {
+		_spec.SetField(authcode.FieldUserID, field.TypeString, value)
+		_node.UserID = value
 	}
 	return _node, _spec
 }

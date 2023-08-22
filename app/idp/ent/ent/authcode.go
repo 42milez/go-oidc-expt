@@ -20,12 +20,12 @@ type AuthCode struct {
 	ID int `json:"id,omitempty"`
 	// Code holds the value of the "code" field.
 	Code string `json:"code,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID typedef.UserID `json:"user_id,omitempty"`
 	// ExpireAt holds the value of the "expire_at" field.
 	ExpireAt time.Time `json:"expire_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt    time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID       typedef.UserID `json:"user_id,omitempty"`
 	user_id      *typedef.UserID
 	selectValues sql.SelectValues
 }
@@ -70,12 +70,6 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ac.Code = value.String
 			}
-		case authcode.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				ac.UserID = typedef.UserID(value.String)
-			}
 		case authcode.FieldExpireAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field expire_at", values[i])
@@ -87,6 +81,12 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				ac.CreatedAt = value.Time
+			}
+		case authcode.FieldUserID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				ac.UserID = typedef.UserID(value.String)
 			}
 		case authcode.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -134,14 +134,14 @@ func (ac *AuthCode) String() string {
 	builder.WriteString("code=")
 	builder.WriteString(ac.Code)
 	builder.WriteString(", ")
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", ac.UserID))
-	builder.WriteString(", ")
 	builder.WriteString("expire_at=")
 	builder.WriteString(ac.ExpireAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ac.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", ac.UserID))
 	builder.WriteByte(')')
 	return builder.String()
 }

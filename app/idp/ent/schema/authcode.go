@@ -32,19 +32,20 @@ func (AuthCode) Fields() []ent.Field {
 			}).
 			NotEmpty().
 			Immutable(),
+		field.Time("expire_at").
+			Default(func() time.Time {
+				return time.Now().Add(codeLifetime)
+			}).
+			Immutable(),
+		field.Time("created_at").
+			Default(time.Now).
+			Immutable(),
 		field.String("user_id").
 			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{
 				dialect.MySQL: userIDType,
 			}).
 			NotEmpty().
-			Immutable(),
-		field.Time("expire_at").
-			Default(func() time.Time {
-				return time.Now().Add(codeLifetime)
-			}),
-		field.Time("created_at").
-			Default(time.Now).
 			Immutable(),
 	}
 }

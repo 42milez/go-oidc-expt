@@ -60,12 +60,6 @@ func Code(v string) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldCode, v))
 }
 
-// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v typedef.UserID) predicate.AuthCode {
-	vc := string(v)
-	return predicate.AuthCode(sql.FieldEQ(FieldUserID, vc))
-}
-
 // ExpireAt applies equality check predicate on the "expire_at" field. It's identical to ExpireAtEQ.
 func ExpireAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldExpireAt, v))
@@ -74,6 +68,12 @@ func ExpireAt(v time.Time) predicate.AuthCode {
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v typedef.UserID) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldUserID, vc))
 }
 
 // CodeEQ applies the EQ predicate on the "code" field.
@@ -139,6 +139,86 @@ func CodeEqualFold(v string) predicate.AuthCode {
 // CodeContainsFold applies the ContainsFold predicate on the "code" field.
 func CodeContainsFold(v string) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldContainsFold(FieldCode, v))
+}
+
+// ExpireAtEQ applies the EQ predicate on the "expire_at" field.
+func ExpireAtEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldExpireAt, v))
+}
+
+// ExpireAtNEQ applies the NEQ predicate on the "expire_at" field.
+func ExpireAtNEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNEQ(FieldExpireAt, v))
+}
+
+// ExpireAtIn applies the In predicate on the "expire_at" field.
+func ExpireAtIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldIn(FieldExpireAt, vs...))
+}
+
+// ExpireAtNotIn applies the NotIn predicate on the "expire_at" field.
+func ExpireAtNotIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNotIn(FieldExpireAt, vs...))
+}
+
+// ExpireAtGT applies the GT predicate on the "expire_at" field.
+func ExpireAtGT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGT(FieldExpireAt, v))
+}
+
+// ExpireAtGTE applies the GTE predicate on the "expire_at" field.
+func ExpireAtGTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGTE(FieldExpireAt, v))
+}
+
+// ExpireAtLT applies the LT predicate on the "expire_at" field.
+func ExpireAtLT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLT(FieldExpireAt, v))
+}
+
+// ExpireAtLTE applies the LTE predicate on the "expire_at" field.
+func ExpireAtLTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLTE(FieldExpireAt, v))
+}
+
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNEQ(FieldCreatedAt, v))
+}
+
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
@@ -223,86 +303,6 @@ func UserIDEqualFold(v typedef.UserID) predicate.AuthCode {
 func UserIDContainsFold(v typedef.UserID) predicate.AuthCode {
 	vc := string(v)
 	return predicate.AuthCode(sql.FieldContainsFold(FieldUserID, vc))
-}
-
-// ExpireAtEQ applies the EQ predicate on the "expire_at" field.
-func ExpireAtEQ(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldExpireAt, v))
-}
-
-// ExpireAtNEQ applies the NEQ predicate on the "expire_at" field.
-func ExpireAtNEQ(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNEQ(FieldExpireAt, v))
-}
-
-// ExpireAtIn applies the In predicate on the "expire_at" field.
-func ExpireAtIn(vs ...time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldIn(FieldExpireAt, vs...))
-}
-
-// ExpireAtNotIn applies the NotIn predicate on the "expire_at" field.
-func ExpireAtNotIn(vs ...time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNotIn(FieldExpireAt, vs...))
-}
-
-// ExpireAtGT applies the GT predicate on the "expire_at" field.
-func ExpireAtGT(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGT(FieldExpireAt, v))
-}
-
-// ExpireAtGTE applies the GTE predicate on the "expire_at" field.
-func ExpireAtGTE(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGTE(FieldExpireAt, v))
-}
-
-// ExpireAtLT applies the LT predicate on the "expire_at" field.
-func ExpireAtLT(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLT(FieldExpireAt, v))
-}
-
-// ExpireAtLTE applies the LTE predicate on the "expire_at" field.
-func ExpireAtLTE(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLTE(FieldExpireAt, v))
-}
-
-// CreatedAtEQ applies the EQ predicate on the "created_at" field.
-func CreatedAtEQ(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
-func CreatedAtNEQ(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtIn applies the In predicate on the "created_at" field.
-func CreatedAtIn(vs ...time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
-func CreatedAtNotIn(vs ...time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNotIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtGT applies the GT predicate on the "created_at" field.
-func CreatedAtGT(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGT(FieldCreatedAt, v))
-}
-
-// CreatedAtGTE applies the GTE predicate on the "created_at" field.
-func CreatedAtGTE(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGTE(FieldCreatedAt, v))
-}
-
-// CreatedAtLT applies the LT predicate on the "created_at" field.
-func CreatedAtLT(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLT(FieldCreatedAt, v))
-}
-
-// CreatedAtLTE applies the LTE predicate on the "created_at" field.
-func CreatedAtLTE(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLTE(FieldCreatedAt, v))
 }
 
 // And groups predicates with the AND operator between them.

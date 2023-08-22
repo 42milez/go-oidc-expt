@@ -13,9 +13,9 @@ var (
 	AuthCodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(20)"}},
-		{Name: "user_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 		{Name: "expire_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 	}
 	// AuthCodesTable holds the schema information for the "auth_codes" table.
 	AuthCodesTable = &schema.Table{
@@ -25,7 +25,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "auth_codes_redirect_uris_auth_codes",
-				Columns:    []*schema.Column{AuthCodesColumns[2]},
+				Columns:    []*schema.Column{AuthCodesColumns[4]},
 				RefColumns: []*schema.Column{RedirectUrisColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -34,7 +34,7 @@ var (
 			{
 				Name:    "authcode_user_id_code",
 				Unique:  true,
-				Columns: []*schema.Column{AuthCodesColumns[2], AuthCodesColumns[1]},
+				Columns: []*schema.Column{AuthCodesColumns[4], AuthCodesColumns[1]},
 			},
 		},
 	}
@@ -42,8 +42,8 @@ var (
 	RedirectUrIsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "uri", Type: field.TypeString},
-		{Name: "user_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 		{Name: "created_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 	}
 	// RedirectUrIsTable holds the schema information for the "redirect_ur_is" table.
 	RedirectUrIsTable = &schema.Table{
@@ -53,7 +53,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "redirect_ur_is_redirect_uris_redirect_uris",
-				Columns:    []*schema.Column{RedirectUrIsColumns[2]},
+				Columns:    []*schema.Column{RedirectUrIsColumns[3]},
 				RefColumns: []*schema.Column{RedirectUrisColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -62,7 +62,7 @@ var (
 			{
 				Name:    "redirecturi_user_id_uri",
 				Unique:  true,
-				Columns: []*schema.Column{RedirectUrIsColumns[2], RedirectUrIsColumns[1]},
+				Columns: []*schema.Column{RedirectUrIsColumns[3], RedirectUrIsColumns[1]},
 			},
 		},
 	}
