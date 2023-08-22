@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -33,6 +34,12 @@ func (ruu *RedirectURIUpdate) SetURI(s string) *RedirectURIUpdate {
 	return ruu
 }
 
+// SetModifiedAt sets the "modified_at" field.
+func (ruu *RedirectURIUpdate) SetModifiedAt(t time.Time) *RedirectURIUpdate {
+	ruu.mutation.SetModifiedAt(t)
+	return ruu
+}
+
 // Mutation returns the RedirectURIMutation object of the builder.
 func (ruu *RedirectURIUpdate) Mutation() *RedirectURIMutation {
 	return ruu.mutation
@@ -40,6 +47,7 @@ func (ruu *RedirectURIUpdate) Mutation() *RedirectURIMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ruu *RedirectURIUpdate) Save(ctx context.Context) (int, error) {
+	ruu.defaults()
 	return withHooks(ctx, ruu.sqlSave, ruu.mutation, ruu.hooks)
 }
 
@@ -62,6 +70,14 @@ func (ruu *RedirectURIUpdate) Exec(ctx context.Context) error {
 func (ruu *RedirectURIUpdate) ExecX(ctx context.Context) {
 	if err := ruu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ruu *RedirectURIUpdate) defaults() {
+	if _, ok := ruu.mutation.ModifiedAt(); !ok {
+		v := redirecturi.UpdateDefaultModifiedAt()
+		ruu.mutation.SetModifiedAt(v)
 	}
 }
 
@@ -90,6 +106,9 @@ func (ruu *RedirectURIUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ruu.mutation.URI(); ok {
 		_spec.SetField(redirecturi.FieldURI, field.TypeString, value)
 	}
+	if value, ok := ruu.mutation.ModifiedAt(); ok {
+		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ruu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{redirecturi.Label}
@@ -116,6 +135,12 @@ func (ruuo *RedirectURIUpdateOne) SetURI(s string) *RedirectURIUpdateOne {
 	return ruuo
 }
 
+// SetModifiedAt sets the "modified_at" field.
+func (ruuo *RedirectURIUpdateOne) SetModifiedAt(t time.Time) *RedirectURIUpdateOne {
+	ruuo.mutation.SetModifiedAt(t)
+	return ruuo
+}
+
 // Mutation returns the RedirectURIMutation object of the builder.
 func (ruuo *RedirectURIUpdateOne) Mutation() *RedirectURIMutation {
 	return ruuo.mutation
@@ -136,6 +161,7 @@ func (ruuo *RedirectURIUpdateOne) Select(field string, fields ...string) *Redire
 
 // Save executes the query and returns the updated RedirectURI entity.
 func (ruuo *RedirectURIUpdateOne) Save(ctx context.Context) (*RedirectURI, error) {
+	ruuo.defaults()
 	return withHooks(ctx, ruuo.sqlSave, ruuo.mutation, ruuo.hooks)
 }
 
@@ -158,6 +184,14 @@ func (ruuo *RedirectURIUpdateOne) Exec(ctx context.Context) error {
 func (ruuo *RedirectURIUpdateOne) ExecX(ctx context.Context) {
 	if err := ruuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ruuo *RedirectURIUpdateOne) defaults() {
+	if _, ok := ruuo.mutation.ModifiedAt(); !ok {
+		v := redirecturi.UpdateDefaultModifiedAt()
+		ruuo.mutation.SetModifiedAt(v)
 	}
 }
 
@@ -202,6 +236,9 @@ func (ruuo *RedirectURIUpdateOne) sqlSave(ctx context.Context) (_node *RedirectU
 	}
 	if value, ok := ruuo.mutation.URI(); ok {
 		_spec.SetField(redirecturi.FieldURI, field.TypeString, value)
+	}
+	if value, ok := ruuo.mutation.ModifiedAt(); ok {
+		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
 	}
 	_node = &RedirectURI{config: ruuo.config}
 	_spec.Assign = _node.assignValues

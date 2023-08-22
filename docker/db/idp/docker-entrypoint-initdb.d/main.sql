@@ -26,15 +26,3 @@ GRANT ALTER, CREATE, DROP, INDEX, REFERENCES ON idp.* TO 'atlas'@'%';
 GRANT CREATE, INSERT, SELECT, UPDATE ON idp.atlas_schema_revisions TO 'atlas'@'%';
 GRANT ALTER, CREATE, DROP, INDEX, REFERENCES, SELECT ON idp_test.* TO 'atlas'@'%';
 GRANT CREATE, INSERT, SELECT, UPDATE ON idp_test.atlas_schema_revisions TO 'atlas'@'%';
-
--- --------------------------------------------------
---  Initial Data
--- --------------------------------------------------
-
--- INSERT INTO users (id, name, password_hash, created_at, modified_at) VALUES ('', '', '', '', '');
--- INSERT INTO auth_codes (code, expire_at, created_at, user_id) VALUES ('', '', '', '');
--- INSERT INTO auth_codes (code, expire_at, created_at, user_id) VALUES ('', '', '', '');
--- INSERT INTO auth_codes (code, expire_at, created_at, user_id) VALUES ('', '', '', '');
--- INSERT INTO redirect_uris (uri, created_at, user_id) VALUES ('', '', '');
--- INSERT INTO redirect_uris (uri, created_at, user_id) VALUES ('', '', '');
--- INSERT INTO redirect_uris (uri, created_at, user_id) VALUES ('', '', '');

@@ -41,6 +41,20 @@ func (ruc *RedirectURICreate) SetNillableCreatedAt(t *time.Time) *RedirectURICre
 	return ruc
 }
 
+// SetModifiedAt sets the "modified_at" field.
+func (ruc *RedirectURICreate) SetModifiedAt(t time.Time) *RedirectURICreate {
+	ruc.mutation.SetModifiedAt(t)
+	return ruc
+}
+
+// SetNillableModifiedAt sets the "modified_at" field if the given value is not nil.
+func (ruc *RedirectURICreate) SetNillableModifiedAt(t *time.Time) *RedirectURICreate {
+	if t != nil {
+		ruc.SetModifiedAt(*t)
+	}
+	return ruc
+}
+
 // SetUserID sets the "user_id" field.
 func (ruc *RedirectURICreate) SetUserID(ti typedef.UserID) *RedirectURICreate {
 	ruc.mutation.SetUserID(ti)
@@ -86,6 +100,10 @@ func (ruc *RedirectURICreate) defaults() {
 		v := redirecturi.DefaultCreatedAt()
 		ruc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := ruc.mutation.ModifiedAt(); !ok {
+		v := redirecturi.DefaultModifiedAt()
+		ruc.mutation.SetModifiedAt(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -100,6 +118,9 @@ func (ruc *RedirectURICreate) check() error {
 	}
 	if _, ok := ruc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "RedirectURI.created_at"`)}
+	}
+	if _, ok := ruc.mutation.ModifiedAt(); !ok {
+		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "RedirectURI.modified_at"`)}
 	}
 	if _, ok := ruc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "RedirectURI.user_id"`)}
@@ -142,6 +163,10 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 	if value, ok := ruc.mutation.CreatedAt(); ok {
 		_spec.SetField(redirecturi.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := ruc.mutation.ModifiedAt(); ok {
+		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
+		_node.ModifiedAt = value
 	}
 	if value, ok := ruc.mutation.UserID(); ok {
 		_spec.SetField(redirecturi.FieldUserID, field.TypeString, value)

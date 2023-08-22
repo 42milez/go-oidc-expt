@@ -125,6 +125,12 @@ go run -mod=mod entgo.io/ent/cmd/ent new --target app/idp/ent/schema AuthCode
 
 If `N_LATEST` isn't specified, the diff between `main` branch and the current one is selected as the changeset.
 
+### Seeding database
+
+```
+go run ./script/seed/main.go
+```
+
 ## References
 
 - OpenID Connect

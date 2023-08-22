@@ -22,6 +22,8 @@ type RedirectURI struct {
 	URI string `json:"uri,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// ModifiedAt holds the value of the "modified_at" field.
+	ModifiedAt time.Time `json:"modified_at,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID       typedef.UserID `json:"user_id,omitempty"`
 	user_id      *typedef.UserID
@@ -37,7 +39,7 @@ func (*RedirectURI) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case redirecturi.FieldURI, redirecturi.FieldUserID:
 			values[i] = new(sql.NullString)
-		case redirecturi.FieldCreatedAt:
+		case redirecturi.FieldCreatedAt, redirecturi.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
 		case redirecturi.ForeignKeys[0]: // user_id
 			values[i] = new(sql.NullString)
@@ -73,6 +75,12 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				ru.CreatedAt = value.Time
+			}
+		case redirecturi.FieldModifiedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field modified_at", values[i])
+			} else if value.Valid {
+				ru.ModifiedAt = value.Time
 			}
 		case redirecturi.FieldUserID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -128,6 +136,9 @@ func (ru *RedirectURI) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ru.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("modified_at=")
+	builder.WriteString(ru.ModifiedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", ru.UserID))

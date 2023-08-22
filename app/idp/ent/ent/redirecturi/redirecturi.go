@@ -17,10 +17,12 @@ const (
 	FieldURI = "uri"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldModifiedAt holds the string denoting the modified_at field in the database.
+	FieldModifiedAt = "modified_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// Table holds the table name of the redirecturi in the database.
-	Table = "redirect_ur_is"
+	Table = "redirect_uris"
 )
 
 // Columns holds all SQL columns for redirecturi fields.
@@ -28,10 +30,11 @@ var Columns = []string{
 	FieldID,
 	FieldURI,
 	FieldCreatedAt,
+	FieldModifiedAt,
 	FieldUserID,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the "redirect_ur_is"
+// ForeignKeys holds the SQL foreign-keys that are owned by the "redirect_uris"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"user_id",
@@ -57,6 +60,10 @@ var (
 	URIValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultModifiedAt holds the default value on creation for the "modified_at" field.
+	DefaultModifiedAt func() time.Time
+	// UpdateDefaultModifiedAt holds the default value on update for the "modified_at" field.
+	UpdateDefaultModifiedAt func() time.Time
 	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	UserIDValidator func(string) error
 )
@@ -77,6 +84,11 @@ func ByURI(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByModifiedAt orders the results by the modified_at field.
+func ByModifiedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldModifiedAt, opts...).ToFunc()
 }
 
 // ByUserID orders the results by the user_id field.

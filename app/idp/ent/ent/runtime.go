@@ -44,8 +44,14 @@ func init() {
 	redirecturiDescCreatedAt := redirecturiFields[1].Descriptor()
 	// redirecturi.DefaultCreatedAt holds the default value on creation for the created_at field.
 	redirecturi.DefaultCreatedAt = redirecturiDescCreatedAt.Default.(func() time.Time)
+	// redirecturiDescModifiedAt is the schema descriptor for modified_at field.
+	redirecturiDescModifiedAt := redirecturiFields[2].Descriptor()
+	// redirecturi.DefaultModifiedAt holds the default value on creation for the modified_at field.
+	redirecturi.DefaultModifiedAt = redirecturiDescModifiedAt.Default.(func() time.Time)
+	// redirecturi.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
+	redirecturi.UpdateDefaultModifiedAt = redirecturiDescModifiedAt.UpdateDefault.(func() time.Time)
 	// redirecturiDescUserID is the schema descriptor for user_id field.
-	redirecturiDescUserID := redirecturiFields[2].Descriptor()
+	redirecturiDescUserID := redirecturiFields[3].Descriptor()
 	// redirecturi.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	redirecturi.UserIDValidator = redirecturiDescUserID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()

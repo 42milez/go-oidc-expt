@@ -528,6 +528,7 @@ type RedirectURIMutation struct {
 	id            *int
 	uri           *string
 	created_at    *time.Time
+	modified_at   *time.Time
 	user_id       *typedef.UserID
 	clearedFields map[string]struct{}
 	done          bool
@@ -705,6 +706,42 @@ func (m *RedirectURIMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
+// SetModifiedAt sets the "modified_at" field.
+func (m *RedirectURIMutation) SetModifiedAt(t time.Time) {
+	m.modified_at = &t
+}
+
+// ModifiedAt returns the value of the "modified_at" field in the mutation.
+func (m *RedirectURIMutation) ModifiedAt() (r time.Time, exists bool) {
+	v := m.modified_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldModifiedAt returns the old "modified_at" field's value of the RedirectURI entity.
+// If the RedirectURI object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RedirectURIMutation) OldModifiedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldModifiedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldModifiedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldModifiedAt: %w", err)
+	}
+	return oldValue.ModifiedAt, nil
+}
+
+// ResetModifiedAt resets all changes to the "modified_at" field.
+func (m *RedirectURIMutation) ResetModifiedAt() {
+	m.modified_at = nil
+}
+
 // SetUserID sets the "user_id" field.
 func (m *RedirectURIMutation) SetUserID(ti typedef.UserID) {
 	m.user_id = &ti
@@ -775,12 +812,15 @@ func (m *RedirectURIMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RedirectURIMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.uri != nil {
 		fields = append(fields, redirecturi.FieldURI)
 	}
 	if m.created_at != nil {
 		fields = append(fields, redirecturi.FieldCreatedAt)
+	}
+	if m.modified_at != nil {
+		fields = append(fields, redirecturi.FieldModifiedAt)
 	}
 	if m.user_id != nil {
 		fields = append(fields, redirecturi.FieldUserID)
@@ -797,6 +837,8 @@ func (m *RedirectURIMutation) Field(name string) (ent.Value, bool) {
 		return m.URI()
 	case redirecturi.FieldCreatedAt:
 		return m.CreatedAt()
+	case redirecturi.FieldModifiedAt:
+		return m.ModifiedAt()
 	case redirecturi.FieldUserID:
 		return m.UserID()
 	}
@@ -812,6 +854,8 @@ func (m *RedirectURIMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldURI(ctx)
 	case redirecturi.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case redirecturi.FieldModifiedAt:
+		return m.OldModifiedAt(ctx)
 	case redirecturi.FieldUserID:
 		return m.OldUserID(ctx)
 	}
@@ -836,6 +880,13 @@ func (m *RedirectURIMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
+		return nil
+	case redirecturi.FieldModifiedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetModifiedAt(v)
 		return nil
 	case redirecturi.FieldUserID:
 		v, ok := value.(typedef.UserID)
@@ -898,6 +949,9 @@ func (m *RedirectURIMutation) ResetField(name string) error {
 		return nil
 	case redirecturi.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case redirecturi.FieldModifiedAt:
+		m.ResetModifiedAt()
 		return nil
 	case redirecturi.FieldUserID:
 		m.ResetUserID()

@@ -19,9 +19,11 @@ type RedirectURI struct {
 }
 
 // Annotations of the RedirectURI.
-func (User) Annotations() []schema.Annotation {
+func (RedirectURI) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "redirect_uris"},
+		entsql.Annotation{
+			Table: "redirect_uris",
+		},
 	}
 }
 
@@ -33,6 +35,9 @@ func (RedirectURI) Fields() []ent.Field {
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),
+		field.Time("modified_at").
+			Default(time.Now).
+			UpdateDefault(time.Now),
 		field.String("user_id").
 			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{

@@ -30,7 +30,7 @@ const (
 	// EdgeRedirectUris holds the string denoting the redirect_uris edge name in mutations.
 	EdgeRedirectUris = "redirect_uris"
 	// Table holds the table name of the user in the database.
-	Table = "redirect_uris"
+	Table = "users"
 	// AuthCodesTable is the table that holds the auth_codes relation/edge.
 	AuthCodesTable = "auth_codes"
 	// AuthCodesInverseTable is the table name for the AuthCode entity.
@@ -39,10 +39,10 @@ const (
 	// AuthCodesColumn is the table column denoting the auth_codes relation/edge.
 	AuthCodesColumn = "user_id"
 	// RedirectUrisTable is the table that holds the redirect_uris relation/edge.
-	RedirectUrisTable = "redirect_ur_is"
+	RedirectUrisTable = "redirect_uris"
 	// RedirectUrisInverseTable is the table name for the RedirectURI entity.
 	// It exists in this package in order to avoid circular dependency with the "redirecturi" package.
-	RedirectUrisInverseTable = "redirect_ur_is"
+	RedirectUrisInverseTable = "redirect_uris"
 	// RedirectUrisColumn is the table column denoting the redirect_uris relation/edge.
 	RedirectUrisColumn = "user_id"
 )

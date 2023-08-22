@@ -65,6 +65,11 @@ func CreatedAt(v time.Time) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// ModifiedAt applies equality check predicate on the "modified_at" field. It's identical to ModifiedAtEQ.
+func ModifiedAt(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldEQ(FieldModifiedAt, v))
+}
+
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
 func UserID(v typedef.UserID) predicate.RedirectURI {
 	vc := string(v)
@@ -174,6 +179,46 @@ func CreatedAtLT(v time.Time) predicate.RedirectURI {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// ModifiedAtEQ applies the EQ predicate on the "modified_at" field.
+func ModifiedAtEQ(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldEQ(FieldModifiedAt, v))
+}
+
+// ModifiedAtNEQ applies the NEQ predicate on the "modified_at" field.
+func ModifiedAtNEQ(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldNEQ(FieldModifiedAt, v))
+}
+
+// ModifiedAtIn applies the In predicate on the "modified_at" field.
+func ModifiedAtIn(vs ...time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldIn(FieldModifiedAt, vs...))
+}
+
+// ModifiedAtNotIn applies the NotIn predicate on the "modified_at" field.
+func ModifiedAtNotIn(vs ...time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldNotIn(FieldModifiedAt, vs...))
+}
+
+// ModifiedAtGT applies the GT predicate on the "modified_at" field.
+func ModifiedAtGT(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldGT(FieldModifiedAt, v))
+}
+
+// ModifiedAtGTE applies the GTE predicate on the "modified_at" field.
+func ModifiedAtGTE(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldGTE(FieldModifiedAt, v))
+}
+
+// ModifiedAtLT applies the LT predicate on the "modified_at" field.
+func ModifiedAtLT(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldLT(FieldModifiedAt, v))
+}
+
+// ModifiedAtLTE applies the LTE predicate on the "modified_at" field.
+func ModifiedAtLTE(v time.Time) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldLTE(FieldModifiedAt, v))
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.

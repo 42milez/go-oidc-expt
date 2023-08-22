@@ -24,9 +24,9 @@ var (
 		PrimaryKey: []*schema.Column{AuthCodesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "auth_codes_redirect_uris_auth_codes",
+				Symbol:     "auth_codes_users_auth_codes",
 				Columns:    []*schema.Column{AuthCodesColumns[4]},
-				RefColumns: []*schema.Column{RedirectUrisColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -38,23 +38,24 @@ var (
 			},
 		},
 	}
-	// RedirectUrIsColumns holds the columns for the "redirect_ur_is" table.
-	RedirectUrIsColumns = []*schema.Column{
+	// RedirectUrisColumns holds the columns for the "redirect_uris" table.
+	RedirectUrisColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "uri", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
+		{Name: "modified_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 	}
-	// RedirectUrIsTable holds the schema information for the "redirect_ur_is" table.
-	RedirectUrIsTable = &schema.Table{
-		Name:       "redirect_ur_is",
-		Columns:    RedirectUrIsColumns,
-		PrimaryKey: []*schema.Column{RedirectUrIsColumns[0]},
+	// RedirectUrisTable holds the schema information for the "redirect_uris" table.
+	RedirectUrisTable = &schema.Table{
+		Name:       "redirect_uris",
+		Columns:    RedirectUrisColumns,
+		PrimaryKey: []*schema.Column{RedirectUrisColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "redirect_ur_is_redirect_uris_redirect_uris",
-				Columns:    []*schema.Column{RedirectUrIsColumns[3]},
-				RefColumns: []*schema.Column{RedirectUrisColumns[0]},
+				Symbol:     "redirect_uris_users_redirect_uris",
+				Columns:    []*schema.Column{RedirectUrisColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -62,12 +63,12 @@ var (
 			{
 				Name:    "redirecturi_user_id_uri",
 				Unique:  true,
-				Columns: []*schema.Column{RedirectUrIsColumns[3], RedirectUrIsColumns[1]},
+				Columns: []*schema.Column{RedirectUrisColumns[4], RedirectUrisColumns[1]},
 			},
 		},
 	}
-	// RedirectUrisColumns holds the columns for the "redirect_uris" table.
-	RedirectUrisColumns = []*schema.Column{
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
 		{Name: "password_hash", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(1000)"}},
@@ -75,23 +76,23 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},
 	}
-	// RedirectUrisTable holds the schema information for the "redirect_uris" table.
-	RedirectUrisTable = &schema.Table{
-		Name:       "redirect_uris",
-		Columns:    RedirectUrisColumns,
-		PrimaryKey: []*schema.Column{RedirectUrisColumns[0]},
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AuthCodesTable,
-		RedirectUrIsTable,
 		RedirectUrisTable,
+		UsersTable,
 	}
 )
 
 func init() {
-	AuthCodesTable.ForeignKeys[0].RefTable = RedirectUrisTable
-	RedirectUrIsTable.ForeignKeys[0].RefTable = RedirectUrisTable
+	AuthCodesTable.ForeignKeys[0].RefTable = UsersTable
+	RedirectUrisTable.ForeignKeys[0].RefTable = UsersTable
 	RedirectUrisTable.Annotation = &entsql.Annotation{
 		Table: "redirect_uris",
 	}
