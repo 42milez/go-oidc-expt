@@ -33,6 +33,20 @@ func (acc *AuthCodeCreate) SetUserID(ti typedef.UserID) *AuthCodeCreate {
 	return acc
 }
 
+// SetExpireAt sets the "expire_at" field.
+func (acc *AuthCodeCreate) SetExpireAt(t time.Time) *AuthCodeCreate {
+	acc.mutation.SetExpireAt(t)
+	return acc
+}
+
+// SetNillableExpireAt sets the "expire_at" field if the given value is not nil.
+func (acc *AuthCodeCreate) SetNillableExpireAt(t *time.Time) *AuthCodeCreate {
+	if t != nil {
+		acc.SetExpireAt(*t)
+	}
+	return acc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (acc *AuthCodeCreate) SetCreatedAt(t time.Time) *AuthCodeCreate {
 	acc.mutation.SetCreatedAt(t)
@@ -82,6 +96,10 @@ func (acc *AuthCodeCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (acc *AuthCodeCreate) defaults() {
+	if _, ok := acc.mutation.ExpireAt(); !ok {
+		v := authcode.DefaultExpireAt()
+		acc.mutation.SetExpireAt(v)
+	}
 	if _, ok := acc.mutation.CreatedAt(); !ok {
 		v := authcode.DefaultCreatedAt()
 		acc.mutation.SetCreatedAt(v)
@@ -105,6 +123,9 @@ func (acc *AuthCodeCreate) check() error {
 		if err := authcode.UserIDValidator(string(v)); err != nil {
 			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "AuthCode.user_id": %w`, err)}
 		}
+	}
+	if _, ok := acc.mutation.ExpireAt(); !ok {
+		return &ValidationError{Name: "expire_at", err: errors.New(`ent: missing required field "AuthCode.expire_at"`)}
 	}
 	if _, ok := acc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AuthCode.created_at"`)}
@@ -142,6 +163,10 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 	if value, ok := acc.mutation.UserID(); ok {
 		_spec.SetField(authcode.FieldUserID, field.TypeString, value)
 		_node.UserID = value
+	}
+	if value, ok := acc.mutation.ExpireAt(); ok {
+		_spec.SetField(authcode.FieldExpireAt, field.TypeTime, value)
+		_node.ExpireAt = value
 	}
 	if value, ok := acc.mutation.CreatedAt(); ok {
 		_spec.SetField(authcode.FieldCreatedAt, field.TypeTime, value)

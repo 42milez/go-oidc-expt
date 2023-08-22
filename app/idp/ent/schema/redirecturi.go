@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
@@ -8,7 +10,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
-	"time"
 )
 
 // RedirectURI holds the schema definition for the RedirectURI entity.

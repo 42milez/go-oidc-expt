@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	codeType = "CHAR(20)" // The length of authorization code
+	codeType     = "CHAR(20)" // The length of authorization code
+	codeLifetime = 10 * time.Minute
 )
 
 // AuthCode holds the schema definition for the AuthCode entity.
@@ -38,6 +39,10 @@ func (AuthCode) Fields() []ent.Field {
 			}).
 			NotEmpty().
 			Immutable(),
+		field.Time("expire_at").
+			Default(func() time.Time {
+				return time.Now().Add(codeLifetime)
+			}),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

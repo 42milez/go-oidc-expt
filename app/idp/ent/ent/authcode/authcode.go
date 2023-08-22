@@ -17,6 +17,8 @@ const (
 	FieldCode = "code"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldExpireAt holds the string denoting the expire_at field in the database.
+	FieldExpireAt = "expire_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// Table holds the table name of the authcode in the database.
@@ -28,6 +30,7 @@ var Columns = []string{
 	FieldID,
 	FieldCode,
 	FieldUserID,
+	FieldExpireAt,
 	FieldCreatedAt,
 }
 
@@ -57,6 +60,8 @@ var (
 	CodeValidator func(string) error
 	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	UserIDValidator func(string) error
+	// DefaultExpireAt holds the default value on creation for the "expire_at" field.
+	DefaultExpireAt func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 )
@@ -77,6 +82,11 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 // ByUserID orders the results by the user_id field.
 func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
+}
+
+// ByExpireAt orders the results by the expire_at field.
+func ByExpireAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldExpireAt, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

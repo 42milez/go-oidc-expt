@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
+	"golang.org/x/exp/slices"
+
 	"github.com/42milez/go-oidc-server/app/idp/repository"
 
 	"github.com/42milez/go-oidc-server/pkg/xutil"
@@ -19,7 +22,6 @@ type Authorize struct {
 }
 
 func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest) (string, error) {
-	// TODO: Generate authorization code
 	code, err := xutil.MakeCryptoRandomString(authCodeLen)
 
 	if err != nil {
@@ -36,9 +38,24 @@ func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest
 		return "", err
 	}
 
-	// TODO: Read redirect uri from database and verify it
-	// ...
+	ru, err := p.Repo.SelectRedirectURIByUserID(ctx, userID)
 
-	// TODO: Return the authorization code and state
-	return fmt.Sprintf("http://client.example.org/cb?code=%s&state=af0ifjsldk", code), nil
+	if err != nil {
+		return "", err
+	}
+
+	if !validateRedirectURI(ru, param.RedirectURI) {
+		return "", errors.New("invalid redirect uri")
+	}
+
+	return fmt.Sprintf("%s?code=%s&state=%s", param.RedirectURI, code, param.State), nil
+}
+
+func validateRedirectURI(s []*ent.RedirectURI, v string) bool {
+	return slices.ContainsFunc(s, func(uri *ent.RedirectURI) bool {
+		if uri.URI != v {
+			return false
+		}
+		return true
+	})
 }

@@ -14,6 +14,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(20)"}},
 		{Name: "user_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
+		{Name: "expire_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
 	}
 	// AuthCodesTable holds the schema information for the "auth_codes" table.
