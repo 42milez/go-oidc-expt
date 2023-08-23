@@ -2,19 +2,20 @@ package main
 
 import (
 	"context"
+	"log"
+	"time"
+
 	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
-	"log"
-	"time"
 )
 
 func insertUsers(ctx context.Context, client *ent.Client) ([]*ent.User, error) {
-	params := []struct{
-		name string
+	params := []struct {
+		name   string
 		pwHash typedef.PasswordHash
 	}{
 		{name: "user01"},
@@ -39,14 +40,14 @@ func insertUsers(ctx context.Context, client *ent.Client) ([]*ent.User, error) {
 }
 
 func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User) ([]*ent.AuthCode, error) {
-	params := []struct{
-		code string
+	params := []struct {
+		code     string
 		expireAt time.Time
-		userID typedef.UserID
+		userID   typedef.UserID
 	}{
 		// TODO: Use const variable
-		{expireAt: time.Now().Add(10*time.Minute)},
-		{expireAt: time.Now().Add(10*time.Minute)},
+		{expireAt: time.Now().Add(10 * time.Minute)},
+		{expireAt: time.Now().Add(10 * time.Minute)},
 	}
 
 	for i, user := range users {
@@ -69,8 +70,8 @@ func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User)
 }
 
 func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.User) ([]*ent.RedirectURI, error) {
-	params := []struct{
-		uri string
+	params := []struct {
+		uri    string
 		userID typedef.UserID
 	}{
 		{uri: "http://example.com/cb1"},
