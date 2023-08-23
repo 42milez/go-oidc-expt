@@ -57,8 +57,6 @@ type Authenticate struct {
 //	@failure		500			{object}	model.InternalServerError
 //	@router			/v1/authenticate [post]
 func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
 	var body struct {
 		Name     string `json:"name" validate:"required"`
 		Password string `json:"password" validate:"required"`
@@ -80,7 +78,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := p.Service.Authenticate(ctx, body.Name, body.Password)
+	token, err := p.Service.Authenticate(r.Context(), body.Name, body.Password)
 
 	if err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{

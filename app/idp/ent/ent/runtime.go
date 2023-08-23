@@ -21,7 +21,21 @@ func init() {
 	// authcodeDescCode is the schema descriptor for code field.
 	authcodeDescCode := authcodeFields[0].Descriptor()
 	// authcode.CodeValidator is a validator for the "code" field. It is called by the builders before save.
-	authcode.CodeValidator = authcodeDescCode.Validators[0].(func(string) error)
+	authcode.CodeValidator = func() func(string) error {
+		validators := authcodeDescCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(code string) error {
+			for _, fn := range fns {
+				if err := fn(code); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// authcodeDescExpireAt is the schema descriptor for expire_at field.
 	authcodeDescExpireAt := authcodeFields[1].Descriptor()
 	// authcode.DefaultExpireAt holds the default value on creation for the expire_at field.
@@ -64,8 +78,6 @@ func init() {
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
-			validators[2].(func(string) error),
-			validators[3].(func(string) error),
 		}
 		return func(name string) error {
 			for _, fn := range fns {
@@ -97,21 +109,7 @@ func init() {
 	// userDescTotpSecret is the schema descriptor for totp_secret field.
 	userDescTotpSecret := userFields[3].Descriptor()
 	// user.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
-	user.TotpSecretValidator = func() func(string) error {
-		validators := userDescTotpSecret.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(totp_secret string) error {
-			for _, fn := range fns {
-				if err := fn(totp_secret); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	user.TotpSecretValidator = userDescTotpSecret.Validators[0].(func(string) error)
 	// userDescCreatedAt is the schema descriptor for created_at field.
 	userDescCreatedAt := userFields[4].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.

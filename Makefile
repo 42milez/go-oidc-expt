@@ -66,6 +66,7 @@ resolve:
 ## test: Run all tests
 test:
 	@\
+	CI=true \
 	DB_PORT=13306 \
 	REDIS_PORT=16379 \
 	go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`

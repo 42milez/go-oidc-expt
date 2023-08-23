@@ -1015,7 +1015,7 @@ type UserMutation struct {
 	typ                  string
 	id                   *typedef.UserID
 	name                 *string
-	password_hash        *typedef.PasswordHash
+	password_hash        *string
 	totp_secret          *string
 	created_at           *time.Time
 	modified_at          *time.Time
@@ -1172,12 +1172,12 @@ func (m *UserMutation) ResetName() {
 }
 
 // SetPasswordHash sets the "password_hash" field.
-func (m *UserMutation) SetPasswordHash(th typedef.PasswordHash) {
-	m.password_hash = &th
+func (m *UserMutation) SetPasswordHash(s string) {
+	m.password_hash = &s
 }
 
 // PasswordHash returns the value of the "password_hash" field in the mutation.
-func (m *UserMutation) PasswordHash() (r typedef.PasswordHash, exists bool) {
+func (m *UserMutation) PasswordHash() (r string, exists bool) {
 	v := m.password_hash
 	if v == nil {
 		return
@@ -1188,7 +1188,7 @@ func (m *UserMutation) PasswordHash() (r typedef.PasswordHash, exists bool) {
 // OldPasswordHash returns the old "password_hash" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldPasswordHash(ctx context.Context) (v typedef.PasswordHash, err error) {
+func (m *UserMutation) OldPasswordHash(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPasswordHash is only allowed on UpdateOne operations")
 	}
@@ -1540,7 +1540,7 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case user.FieldPasswordHash:
-		v, ok := value.(typedef.PasswordHash)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

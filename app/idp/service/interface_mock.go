@@ -9,7 +9,6 @@ import (
 	reflect "reflect"
 
 	ent "github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	typedef "github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -126,7 +125,7 @@ func (m *MockUserCreator) EXPECT() *MockUserCreatorMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockUserCreator) Create(ctx context.Context, name string, pw typedef.PasswordHash) (*ent.User, error) {
+func (m *MockUserCreator) Create(ctx context.Context, name, pw string) (*ent.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, name, pw)
 	ret0, _ := ret[0].(*ent.User)

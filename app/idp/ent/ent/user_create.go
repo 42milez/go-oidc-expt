@@ -30,8 +30,8 @@ func (uc *UserCreate) SetName(s string) *UserCreate {
 }
 
 // SetPasswordHash sets the "password_hash" field.
-func (uc *UserCreate) SetPasswordHash(th typedef.PasswordHash) *UserCreate {
-	uc.mutation.SetPasswordHash(th)
+func (uc *UserCreate) SetPasswordHash(s string) *UserCreate {
+	uc.mutation.SetPasswordHash(s)
 	return uc
 }
 
@@ -184,7 +184,7 @@ func (uc *UserCreate) check() error {
 		return &ValidationError{Name: "password_hash", err: errors.New(`ent: missing required field "User.password_hash"`)}
 	}
 	if v, ok := uc.mutation.PasswordHash(); ok {
-		if err := user.PasswordHashValidator(string(v)); err != nil {
+		if err := user.PasswordHashValidator(v); err != nil {
 			return &ValidationError{Name: "password_hash", err: fmt.Errorf(`ent: validator failed for field "User.password_hash": %w`, err)}
 		}
 	}

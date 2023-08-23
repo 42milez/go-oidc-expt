@@ -41,7 +41,7 @@ func (RedirectURI) Fields() []ent.Field {
 		field.String("user_id").
 			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{
-				dialect.MySQL: userIDType,
+				dialect.MySQL: UserIDSchemaType(),
 			}).
 			NotEmpty().
 			Immutable(),

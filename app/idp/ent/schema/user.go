@@ -22,12 +22,7 @@ const (
 	nameMinLength         = 6
 	passwordHashMaxLength = 1000
 	totpSecretLength      = 160
-)
-
-const (
-	userIDType       = "CHAR(26)"
-	passwordHashType = "VARCHAR(1000)"
-	totpSecretType   = "CHAR(160)"
+	userIDLength          = 26
 )
 
 // User holds the schema definition for the User entity.
@@ -41,41 +36,34 @@ func (User) Fields() []ent.Field {
 		field.String("id").
 			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{
-				dialect.MySQL: userIDType,
+				dialect.MySQL: UserIDSchemaType(),
 			}).
-			Immutable().
 			DefaultFunc(func() typedef.UserID {
 				return xutil.MakeUserID()
-			}),
+			}).
+			Immutable(),
 		field.String("name").
-			MaxLen(nameMaxLength).
-			MinLen(nameMinLength).
-			Match(regexp.MustCompile("^\\D[0-9a-z_]+")).
+			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-z_]{%d,%d}$", nameMinLength, nameMaxLength))).
 			Unique().
 			NotEmpty(),
 		field.String("password_hash").
-			GoType(typedef.PasswordHash("")).
 			SchemaType(map[string]string{
-				dialect.MySQL: passwordHashType,
+				dialect.MySQL: PasswordHashSchemaType(),
 			}).
 			Validate(func(s string) error {
 				if len(s) > passwordHashMaxLength {
-					return fmt.Errorf("password must be %d characters", passwordHashMaxLength)
+					return fmt.Errorf("password must be less than or equal to %d characters", passwordHashMaxLength)
 				}
 				return nil
 			}).
 			NotEmpty(),
 		field.String("totp_secret").
 			SchemaType(map[string]string{
-				dialect.MySQL: totpSecretType,
+				dialect.MySQL: TotoSecretSchemaType(),
 			}).
-			MaxLen(totpSecretLength).
-			Validate(func(s string) error {
-				if len(s) != totpSecretLength {
-					return fmt.Errorf("totp_secret must be %d characters", totpSecretLength)
-				}
-				return nil
-			}).
+			// TOTP secret is encoded with base32 encoding.
+			// https://datatracker.ietf.org/doc/html/rfc4648#page-8
+			Match(regexp.MustCompile(fmt.Sprintf("^[A-Z2-7=]{%d}$", totpSecretLength))).
 			Optional(),
 		field.Time("created_at").
 			Default(time.Now).
@@ -96,4 +84,16 @@ func (User) Edges() []ent.Edge {
 			StorageKey(edge.Column("user_id")).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
+}
+
+func PasswordHashSchemaType() string {
+	return fmt.Sprintf("CHAR(%d)", passwordHashMaxLength)
+}
+
+func TotoSecretSchemaType() string {
+	return fmt.Sprintf("CHAR(%d)", totpSecretLength)
+}
+
+func UserIDSchemaType() string {
+	return fmt.Sprintf("CHAR(%d)", userIDLength)
 }

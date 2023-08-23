@@ -40,17 +40,22 @@ func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Str("role", "idp").Logger()
 
-	if err := run(context.Background()); err != nil {
-		log.Fatal().Stack().Err(err).Msg("failed to shutdown")
-	}
-}
-
-func run(ctx context.Context) error {
 	cfg, err := config.New()
+
 	if err != nil {
 		log.Fatal().Stack().Err(err).Msg("failed to parse env variable")
 	}
 
+	if cfg.CI {
+		log.Logger.Level(zerolog.Disabled)
+	}
+
+	if err = run(context.Background(), cfg); err != nil {
+		log.Fatal().Stack().Err(err).Msg("failed to shutdown")
+	}
+}
+
+func run(ctx context.Context, cfg *config.Config) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
 	if err != nil {
 		log.Fatal().Stack().Err(err).Msgf("failed to listen port %d", cfg.Port)

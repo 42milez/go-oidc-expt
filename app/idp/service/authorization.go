@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"golang.org/x/exp/slices"
 
@@ -15,14 +16,12 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/model"
 )
 
-const authCodeLen = 20
-
 type Authorize struct {
 	Repo *repository.User
 }
 
 func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest) (string, error) {
-	code, err := xutil.MakeCryptoRandomString(authCodeLen)
+	code, err := xutil.MakeCryptoRandomString(config.AuthCodeLength)
 
 	if err != nil {
 		return "", err

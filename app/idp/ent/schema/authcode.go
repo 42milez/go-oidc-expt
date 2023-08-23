@@ -1,7 +1,11 @@
 package schema
 
 import (
+	"fmt"
+	"regexp"
 	"time"
+
+	"github.com/42milez/go-oidc-server/app/idp/config"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 
@@ -10,11 +14,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
-)
-
-const (
-	codeType     = "CHAR(20)" // The length of authorization code
-	codeLifetime = 10 * time.Minute
 )
 
 // AuthCode holds the schema definition for the AuthCode entity.
@@ -28,13 +27,14 @@ func (AuthCode) Fields() []ent.Field {
 		// TODO: Set length
 		field.String("code").
 			SchemaType(map[string]string{
-				dialect.MySQL: codeType,
+				dialect.MySQL: AuthCodeSchemaType(),
 			}).
+			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-zA-Z]{%d}$", config.AuthCodeLength))).
 			NotEmpty().
 			Immutable(),
 		field.Time("expire_at").
 			Default(func() time.Time {
-				return time.Now().Add(codeLifetime)
+				return time.Now().Add(config.AuthCodeLifetime)
 			}).
 			Immutable(),
 		field.Time("created_at").
@@ -43,7 +43,7 @@ func (AuthCode) Fields() []ent.Field {
 		field.String("user_id").
 			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{
-				dialect.MySQL: userIDType,
+				dialect.MySQL: UserIDSchemaType(),
 			}).
 			NotEmpty().
 			Immutable(),
@@ -56,4 +56,8 @@ func (AuthCode) Indexes() []ent.Index {
 		index.Fields("user_id", "code").
 			Unique(),
 	}
+}
+
+func AuthCodeSchemaType() string {
+	return fmt.Sprintf("CHAR(%d)", config.AuthCodeLength)
 }

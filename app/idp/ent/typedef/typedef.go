@@ -1,7 +1,5 @@
 package typedef
 
-type PasswordHash string
-
 type UserID string
 
 func (v UserID) IsZero() bool {

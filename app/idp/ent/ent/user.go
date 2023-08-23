@@ -21,7 +21,7 @@ type User struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// PasswordHash holds the value of the "password_hash" field.
-	PasswordHash typedef.PasswordHash `json:"password_hash,omitempty"`
+	PasswordHash string `json:"password_hash,omitempty"`
 	// TotpSecret holds the value of the "totp_secret" field.
 	TotpSecret string `json:"totp_secret,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -103,7 +103,7 @@ func (u *User) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field password_hash", values[i])
 			} else if value.Valid {
-				u.PasswordHash = typedef.PasswordHash(value.String)
+				u.PasswordHash = value.String
 			}
 		case user.FieldTotpSecret:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -173,7 +173,7 @@ func (u *User) String() string {
 	builder.WriteString(u.Name)
 	builder.WriteString(", ")
 	builder.WriteString("password_hash=")
-	builder.WriteString(fmt.Sprintf("%v", u.PasswordHash))
+	builder.WriteString(u.PasswordHash)
 	builder.WriteString(", ")
 	builder.WriteString("totp_secret=")
 	builder.WriteString(u.TotpSecret)

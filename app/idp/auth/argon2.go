@@ -8,7 +8,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
-	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -39,7 +38,7 @@ const parallelism uint8 = 4
 const saltLength uint32 = 128
 const keyLength uint32 = 256
 
-func GeneratePasswordHash(raw string) (typedef.PasswordHash, error) {
+func GeneratePasswordHash(raw string) (string, error) {
 	salt := make([]byte, saltLength)
 
 	if _, err := rand.Read(salt); err != nil {
@@ -48,7 +47,7 @@ func GeneratePasswordHash(raw string) (typedef.PasswordHash, error) {
 
 	hash := argon2.IDKey([]byte(raw), salt, iterations, memory, parallelism, keyLength)
 
-	repr := passwordHashRepr{
+	pwHashRP := passwordHashRepr{
 		Variant:     a2id,
 		Version:     argon2.Version,
 		Memory:      memory,
@@ -62,17 +61,17 @@ func GeneratePasswordHash(raw string) (typedef.PasswordHash, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
 
-	if err := enc.Encode(repr); err != nil {
+	if err := enc.Encode(pwHashRP); err != nil {
 		return "", xerr.Wrap(xerr.FailedToEncodeInToBytes, err)
 	}
 
 	ret := base64.RawStdEncoding.EncodeToString(buf.Bytes())
 
-	return typedef.PasswordHash(ret), nil
+	return ret, nil
 }
 
-func ComparePassword(raw string, encoded typedef.PasswordHash) (bool, error) {
-	b, err := base64.RawStdEncoding.DecodeString(string(encoded))
+func ComparePassword(raw string, encoded string) (bool, error) {
+	b, err := base64.RawStdEncoding.DecodeString(encoded)
 
 	if err != nil {
 		return false, xerr.Wrap(xerr.FailedToDecodeInToBytes, err)

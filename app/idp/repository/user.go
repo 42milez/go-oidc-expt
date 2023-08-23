@@ -19,7 +19,7 @@ type User struct {
 	DB    *ent.Client
 }
 
-func (p *User) Create(ctx context.Context, name string, pw typedef.PasswordHash) (*ent.User, error) {
+func (p *User) Create(ctx context.Context, name string, pw string) (*ent.User, error) {
 	return p.DB.User.Create().SetName(name).SetPasswordHash(pw).Save(ctx)
 }
 

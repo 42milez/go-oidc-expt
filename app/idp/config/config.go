@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"github.com/caarlos0/env/v8"
 )
@@ -21,6 +23,7 @@ type Config struct {
 	RedisPort     int    `env:"REDIS_PORT" envDefault:"6379"`
 	RedisPassword string `env:"REDIS_PASSWORD" envDefault:""`
 	RedisDB       int    `env:"REDIS_DB" envDefault:"0"`
+	CI            bool   `env:"CI" envDefault:"false"`
 }
 
 func (p *Config) IsDevelopment() bool {
@@ -34,3 +37,12 @@ func New() (*Config, error) {
 	}
 	return cfg, nil
 }
+
+const (
+	AppName = "idp"
+)
+
+const (
+	AuthCodeLifetime = 10 * time.Minute
+	AuthCodeLength   = 10
+)

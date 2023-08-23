@@ -19,6 +19,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+const (
+	apiVersionV1 = "v1"
+	apiVersionCurrent = apiVersionV1
+)
+
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
 	mux := chi.NewRouter()
 
@@ -66,7 +71,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	mux.Route("/create", func(r chi.Router) {
+	mux.Route(makePattern("create"), func(r chi.Router) {
 		r.Post("/", createUserHdlr.ServeHTTP)
 	})
 
@@ -76,7 +81,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	mux.Route("/auth", func(r chi.Router) {
+	mux.Route(makePattern("authenticate"), func(r chi.Router) {
 		r.Post("/", authenticateUserHdlr.ServeHTTP)
 	})
 
@@ -91,7 +96,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 
 	authorizePost := handler.NewAuthorizePost()
 
-	mux.Route("/idp/v1/authorize", func(r chi.Router) {
+	mux.Route(makePattern("authorize"), func(r chi.Router) {
 		r.Get("/", authorizeGet.ServeHTTP)
 		r.Post("/", authorizePost.ServeHTTP)
 	})
@@ -100,4 +105,8 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		xutil.CloseConnection(entClient)
 		xutil.CloseConnection(redisClient)
 	}, nil
+}
+
+func makePattern(path string) string {
+	return fmt.Sprintf("/%s/%s/%s", config.AppName, apiVersionCurrent, path)
 }

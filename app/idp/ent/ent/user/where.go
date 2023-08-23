@@ -62,9 +62,8 @@ func Name(v string) predicate.User {
 }
 
 // PasswordHash applies equality check predicate on the "password_hash" field. It's identical to PasswordHashEQ.
-func PasswordHash(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldEQ(FieldPasswordHash, vc))
+func PasswordHash(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPasswordHash, v))
 }
 
 // TotpSecret applies equality check predicate on the "totp_secret" field. It's identical to TotpSecretEQ.
@@ -148,87 +147,68 @@ func NameContainsFold(v string) predicate.User {
 }
 
 // PasswordHashEQ applies the EQ predicate on the "password_hash" field.
-func PasswordHashEQ(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldEQ(FieldPasswordHash, vc))
+func PasswordHashEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPasswordHash, v))
 }
 
 // PasswordHashNEQ applies the NEQ predicate on the "password_hash" field.
-func PasswordHashNEQ(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldNEQ(FieldPasswordHash, vc))
+func PasswordHashNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldPasswordHash, v))
 }
 
 // PasswordHashIn applies the In predicate on the "password_hash" field.
-func PasswordHashIn(vs ...typedef.PasswordHash) predicate.User {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = string(vs[i])
-	}
-	return predicate.User(sql.FieldIn(FieldPasswordHash, v...))
+func PasswordHashIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldPasswordHash, vs...))
 }
 
 // PasswordHashNotIn applies the NotIn predicate on the "password_hash" field.
-func PasswordHashNotIn(vs ...typedef.PasswordHash) predicate.User {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = string(vs[i])
-	}
-	return predicate.User(sql.FieldNotIn(FieldPasswordHash, v...))
+func PasswordHashNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldPasswordHash, vs...))
 }
 
 // PasswordHashGT applies the GT predicate on the "password_hash" field.
-func PasswordHashGT(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldGT(FieldPasswordHash, vc))
+func PasswordHashGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldPasswordHash, v))
 }
 
 // PasswordHashGTE applies the GTE predicate on the "password_hash" field.
-func PasswordHashGTE(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldGTE(FieldPasswordHash, vc))
+func PasswordHashGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldPasswordHash, v))
 }
 
 // PasswordHashLT applies the LT predicate on the "password_hash" field.
-func PasswordHashLT(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldLT(FieldPasswordHash, vc))
+func PasswordHashLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldPasswordHash, v))
 }
 
 // PasswordHashLTE applies the LTE predicate on the "password_hash" field.
-func PasswordHashLTE(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldLTE(FieldPasswordHash, vc))
+func PasswordHashLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldPasswordHash, v))
 }
 
 // PasswordHashContains applies the Contains predicate on the "password_hash" field.
-func PasswordHashContains(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldContains(FieldPasswordHash, vc))
+func PasswordHashContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldPasswordHash, v))
 }
 
 // PasswordHashHasPrefix applies the HasPrefix predicate on the "password_hash" field.
-func PasswordHashHasPrefix(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldHasPrefix(FieldPasswordHash, vc))
+func PasswordHashHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldPasswordHash, v))
 }
 
 // PasswordHashHasSuffix applies the HasSuffix predicate on the "password_hash" field.
-func PasswordHashHasSuffix(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldHasSuffix(FieldPasswordHash, vc))
+func PasswordHashHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldPasswordHash, v))
 }
 
 // PasswordHashEqualFold applies the EqualFold predicate on the "password_hash" field.
-func PasswordHashEqualFold(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldEqualFold(FieldPasswordHash, vc))
+func PasswordHashEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldPasswordHash, v))
 }
 
 // PasswordHashContainsFold applies the ContainsFold predicate on the "password_hash" field.
-func PasswordHashContainsFold(v typedef.PasswordHash) predicate.User {
-	vc := string(v)
-	return predicate.User(sql.FieldContainsFold(FieldPasswordHash, vc))
+func PasswordHashContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldPasswordHash, v))
 }
 
 // TotpSecretEQ applies the EQ predicate on the "totp_secret" field.

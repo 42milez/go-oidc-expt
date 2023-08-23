@@ -12,7 +12,7 @@ var (
 	// AuthCodesColumns holds the columns for the "auth_codes" table.
 	AuthCodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(20)"}},
+		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(10)"}},
 		{Name: "expire_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
@@ -70,9 +70,9 @@ var (
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
-		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
-		{Name: "password_hash", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(1000)"}},
-		{Name: "totp_secret", Type: field.TypeString, Nullable: true, Size: 160, SchemaType: map[string]string{"mysql": "CHAR(160)"}},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "password_hash", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(1000)"}},
+		{Name: "totp_secret", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "CHAR(160)"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},
 	}

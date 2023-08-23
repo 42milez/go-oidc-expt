@@ -60,3 +60,9 @@ func (v Err) Error() string {
 func Wrap(e1, e2 error) error {
 	return fmt.Errorf("%w (%w)", e1, e2)
 }
+
+// --------------------------------------------------
+
+var (
+	ErrPasswordNotMatched = errors.New("password not matched")
+)

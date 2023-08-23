@@ -15,7 +15,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent/user"
-	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -38,8 +37,8 @@ func (uu *UserUpdate) SetName(s string) *UserUpdate {
 }
 
 // SetPasswordHash sets the "password_hash" field.
-func (uu *UserUpdate) SetPasswordHash(th typedef.PasswordHash) *UserUpdate {
-	uu.mutation.SetPasswordHash(th)
+func (uu *UserUpdate) SetPasswordHash(s string) *UserUpdate {
+	uu.mutation.SetPasswordHash(s)
 	return uu
 }
 
@@ -190,7 +189,7 @@ func (uu *UserUpdate) check() error {
 		}
 	}
 	if v, ok := uu.mutation.PasswordHash(); ok {
-		if err := user.PasswordHashValidator(string(v)); err != nil {
+		if err := user.PasswordHashValidator(v); err != nil {
 			return &ValidationError{Name: "password_hash", err: fmt.Errorf(`ent: validator failed for field "User.password_hash": %w`, err)}
 		}
 	}
@@ -346,8 +345,8 @@ func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 }
 
 // SetPasswordHash sets the "password_hash" field.
-func (uuo *UserUpdateOne) SetPasswordHash(th typedef.PasswordHash) *UserUpdateOne {
-	uuo.mutation.SetPasswordHash(th)
+func (uuo *UserUpdateOne) SetPasswordHash(s string) *UserUpdateOne {
+	uuo.mutation.SetPasswordHash(s)
 	return uuo
 }
 
@@ -511,7 +510,7 @@ func (uuo *UserUpdateOne) check() error {
 		}
 	}
 	if v, ok := uuo.mutation.PasswordHash(); ok {
-		if err := user.PasswordHashValidator(string(v)); err != nil {
+		if err := user.PasswordHashValidator(v); err != nil {
 			return &ValidationError{Name: "password_hash", err: fmt.Errorf(`ent: validator failed for field "User.password_hash": %w`, err)}
 		}
 	}
