@@ -14,10 +14,10 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
-//go:embed cert/private.pem
+//go:embed cert/jwt/private.pem
 var rawPrivateKey []byte
 
-//go:embed cert/public.pem
+//go:embed cert/jwt/public.pem
 var rawPublicKey []byte
 
 const (
