@@ -1,4 +1,4 @@
-package auth
+package jwt
 
 import (
 	_ "embed"
@@ -14,10 +14,10 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
-//go:embed cert/jwt/private.pem
+//go:embed cert/private.pem
 var rawPrivateKey []byte
 
-//go:embed cert/jwt/public.pem
+//go:embed cert/public.pem
 var rawPublicKey []byte
 
 const (
@@ -29,12 +29,12 @@ const (
 	errInvalidToken            xerr.Err = "invalid token"
 )
 
-type JWTUtil struct {
+type Util struct {
 	privateKey, publicKey jwk.Key
 	clock                 xutil.Clocker
 }
 
-func NewJWTUtil(clock xutil.Clocker) (*JWTUtil, error) {
+func NewUtil(clock xutil.Clocker) (*Util, error) {
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
 		return nil, xerr.Wrap(errFailedToParsePrivateKey, err)
@@ -45,7 +45,7 @@ func NewJWTUtil(clock xutil.Clocker) (*JWTUtil, error) {
 		return nil, xerr.Wrap(errFailedToParsePublicKey, err)
 	}
 
-	return &JWTUtil{
+	return &Util{
 		privateKey: privKey,
 		publicKey:  pubKey,
 		clock:      clock,
@@ -56,7 +56,7 @@ const issuer = "github.com/42milez/go-oidc-server"
 const accessTokenSubject = "access_token"
 const nameKey = "name"
 
-func (p *JWTUtil) GenerateAccessToken(name string) ([]byte, error) {
+func (p *Util) GenerateAccessToken(name string) ([]byte, error) {
 	token, err := jwt.
 		NewBuilder().
 		JwtID(uuid.New().String()).
@@ -83,15 +83,15 @@ func parseKey(key []byte) (jwk.Key, error) {
 	return jwk.ParseKey(key, jwk.WithPEM(true))
 }
 
-func (p *JWTUtil) parseRequest(r *http.Request) (jwt.Token, error) {
+func (p *Util) parseRequest(r *http.Request) (jwt.Token, error) {
 	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
 }
 
-func (p *JWTUtil) validate(token jwt.Token) error {
+func (p *Util) validate(token jwt.Token) error {
 	return jwt.Validate(token, jwt.WithClock(p.clock))
 }
 
-func (p *JWTUtil) ExtractToken(r *http.Request) (jwt.Token, error) {
+func (p *Util) ExtractToken(r *http.Request) (jwt.Token, error) {
 	token, err := p.parseRequest(r)
 
 	if err != nil {

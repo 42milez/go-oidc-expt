@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/42milez/go-oidc-server/app/idp/jwt"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
 	"github.com/42milez/go-oidc-server/app/idp/service"
@@ -20,7 +20,7 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(entClient *ent.Client, redisClient *redis.Client, jwtUtil *auth.JWTUtil) (*CreateUser, error) {
+func NewCreateUser(entClient *ent.Client, redisClient *redis.Client, jwtUtil *jwt.Util) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{

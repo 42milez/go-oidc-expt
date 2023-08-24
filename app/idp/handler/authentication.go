@@ -3,9 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"github.com/42milez/go-oidc-server/app/idp/cookie"
+	"github.com/42milez/go-oidc-server/app/idp/jwt"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
 	"github.com/42milez/go-oidc-server/app/idp/service"
@@ -18,7 +18,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticate(entClient *ent.Client, cookie *cookie.Util, jwtUtil *auth.JWTUtil) (*Authenticate, error) {
+func NewAuthenticate(entClient *ent.Client, cookie *cookie.Util, jwtUtil *jwt.Util) (*Authenticate, error) {
 	return &Authenticate{
 		Cookie: cookie,
 		Service: &service.Authenticate{

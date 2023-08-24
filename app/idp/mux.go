@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"github.com/42milez/go-oidc-server/app/idp/cookie"
+	"github.com/42milez/go-oidc-server/app/idp/jwt"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/repository"
@@ -51,7 +51,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	// ==================================================
 
 	cookieUtil := cookie.NewUtil(cfg)
-	jwtUtil, err := auth.NewJWTUtil(&xutil.RealClocker{})
+	jwtUtil, err := jwt.NewUtil(&xutil.RealClocker{})
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)

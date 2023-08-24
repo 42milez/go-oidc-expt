@@ -15,6 +15,6 @@
 # vendor/
 
 # go-oidc-server
-app/idp/auth/cert
+app/idp/jwt/cert
 bin/
 secret/

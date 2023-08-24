@@ -1,4 +1,4 @@
-package auth
+package jwt
 
 import (
 	"bytes"
@@ -31,7 +31,7 @@ func TestEmbed(t *testing.T) {
 }
 
 func TestJWT_GenerateAccessToken(t *testing.T) {
-	jwtUtil, err := NewJWTUtil(&xutil.RealClocker{})
+	jwtUtil, err := NewUtil(&xutil.RealClocker{})
 
 	if err != nil {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
@@ -78,7 +78,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	jwtUtil, err := NewJWTUtil(c)
+	jwtUtil, err := NewUtil(c)
 
 	if err != nil {
 		t.Fatal(err)
@@ -117,7 +117,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatalf("%+v: %+v", errFailedToBuildToken, err)
 		}
 
-		jwtUtil, err := NewJWTUtil(c)
+		jwtUtil, err := NewUtil(c)
 
 		if err != nil {
 			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
@@ -144,7 +144,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatalf("%+v: %+v", errFailedToBuildToken, err)
 		}
 
-		jwtUtil, err := NewJWTUtil(xtestutil.FixedTomorrowClocker{})
+		jwtUtil, err := NewUtil(xtestutil.FixedTomorrowClocker{})
 
 		if err != nil {
 			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
