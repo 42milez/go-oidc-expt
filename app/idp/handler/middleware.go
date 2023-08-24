@@ -1,13 +1,13 @@
 package handler
 
 import (
+	"github.com/42milez/go-oidc-server/app/idp/session"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
-func RestoreSession(sess *xutil.Session) func(next http.Handler) http.Handler {
+func RestoreSession(sess *session.Util) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			req, err := sess.FillContext(r)

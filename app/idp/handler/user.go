@@ -3,14 +3,13 @@ package handler
 import (
 	"encoding/json"
 	"github.com/42milez/go-oidc-server/app/idp/jwt"
+	"github.com/42milez/go-oidc-server/app/idp/session"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
 	"github.com/42milez/go-oidc-server/app/idp/service"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
-	"github.com/redis/go-redis/v9"
-
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-playground/validator/v10"
@@ -20,7 +19,7 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(entClient *ent.Client, redisClient *redis.Client, jwtUtil *jwt.Util) (*CreateUser, error) {
+func NewCreateUser(entClient *ent.Client, sessionUtil *session.Util, jwtUtil *jwt.Util) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{
@@ -28,12 +27,7 @@ func NewCreateUser(entClient *ent.Client, redisClient *redis.Client, jwtUtil *jw
 				DB:    entClient,
 			},
 		},
-		Session: &xutil.Session{
-			Repo: &repository.Session{
-				Cache: redisClient,
-			},
-			Token: jwtUtil,
-		},
+		Session: sessionUtil,
 		Validator: validator.New(),
 	}, nil
 }

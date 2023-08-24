@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/42milez/go-oidc-server/app/idp/session"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
@@ -27,7 +28,7 @@ func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest
 		return "", err
 	}
 
-	userID, ok := xutil.GetUserID(ctx)
+	userID, ok := session.GetUserID(ctx)
 
 	if !ok {
 		return "", errors.New("user id not found")

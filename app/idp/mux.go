@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/42milez/go-oidc-server/app/idp/cookie"
 	"github.com/42milez/go-oidc-server/app/idp/jwt"
+	"github.com/42milez/go-oidc-server/app/idp/session"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/repository"
@@ -50,12 +51,14 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  Route
 	// ==================================================
 
-	cookieUtil := cookie.NewUtil(cfg)
 	jwtUtil, err := jwt.NewUtil(&xutil.RealClocker{})
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
+
+	cookieUtil := cookie.NewUtil(cfg)
+	sessionUtil := session.NewUtil(redisClient, jwtUtil)
 
 	//  Swagger Endpoint
 	// --------------------------------------------------
@@ -74,7 +77,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  User Endpoint
 	// --------------------------------------------------
 
-	createUserHdlr, err := handler.NewCreateUser(entClient, redisClient, jwtUtil)
+	createUserHdlr, err := handler.NewCreateUser(entClient, sessionUtil, jwtUtil)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
@@ -84,7 +87,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		r.Post("/", createUserHdlr.ServeHTTP)
 	})
 
-	authenticateUserHdlr, err := handler.NewAuthenticate(entClient, cookieUtil, jwtUtil)
+	authenticateUserHdlr, err := handler.NewAuthenticate(entClient, cookieUtil, sessionUtil, jwtUtil)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)

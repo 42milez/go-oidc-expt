@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"github.com/42milez/go-oidc-server/app/idp/cookie"
 	"github.com/42milez/go-oidc-server/app/idp/jwt"
+	"github.com/42milez/go-oidc-server/app/idp/repository"
+	"github.com/42milez/go-oidc-server/app/idp/service"
+	"github.com/42milez/go-oidc-server/app/idp/session"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/app/idp/repository"
-	"github.com/42milez/go-oidc-server/app/idp/service"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
-
 	"github.com/rs/zerolog/log"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
@@ -18,9 +18,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticate(entClient *ent.Client, cookie *cookie.Util, jwtUtil *jwt.Util) (*Authenticate, error) {
+func NewAuthenticate(entClient *ent.Client, cookieUtil *cookie.Util, sessionUtil *session.Util, jwtUtil *jwt.Util) (*Authenticate, error) {
 	return &Authenticate{
-		Cookie: cookie,
 		Service: &service.Authenticate{
 			Repo: &repository.User{
 				Clock: &xutil.RealClocker{},
@@ -28,6 +27,8 @@ func NewAuthenticate(entClient *ent.Client, cookie *cookie.Util, jwtUtil *jwt.Ut
 			},
 			Token: jwtUtil,
 		},
+		Cookie: cookieUtil,
+		Session: sessionUtil,
 		Validator: validator.New(),
 	}, nil
 }
@@ -35,6 +36,7 @@ func NewAuthenticate(entClient *ent.Client, cookie *cookie.Util, jwtUtil *jwt.Ut
 type Authenticate struct {
 	Service   Authenticator
 	Cookie    *cookie.Util
+	Session   *session.Util
 	Validator *validator.Validate
 }
 

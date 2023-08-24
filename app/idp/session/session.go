@@ -1,7 +1,11 @@
-package xutil
+package session
 
 import (
 	"context"
+	"github.com/42milez/go-oidc-server/app/idp/jwt"
+	"github.com/42milez/go-oidc-server/app/idp/repository"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/redis/go-redis/v9"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
@@ -12,14 +16,23 @@ const (
 	ErrFailedToExtractToken xerr.Err = "failed to extract token"
 )
 
-type IDKey struct{}
-
-type Session struct {
-	Repo  SessionManager
-	Token TokenExtractor
+func NewUtil(redisClient *redis.Client, jwtUtil *jwt.Util) *Util {
+	return &Util{
+		Repo: &repository.Session{
+			Cache: redisClient,
+		},
+		Token: jwtUtil,
+	}
 }
 
-func (p *Session) FillContext(r *http.Request) (*http.Request, error) {
+type IDKey struct{}
+
+type Util struct {
+	Repo  xutil.SessionManager
+	Token xutil.TokenExtractor
+}
+
+func (p *Util) FillContext(r *http.Request) (*http.Request, error) {
 	token, err := p.Token.ExtractToken(r)
 
 	if err != nil {
