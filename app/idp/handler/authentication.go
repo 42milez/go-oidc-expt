@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/auth"
@@ -18,13 +17,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticate(entClient *ent.Client) (*Authenticate, error) {
-	jwtUtil, err := auth.NewJWTUtil(&xutil.RealClocker{})
-
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
-	}
-
+func NewAuthenticate(entClient *ent.Client, jwtUtil *auth.JWTUtil) (*Authenticate, error) {
 	return &Authenticate{
 		Service: &service.Authenticate{
 			Repo: &repository.User{

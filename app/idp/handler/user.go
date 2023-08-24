@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/auth"
@@ -21,13 +20,7 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(entClient *ent.Client, redisClient *redis.Client) (*CreateUser, error) {
-	jwtUtil, err := auth.NewJWTUtil(&xutil.RealClocker{})
-
-	if err != nil {
-		return nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
-	}
-
+func NewCreateUser(entClient *ent.Client, redisClient *redis.Client, jwtUtil *auth.JWTUtil) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{

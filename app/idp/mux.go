@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/42milez/go-oidc-server/app/idp/auth"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/repository"
@@ -48,6 +49,12 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  Route
 	// ==================================================
 
+	jwtUtil, err := auth.NewJWTUtil(&xutil.RealClocker{})
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
+	}
+
 	//  Swagger Endpoint
 	// --------------------------------------------------
 
@@ -65,7 +72,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  User Endpoint
 	// --------------------------------------------------
 
-	createUserHdlr, err := handler.NewCreateUser(entClient, redisClient)
+	createUserHdlr, err := handler.NewCreateUser(entClient, redisClient, jwtUtil)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
@@ -75,7 +82,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		r.Post("/", createUserHdlr.ServeHTTP)
 	})
 
-	authenticateUserHdlr, err := handler.NewAuthenticate(entClient)
+	authenticateUserHdlr, err := handler.NewAuthenticate(entClient, jwtUtil)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
