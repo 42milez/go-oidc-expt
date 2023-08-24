@@ -57,12 +57,13 @@ func (v Err) Error() string {
 	return string(v)
 }
 
-func Wrap(e1, e2 error) error {
-	return fmt.Errorf("%w (%w)", e1, e2)
+func (v Err) Wrap(e error) error {
+	return fmt.Errorf("%w (%w)", v, e)
 }
 
 // --------------------------------------------------
 
-var (
-	ErrPasswordNotMatched = errors.New("password not matched")
+const (
+	FailedToExtractToken Err = "failed to extract token"
+	PasswordNotMatched Err = "password not matched"
 )

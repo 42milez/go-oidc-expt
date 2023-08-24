@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/model"
@@ -21,7 +22,7 @@ type Authorizer interface {
 }
 
 type Authenticator interface {
-	Authenticate(ctx context.Context, name, pw string) error
+	Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error)
 }
 
 type UserCreator interface {

@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/42milez/go-oidc-server/app/idp/cookie"
+	"github.com/42milez/go-oidc-server/app/idp/entity"
 	"github.com/42milez/go-oidc-server/app/idp/jwt"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
 	"github.com/42milez/go-oidc-server/app/idp/service"
@@ -76,18 +77,32 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := p.Service.Authenticate(r.Context(), body.Name, body.Password); err != nil {
+	userID, err := p.Service.Authenticate(r.Context(), body.Name, body.Password)
+
+	if err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 			Error: xerr.UnexpectedErrorOccurred,
 		})
 		return
 	}
 
-	// TODO: Create a session with secret key
-	// ...
+	sessionID, err := p.Session.Create(&entity.UserSession{
+		ID: userID,
+	})
 
-	// TODO: Save session id in cookie
-	// ...
+	if err != nil {
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
+		})
+		return
+	}
+
+	if err = p.Cookie.SetSessionID(w, sessionID); err != nil {
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
+		})
+		return
+	}
 
 	// TODO: Redirect to consent url
 	// ...
