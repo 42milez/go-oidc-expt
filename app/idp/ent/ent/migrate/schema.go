@@ -71,7 +71,7 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(26)"}},
 		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "password_hash", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(1000)"}},
+		{Name: "password", Type: field.TypeString, SchemaType: map[string]string{"mysql": "VARCHAR(271)"}},
 		{Name: "totp_secret", Type: field.TypeString, Nullable: true, SchemaType: map[string]string{"mysql": "CHAR(160)"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},

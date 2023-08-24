@@ -25,7 +25,7 @@ func insertUsers(ctx context.Context, client *ent.Client) ([]*ent.User, error) {
 	}
 
 	for i, v := range params {
-		pwHash, err := auth.GeneratePasswordHash(v.name)
+		pwHash, err := auth.HashPassword(v.name)
 		if err != nil {
 			return nil, err
 		}
@@ -35,7 +35,7 @@ func insertUsers(ctx context.Context, client *ent.Client) ([]*ent.User, error) {
 	builders := make([]*ent.UserCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = client.User.Create().SetName(v.name).SetPasswordHash(v.pwHash)
+		builders[i] = client.User.Create().SetName(v.name).SetPassword(v.pwHash)
 	}
 
 	return client.User.CreateBulk(builders...).Save(ctx)

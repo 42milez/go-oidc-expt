@@ -88,24 +88,10 @@ func init() {
 			return nil
 		}
 	}()
-	// userDescPasswordHash is the schema descriptor for password_hash field.
-	userDescPasswordHash := userFields[2].Descriptor()
-	// user.PasswordHashValidator is a validator for the "password_hash" field. It is called by the builders before save.
-	user.PasswordHashValidator = func() func(string) error {
-		validators := userDescPasswordHash.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(password_hash string) error {
-			for _, fn := range fns {
-				if err := fn(password_hash); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	// userDescPassword is the schema descriptor for password field.
+	userDescPassword := userFields[2].Descriptor()
+	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
 	// userDescTotpSecret is the schema descriptor for totp_secret field.
 	userDescTotpSecret := userFields[3].Descriptor()
 	// user.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.

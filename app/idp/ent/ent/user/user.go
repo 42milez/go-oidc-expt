@@ -17,8 +17,8 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldPasswordHash holds the string denoting the password_hash field in the database.
-	FieldPasswordHash = "password_hash"
+	// FieldPassword holds the string denoting the password field in the database.
+	FieldPassword = "password"
 	// FieldTotpSecret holds the string denoting the totp_secret field in the database.
 	FieldTotpSecret = "totp_secret"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -51,7 +51,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
-	FieldPasswordHash,
+	FieldPassword,
 	FieldTotpSecret,
 	FieldCreatedAt,
 	FieldModifiedAt,
@@ -70,8 +70,8 @@ func ValidColumn(column string) bool {
 var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
-	// PasswordHashValidator is a validator for the "password_hash" field. It is called by the builders before save.
-	PasswordHashValidator func(string) error
+	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	PasswordValidator func(string) error
 	// TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
 	TotpSecretValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -97,9 +97,9 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
-// ByPasswordHash orders the results by the password_hash field.
-func ByPasswordHash(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPasswordHash, opts...).ToFunc()
+// ByPassword orders the results by the password field.
+func ByPassword(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPassword, opts...).ToFunc()
 }
 
 // ByTotpSecret orders the results by the totp_secret field.

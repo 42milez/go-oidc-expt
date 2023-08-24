@@ -38,7 +38,7 @@ const parallelism uint8 = 4
 const saltLength uint32 = 16
 const keyLength uint32 = 32
 
-func GeneratePasswordHash(raw string) (string, error) {
+func HashPassword(raw string) (string, error) {
 	salt := make([]byte, saltLength)
 
 	if _, err := rand.Read(salt); err != nil {

@@ -25,7 +25,7 @@ type CreateUser struct {
 }
 
 func (p *CreateUser) CreateUser(ctx context.Context, name, pw string) (*ent.User, error) {
-	hash, err := auth.GeneratePasswordHash(pw)
+	hash, err := auth.HashPassword(pw)
 
 	if err != nil {
 		log.Error().Err(err).Msg(xerr.Wrap(errFailedToGeneratePassword, err).Error())

@@ -1015,7 +1015,7 @@ type UserMutation struct {
 	typ                  string
 	id                   *typedef.UserID
 	name                 *string
-	password_hash        *string
+	password             *string
 	totp_secret          *string
 	created_at           *time.Time
 	modified_at          *time.Time
@@ -1171,40 +1171,40 @@ func (m *UserMutation) ResetName() {
 	m.name = nil
 }
 
-// SetPasswordHash sets the "password_hash" field.
-func (m *UserMutation) SetPasswordHash(s string) {
-	m.password_hash = &s
+// SetPassword sets the "password" field.
+func (m *UserMutation) SetPassword(s string) {
+	m.password = &s
 }
 
-// PasswordHash returns the value of the "password_hash" field in the mutation.
-func (m *UserMutation) PasswordHash() (r string, exists bool) {
-	v := m.password_hash
+// Password returns the value of the "password" field in the mutation.
+func (m *UserMutation) Password() (r string, exists bool) {
+	v := m.password
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldPasswordHash returns the old "password_hash" field's value of the User entity.
+// OldPassword returns the old "password" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldPasswordHash(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldPassword(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPasswordHash is only allowed on UpdateOne operations")
+		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPasswordHash requires an ID field in the mutation")
+		return v, errors.New("OldPassword requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPasswordHash: %w", err)
+		return v, fmt.Errorf("querying old value for OldPassword: %w", err)
 	}
-	return oldValue.PasswordHash, nil
+	return oldValue.Password, nil
 }
 
-// ResetPasswordHash resets all changes to the "password_hash" field.
-func (m *UserMutation) ResetPasswordHash() {
-	m.password_hash = nil
+// ResetPassword resets all changes to the "password" field.
+func (m *UserMutation) ResetPassword() {
+	m.password = nil
 }
 
 // SetTotpSecret sets the "totp_secret" field.
@@ -1474,8 +1474,8 @@ func (m *UserMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, user.FieldName)
 	}
-	if m.password_hash != nil {
-		fields = append(fields, user.FieldPasswordHash)
+	if m.password != nil {
+		fields = append(fields, user.FieldPassword)
 	}
 	if m.totp_secret != nil {
 		fields = append(fields, user.FieldTotpSecret)
@@ -1496,8 +1496,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldName:
 		return m.Name()
-	case user.FieldPasswordHash:
-		return m.PasswordHash()
+	case user.FieldPassword:
+		return m.Password()
 	case user.FieldTotpSecret:
 		return m.TotpSecret()
 	case user.FieldCreatedAt:
@@ -1515,8 +1515,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case user.FieldName:
 		return m.OldName(ctx)
-	case user.FieldPasswordHash:
-		return m.OldPasswordHash(ctx)
+	case user.FieldPassword:
+		return m.OldPassword(ctx)
 	case user.FieldTotpSecret:
 		return m.OldTotpSecret(ctx)
 	case user.FieldCreatedAt:
@@ -1539,12 +1539,12 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case user.FieldPasswordHash:
+	case user.FieldPassword:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetPasswordHash(v)
+		m.SetPassword(v)
 		return nil
 	case user.FieldTotpSecret:
 		v, ok := value.(string)
@@ -1628,8 +1628,8 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldName:
 		m.ResetName()
 		return nil
-	case user.FieldPasswordHash:
-		m.ResetPasswordHash()
+	case user.FieldPassword:
+		m.ResetPassword()
 		return nil
 	case user.FieldTotpSecret:
 		m.ResetTotpSecret()

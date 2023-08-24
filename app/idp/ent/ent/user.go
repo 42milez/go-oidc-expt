@@ -20,8 +20,8 @@ type User struct {
 	ID typedef.UserID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// PasswordHash holds the value of the "password_hash" field.
-	PasswordHash string `json:"password_hash,omitempty"`
+	// Password holds the value of the "password" field.
+	Password string `json:"password,omitempty"`
 	// TotpSecret holds the value of the "totp_secret" field.
 	TotpSecret string `json:"totp_secret,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -68,7 +68,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID, user.FieldName, user.FieldPasswordHash, user.FieldTotpSecret:
+		case user.FieldID, user.FieldName, user.FieldPassword, user.FieldTotpSecret:
 			values[i] = new(sql.NullString)
 		case user.FieldCreatedAt, user.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
@@ -99,11 +99,11 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Name = value.String
 			}
-		case user.FieldPasswordHash:
+		case user.FieldPassword:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field password_hash", values[i])
+				return fmt.Errorf("unexpected type %T for field password", values[i])
 			} else if value.Valid {
-				u.PasswordHash = value.String
+				u.Password = value.String
 			}
 		case user.FieldTotpSecret:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -172,8 +172,8 @@ func (u *User) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(u.Name)
 	builder.WriteString(", ")
-	builder.WriteString("password_hash=")
-	builder.WriteString(u.PasswordHash)
+	builder.WriteString("password=")
+	builder.WriteString(u.Password)
 	builder.WriteString(", ")
 	builder.WriteString("totp_secret=")
 	builder.WriteString(u.TotpSecret)

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/idp/auth"
@@ -19,7 +20,7 @@ func (p *Authenticate) Authenticate(ctx context.Context, name, pw string) error 
 		return err
 	}
 
-	ok, err := auth.ComparePassword(pw, user.PasswordHash)
+	ok, err := auth.ComparePassword(pw, user.Password)
 
 	if err != nil {
 		return err

@@ -18,11 +18,11 @@ import (
 )
 
 const (
-	nameMaxLength         = 30
-	nameMinLength         = 6
-	passwordHashMaxLength = 1000
-	totpSecretLength      = 160
-	userIDLength          = 26
+	nameMaxLength    = 30
+	nameMinLength    = 6
+	passwordLength   = 271
+	totpSecretLength = 160
+	userIDLength     = 26
 )
 
 // User holds the schema definition for the User entity.
@@ -46,15 +46,9 @@ func (User) Fields() []ent.Field {
 			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-z_]{%d,%d}$", nameMinLength, nameMaxLength))).
 			Unique().
 			NotEmpty(),
-		field.String("password_hash").
+		field.String("password").
 			SchemaType(map[string]string{
-				dialect.MySQL: PasswordHashSchemaType(),
-			}).
-			Validate(func(s string) error {
-				if len(s) > passwordHashMaxLength {
-					return fmt.Errorf("password must be less than or equal to %d characters", passwordHashMaxLength)
-				}
-				return nil
+				dialect.MySQL: PasswordSchemaType(),
 			}).
 			NotEmpty(),
 		field.String("totp_secret").
@@ -86,8 +80,8 @@ func (User) Edges() []ent.Edge {
 	}
 }
 
-func PasswordHashSchemaType() string {
-	return fmt.Sprintf("CHAR(%d)", passwordHashMaxLength)
+func PasswordSchemaType() string {
+	return fmt.Sprintf("VARCHAR(%d)", passwordLength)
 }
 
 func TotoSecretSchemaType() string {

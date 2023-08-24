@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	apiVersionV1 = "v1"
+	apiVersionV1      = "v1"
 	apiVersionCurrent = apiVersionV1
 )
 

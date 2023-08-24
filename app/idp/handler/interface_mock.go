@@ -127,12 +127,11 @@ func (m *MockAuthenticator) EXPECT() *MockAuthenticatorMockRecorder {
 }
 
 // Authenticate mocks base method.
-func (m *MockAuthenticator) Authenticate(ctx context.Context, name, pw string) (string, error) {
+func (m *MockAuthenticator) Authenticate(ctx context.Context, name, pw string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Authenticate", ctx, name, pw)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Authenticate indicates an expected call of Authenticate.

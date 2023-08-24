@@ -20,7 +20,7 @@ type User struct {
 }
 
 func (p *User) Create(ctx context.Context, name string, pw string) (*ent.User, error) {
-	return p.DB.User.Create().SetName(name).SetPasswordHash(pw).Save(ctx)
+	return p.DB.User.Create().SetName(name).SetPassword(pw).Save(ctx)
 }
 
 func (p *User) SelectByName(ctx context.Context, name string) (*ent.User, error) {
