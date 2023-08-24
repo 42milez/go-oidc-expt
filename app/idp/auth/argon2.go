@@ -35,8 +35,8 @@ type passwordHashRepr struct {
 const memory uint32 = 64 * 1024
 const iterations uint32 = 3
 const parallelism uint8 = 4
-const saltLength uint32 = 128
-const keyLength uint32 = 256
+const saltLength uint32 = 16
+const keyLength uint32 = 32
 
 func GeneratePasswordHash(raw string) (string, error) {
 	salt := make([]byte, saltLength)
