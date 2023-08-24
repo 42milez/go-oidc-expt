@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/42milez/go-oidc-server/app/idp/auth"
+	"github.com/42milez/go-oidc-server/app/idp/cookie"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/repository"
@@ -49,6 +50,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  Route
 	// ==================================================
 
+	cookieUtil := cookie.NewUtil(cfg)
 	jwtUtil, err := auth.NewJWTUtil(&xutil.RealClocker{})
 
 	if err != nil {
@@ -82,7 +84,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		r.Post("/", createUserHdlr.ServeHTTP)
 	})
 
-	authenticateUserHdlr, err := handler.NewAuthenticate(entClient, jwtUtil)
+	authenticateUserHdlr, err := handler.NewAuthenticate(entClient, cookieUtil, jwtUtil)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)

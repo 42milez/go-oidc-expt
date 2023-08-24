@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/42milez/go-oidc-server/app/idp/cookie"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/auth"
@@ -17,8 +18,9 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticate(entClient *ent.Client, jwtUtil *auth.JWTUtil) (*Authenticate, error) {
+func NewAuthenticate(entClient *ent.Client, cookie *cookie.Util, jwtUtil *auth.JWTUtil) (*Authenticate, error) {
 	return &Authenticate{
+		Cookie: cookie,
 		Service: &service.Authenticate{
 			Repo: &repository.User{
 				Clock: &xutil.RealClocker{},
@@ -32,6 +34,7 @@ func NewAuthenticate(entClient *ent.Client, jwtUtil *auth.JWTUtil) (*Authenticat
 
 type Authenticate struct {
 	Service   Authenticator
+	Cookie    *cookie.Util
 	Validator *validator.Validate
 }
 
