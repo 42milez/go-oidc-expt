@@ -78,20 +78,23 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := p.Service.Authenticate(r.Context(), body.Name, body.Password)
-
-	if err != nil {
+	if err := p.Service.Authenticate(r.Context(), body.Name, body.Password); err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 			Error: xerr.UnexpectedErrorOccurred,
 		})
 		return
 	}
 
-	resp := struct {
-		AccessToken string `json:"access_token"`
-	}{
-		AccessToken: token,
-	}
+	// TODO: Create a session with secret key
+	// ...
+
+	// TODO: Save session id in cookie
+	// ...
+
+	// TODO: Redirect to consent url
+	// ...
+
+	resp := ""
 
 	RespondJSON(w, http.StatusOK, resp)
 }

@@ -21,7 +21,7 @@ type Authorizer interface {
 }
 
 type Authenticator interface {
-	Authenticate(ctx context.Context, name, pw string) (string, error)
+	Authenticate(ctx context.Context, name, pw string) error
 }
 
 type UserCreator interface {
