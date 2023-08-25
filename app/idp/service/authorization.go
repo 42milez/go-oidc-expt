@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/42milez/go-oidc-server/app/idp/session"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"

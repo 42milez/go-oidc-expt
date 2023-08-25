@@ -42,7 +42,7 @@ func HashPassword(raw string) (string, error) {
 	salt := make([]byte, saltLength)
 
 	if _, err := rand.Read(salt); err != nil {
-		return "", xerr.Wrap(xerr.FailedToGenerateRandomBytes, err)
+		return "", xerr.FailedToGenerateRandomBytes.Wrap(err)
 	}
 
 	hash := argon2.IDKey([]byte(raw), salt, iterations, memory, parallelism, keyLength)
@@ -62,7 +62,7 @@ func HashPassword(raw string) (string, error) {
 	enc := gob.NewEncoder(&buf)
 
 	if err := enc.Encode(pwHashRP); err != nil {
-		return "", xerr.Wrap(xerr.FailedToEncodeInToBytes, err)
+		return "", xerr.FailedToEncodeInToBytes.Wrap(err)
 	}
 
 	ret := base64.RawStdEncoding.EncodeToString(buf.Bytes())
@@ -74,7 +74,7 @@ func ComparePassword(raw string, encoded string) (bool, error) {
 	b, err := base64.RawStdEncoding.DecodeString(encoded)
 
 	if err != nil {
-		return false, xerr.Wrap(xerr.FailedToDecodeInToBytes, err)
+		return false, xerr.FailedToDecodeInToBytes.Wrap(err)
 	}
 
 	buf := bytes.NewBuffer(b)
@@ -82,7 +82,7 @@ func ComparePassword(raw string, encoded string) (bool, error) {
 	repr := &passwordHashRepr{}
 
 	if err = dec.Decode(&repr); err != nil {
-		return false, xerr.Wrap(xerr.FailedToDecodeInToStruct, err)
+		return false, xerr.FailedToDecodeInToStruct.Wrap(err)
 	}
 
 	hash := argon2.IDKey([]byte(raw), repr.Salt, repr.Iterations, repr.Memory, repr.Parallelism, repr.KeyLength)

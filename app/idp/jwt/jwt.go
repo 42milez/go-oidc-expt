@@ -20,15 +20,6 @@ var rawPrivateKey []byte
 //go:embed cert/public.pem
 var rawPublicKey []byte
 
-const (
-	errFailedToBuildToken      xerr.Err = "failed to build token"
-	errFailedToParsePrivateKey xerr.Err = "failed to parse private key"
-	errFailedToParsePublicKey  xerr.Err = "failed to parse public key"
-	errFailedToParseRequest    xerr.Err = "failed to parse request"
-	errFailedToSignToken       xerr.Err = "failed to sign token"
-	errInvalidToken            xerr.Err = "invalid token"
-)
-
 type Util struct {
 	privateKey, publicKey jwk.Key
 	clock                 xutil.Clocker
@@ -37,12 +28,12 @@ type Util struct {
 func NewUtil(clock xutil.Clocker) (*Util, error) {
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
-		return nil, xerr.Wrap(errFailedToParsePrivateKey, err)
+		return nil, xerr.FailedToParsePrivateKey.Wrap(err)
 	}
 
 	pubKey, err := parseKey(rawPublicKey)
 	if err != nil {
-		return nil, xerr.Wrap(errFailedToParsePublicKey, err)
+		return nil, xerr.FailedToParsePublicKey.Wrap(err)
 	}
 
 	return &Util{
@@ -67,13 +58,13 @@ func (p *Util) GenerateAccessToken(name string) ([]byte, error) {
 		Build()
 
 	if err != nil {
-		return nil, xerr.Wrap(errFailedToBuildToken, err)
+		return nil, xerr.FailedToBuildToken.Wrap(err)
 	}
 
 	signed, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, p.privateKey))
 
 	if err != nil {
-		return nil, xerr.Wrap(errFailedToSignToken, err)
+		return nil, xerr.FailedToSignToken.Wrap(err)
 	}
 
 	return signed, nil
@@ -95,11 +86,11 @@ func (p *Util) ExtractToken(r *http.Request) (jwt.Token, error) {
 	token, err := p.parseRequest(r)
 
 	if err != nil {
-		return nil, xerr.Wrap(errFailedToParseRequest, err)
+		return nil, xerr.FailedToParseRequest.Wrap(err)
 	}
 
 	if err = p.validate(token); err != nil {
-		return nil, xerr.Wrap(errInvalidToken, err)
+		return nil, xerr.InvalidToken.Wrap(err)
 	}
 
 	return token, nil

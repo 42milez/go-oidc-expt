@@ -49,3 +49,9 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 		log.Error().Err(err).Msg(errFailedToWriteHTTPResponse)
 	}
 }
+
+func ResponseJSONWithInternalServerError(w http.ResponseWriter) {
+	RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+		Error: xerr.UnexpectedErrorOccurred,
+	})
+}

@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/42milez/go-oidc-server/app/idp/cookie"
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 	"github.com/42milez/go-oidc-server/app/idp/jwt"
@@ -9,7 +11,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/service"
 	"github.com/42milez/go-oidc-server/app/idp/session"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
-	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/rs/zerolog/log"
@@ -19,27 +20,29 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticate(entClient *ent.Client, cookieUtil *cookie.Util, sessionUtil *session.Util, jwtUtil *jwt.Util) (*Authenticate, error) {
+func NewAuthenticate(entClient *ent.Client, cookieUtil *cookie.Cookie, sessionUtil *session.Session, jwtUtil *jwt.Util) (*Authenticate, error) {
 	return &Authenticate{
-		Service: &service.Authenticate{
+		service: &service.Authenticate{
 			Repo: &repository.User{
 				Clock: &xutil.RealClocker{},
 				DB:    entClient,
 			},
 			Token: jwtUtil,
 		},
-		Cookie: cookieUtil,
-		Session: sessionUtil,
-		Validator: validator.New(),
+		cookie:    cookieUtil,
+		session:   sessionUtil,
+		validator: validator.New(),
 	}, nil
 }
 
 type Authenticate struct {
-	Service   Authenticator
-	Cookie    *cookie.Util
-	Session   *session.Util
-	Validator *validator.Validate
+	service   Authenticator
+	session   SessionCreator
+	cookie    *cookie.Cookie
+	validator *validator.Validate
 }
+
+const cookieNameSessionID = "sid"
 
 // ServeHTTP authenticates a user
 //
@@ -63,13 +66,11 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		log.Error().Err(err).Msg(errFailedToDecodeRequestBody)
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+		ResponseJSONWithInternalServerError(w)
 		return
 	}
 
-	if err := p.Validator.Struct(body); err != nil {
+	if err := p.validator.Struct(body); err != nil {
 		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.AuthenticationFailed,
@@ -77,37 +78,34 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := p.Service.Authenticate(r.Context(), body.Name, body.Password)
+	userID, err := p.service.Authenticate(r.Context(), body.Name, body.Password)
 
 	if err != nil {
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+		ResponseJSONWithInternalServerError(w)
 		return
 	}
 
-	sessionID, err := p.Session.Create(&entity.UserSession{
+	sessionID, err := p.session.Create(&entity.UserSession{
 		ID: userID,
 	})
 
 	if err != nil {
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+		ResponseJSONWithInternalServerError(w)
 		return
 	}
 
-	if err = p.Cookie.SetSessionID(w, sessionID); err != nil {
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+	if err = p.cookie.Set(w, cookieNameSessionID, sessionID); err != nil {
+		ResponseJSONWithInternalServerError(w)
 		return
 	}
 
 	// TODO: Redirect to consent url
 	// ...
 
-	resp := ""
-
+	resp := struct {
+		Error string `json:"error"`
+	}{
+		Error: "",
+	}
 	RespondJSON(w, http.StatusOK, resp)
 }

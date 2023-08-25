@@ -6,22 +6,16 @@ import (
 )
 
 const (
-	FailToEstablishConnection    GeneralErr = "failed to establish connection"
 	FailedToCloseConnection      GeneralErr = "failed to close connection"
 	FailedToCloseResponseBody    GeneralErr = "failed to close response body"
-	FailedToDecodeInToBytes      GeneralErr = "failed to decode string"
-	FailedToEncodeInToBytes      GeneralErr = "failed to encode struct"
-	FailedToGenerateRandomBytes  GeneralErr = "failed to generate random bytes"
 	FailedToInitialize           GeneralErr = "failed to initialize"
 	FailedToPingCache            GeneralErr = "failed to ping cache"
 	FailedToPingDatabase         GeneralErr = "failed to ping database"
-	FailedToReachHost            GeneralErr = "failed to reach host"
 	FailedToReadContextValue     GeneralErr = "failed to read context value"
 	FailedToReadFile             GeneralErr = "failed to read file"
 	FailedToReadResponseBody     GeneralErr = "failed to read response body"
 	FailedToReadResponseLocation GeneralErr = "failed to read response location"
 	FailedToUnmarshalJSON        GeneralErr = "failed to unmarshal json"
-	FailedToDecodeInToStruct     GeneralErr = "failed to decode into struct"
 )
 
 type GeneralErr string
@@ -58,12 +52,30 @@ func (v Err) Error() string {
 }
 
 func (v Err) Wrap(e error) error {
-	return fmt.Errorf("%w (%w)", v, e)
+	return fmt.Errorf("%w ( %w )", v, e)
 }
 
 // --------------------------------------------------
 
-const (
-	FailedToExtractToken Err = "failed to extract token"
-	PasswordNotMatched Err = "password not matched"
+var (
+	FailToEstablishConnection   Err = "failed to establish connection"
+	FailedToBuildToken          Err = "failed to build token"
+	FailedToCreateUser          Err = "failed to create user"
+	FailedToDecodeInToBytes     Err = "failed to decode string"
+	FailedToDecodeInToStruct    Err = "failed to decode into struct"
+	FailedToDeleteItem          Err = "failed to delete item"
+	FailedToEncodeInToBytes     Err = "failed to encode struct"
+	FailedToExtractToken        Err = "failed to extract token"
+	FailedToGenerateRandomBytes Err = "failed to generate random bytes"
+	FailedToHashPassword        Err = "failed to hash password"
+	FailedToLoadItem            Err = "failed to load item"
+	FailedToParseEnvVal         Err = "failed to parse environment variable"
+	FailedToParsePrivateKey     Err = "failed to parse private key"
+	FailedToParsePublicKey      Err = "failed to parse public key"
+	FailedToParseRequest        Err = "failed to parse request"
+	FailedToReachHost           Err = "failed to reach host"
+	FailedToSaveItem            Err = "failed to save item"
+	FailedToSignToken           Err = "failed to sign token"
+	InvalidToken                Err = "invalid token"
+	PasswordNotMatched          Err = "password not matched"
 )

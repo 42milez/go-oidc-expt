@@ -6,6 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/idp/cookie"
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+
 	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang/mock/gomock"
@@ -20,12 +23,17 @@ const (
 	tdAuthenticationResponse500 = tdAuthenticationDir + "500_resp.json"
 )
 
-const dummyAccessToken = "DUMMY ACCESS TOKEN"
+const dummyUserID typedef.UserID = "user01"
 
 func TestAuthentication_ServeHTTP(t *testing.T) {
-	type mockResp struct {
-		token string
-		err   error
+	type serviceMockResp struct {
+		userID typedef.UserID
+		err    error
+	}
+
+	type sessionMockResp struct {
+		sessionID string
+		err       error
 	}
 
 	type want struct {
@@ -33,16 +41,25 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		respFile   string
 	}
 
+	sessionID := "dd9a0158-092c-4dc2-b470-7e68c97bfdb0"
+	cookieHashKey := "nlmUN8ccpAIgCFWtminsNkr6uJU0YrPquFE7eqbXAH1heOYddNjV1Ni3YSZWdpob"
+	cookieBlockKey := "aMe6Jbqnnee4lXR0PHC2Eg5gaB5Mv5p5"
+
 	tests := map[string]struct {
-		reqFile string
-		resp    mockResp
-		want    want
+		reqFile      string
+		respSVCMock  serviceMockResp
+		respSessMock sessionMockResp
+		want         want
 	}{
 		"OK": {
 			reqFile: tdAuthenticationRequest200,
-			resp: mockResp{
-				token: dummyAccessToken,
-				err:   nil,
+			respSVCMock: serviceMockResp{
+				userID: dummyUserID,
+				err:    nil,
+			},
+			respSessMock: sessionMockResp{
+				sessionID: sessionID,
+				err:       nil,
 			},
 			want: want{
 				statusCode: http.StatusOK,
@@ -58,9 +75,9 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		},
 		"InternalServerError": {
 			reqFile: tdAuthenticationRequest200,
-			resp: mockResp{
-				token: "",
-				err:   xtestutil.DummyError,
+			respSVCMock: serviceMockResp{
+				userID: "",
+				err:    xtestutil.DummyError,
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,
@@ -85,12 +102,17 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			svcMock.
 				EXPECT().
 				Authenticate(r.Context(), gomock.Any(), gomock.Any()).
-				Return(tt.resp.token, tt.resp.err).
+				Return(tt.respSVCMock.userID, tt.respSVCMock.err).
 				AnyTimes()
 
+			sessMock := NewMockSessionCreator(gomock.NewController(t))
+			sessMock.EXPECT().Create(gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
+
 			sut := Authenticate{
-				Service:   svcMock,
-				Validator: validator.New(),
+				service:   svcMock,
+				session:   sessMock,
+				cookie:    cookie.NewCookie(cookieHashKey, cookieBlockKey),
+				validator: validator.New(),
 			}
 			sut.ServeHTTP(w, r)
 

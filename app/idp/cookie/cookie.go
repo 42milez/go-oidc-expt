@@ -1,29 +1,28 @@
 package cookie
 
 import (
-	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/gorilla/securecookie"
 	"net/http"
+
+	"github.com/gorilla/securecookie"
 )
 
-type Util struct {
+type Cookie struct {
 	sc *securecookie.SecureCookie
 }
 
-func (p *Util) SetSessionID(w http.ResponseWriter, id string) error {
-	name := "sid"
-	encoded, err := p.sc.Encode(name, id)
+func (p *Cookie) Set(w http.ResponseWriter, name, val string) error {
+	encoded, err := p.sc.Encode(name, val)
 
 	if err != nil {
 		return err
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:  name,
-		Value: encoded,
-		Path:  "/",
-		MaxAge: 0,
-		Secure: true,
+		Name:     name,
+		Value:    encoded,
+		Path:     "/",
+		MaxAge:   0,
+		Secure:   true,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	})
@@ -31,8 +30,8 @@ func (p *Util) SetSessionID(w http.ResponseWriter, id string) error {
 	return nil
 }
 
-func NewUtil(cfg *config.Config) *Util {
-	return &Util{
-		sc: securecookie.New([]byte(cfg.CookieHashKey), []byte(cfg.CookieBlockKey)),
+func NewCookie(hashKey, blockKey string) *Cookie {
+	return &Cookie{
+		sc: securecookie.New([]byte(hashKey), []byte(blockKey)),
 	}
 }

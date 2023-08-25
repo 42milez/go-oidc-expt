@@ -63,7 +63,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		Build()
 
 	if err != nil {
-		t.Fatalf("%+v: %+v", errFailedToBuildToken, err)
+		t.Fatal(err)
 	}
 
 	privateKey, err := jwk.ParseKey(rawPrivateKey, jwk.WithPEM(true))
@@ -114,7 +114,7 @@ func TestJWT_Validate(t *testing.T) {
 			Build()
 
 		if err != nil {
-			t.Fatalf("%+v: %+v", errFailedToBuildToken, err)
+			t.Fatal(err)
 		}
 
 		jwtUtil, err := NewUtil(c)
@@ -141,7 +141,7 @@ func TestJWT_Validate(t *testing.T) {
 			Build()
 
 		if err != nil {
-			t.Fatalf("%+v: %+v", errFailedToBuildToken, err)
+			t.Fatal(err)
 		}
 
 		jwtUtil, err := NewUtil(xtestutil.FixedTomorrowClocker{})

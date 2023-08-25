@@ -12,11 +12,11 @@ import (
 
 func Admin(admin *ent.User) *ent.User {
 	ret := &ent.User{
-		ID:           xutil.MakeUserID(),
-		Name:         "42milez" + strconv.Itoa(rand.Int())[:5],
-		Password: "/4L/gQMBAQphcmdvbjJSZXByAf+CAAEIAQdWYXJpYW50AQYAAQdWZXJzaW9uAQQAAQZNZW1vcnkBBgABCkl0ZXJhdGlvbnMBBgABC1BhcmFsbGVsaXNtAQYAAQlLZXlMZW5ndGgBBgABBFNhbHQBCgABDFBhc3N3b3JkSGFzaAEKAAAARv+CAQIBJgH9AQAAAQMBBAEgARBBnF9UwRGCjn9L7BI3g5yiASA6O7i2oGmVB9EAJYYhFvIU+jdvr/UMkQqmeOc0uvsyjAA",
-		CreatedAt:    time.Now(),
-		ModifiedAt:   time.Now(),
+		ID:         xutil.MakeUserID(),
+		Name:       "42milez" + strconv.Itoa(rand.Int())[:5],
+		Password:   "/4L/gQMBAQphcmdvbjJSZXByAf+CAAEIAQdWYXJpYW50AQYAAQdWZXJzaW9uAQQAAQZNZW1vcnkBBgABCkl0ZXJhdGlvbnMBBgABC1BhcmFsbGVsaXNtAQYAAQlLZXlMZW5ndGgBBgABBFNhbHQBCgABDFBhc3N3b3JkSGFzaAEKAAAARv+CAQIBJgH9AQAAAQMBBAEgARBBnF9UwRGCjn9L7BI3g5yiASA6O7i2oGmVB9EAJYYhFvIU+jdvr/UMkQqmeOc0uvsyjAA",
+		CreatedAt:  time.Now(),
+		ModifiedAt: time.Now(),
 	}
 
 	if admin == nil {

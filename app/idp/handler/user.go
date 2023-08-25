@@ -2,9 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/42milez/go-oidc-server/app/idp/jwt"
 	"github.com/42milez/go-oidc-server/app/idp/session"
-	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
@@ -19,7 +20,7 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(entClient *ent.Client, sessionUtil *session.Util, jwtUtil *jwt.Util) (*CreateUser, error) {
+func NewCreateUser(entClient *ent.Client, sessionUtil *session.Session, jwtUtil *jwt.Util) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{
@@ -27,14 +28,14 @@ func NewCreateUser(entClient *ent.Client, sessionUtil *session.Util, jwtUtil *jw
 				DB:    entClient,
 			},
 		},
-		Session: sessionUtil,
+		Session:   sessionUtil,
 		Validator: validator.New(),
 	}, nil
 }
 
 type CreateUser struct {
 	Service   UserCreator
-	Session   SessionManager
+	Session   SessionRestorer
 	Validator *validator.Validate
 }
 

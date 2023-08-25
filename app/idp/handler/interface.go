@@ -2,8 +2,11 @@ package handler
 
 import (
 	"context"
-	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/idp/entity"
+
+	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 
 	"github.com/42milez/go-oidc-server/app/idp/model"
 
@@ -25,14 +28,18 @@ type Authenticator interface {
 	Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error)
 }
 
+type SessionCreator interface {
+	Create(item *entity.UserSession) (string, error)
+}
+
+type SessionRestorer interface {
+	Restore(r *http.Request) (*http.Request, error)
+}
+
 type UserCreator interface {
 	CreateUser(ctx context.Context, name, pw string) (*ent.User, error)
 }
 
 type UserSelector interface {
 	SelectUser(ctx context.Context) (*ent.User, error)
-}
-
-type SessionManager interface {
-	FillContext(r *http.Request) (*http.Request, error)
 }

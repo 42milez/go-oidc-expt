@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/42milez/go-oidc-server/app/idp/cookie"
 	"github.com/42milez/go-oidc-server/app/idp/jwt"
 	"github.com/42milez/go-oidc-server/app/idp/session"
-	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/repository"
 
@@ -57,8 +58,8 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	cookieUtil := cookie.NewUtil(cfg)
-	sessionUtil := session.NewUtil(redisClient, jwtUtil)
+	cookieUtil := cookie.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
+	sessionUtil := session.NewSession(redisClient, jwtUtil)
 
 	//  Swagger Endpoint
 	// --------------------------------------------------

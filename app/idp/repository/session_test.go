@@ -3,10 +3,11 @@ package repository
 import (
 	"context"
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
 	"testing"
+
+	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
@@ -105,8 +106,8 @@ func TestSession_LoadID(t *testing.T) {
 
 		_, err := repo.LoadUserID(ctx, key)
 
-		if err == nil || !errors.Is(err, ErrFailedToLoadItem) {
-			t.Errorf("want = %s; got = %+v", fmt.Sprintf("%s ( %s ): redis: nil", ErrFailedToLoadItem, key), err)
+		if err == nil || !errors.Is(err, redis.Nil) {
+			t.Errorf("want = %+v; got = %+v", redis.Nil, err)
 		}
 	})
 }

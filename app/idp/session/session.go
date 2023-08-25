@@ -2,26 +2,27 @@ package session
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 	"github.com/42milez/go-oidc-server/app/idp/jwt"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
-	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-type Util struct {
+type Session struct {
 	repo  xutil.SessionManager
 	token xutil.TokenExtractor
 }
 
 type IDKey struct{}
 
-func (p *Util) Create(item *entity.UserSession) (string, error) {
+func (p *Session) Create(item *entity.UserSession) (string, error) {
 	ret, err := uuid.NewRandom()
 
 	if err != nil {
@@ -31,7 +32,7 @@ func (p *Util) Create(item *entity.UserSession) (string, error) {
 	return ret.String(), nil
 }
 
-func (p *Util) FillContext(r *http.Request) (*http.Request, error) {
+func (p *Session) Restore(r *http.Request) (*http.Request, error) {
 	token, err := p.token.ExtractToken(r)
 
 	if err != nil {
@@ -54,8 +55,8 @@ func GetUserID(ctx context.Context) (typedef.UserID, bool) {
 	return id, ok
 }
 
-func NewUtil(redisClient *redis.Client, jwtUtil *jwt.Util) *Util {
-	return &Util{
+func NewSession(redisClient *redis.Client, jwtUtil *jwt.Util) *Session {
+	return &Session{
 		repo: &repository.Session{
 			Cache: redisClient,
 		},

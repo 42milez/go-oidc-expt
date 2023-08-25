@@ -3,8 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"log"
+
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 var (

@@ -46,10 +46,6 @@ func main() {
 		log.Fatal().Stack().Err(err).Msg("failed to parse env variable")
 	}
 
-	if cfg.CI {
-		log.Logger.Level(zerolog.Disabled)
-	}
-
 	if err = run(context.Background(), cfg); err != nil {
 		log.Fatal().Stack().Err(err).Msg("failed to shutdown")
 	}

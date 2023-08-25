@@ -31,7 +31,7 @@ func NewDBClient(ctx context.Context, cfg *config.Config) (*sql.DB, error) {
 
 	if err != nil {
 		xutil.CloseConnection(db)
-		return nil, xerr.Wrap(xerr.FailToEstablishConnection, err)
+		return nil, xerr.FailToEstablishConnection.Wrap(err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
@@ -60,7 +60,7 @@ func NewCacheClient(ctx context.Context, cfg *config.Config) (*redis.Client, err
 
 	if err := client.Ping(ctx).Err(); err != nil {
 		xutil.CloseConnection(client)
-		return nil, xerr.Wrap(xerr.FailedToReachHost, err)
+		return nil, xerr.FailedToReachHost.Wrap(err)
 	}
 
 	return client, nil
