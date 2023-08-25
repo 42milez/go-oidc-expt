@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/testutil"
 
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
 func TestHealthCheck_PingCache(t *testing.T) {
-	client := xtestutil.OpenRedis(t)
+	client := testutil.OpenRedis(t)
 	ch := &CheckHealth{
 		Cache: client,
 	}
@@ -20,7 +20,7 @@ func TestHealthCheck_PingCache(t *testing.T) {
 }
 
 func TestHealthCheck_PingDB(t *testing.T) {
-	_, client := xtestutil.OpenDB(t)
+	_, client := testutil.OpenDB(t)
 	ch := &CheckHealth{
 		DB: client,
 	}

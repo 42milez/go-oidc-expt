@@ -1,15 +1,19 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/ent/typedef"
+
+	"github.com/42milez/go-oidc-server/app/testutil"
+
 	"github.com/42milez/go-oidc-server/app/validation"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/golang/mock/gomock"
 )
@@ -30,6 +34,8 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 		statusCode int
 		respFile   string
 	}
+
+	const userID typedef.UserID = "01H8P9NBW77WMNN2ZTNACGZ19X"
 
 	tests := map[string]struct {
 		reqFile string
@@ -61,12 +67,13 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				"http://idp/v1/authorize",
 				nil,
 			)
-			r.URL.RawQuery = strings.Replace(xutil.ByteToString(xtestutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
+			r.URL.RawQuery = strings.Replace(xutil.ByteToString(testutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
+			r = r.Clone(context.WithValue(r.Context(), UserIDKey{}, userID))
 
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.
 				EXPECT().
-				Authorize(r.Context(), gomock.Any()).
+				Authorize(r.Context(), gomock.Any(), gomock.Any()).
 				Return(tt.resp.location, nil).
 				AnyTimes()
 
@@ -77,19 +84,19 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			}
 
 			hdlr := &AuthorizeGet{
-				Service:   svcMock,
-				Validator: v,
+				service:   svcMock,
+				validator: v,
 			}
 			hdlr.ServeHTTP(w, r)
 			resp := w.Result()
 
-			wantResp := &xtestutil.Response{
+			wantResp := &testutil.Response{
 				StatusCode: http.StatusFound,
 				Location:   tt.resp.location,
-				Body:       xtestutil.LoadFile(t, tt.want.respFile),
+				Body:       testutil.LoadFile(t, tt.want.respFile),
 			}
 
-			xtestutil.AssertResponse(t, resp, wantResp)
+			testutil.AssertResponse(t, resp, wantResp)
 		})
 	}
 }

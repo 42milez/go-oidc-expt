@@ -2,11 +2,15 @@ basePath: /v1
 consumes:
 - application/json
 definitions:
-  model.Authenticate:
+  model.AuthenticateResponse:
+    properties:
+      error:
+        type: string
     type: object
-  model.BadRequest:
-    type: object
-  model.InternalServerError:
+  model.ErrorResponse:
+    properties:
+      error:
+        type: string
     type: object
 externalDocs:
   description: TBD
@@ -50,11 +54,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Authenticate'
+            $ref: '#/definitions/model.AuthenticateResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.InternalServerError'
+            $ref: '#/definitions/model.ErrorResponse'
       summary: TBD
       tags:
       - authentication
@@ -85,7 +89,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.InternalServerError'
+            $ref: '#/definitions/model.ErrorResponse'
       summary: TBD
       tags:
       - authorization
@@ -115,7 +119,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/model.InternalServerError'
+            $ref: '#/definitions/model.ErrorResponse'
       summary: TBD
       tags:
       - authorization

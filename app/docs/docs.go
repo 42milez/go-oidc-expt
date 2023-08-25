@@ -69,13 +69,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Authenticate"
+                            "$ref": "#/definitions/model.AuthenticateResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.InternalServerError"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -121,7 +121,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.InternalServerError"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -165,7 +165,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/model.InternalServerError"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -173,14 +173,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "model.Authenticate": {
-            "type": "object"
+        "model.AuthenticateResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
         },
-        "model.BadRequest": {
-            "type": "object"
-        },
-        "model.InternalServerError": {
-            "type": "object"
+        "model.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
         }
     },
     "tags": [

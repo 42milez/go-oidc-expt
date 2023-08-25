@@ -7,10 +7,9 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
+	"github.com/42milez/go-oidc-server/app/ent/typedef"
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/42milez/go-oidc-server/app/repository"
-	"github.com/42milez/go-oidc-server/app/session"
-
 	"golang.org/x/exp/slices"
 
 	"github.com/42milez/go-oidc-server/pkg/xutil"
@@ -20,24 +19,18 @@ type Authorize struct {
 	Repo *repository.User
 }
 
-func (p *Authorize) Authorize(ctx context.Context, param *model.AuthorizeRequest) (string, error) {
+func (p *Authorize) Authorize(ctx context.Context, userID typedef.UserID, param *model.AuthorizeRequest) (string, error) {
 	code, err := xutil.MakeCryptoRandomString(config.AuthCodeLength)
 
 	if err != nil {
 		return "", err
 	}
 
-	userID, ok := session.GetUserID(ctx)
-
-	if !ok {
-		return "", errors.New("user id not found")
-	}
-
 	if _, err = p.Repo.SaveAuthorizationCode(ctx, userID, code); err != nil {
 		return "", err
 	}
 
-	ru, err := p.Repo.SelectRedirectURIByUserID(ctx, userID)
+	ru, err := p.Repo.SelectRedirectUriByUserID(ctx, userID)
 
 	if err != nil {
 		return "", err

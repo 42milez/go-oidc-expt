@@ -1,4 +1,4 @@
-package session
+package handler
 
 import (
 	"context"
@@ -17,7 +17,7 @@ func TestGetUserID(t *testing.T) {
 	ctx := context.Background()
 	want := typedef.UserID(userULID)
 
-	ctx = context.WithValue(ctx, IDKey{}, want)
+	ctx = context.WithValue(ctx, UserIDKey{}, want)
 	got, ok := GetUserID(ctx)
 
 	if !ok {

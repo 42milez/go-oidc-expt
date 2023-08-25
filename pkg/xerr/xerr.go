@@ -77,5 +77,6 @@ var (
 	FailedToSaveItem            Err = "failed to save item"
 	FailedToSignToken           Err = "failed to sign token"
 	InvalidToken                Err = "invalid token"
+	OK                          Err = "ok"
 	PasswordNotMatched          Err = "password not matched"
 )

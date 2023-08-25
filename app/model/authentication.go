@@ -1,3 +1,5 @@
 package model
 
-type Authenticate struct{}
+type AuthenticateResponse struct {
+	Error string `json:"error"`
+}

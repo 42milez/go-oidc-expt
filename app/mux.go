@@ -9,8 +9,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/config"
 	handler2 "github.com/42milez/go-oidc-server/app/handler"
 	"github.com/42milez/go-oidc-server/app/repository"
-	"github.com/42milez/go-oidc-server/app/session"
-
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
@@ -57,7 +55,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	}
 
 	cookieUtil := handler2.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
-	sessionUtil := session.NewSession(redisClient, jwtUtil)
+	sessionUtil := handler2.NewSession(redisClient, jwtUtil)
 
 	//  Swagger Endpoint
 	// --------------------------------------------------

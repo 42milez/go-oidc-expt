@@ -1,4 +1,4 @@
-package xtestutil
+package testutil
 
 import (
 	"context"

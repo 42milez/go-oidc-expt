@@ -9,8 +9,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
-	"github.com/42milez/go-oidc-server/app/session"
-
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/rs/zerolog/log"
 
@@ -19,7 +17,7 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(entClient *ent.Client, sessionUtil *session.Session, jwtUtil *auth.Util) (*CreateUser, error) {
+func NewCreateUser(entClient *ent.Client, sessionUtil *Session, jwtUtil *auth.Util) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{

@@ -1,11 +1,10 @@
-package session
+package handler
 
 import (
 	"context"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/auth"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
 	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/42milez/go-oidc-server/app/repository"
 
@@ -21,7 +20,7 @@ type Session struct {
 	token xutil.TokenExtractor
 }
 
-type IDKey struct{}
+type UserIDKey struct{}
 
 func (p *Session) Create(item *entity.UserSession) (string, error) {
 	ret, err := uuid.NewRandom()
@@ -46,14 +45,9 @@ func (p *Session) Restore(r *http.Request) (*http.Request, error) {
 		return nil, err
 	}
 
-	ctx := context.WithValue(r.Context(), IDKey{}, id)
+	ctx := context.WithValue(r.Context(), UserIDKey{}, id)
 
 	return r.Clone(ctx), nil
-}
-
-func GetUserID(ctx context.Context) (typedef.UserID, bool) {
-	id, ok := ctx.Value(IDKey{}).(typedef.UserID)
-	return id, ok
 }
 
 func NewSession(redisClient *redis.Client, jwtUtil *auth.Util) *Session {

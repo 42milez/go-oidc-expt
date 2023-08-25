@@ -20,15 +20,15 @@ func NewAuthorizeGet() (*AuthorizeGet, error) {
 	}
 
 	ret := &AuthorizeGet{
-		Validator: v,
+		validator: v,
 	}
 
 	return ret, nil
 }
 
 type AuthorizeGet struct {
-	Service   Authorizer
-	Validator *validator.Validate
+	service   Authorizer
+	validator *validator.Validate
 }
 
 // ServeHTTP authorizes a request that asking to access the resources belonging to a user
@@ -42,8 +42,8 @@ type AuthorizeGet struct {
 //	@param			name		query		string	true	"TBD"
 //	@param			password	query		string	true	"TBD"
 //	@success		200			{string}	string
-//	@failure		500			{object}	model.BadRequest
-//	@failure		500			{object}	model.InternalServerError
+//	@failure		500			{object}	model.ErrorResponse
+//	@failure		500			{object}	model.ErrorResponse
 //	@router			/v1/authorization [get]
 func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
@@ -56,7 +56,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := p.Validator.Struct(q); err != nil {
+	if err := p.validator.Struct(q); err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.InvalidRequest,
 		})
@@ -69,7 +69,16 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	location, err := p.Service.Authorize(r.Context(), q)
+	userID, ok := GetUserID(r.Context())
+
+	if !ok {
+		RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
+			Error: xerr.UnauthorizedUser,
+		})
+		return
+	}
+
+	location, err := p.service.Authorize(r.Context(), userID, q)
 
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
@@ -101,8 +110,8 @@ type AuthorizePost struct {
 //	@param			name		formData	string	true	"TBD"
 //	@param			password	formData	string	true	"TBD"
 //	@success		200			{string}	string
-//	@failure		500			{object}	model.BadRequest
-//	@failure		500			{object}	model.InternalServerError
+//	@failure		500			{object}	model.ErrorResponse
+//	@failure		500			{object}	model.ErrorResponse
 //	@router			/v1/authorization [post]
 func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// NOT IMPLEMENTED YET

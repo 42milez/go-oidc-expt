@@ -1,5 +1,5 @@
 package model
 
-type BadRequest struct{}
-
-type InternalServerError struct{}
+type ErrorResponse struct {
+	Error string `json:"error"`
+}

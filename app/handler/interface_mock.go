@@ -91,18 +91,18 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // Authorize mocks base method.
-func (m *MockAuthorizer) Authorize(ctx context.Context, param *model.AuthorizeRequest) (string, error) {
+func (m *MockAuthorizer) Authorize(ctx context.Context, userID typedef.UserID, param *model.AuthorizeRequest) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Authorize", ctx, param)
+	ret := m.ctrl.Call(m, "Authorize", ctx, userID, param)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Authorize indicates an expected call of Authorize.
-func (mr *MockAuthorizerMockRecorder) Authorize(ctx, param interface{}) *gomock.Call {
+func (mr *MockAuthorizerMockRecorder) Authorize(ctx, userID, param interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAuthorizer)(nil).Authorize), ctx, param)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAuthorizer)(nil).Authorize), ctx, userID, param)
 }
 
 // MockAuthenticator is a mock of Authenticator interface.

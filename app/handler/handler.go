@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/ent/typedef"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
@@ -50,8 +53,13 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 	}
 }
 
-func ResponseJSONWithInternalServerError(w http.ResponseWriter) {
+func ResponseJsonWithInternalServerError(w http.ResponseWriter) {
 	RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 		Error: xerr.UnexpectedErrorOccurred,
 	})
+}
+
+func GetUserID(ctx context.Context) (typedef.UserID, bool) {
+	ret, ok := ctx.Value(UserIDKey{}).(typedef.UserID)
+	return ret, ok
 }
