@@ -44,12 +44,12 @@ clean:
 ## fmt: Run formatter
 fmt:
 	@go fmt ./...
-	@swag fmt -d app/idp
+	@swag fmt -d app
 
 ## gen: Run generator
 gen:
 	@go generate ./...
-	@swag init -d app/idp -o app/idp/docs
+	@swag init -d app -o app/docs
 
 ## lint: Run linters
 lint:

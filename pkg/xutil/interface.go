@@ -4,7 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/ent/typedef"
+
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 

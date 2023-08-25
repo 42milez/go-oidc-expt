@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/ent/ent"
+
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
 )

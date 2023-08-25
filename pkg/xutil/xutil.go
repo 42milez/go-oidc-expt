@@ -1,7 +1,7 @@
 package xutil
 
 import (
-	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/ent/typedef"
 	"github.com/oklog/ulid/v2"
 )
 

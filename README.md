@@ -28,9 +28,9 @@ ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/
 ### Generate key pair for signing access token
 
 ```
-mkdir -p app/idp/jwt/cert
-openssl ecparam -genkey -name prime256v1 -noout -out app/idp/jwt/cert/private.pem
-openssl ec -in app/idp/jwt/cert/private.pem -pubout -out app/idp/jwt/cert/public.pem
+mkdir -p app/auth/cert
+openssl ecparam -genkey -name prime256v1 -noout -out app/auth/cert/private.pem
+openssl ec -in app/auth/cert/private.pem -pubout -out app/auth/cert/public.pem
 ```
 
 References:
@@ -70,7 +70,7 @@ The containers:
 ### Apply migrations
 
 ```
-./script/atlas/migrate-apply.sh idp
+./script/atlas/migrate-apply.sh
 ```
 
 ## API document
@@ -87,7 +87,6 @@ The commands described later require the following parameters:
 
 | Parameter      | Detail                                                                                                                 |
 |----------------|------------------------------------------------------------------------------------------------------------------------|
-| APP_NAME       | Application name ( `idp` or `auth` )                                                                                   |
 | MIGRATION_NAME | A part of migration file name. The filename is determined according to the format `%Y%m%d%H%i%S_<MIGRATION_NAME>.sql`. |
 | N_LATEST       | The number of latest migration files to be analyzed. `migrate-list.sh` runs analysis on them.                          |
 
@@ -102,25 +101,25 @@ go generate ./...
 e.g. The following command generates `AuthCode` schema.
 
 ```
-go run -mod=mod entgo.io/ent/cmd/ent new --target app/idp/ent/schema AuthCode
+go run -mod=mod entgo.io/ent/cmd/ent new --target app/ent/schema AuthCode
 ```
 
 ### Generating versioned migration files
 
 ```
-./script/atlas/migrate-diff.sh <APP_NAME> <MIGRATION_NAME>
+./script/atlas/migrate-diff.sh <MIGRATION_NAME>
 ```
 
 ### Verifying and linting migrations
 
 ```
-./script/atlas/migrate-lint.sh <APP_NAME> [<N_LATEST>]
+./script/atlas/migrate-lint.sh [<N_LATEST>]
 ```
 
 ### Applying migrations
 
 ```
-./script/atlas/migrate-apply.sh <APP_NAME>
+./script/atlas/migrate-apply.sh
 ```
 
 If `N_LATEST` isn't specified, the diff between `main` branch and the current one is selected as the changeset.

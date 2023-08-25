@@ -6,16 +6,16 @@ import (
 	"log"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/auth"
+	"github.com/42milez/go-oidc-server/app/config"
+	ent2 "github.com/42milez/go-oidc-server/app/ent/ent"
+	"github.com/42milez/go-oidc-server/app/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/repository"
 
-	"github.com/42milez/go-oidc-server/app/idp/auth"
-	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
-	"github.com/42milez/go-oidc-server/app/idp/ent/typedef"
-	"github.com/42milez/go-oidc-server/app/idp/repository"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
-func insertUsers(ctx context.Context, client *ent.Client) ([]*ent.User, error) {
+func insertUsers(ctx context.Context, client *ent2.Client) ([]*ent2.User, error) {
 	params := []struct {
 		name   string
 		pwHash string
@@ -32,7 +32,7 @@ func insertUsers(ctx context.Context, client *ent.Client) ([]*ent.User, error) {
 		params[i].pwHash = pwHash
 	}
 
-	builders := make([]*ent.UserCreate, len(params))
+	builders := make([]*ent2.UserCreate, len(params))
 
 	for i, v := range params {
 		builders[i] = client.User.Create().SetName(v.name).SetPassword(v.pwHash)
@@ -41,7 +41,7 @@ func insertUsers(ctx context.Context, client *ent.Client) ([]*ent.User, error) {
 	return client.User.CreateBulk(builders...).Save(ctx)
 }
 
-func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User) ([]*ent.AuthCode, error) {
+func insertAuthCodes(ctx context.Context, client *ent2.Client, users []*ent2.User) ([]*ent2.AuthCode, error) {
 	type param struct {
 		code     string
 		expireAt time.Time
@@ -62,7 +62,7 @@ func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User)
 		params[i].userID = users[i%nCodeByUser].ID
 	}
 
-	builders := make([]*ent.AuthCodeCreate, len(params))
+	builders := make([]*ent2.AuthCodeCreate, len(params))
 
 	for i, v := range params {
 		builders[i] = client.AuthCode.Create().SetCode(v.code).SetExpireAt(v.expireAt).SetUserID(v.userID)
@@ -71,7 +71,7 @@ func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User)
 	return client.AuthCode.CreateBulk(builders...).Save(ctx)
 }
 
-func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.User) ([]*ent.RedirectURI, error) {
+func insertRedirectURIs(ctx context.Context, client *ent2.Client, users []*ent2.User) ([]*ent2.RedirectURI, error) {
 	type param struct {
 		uri    string
 		userID typedef.UserID
@@ -85,7 +85,7 @@ func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.Us
 		params[i].userID = users[i%nURIByUser].ID
 	}
 
-	builders := make([]*ent.RedirectURICreate, len(params))
+	builders := make([]*ent2.RedirectURICreate, len(params))
 
 	for i, v := range params {
 		builders[i] = client.RedirectURI.Create().SetURI(v.uri).SetUserID(v.userID)
@@ -94,7 +94,7 @@ func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.Us
 	return client.RedirectURI.CreateBulk(builders...).Save(ctx)
 }
 
-func run(ctx context.Context, client *ent.Client) error {
+func run(ctx context.Context, client *ent2.Client) error {
 	users, err := insertUsers(ctx, client)
 
 	if err != nil {

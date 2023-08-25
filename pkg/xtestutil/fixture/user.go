@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/ent/ent"
 
-	"github.com/42milez/go-oidc-server/app/idp/ent/ent"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 func Admin(admin *ent.User) *ent.User {
