@@ -6,10 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/42milez/go-oidc-server/pkg/xutil"
+
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"

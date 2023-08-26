@@ -127,7 +127,7 @@ If `N_LATEST` isn't specified, the diff between `main` branch and the current on
 ### Seeding database
 
 ```
-go run ./script/seed/main.go
+make seed
 ```
 
 ## References

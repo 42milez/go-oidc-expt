@@ -3,7 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/app/auth"
+	"github.com/42milez/go-oidc-server/pkg/xargon2"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
@@ -15,7 +16,7 @@ type CreateUser struct {
 }
 
 func (p *CreateUser) CreateUser(ctx context.Context, name, pw string) (*ent.User, error) {
-	hash, err := auth.HashPassword(pw)
+	hash, err := xargon2.HashPassword(pw)
 
 	if err != nil {
 		log.Error().Err(err).Msg(xerr.FailedToHashPassword.Wrap(err).Error())

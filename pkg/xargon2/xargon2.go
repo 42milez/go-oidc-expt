@@ -1,4 +1,4 @@
-package auth
+package xargon2
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ const (
 	a2id argon2Variant = "argon2id"
 )
 
-type passwordHashRepr struct {
+type argon2Representation struct {
 	Variant     argon2Variant
 	Version     int
 	Memory      uint32
@@ -47,7 +47,7 @@ func HashPassword(raw string) (string, error) {
 
 	hash := argon2.IDKey([]byte(raw), salt, iterations, memory, parallelism, keyLength)
 
-	pwHashRP := passwordHashRepr{
+	rep := argon2Representation{
 		Variant:     a2id,
 		Version:     argon2.Version,
 		Memory:      memory,
@@ -61,7 +61,7 @@ func HashPassword(raw string) (string, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
 
-	if err := enc.Encode(pwHashRP); err != nil {
+	if err := enc.Encode(rep); err != nil {
 		return "", xerr.FailedToEncodeInToBytes.Wrap(err)
 	}
 
@@ -79,7 +79,7 @@ func ComparePassword(raw string, encoded string) (bool, error) {
 
 	buf := bytes.NewBuffer(b)
 	dec := gob.NewDecoder(buf)
-	repr := &passwordHashRepr{}
+	repr := &argon2Representation{}
 
 	if err = dec.Decode(&repr); err != nil {
 		return false, xerr.FailedToDecodeInToStruct.Wrap(err)

@@ -1,4 +1,4 @@
-package xutil
+package xrandom
 
 import (
 	"testing"

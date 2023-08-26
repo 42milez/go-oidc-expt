@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/auth"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-playground/validator/v10"
@@ -21,7 +22,7 @@ func NewCreateUser(entClient *ent.Client, sessionUtil *Session, jwtUtil *auth.Ut
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{
-				Clock: &xutil.RealClocker{},
+				Clock: &xtime.RealClocker{},
 				DB:    entClient,
 			},
 		},

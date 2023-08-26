@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/pkg/xrandom"
 )
 
 var (
@@ -19,7 +19,7 @@ func main() {
 		log.Fatal("length must be greater than 0")
 	}
 
-	ret, err := xutil.MakeCryptoRandomString(*lenFlag)
+	ret, err := xrandom.MakeCryptoRandomString(*lenFlag)
 
 	if err != nil {
 		log.Fatal(err)

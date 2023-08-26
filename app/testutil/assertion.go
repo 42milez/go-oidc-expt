@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/pkg/xstring"
+
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/go-cmp/cmp"
@@ -52,8 +54,8 @@ func assertBody(t *testing.T, want *Response, got *http.Response) {
 		return
 	}
 
-	wb := strings.Replace(xutil.ByteToString(want.Body), "\n", "", -1)
-	gb := strings.Replace(xutil.ByteToString(gotBody), "\n", "", -1)
+	wb := strings.Replace(xstring.ByteToString(want.Body), "\n", "", -1)
+	gb := strings.Replace(xstring.ByteToString(gotBody), "\n", "", -1)
 
 	if wb != gb {
 		t.Errorf("body not matched ( want = %s; got = %s", wb, gb)

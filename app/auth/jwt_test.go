@@ -9,11 +9,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/testutil"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -32,7 +33,7 @@ func TestEmbed(t *testing.T) {
 }
 
 func TestJWT_GenerateAccessToken(t *testing.T) {
-	jwtUtil, err := NewUtil(&xutil.RealClocker{})
+	jwtUtil, err := NewUtil(&xtime.RealClocker{})
 
 	if err != nil {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)

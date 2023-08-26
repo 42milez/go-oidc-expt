@@ -4,9 +4,10 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/lestrrat-go/jwx/v2/jwt"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
-	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/42milez/go-oidc-server/app/model"
 )
 
@@ -26,11 +27,15 @@ type Authenticator interface {
 }
 
 type SessionCreator interface {
-	Create(item *entity.UserSession) (string, error)
+	Create(item *UserSession) (string, error)
 }
 
 type SessionRestorer interface {
 	Restore(r *http.Request) (*http.Request, error)
+}
+
+type TokenExtractor interface {
+	ExtractToken(r *http.Request) (jwt.Token, error)
 }
 
 type UserCreator interface {
@@ -39,4 +44,11 @@ type UserCreator interface {
 
 type UserSelector interface {
 	SelectUser(ctx context.Context) (*ent.User, error)
+}
+
+// TODO: Separate methods ( SessionManager )
+
+type SessionManager interface {
+	SaveUserID(ctx context.Context, key string, id typedef.UserID) error
+	LoadUserID(ctx context.Context, key string) (typedef.UserID, error)
 }

@@ -4,25 +4,25 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/ent/typedef"
+
 	"github.com/42milez/go-oidc-server/app/auth"
-	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/42milez/go-oidc-server/app/repository"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-type Session struct {
-	repo  xutil.SessionManager
-	token xutil.TokenExtractor
-}
-
 type UserIDKey struct{}
 
-func (p *Session) Create(item *entity.UserSession) (string, error) {
+type Session struct {
+	repo  SessionManager
+	token TokenExtractor
+}
+
+func (p *Session) Create(item *UserSession) (string, error) {
 	ret, err := uuid.NewRandom()
 
 	if err != nil {
@@ -57,4 +57,8 @@ func NewSession(redisClient *redis.Client, jwtUtil *auth.Util) *Session {
 		},
 		token: jwtUtil,
 	}
+}
+
+type UserSession struct {
+	ID typedef.UserID
 }

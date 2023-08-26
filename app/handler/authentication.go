@@ -2,17 +2,17 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/model"
 
 	"github.com/42milez/go-oidc-server/app/auth"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
-
 	"github.com/rs/zerolog/log"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
@@ -24,7 +24,7 @@ func NewAuthenticate(entClient *ent.Client, cookieUtil *Cookie, sessionUtil *Ses
 	return &Authenticate{
 		service: &service.Authenticate{
 			Repo: &repository.User{
-				Clock: &xutil.RealClocker{},
+				Clock: &xtime.RealClocker{},
 				DB:    entClient,
 			},
 			Token: jwtUtil,
@@ -81,11 +81,18 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userID, err := p.service.Authenticate(r.Context(), body.Name, body.Password)
 
 	if err != nil {
-		ResponseJsonWithInternalServerError(w)
-		return
+		if errors.Is(err, xerr.PasswordNotMatched) {
+			RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
+				Error: xerr.InvalidUsernameOrPassword,
+			})
+			return
+		} else {
+			ResponseJsonWithInternalServerError(w)
+			return
+		}
 	}
 
-	sessionID, err := p.session.Create(&entity.UserSession{
+	sessionID, err := p.session.Create(&UserSession{
 		ID: userID,
 	})
 

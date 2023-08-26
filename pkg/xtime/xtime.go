@@ -1,4 +1,4 @@
-package xutil
+package xtime
 
 import "time"
 

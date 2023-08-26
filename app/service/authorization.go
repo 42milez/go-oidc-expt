@@ -5,14 +5,14 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/pkg/xrandom"
+
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"golang.org/x/exp/slices"
-
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 type Authorize struct {
@@ -20,7 +20,7 @@ type Authorize struct {
 }
 
 func (p *Authorize) Authorize(ctx context.Context, userID typedef.UserID, param *model.AuthorizeRequest) (string, error) {
-	code, err := xutil.MakeCryptoRandomString(config.AuthCodeLength)
+	code, err := xrandom.MakeCryptoRandomString(config.AuthCodeLength)
 
 	if err != nil {
 		return "", err

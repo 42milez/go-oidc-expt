@@ -36,13 +36,13 @@ paths:
       description: TBD
       operationId: Authenticate.ServeHTTP
       parameters:
-      - description: TBD
+      - description: Username
         in: body
         name: name
         required: true
         schema:
           type: string
-      - description: TBD
+      - description: Password
         in: body
         name: password
         required: true

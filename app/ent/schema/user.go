@@ -5,12 +5,12 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/oklog/ulid/v2"
+
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
-
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -20,7 +20,7 @@ import (
 const (
 	nameMaxLength    = 30
 	nameMinLength    = 6
-	passwordLength   = 271
+	passwordLength   = 279
 	totpSecretLength = 160
 	userIDLength     = 26
 )
@@ -39,7 +39,7 @@ func (User) Fields() []ent.Field {
 				dialect.MySQL: UserIDSchemaType(),
 			}).
 			DefaultFunc(func() typedef.UserID {
-				return xutil.MakeUserID()
+				return makeUserID()
 			}).
 			Immutable(),
 		field.String("name").
@@ -90,4 +90,8 @@ func TotoSecretSchemaType() string {
 
 func UserIDSchemaType() string {
 	return fmt.Sprintf("CHAR(%d)", userIDLength)
+}
+
+func makeUserID() typedef.UserID {
+	return typedef.UserID(ulid.Make().String())
 }

@@ -31,7 +31,7 @@ build-local:
 #  Utility
 # ==================================================
 
-.PHONY: clean debug fmt gen lint migrate resolve test benchmark
+.PHONY: clean cleanup-db debug fmt gen lint migrate resolve seed test benchmark
 
 ## benchmark: Run all benchmarks
 benchmark:
@@ -40,6 +40,18 @@ benchmark:
 ## clean: Clean up caches
 clean:
 	@go clean -cache -fuzzcache -testcache
+
+## cleanup-db: Clean up database
+cleanup-db: export DB_HOST := 127.0.0.1
+cleanup-db: export DB_USER := root
+cleanup-db: export DB_PORT := 13306
+cleanup-db: export DB_NAME := idp
+cleanup-db:
+	@mysql -h $$DB_HOST -u $$DB_USER -P $$DB_PORT -Nse "show tables" $$DB_NAME | \
+		while read table; do \
+			[[ $$table == "atlas_schema_revisions" ]] && continue; \
+			mysql -h $$DB_HOST -u $$DB_USER -P $$DB_PORT --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" -e "truncate table $$table" $$DB_NAME; \
+		done
 
 ## fmt: Run formatter
 fmt:
@@ -63,13 +75,16 @@ migrate:
 resolve:
 	@go mod tidy
 
+## seed: Seeding database
+seed:
+	@go run ./script/seed/main.go
+
 ## test: Run all tests
+test: export CI := true
+test: export DB_PORT := 13306
+test: export REDIS_PORT := 16379
 test:
-	@\
-	CI=true \
-	DB_PORT=13306 \
-	REDIS_PORT=16379 \
-	go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`
+	@go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`
 
 # ==================================================
 #  Docker

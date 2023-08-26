@@ -21,8 +21,8 @@ const (
 )
 
 type ErrResponse struct {
-	Error   xerr.HTTPErr `json:"error"`
-	Details []string     `json:"details,omitempty"`
+	Error   xerr.PublicErr `json:"error"`
+	Details []string       `json:"details,omitempty"`
 }
 
 func RespondJSON(w http.ResponseWriter, statusCode int, body any) {

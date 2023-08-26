@@ -24,15 +24,6 @@ func (v GeneralErr) Error() string {
 	return string(v)
 }
 
-const (
-	AuthenticationFailed        HTTPErr = "authentication failed"
-	InvalidParameter            HTTPErr = "invalid parameter"
-	InvalidRequest              HTTPErr = "invalid request"
-	ServiceCurrentlyUnavailable HTTPErr = "service currently unavailable"
-	UnauthorizedUser            HTTPErr = "unauthorized user"
-	UnexpectedErrorOccurred     HTTPErr = "unexpected error occurred"
-)
-
 type HTTPErr string
 
 func (v HTTPErr) Error() string {
@@ -45,38 +36,54 @@ var (
 	InvalidResponseType = errors.New("invalid response type")
 )
 
-type Err string
+type InternalErr string
 
-func (v Err) Error() string {
+func (v InternalErr) Error() string {
 	return string(v)
 }
 
-func (v Err) Wrap(e error) error {
+func (v InternalErr) Wrap(e error) error {
 	return fmt.Errorf("%w ( %w )", v, e)
+}
+
+type PublicErr string
+
+func (v PublicErr) Error() string {
+	return string(v)
 }
 
 // --------------------------------------------------
 
 var (
-	FailToEstablishConnection   Err = "failed to establish connection"
-	FailedToBuildToken          Err = "failed to build token"
-	FailedToCreateUser          Err = "failed to create user"
-	FailedToDecodeInToBytes     Err = "failed to decode string"
-	FailedToDecodeInToStruct    Err = "failed to decode into struct"
-	FailedToDeleteItem          Err = "failed to delete item"
-	FailedToEncodeInToBytes     Err = "failed to encode struct"
-	FailedToExtractToken        Err = "failed to extract token"
-	FailedToGenerateRandomBytes Err = "failed to generate random bytes"
-	FailedToHashPassword        Err = "failed to hash password"
-	FailedToLoadItem            Err = "failed to load item"
-	FailedToParseEnvVal         Err = "failed to parse environment variable"
-	FailedToParsePrivateKey     Err = "failed to parse private key"
-	FailedToParsePublicKey      Err = "failed to parse public key"
-	FailedToParseRequest        Err = "failed to parse request"
-	FailedToReachHost           Err = "failed to reach host"
-	FailedToSaveItem            Err = "failed to save item"
-	FailedToSignToken           Err = "failed to sign token"
-	InvalidToken                Err = "invalid token"
-	OK                          Err = "ok"
-	PasswordNotMatched          Err = "password not matched"
+	AuthenticationFailed        PublicErr = "authentication failed"
+	InvalidParameter            PublicErr = "invalid parameter"
+	InvalidRequest              PublicErr = "invalid request"
+	InvalidUsernameOrPassword   PublicErr = "invalid username or password"
+	OK                          PublicErr = "ok"
+	ServiceCurrentlyUnavailable PublicErr = "service currently unavailable"
+	UnauthorizedUser            PublicErr = "unauthorized user"
+	UnexpectedErrorOccurred     PublicErr = "unexpected error occurred"
+)
+
+var (
+	FailToEstablishConnection   InternalErr = "failed to establish connection"
+	FailedToBuildToken          InternalErr = "failed to build token"
+	FailedToCreateUser          InternalErr = "failed to create user"
+	FailedToDecodeInToBytes     InternalErr = "failed to decode string"
+	FailedToDecodeInToStruct    InternalErr = "failed to decode into struct"
+	FailedToDeleteItem          InternalErr = "failed to delete item"
+	FailedToEncodeInToBytes     InternalErr = "failed to encode struct"
+	FailedToExtractToken        InternalErr = "failed to extract token"
+	FailedToGenerateRandomBytes InternalErr = "failed to generate random bytes"
+	FailedToHashPassword        InternalErr = "failed to hash password"
+	FailedToLoadItem            InternalErr = "failed to load item"
+	FailedToParseEnvVal         InternalErr = "failed to parse environment variable"
+	FailedToParsePrivateKey     InternalErr = "failed to parse private key"
+	FailedToParsePublicKey      InternalErr = "failed to parse public key"
+	FailedToParseRequest        InternalErr = "failed to parse request"
+	FailedToReachHost           InternalErr = "failed to reach host"
+	FailedToSaveItem            InternalErr = "failed to save item"
+	FailedToSignToken           InternalErr = "failed to sign token"
+	InvalidToken                InternalErr = "invalid token"
+	PasswordNotMatched          InternalErr = "password not matched"
 )

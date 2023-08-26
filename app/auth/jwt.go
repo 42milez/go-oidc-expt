@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwk"
@@ -22,10 +23,10 @@ var rawPublicKey []byte
 
 type Util struct {
 	privateKey, publicKey jwk.Key
-	clock                 xutil.Clocker
+	clock                 xtime.Clocker
 }
 
-func NewUtil(clock xutil.Clocker) (*Util, error) {
+func NewUtil(clock xtime.Clocker) (*Util, error) {
 	privKey, err := parseKey(rawPrivateKey)
 	if err != nil {
 		return nil, xerr.FailedToParsePrivateKey.Wrap(err)

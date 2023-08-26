@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/pkg/xstring"
+
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 
 	"github.com/42milez/go-oidc-server/app/testutil"
@@ -14,7 +16,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/validation"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/golang/mock/gomock"
 )
 
@@ -67,7 +68,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				"http://idp/v1/authorize",
 				nil,
 			)
-			r.URL.RawQuery = strings.Replace(xutil.ByteToString(testutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
+			r.URL.RawQuery = strings.Replace(xstring.ByteToString(testutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
 			r = r.Clone(context.WithValue(r.Context(), UserIDKey{}, userID))
 
 			svcMock := NewMockAuthorizer(gomock.NewController(t))

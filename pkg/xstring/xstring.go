@@ -1,4 +1,4 @@
-package xutil
+package xstring
 
 import (
 	"unsafe"

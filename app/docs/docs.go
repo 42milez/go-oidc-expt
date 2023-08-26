@@ -47,7 +47,7 @@ const docTemplate = `{
                 "operationId": "Authenticate.ServeHTTP",
                 "parameters": [
                     {
-                        "description": "TBD",
+                        "description": "Username",
                         "name": "name",
                         "in": "body",
                         "required": true,
@@ -56,7 +56,7 @@ const docTemplate = `{
                         }
                     },
                     {
-                        "description": "TBD",
+                        "description": "Password",
                         "name": "password",
                         "in": "body",
                         "required": true,

@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/app/auth"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
+	"github.com/42milez/go-oidc-server/pkg/xargon2"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
+
+	"github.com/42milez/go-oidc-server/app/ent/typedef"
 )
 
 type Authenticate struct {
@@ -21,7 +22,7 @@ func (p *Authenticate) Authenticate(ctx context.Context, name, pw string) (typed
 		return "", err
 	}
 
-	ok, err := auth.ComparePassword(pw, user.Password)
+	ok, err := xargon2.ComparePassword(pw, user.Password)
 
 	if err != nil {
 		return "", err

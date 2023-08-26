@@ -3,16 +3,16 @@ package repository
 import (
 	"context"
 
+	"github.com/42milez/go-oidc-server/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
-
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 type User struct {
-	Clock xutil.Clocker
+	Clock xtime.Clocker
 	DB    *ent.Client
 }
 
