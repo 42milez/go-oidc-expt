@@ -48,7 +48,7 @@ func main() {
 		schema.WithFormatter(atlas.DefaultFormatter),
 	}
 	if len(os.Args) != 2 {
-		log.Fatal("migration name is required. Use: 'go run -mod=mod app/<APP_NAME>/ent/cmd/migrate/main.go <MIGRATION_NAME>'")
+		log.Fatal("migration name is required. Use: 'go run -mod=mod app/ent/cmd/migrate/main.go <MIGRATION_NAME>'")
 	}
 
 	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
