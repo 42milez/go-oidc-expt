@@ -38,7 +38,6 @@ services:
     depends_on:
       - cache
       - db
-      - id-generator
     cap_add:
       - SYS_PTRACE
     security_opt:

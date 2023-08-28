@@ -21,13 +21,13 @@ var rawPrivateKey []byte
 //go:embed cert/public.pem
 var rawPublicKey []byte
 
-type Util struct {
+type JWT struct {
 	privateKey, publicKey jwk.Key
 	clock                 xtime.Clocker
 }
 
-func NewUtil(clock xtime.Clocker) (*Util, error) {
-	privKey, err := parseKey(rawPrivateKey)
+func NewJWT(clock xtime.Clocker) (*JWT, error) {
+	priKey, err := parseKey(rawPrivateKey)
 	if err != nil {
 		return nil, xerr.FailedToParsePrivateKey.Wrap(err)
 	}
@@ -37,8 +37,8 @@ func NewUtil(clock xtime.Clocker) (*Util, error) {
 		return nil, xerr.FailedToParsePublicKey.Wrap(err)
 	}
 
-	return &Util{
-		privateKey: privKey,
+	return &JWT{
+		privateKey: priKey,
 		publicKey:  pubKey,
 		clock:      clock,
 	}, nil
@@ -48,7 +48,7 @@ const issuer = "github.com/42milez/go-oidc-server"
 const accessTokenSubject = "access_token"
 const nameKey = "name"
 
-func (p *Util) GenerateAccessToken(name string) ([]byte, error) {
+func (p *JWT) GenerateAccessToken(name string) ([]byte, error) {
 	token, err := jwt.
 		NewBuilder().
 		JwtID(uuid.New().String()).
@@ -75,15 +75,15 @@ func parseKey(key []byte) (jwk.Key, error) {
 	return jwk.ParseKey(key, jwk.WithPEM(true))
 }
 
-func (p *Util) parseRequest(r *http.Request) (jwt.Token, error) {
+func (p *JWT) parseRequest(r *http.Request) (jwt.Token, error) {
 	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
 }
 
-func (p *Util) validate(token jwt.Token) error {
+func (p *JWT) validate(token jwt.Token) error {
 	return jwt.Validate(token, jwt.WithClock(p.clock))
 }
 
-func (p *Util) ExtractToken(r *http.Request) (jwt.Token, error) {
+func (p *JWT) ExtractToken(r *http.Request) (jwt.Token, error) {
 	token, err := p.parseRequest(r)
 
 	if err != nil {

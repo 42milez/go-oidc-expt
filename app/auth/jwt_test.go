@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xtime"
+	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
-	"github.com/42milez/go-oidc-server/app/testutil"
+	"github.com/42milez/go-oidc-server/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
@@ -33,7 +33,7 @@ func TestEmbed(t *testing.T) {
 }
 
 func TestJWT_GenerateAccessToken(t *testing.T) {
-	jwtUtil, err := NewUtil(&xtime.RealClocker{})
+	jwtUtil, err := NewJWT(&xtime.RealClocker{})
 
 	if err != nil {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
@@ -53,7 +53,7 @@ func TestJWT_GenerateAccessToken(t *testing.T) {
 func TestJWT_ParseRequest(t *testing.T) {
 	t.Parallel()
 
-	c := testutil.FixedClocker{}
+	c := xtestutil.FixedClocker{}
 
 	want, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
@@ -80,7 +80,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	jwtUtil, err := NewUtil(c)
+	jwtUtil, err := NewJWT(c)
 
 	if err != nil {
 		t.Fatal(err)
@@ -103,7 +103,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 func TestJWT_Validate(t *testing.T) {
 	t.Parallel()
 
-	c := testutil.FixedClocker{}
+	c := xtestutil.FixedClocker{}
 
 	t.Run("OK", func(t *testing.T) {
 		token, err := jwt.NewBuilder().
@@ -119,7 +119,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		jwtUtil, err := NewUtil(c)
+		jwtUtil, err := NewJWT(c)
 
 		if err != nil {
 			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
@@ -146,7 +146,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		jwtUtil, err := NewUtil(testutil.FixedTomorrowClocker{})
+		jwtUtil, err := NewJWT(xtestutil.FixedTomorrowClocker{})
 
 		if err != nil {
 			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)

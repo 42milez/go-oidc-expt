@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/redis/go-redis/v9"
+
 	"github.com/42milez/go-oidc-server/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/auth"
@@ -18,23 +20,28 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(entClient *ent.Client, sessionUtil *Session, jwtUtil *auth.Util) (*CreateUser, error) {
+func NewCreateUser(ec *ent.Client, rc *redis.Client, jwt *auth.JWT) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{
 				Clock: &xtime.RealClocker{},
-				DB:    entClient,
+				DB:    ec,
 			},
 		},
-		Session:   sessionUtil,
-		Validator: validator.New(),
+		Session: &Session{
+			Repo: &repository.Session{
+				Cache: rc,
+			},
+			Token: jwt,
+		},
+		validator: validator.New(),
 	}, nil
 }
 
 type CreateUser struct {
 	Service   UserCreator
 	Session   SessionRestorer
-	Validator *validator.Validate
+	validator *validator.Validate
 }
 
 func (p *CreateUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +54,7 @@ func (p *CreateUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := p.Validator.Struct(req); err != nil {
+	if err := p.validator.Struct(req); err != nil {
 		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.AuthenticationFailed,

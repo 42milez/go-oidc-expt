@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/redis/go-redis/v9"
+
 	"github.com/42milez/go-oidc-server/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/model"
@@ -20,25 +22,30 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticate(entClient *ent.Client, cookieUtil *Cookie, sessionUtil *Session, jwtUtil *auth.Util) (*Authenticate, error) {
+func NewAuthenticate(ec *ent.Client, rc *redis.Client, cookie *Cookie, jwt *auth.JWT) (*Authenticate, error) {
 	return &Authenticate{
-		service: &service.Authenticate{
+		Service: &service.Authenticate{
 			Repo: &repository.User{
 				Clock: &xtime.RealClocker{},
-				DB:    entClient,
+				DB:    ec,
 			},
-			Token: jwtUtil,
+			Token: jwt,
 		},
-		cookie:    cookieUtil,
-		session:   sessionUtil,
+		Cookie: cookie,
+		Session: &Session{
+			Repo: &repository.Session{
+				Cache: rc,
+			},
+			Token: jwt,
+		},
 		validator: validator.New(),
 	}, nil
 }
 
 type Authenticate struct {
-	service   Authenticator
-	session   SessionCreator
-	cookie    *Cookie
+	Service   Authenticator
+	Session   SessionCreator
+	Cookie    *Cookie
 	validator *validator.Validate
 }
 
@@ -78,7 +85,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := p.service.Authenticate(r.Context(), body.Name, body.Password)
+	userID, err := p.Service.Authenticate(r.Context(), body.Name, body.Password)
 
 	if err != nil {
 		if errors.Is(err, xerr.PasswordNotMatched) {
@@ -92,7 +99,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	sessionID, err := p.session.Create(&UserSession{
+	sessionID, err := p.Session.Create(&UserSession{
 		ID: userID,
 	})
 
@@ -101,7 +108,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = p.cookie.Set(w, sessionIDCookieName, sessionID); err != nil {
+	if err = p.Cookie.Set(w, sessionIDCookieName, sessionID); err != nil {
 		ResponseJsonWithInternalServerError(w)
 		return
 	}

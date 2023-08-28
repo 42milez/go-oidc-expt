@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/pkg/xtestutil"
+
 	"github.com/42milez/go-oidc-server/pkg/xstring"
 
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
-
-	"github.com/42milez/go-oidc-server/app/testutil"
 
 	"github.com/42milez/go-oidc-server/app/validation"
 
@@ -68,7 +68,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				"http://idp/v1/authorize",
 				nil,
 			)
-			r.URL.RawQuery = strings.Replace(xstring.ByteToString(testutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
+			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
 			r = r.Clone(context.WithValue(r.Context(), UserIDKey{}, userID))
 
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
@@ -85,19 +85,19 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			}
 
 			hdlr := &AuthorizeGet{
-				service:   svcMock,
+				Service:   svcMock,
 				validator: v,
 			}
 			hdlr.ServeHTTP(w, r)
 			resp := w.Result()
 
-			wantResp := &testutil.Response{
+			wantResp := &xtestutil.Response{
 				StatusCode: http.StatusFound,
 				Location:   tt.resp.location,
-				Body:       testutil.LoadFile(t, tt.want.respFile),
+				Body:       xtestutil.LoadFile(t, tt.want.respFile),
 			}
 
-			testutil.AssertResponse(t, resp, wantResp)
+			xtestutil.AssertResponse(t, resp, wantResp)
 		})
 	}
 }

@@ -54,6 +54,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
+	github.com/sony/sonyflake v1.2.0 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect

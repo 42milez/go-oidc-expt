@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/testutil"
+	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
@@ -22,7 +22,7 @@ const userULID = "01H3M514Q0KGDS7PCKE9VVEMT4"
 func TestNewSession(t *testing.T) {
 	t.Parallel()
 
-	if err := os.Setenv("REDIS_DB", strconv.Itoa(testutil.TestRedisDB)); err != nil {
+	if err := os.Setenv("REDIS_DB", strconv.Itoa(xtestutil.TestRedisDB)); err != nil {
 		t.Error(err)
 	}
 
@@ -48,7 +48,7 @@ func TestNewSession(t *testing.T) {
 func TestSession_SaveID(t *testing.T) {
 	t.Parallel()
 
-	client := testutil.OpenRedis(t)
+	client := xtestutil.OpenRedis(t)
 	repo := Session{
 		Cache: client,
 	}
@@ -69,7 +69,7 @@ func TestSession_SaveID(t *testing.T) {
 func TestSession_LoadID(t *testing.T) {
 	t.Parallel()
 
-	client := testutil.OpenRedis(t)
+	client := xtestutil.OpenRedis(t)
 	repo := Session{
 		Cache: client,
 	}
@@ -117,7 +117,7 @@ func TestSession_LoadID(t *testing.T) {
 func TestSession_Delete(t *testing.T) {
 	t.Parallel()
 
-	client := testutil.OpenRedis(t)
+	client := xtestutil.OpenRedis(t)
 	repo := Session{
 		Cache: client,
 	}

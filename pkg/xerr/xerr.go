@@ -5,31 +5,6 @@ import (
 	"fmt"
 )
 
-const (
-	FailedToCloseConnection      GeneralErr = "failed to close connection"
-	FailedToCloseResponseBody    GeneralErr = "failed to close response body"
-	FailedToInitialize           GeneralErr = "failed to initialize"
-	FailedToPingCache            GeneralErr = "failed to ping cache"
-	FailedToPingDatabase         GeneralErr = "failed to ping database"
-	FailedToReadContextValue     GeneralErr = "failed to read context value"
-	FailedToReadFile             GeneralErr = "failed to read file"
-	FailedToReadResponseBody     GeneralErr = "failed to read response body"
-	FailedToReadResponseLocation GeneralErr = "failed to read response location"
-	FailedToUnmarshalJSON        GeneralErr = "failed to unmarshal json"
-)
-
-type GeneralErr string
-
-func (v GeneralErr) Error() string {
-	return string(v)
-}
-
-type HTTPErr string
-
-func (v HTTPErr) Error() string {
-	return string(v)
-}
-
 type OpenIDErr error
 
 var (
@@ -66,24 +41,34 @@ var (
 )
 
 var (
-	FailToEstablishConnection   InternalErr = "failed to establish connection"
-	FailedToBuildToken          InternalErr = "failed to build token"
-	FailedToCreateUser          InternalErr = "failed to create user"
-	FailedToDecodeInToBytes     InternalErr = "failed to decode string"
-	FailedToDecodeInToStruct    InternalErr = "failed to decode into struct"
-	FailedToDeleteItem          InternalErr = "failed to delete item"
-	FailedToEncodeInToBytes     InternalErr = "failed to encode struct"
-	FailedToExtractToken        InternalErr = "failed to extract token"
-	FailedToGenerateRandomBytes InternalErr = "failed to generate random bytes"
-	FailedToHashPassword        InternalErr = "failed to hash password"
-	FailedToLoadItem            InternalErr = "failed to load item"
-	FailedToParseEnvVal         InternalErr = "failed to parse environment variable"
-	FailedToParsePrivateKey     InternalErr = "failed to parse private key"
-	FailedToParsePublicKey      InternalErr = "failed to parse public key"
-	FailedToParseRequest        InternalErr = "failed to parse request"
-	FailedToReachHost           InternalErr = "failed to reach host"
-	FailedToSaveItem            InternalErr = "failed to save item"
-	FailedToSignToken           InternalErr = "failed to sign token"
-	InvalidToken                InternalErr = "invalid token"
-	PasswordNotMatched          InternalErr = "password not matched"
+	FailToEstablishConnection    InternalErr = "failed to establish connection"
+	FailedToBuildToken           InternalErr = "failed to build token"
+	FailedToCloseConnection      InternalErr = "failed to close connection"
+	FailedToCloseResponseBody    InternalErr = "failed to close response body"
+	FailedToCreateUser           InternalErr = "failed to create user"
+	FailedToDecodeInToBytes      InternalErr = "failed to decode string"
+	FailedToDecodeInToStruct     InternalErr = "failed to decode into struct"
+	FailedToDeleteItem           InternalErr = "failed to delete item"
+	FailedToEncodeInToBytes      InternalErr = "failed to encode struct"
+	FailedToExtractToken         InternalErr = "failed to extract token"
+	FailedToGenerateRandomBytes  InternalErr = "failed to generate random bytes"
+	FailedToHashPassword         InternalErr = "failed to hash password"
+	FailedToInitialize           InternalErr = "failed to initialize"
+	FailedToLoadItem             InternalErr = "failed to load item"
+	FailedToParseEnvVal          InternalErr = "failed to parse environment variable"
+	FailedToParsePrivateKey      InternalErr = "failed to parse private key"
+	FailedToParsePublicKey       InternalErr = "failed to parse public key"
+	FailedToParseRequest         InternalErr = "failed to parse request"
+	FailedToPingCache            InternalErr = "failed to ping cache"
+	FailedToPingDatabase         InternalErr = "failed to ping database"
+	FailedToReachHost            InternalErr = "failed to reach host"
+	FailedToReadContextValue     InternalErr = "failed to read context value"
+	FailedToReadFile             InternalErr = "failed to read file"
+	FailedToReadResponseBody     InternalErr = "failed to read response body"
+	FailedToReadResponseLocation InternalErr = "failed to read response location"
+	FailedToSaveItem             InternalErr = "failed to save item"
+	FailedToSignToken            InternalErr = "failed to sign token"
+	FailedToUnmarshalJSON        InternalErr = "failed to unmarshal json"
+	InvalidToken                 InternalErr = "invalid token"
+	PasswordNotMatched           InternalErr = "password not matched"
 )

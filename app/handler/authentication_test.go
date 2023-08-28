@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/testutil"
+	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 
@@ -77,7 +77,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			reqFile: tdAuthenticationRequest200,
 			respSVCMock: serviceMockResp{
 				userID: "",
-				err:    testutil.DummyError,
+				err:    xtestutil.DummyError,
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,
@@ -96,7 +96,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			r := httptest.NewRequest(
 				http.MethodPost,
 				"/authentication",
-				bytes.NewReader(testutil.LoadFile(t, tt.reqFile)))
+				bytes.NewReader(xtestutil.LoadFile(t, tt.reqFile)))
 
 			svcMock := NewMockAuthenticator(gomock.NewController(t))
 			svcMock.
@@ -109,21 +109,21 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			sessMock.EXPECT().Create(gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
 			sut := Authenticate{
-				service:   svcMock,
-				session:   sessMock,
-				cookie:    NewCookie(cookieHashKey, cookieBlockKey),
+				Service:   svcMock,
+				Session:   sessMock,
+				Cookie:    NewCookie(cookieHashKey, cookieBlockKey),
 				validator: validator.New(),
 			}
 			sut.ServeHTTP(w, r)
 
 			resp := w.Result()
 
-			wantResp := &testutil.Response{
+			wantResp := &xtestutil.Response{
 				StatusCode: tt.want.statusCode,
-				Body:       testutil.LoadFile(t, tt.want.respFile),
+				Body:       xtestutil.LoadFile(t, tt.want.respFile),
 			}
 
-			testutil.AssertResponseJSON(t, resp, wantResp)
+			xtestutil.AssertResponseJSON(t, resp, wantResp)
 		})
 	}
 }

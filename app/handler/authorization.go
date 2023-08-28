@@ -27,7 +27,7 @@ func NewAuthorizeGet() (*AuthorizeGet, error) {
 }
 
 type AuthorizeGet struct {
-	service   Authorizer
+	Service   Authorizer
 	validator *validator.Validate
 }
 
@@ -78,7 +78,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	location, err := p.service.Authorize(r.Context(), userID, q)
+	location, err := p.Service.Authorize(r.Context(), userID, q)
 
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{

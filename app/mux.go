@@ -28,36 +28,29 @@ const (
 
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
 	mux := chi.NewRouter()
-
-	// ==================================================
-	//  Database and Ephemeral Store
-	// ==================================================
-
 	dbClient, err := repository.NewDBClient(ctx, cfg)
 
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, xerr.FailedToInitialize.Wrap(err)
 	}
 
 	entClient := repository.NewEntClient(dbClient)
 	redisClient, err := repository.NewCacheClient(ctx, cfg)
 
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, xerr.FailedToInitialize.Wrap(err)
+	}
+
+	cookie := handler.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
+	jwt, err := auth.NewJWT(&xtime.RealClocker{})
+
+	if err != nil {
+		return nil, nil, xerr.FailedToInitialize.Wrap(err)
 	}
 
 	// ==================================================
 	//  Route
 	// ==================================================
-
-	jwtUtil, err := auth.NewUtil(&xtime.RealClocker{})
-
-	if err != nil {
-		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
-	}
-
-	cookieUtil := handler.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
-	sessionUtil := handler.NewSession(redisClient, jwtUtil)
 
 	//  Swagger Endpoint
 	// --------------------------------------------------
@@ -76,7 +69,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  User Endpoint
 	// --------------------------------------------------
 
-	createUserHdlr, err := handler.NewCreateUser(entClient, sessionUtil, jwtUtil)
+	createUserHdlr, err := handler.NewCreateUser(entClient, redisClient, jwt)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
@@ -86,7 +79,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		r.Post("/", createUserHdlr.ServeHTTP)
 	})
 
-	authenticateUserHdlr, err := handler.NewAuthenticate(entClient, cookieUtil, sessionUtil, jwtUtil)
+	authenticateUserHdlr, err := handler.NewAuthenticate(entClient, redisClient, cookie, jwt)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
@@ -96,7 +89,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		r.Post("/", authenticateUserHdlr.ServeHTTP)
 	})
 
-	//  OpenID/OAuth Endpoint
+	//  OpenID Endpoint
 	// --------------------------------------------------
 
 	authorizeGet, err := handler.NewAuthorizeGet()
