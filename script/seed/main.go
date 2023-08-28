@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
 	"time"
 
 	"github.com/42milez/go-oidc-server/pkg/xargon2"
@@ -20,6 +21,13 @@ import (
 const nUserMin = 1
 const nAuthCodeMin = 1
 const nRedirectUriMin = 1
+
+func print(data any) {
+	v := reflect.ValueOf(data)
+	for i := 0; i < v.Len(); i++ {
+		fmt.Printf("%+v\n", v.Index(i).Interface())
+	}
+}
 
 func insertUsers(ctx context.Context, client *ent.Client, nUser int) ([]*ent.User, error) {
 	if client == nil {
@@ -46,6 +54,8 @@ func insertUsers(ctx context.Context, client *ent.Client, nUser int) ([]*ent.Use
 		}
 		params[i].password = pwHash
 	}
+
+	print(params)
 
 	builders := make([]*ent.UserCreate, len(params))
 
@@ -85,6 +95,8 @@ func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User,
 		params[i].userID = users[i%nUser].ID
 	}
 
+	print(params)
+
 	builders := make([]*ent.AuthCodeCreate, len(params))
 
 	for i, v := range params {
@@ -115,6 +127,8 @@ func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.Us
 		params[i].uri = fmt.Sprintf("http://example.com/cb%d", i)
 		params[i].userID = users[i%nUser].ID
 	}
+
+	print(params)
 
 	builders := make([]*ent.RedirectURICreate, len(params))
 

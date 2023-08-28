@@ -16,7 +16,7 @@ import (
 const (
 	nameMaxLength    = 30
 	nameMinLength    = 6
-	passwordLength   = 279
+	passwordLength   = 284
 	totpSecretLength = 160
 )
 
