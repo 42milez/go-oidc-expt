@@ -8,6 +8,8 @@ import (
 
 var UID *UniqueID
 
+// TODO: Separate the ID generator as an independent container.
+
 type UniqueID struct {
 	generator *sonyflake.Sonyflake
 }
