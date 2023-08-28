@@ -1,7 +1,7 @@
 #  deploy-builder
 # --------------------------------------------------
 
-FROM golang:1.20.2 as deploy-builder
+FROM golang:1.21.0 as deploy-builder
 
 ENV CGO_ENABLED 0
 
@@ -30,7 +30,7 @@ CMD [ "./app" ]
 #  dev
 # --------------------------------------------------
 
-FROM golang:1.20.2 as dev
+FROM golang:1.21.0 as dev
 
 WORKDIR /workspace
 
