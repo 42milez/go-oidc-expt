@@ -2,8 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/42milez/go-oidc-server/pkg/xid"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/pkg/xid"
 
 	"github.com/redis/go-redis/v9"
 

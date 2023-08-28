@@ -97,23 +97,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
-  #id-generator:
-  #  container_name: go-oidc-server-id-generator
-  #  image: 42milez/sonyflake:1.2.0
-  #  networks:
-  #    - dev
-  #  ports:
-  #    - "8081:80"
-  #  stdin_open: true
-  #  tty: true
-  #  deploy:
-  #    resources:
-  #      limits:
-  #        cpus: "0.5"
-  #        memory: 64M
-  #    restart_policy:
-  #      condition: on-failure
-  #      max_attempts: 3
 networks:
   dev:
     driver: bridge

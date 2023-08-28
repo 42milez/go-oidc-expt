@@ -23,7 +23,7 @@ const (
 	tdAuthenticationResponse500 = tdAuthenticationDir + "500_resp.json"
 )
 
-const dummyUserID typedef.UserID = "user01"
+const dummyUserID typedef.UserID = 475924035230777348
 
 func TestAuthentication_ServeHTTP(t *testing.T) {
 	type serviceMockResp struct {
@@ -76,8 +76,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		"InternalServerError": {
 			reqFile: tdAuthenticationRequest200,
 			respSVCMock: serviceMockResp{
-				userID: "",
-				err:    xtestutil.DummyError,
+				err: xtestutil.DummyError,
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,

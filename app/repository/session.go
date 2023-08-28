@@ -16,7 +16,7 @@ type Session struct {
 }
 
 func (p *Session) SaveUserID(ctx context.Context, key string, id typedef.UserID) error {
-	if err := p.Cache.Set(ctx, key, id, sessionTTL).Err(); err != nil {
+	if err := p.Cache.Set(ctx, key, uint64(id), sessionTTL).Err(); err != nil {
 		return err
 	}
 	return nil

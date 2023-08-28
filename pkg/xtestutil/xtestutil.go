@@ -176,7 +176,7 @@ const TestDBUser = "idp_test"
 const TestDBPassword = "idp_test"
 const TestDBName = "idp_test"
 
-func OpenDB(t *testing.T) (*ent.Client, *sql.DB) {
+func NewEntClient(t *testing.T) (*ent.Client, *sql.DB) {
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", TestDBUser, TestDBPassword, TestDBHost, TestDBPort,
 		TestDBName)
 
@@ -206,7 +206,7 @@ const TestRedisPort = 16379
 const TestRedisPassword = ""
 const TestRedisDB = 1
 
-func OpenRedis(t *testing.T) *redis.Client {
+func NewRedisClient(t *testing.T) *redis.Client {
 	t.Helper()
 
 	opt := redis.Options{

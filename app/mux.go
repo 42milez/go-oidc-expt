@@ -44,7 +44,6 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	}
 
 	cookie := handler.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
-	uid, err := xid.NewUniqueID()
 
 	if err != nil {
 		return nil, nil, xerr.FailedToInitialize.Wrap(err)
@@ -77,7 +76,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  User Endpoint
 	// --------------------------------------------------
 
-	createUserHdlr, err := handler.NewCreateUser(ec, rc, uid, jwt)
+	createUserHdlr, err := handler.NewCreateUser(ec, rc, xid.UID, jwt)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)

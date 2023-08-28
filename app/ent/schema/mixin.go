@@ -2,11 +2,12 @@ package schema
 
 import (
 	"context"
+	"fmt"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
-	"fmt"
 	"github.com/42milez/go-oidc-server/app/ent/ent/hook"
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 	"github.com/42milez/go-oidc-server/pkg/xid"
@@ -40,7 +41,7 @@ func (BaseMixin) Hooks() []ent.Hook {
 
 func IDHook() ent.Hook {
 	type IDSetter interface {
-		SetID(uint64)
+		SetID(id typedef.UserID)
 	}
 	return func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
@@ -56,7 +57,7 @@ func IDHook() ent.Hook {
 				return nil, err
 			}
 
-			is.SetID(id)
+			is.SetID(typedef.UserID(id))
 
 			return next.Mutate(ctx, m)
 		})

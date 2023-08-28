@@ -1,8 +1,9 @@
 package xid
 
 import (
-	"github.com/sony/sonyflake"
 	"log"
+
+	"github.com/sony/sonyflake"
 )
 
 var UID *UniqueID

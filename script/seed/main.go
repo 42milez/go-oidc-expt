@@ -11,7 +11,8 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xrandom"
 
 	"github.com/42milez/go-oidc-server/app/config"
-	ent "github.com/42milez/go-oidc-server/app/ent/ent"
+	"github.com/42milez/go-oidc-server/app/ent/ent"
+	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 	"github.com/42milez/go-oidc-server/app/repository"
 )

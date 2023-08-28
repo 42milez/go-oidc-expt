@@ -10,7 +10,7 @@ import (
 )
 
 func TestHealthCheck_PingCache(t *testing.T) {
-	client := xtestutil.OpenRedis(t)
+	client := xtestutil.NewRedisClient(t)
 	ch := &CheckHealth{
 		Cache: client,
 	}
@@ -20,7 +20,7 @@ func TestHealthCheck_PingCache(t *testing.T) {
 }
 
 func TestHealthCheck_PingDB(t *testing.T) {
-	_, client := xtestutil.OpenDB(t)
+	_, client := xtestutil.NewEntClient(t)
 	ch := &CheckHealth{
 		DB: client,
 	}

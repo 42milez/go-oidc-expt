@@ -9,13 +9,13 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-const userULID = "01H3M514Q0KGDS7PCKE9VVEMT4"
+const userULID typedef.UserID = 475924034190589956
 
 func TestGetUserID(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	want := typedef.UserID(userULID)
+	want := userULID
 
 	ctx = context.WithValue(ctx, UserIDKey{}, want)
 	got, ok := GetUserID(ctx)

@@ -17,7 +17,7 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-const userULID = "01H3M514Q0KGDS7PCKE9VVEMT4"
+const userULID typedef.UserID = 475924035230777348
 
 func TestNewSession(t *testing.T) {
 	t.Parallel()
@@ -48,18 +48,18 @@ func TestNewSession(t *testing.T) {
 func TestSession_SaveID(t *testing.T) {
 	t.Parallel()
 
-	client := xtestutil.OpenRedis(t)
+	client := xtestutil.NewRedisClient(t)
 	repo := Session{
 		Cache: client,
 	}
 	ctx := context.Background()
-	key := "TestEpStore_SaveID"
+	key := "TestSession_SaveID"
 
 	t.Cleanup(func() {
 		client.Del(ctx, key)
 	})
 
-	id := typedef.UserID(userULID)
+	id := userULID
 
 	if err := repo.SaveUserID(ctx, key, id); err != nil {
 		t.Error(err)
@@ -69,7 +69,7 @@ func TestSession_SaveID(t *testing.T) {
 func TestSession_LoadID(t *testing.T) {
 	t.Parallel()
 
-	client := xtestutil.OpenRedis(t)
+	client := xtestutil.NewRedisClient(t)
 	repo := Session{
 		Cache: client,
 	}
@@ -78,10 +78,10 @@ func TestSession_LoadID(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		key := "TestEpStore_Load_OK"
-		id := typedef.UserID(userULID)
+		key := "TestSession_LoadID_OK"
+		id := userULID
 
-		if err := client.Set(ctx, key, id, sessionTTL).Err(); err != nil {
+		if err := client.Set(ctx, key, uint64(id), sessionTTL).Err(); err != nil {
 			t.Fatal(err)
 		}
 
@@ -96,7 +96,7 @@ func TestSession_LoadID(t *testing.T) {
 		}
 
 		if got != id {
-			t.Errorf("want = %s; got = %s", id, got)
+			t.Errorf("want = %d; got = %d", id, got)
 		}
 	})
 
@@ -104,7 +104,7 @@ func TestSession_LoadID(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		key := "TestEpStore_Load_NotFound"
+		key := "TestSession_LoadID_NotFound"
 
 		_, err := repo.LoadUserID(ctx, key)
 
@@ -117,14 +117,14 @@ func TestSession_LoadID(t *testing.T) {
 func TestSession_Delete(t *testing.T) {
 	t.Parallel()
 
-	client := xtestutil.OpenRedis(t)
+	client := xtestutil.NewRedisClient(t)
 	repo := Session{
 		Cache: client,
 	}
 	ctx := context.Background()
-	key := "TestEpStore_Delete"
+	key := "TestSession_Delete"
 
-	id := typedef.UserID(userULID)
+	id := userULID
 
 	if err := repo.SaveUserID(ctx, key, id); err != nil {
 		t.Fatal(err)

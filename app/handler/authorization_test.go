@@ -36,7 +36,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 		respFile   string
 	}
 
-	const userID typedef.UserID = "01H8P9NBW77WMNN2ZTNACGZ19X"
+	const userID typedef.UserID = 475924034190589956
 
 	tests := map[string]struct {
 		reqFile string
