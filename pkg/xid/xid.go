@@ -1,18 +1,26 @@
 package xid
 
-import "github.com/sony/sonyflake"
+import (
+	"github.com/sony/sonyflake"
+	"log"
+)
+
+var UID *UniqueID
 
 type UniqueID struct {
 	generator *sonyflake.Sonyflake
 }
 
 func (p *UniqueID) NextID() (uint64, error) {
-	return p.NextID()
+	return p.generator.NextID()
 }
 
-func NewUniqueID() (*UniqueID, error) {
+func init() {
 	sf, err := sonyflake.New(sonyflake.Settings{})
-	return &UniqueID{
+	if err != nil {
+		log.Fatal(err)
+	}
+	UID = &UniqueID{
 		generator: sf,
-	}, err
+	}
 }

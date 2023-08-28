@@ -19,17 +19,17 @@ func (p *Authenticate) Authenticate(ctx context.Context, name, pw string) (typed
 	user, err := p.Repo.SelectByName(ctx, name)
 
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	ok, err := xargon2.ComparePassword(pw, user.Password)
 
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	if !ok {
-		return "", xerr.PasswordNotMatched
+		return 0, xerr.PasswordNotMatched
 	}
 
 	return user.ID, nil

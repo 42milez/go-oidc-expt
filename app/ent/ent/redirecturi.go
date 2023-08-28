@@ -35,14 +35,14 @@ func (*RedirectURI) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case redirecturi.FieldID:
+		case redirecturi.FieldID, redirecturi.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case redirecturi.FieldURI, redirecturi.FieldUserID:
+		case redirecturi.FieldURI:
 			values[i] = new(sql.NullString)
 		case redirecturi.FieldCreatedAt, redirecturi.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
 		case redirecturi.ForeignKeys[0]: // user_id
-			values[i] = new(sql.NullString)
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -83,17 +83,17 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 				ru.ModifiedAt = value.Time
 			}
 		case redirecturi.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				ru.UserID = typedef.UserID(value.String)
+				ru.UserID = typedef.UserID(value.Int64)
 			}
 		case redirecturi.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
 				ru.user_id = new(typedef.UserID)
-				*ru.user_id = typedef.UserID(value.String)
+				*ru.user_id = typedef.UserID(value.Int64)
 			}
 		default:
 			ru.selectValues.Set(columns[i], values[i])

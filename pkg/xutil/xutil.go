@@ -21,3 +21,8 @@ func CloseConnection(client ClosableClient) {
 func IsEmpty[T string | []byte](v T) bool {
 	return len(v) == 0
 }
+
+func NewFalse() *bool {
+	ret := false
+	return &ret
+}

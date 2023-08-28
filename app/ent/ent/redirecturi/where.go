@@ -72,7 +72,7 @@ func ModifiedAt(v time.Time) predicate.RedirectURI {
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
 func UserID(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
+	vc := uint64(v)
 	return predicate.RedirectURI(sql.FieldEQ(FieldUserID, vc))
 }
 
@@ -223,13 +223,13 @@ func ModifiedAtLTE(v time.Time) predicate.RedirectURI {
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
 func UserIDEQ(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
+	vc := uint64(v)
 	return predicate.RedirectURI(sql.FieldEQ(FieldUserID, vc))
 }
 
 // UserIDNEQ applies the NEQ predicate on the "user_id" field.
 func UserIDNEQ(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
+	vc := uint64(v)
 	return predicate.RedirectURI(sql.FieldNEQ(FieldUserID, vc))
 }
 
@@ -237,7 +237,7 @@ func UserIDNEQ(v typedef.UserID) predicate.RedirectURI {
 func UserIDIn(vs ...typedef.UserID) predicate.RedirectURI {
 	v := make([]any, len(vs))
 	for i := range v {
-		v[i] = string(vs[i])
+		v[i] = uint64(vs[i])
 	}
 	return predicate.RedirectURI(sql.FieldIn(FieldUserID, v...))
 }
@@ -246,63 +246,33 @@ func UserIDIn(vs ...typedef.UserID) predicate.RedirectURI {
 func UserIDNotIn(vs ...typedef.UserID) predicate.RedirectURI {
 	v := make([]any, len(vs))
 	for i := range v {
-		v[i] = string(vs[i])
+		v[i] = uint64(vs[i])
 	}
 	return predicate.RedirectURI(sql.FieldNotIn(FieldUserID, v...))
 }
 
 // UserIDGT applies the GT predicate on the "user_id" field.
 func UserIDGT(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
+	vc := uint64(v)
 	return predicate.RedirectURI(sql.FieldGT(FieldUserID, vc))
 }
 
 // UserIDGTE applies the GTE predicate on the "user_id" field.
 func UserIDGTE(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
+	vc := uint64(v)
 	return predicate.RedirectURI(sql.FieldGTE(FieldUserID, vc))
 }
 
 // UserIDLT applies the LT predicate on the "user_id" field.
 func UserIDLT(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
+	vc := uint64(v)
 	return predicate.RedirectURI(sql.FieldLT(FieldUserID, vc))
 }
 
 // UserIDLTE applies the LTE predicate on the "user_id" field.
 func UserIDLTE(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
+	vc := uint64(v)
 	return predicate.RedirectURI(sql.FieldLTE(FieldUserID, vc))
-}
-
-// UserIDContains applies the Contains predicate on the "user_id" field.
-func UserIDContains(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
-	return predicate.RedirectURI(sql.FieldContains(FieldUserID, vc))
-}
-
-// UserIDHasPrefix applies the HasPrefix predicate on the "user_id" field.
-func UserIDHasPrefix(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
-	return predicate.RedirectURI(sql.FieldHasPrefix(FieldUserID, vc))
-}
-
-// UserIDHasSuffix applies the HasSuffix predicate on the "user_id" field.
-func UserIDHasSuffix(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
-	return predicate.RedirectURI(sql.FieldHasSuffix(FieldUserID, vc))
-}
-
-// UserIDEqualFold applies the EqualFold predicate on the "user_id" field.
-func UserIDEqualFold(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
-	return predicate.RedirectURI(sql.FieldEqualFold(FieldUserID, vc))
-}
-
-// UserIDContainsFold applies the ContainsFold predicate on the "user_id" field.
-func UserIDContainsFold(v typedef.UserID) predicate.RedirectURI {
-	vc := string(v)
-	return predicate.RedirectURI(sql.FieldContainsFold(FieldUserID, vc))
 }
 
 // And groups predicates with the AND operator between them.

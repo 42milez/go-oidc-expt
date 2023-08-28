@@ -35,14 +35,14 @@ func (*AuthCode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case authcode.FieldID:
+		case authcode.FieldID, authcode.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case authcode.FieldCode, authcode.FieldUserID:
+		case authcode.FieldCode:
 			values[i] = new(sql.NullString)
 		case authcode.FieldExpireAt, authcode.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		case authcode.ForeignKeys[0]: // user_id
-			values[i] = new(sql.NullString)
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -83,17 +83,17 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 				ac.CreatedAt = value.Time
 			}
 		case authcode.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				ac.UserID = typedef.UserID(value.String)
+				ac.UserID = typedef.UserID(value.Int64)
 			}
 		case authcode.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
 				ac.user_id = new(typedef.UserID)
-				*ac.user_id = typedef.UserID(value.String)
+				*ac.user_id = typedef.UserID(value.Int64)
 			}
 		default:
 			ac.selectValues.Set(columns[i], values[i])

@@ -6,7 +6,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
@@ -38,12 +37,8 @@ func (RedirectURI) Fields() []ent.Field {
 		field.Time("modified_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
-		field.String("user_id").
-			GoType(typedef.UserID("")).
-			SchemaType(map[string]string{
-				dialect.MySQL: UserIDSchemaType(),
-			}).
-			NotEmpty().
+		field.Uint64("user_id").
+			GoType(typedef.UserID(0)).
 			Immutable(),
 	}
 }

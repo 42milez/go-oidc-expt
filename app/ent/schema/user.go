@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
-
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 
@@ -20,7 +18,6 @@ const (
 	nameMinLength    = 6
 	passwordLength   = 279
 	totpSecretLength = 160
-	userIDLength     = 26
 )
 
 // User holds the schema definition for the User entity.
@@ -28,15 +25,16 @@ type User struct {
 	ent.Schema
 }
 
+// Mixin of the User.
+func (User) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		BaseMixin{},
+	}
+}
+
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").
-			GoType(typedef.UserID("")).
-			SchemaType(map[string]string{
-				dialect.MySQL: UserIDSchemaType(),
-			}).
-			Immutable(),
 		field.String("name").
 			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-z_]{%d,%d}$", nameMinLength, nameMaxLength))).
 			Unique().
@@ -81,8 +79,4 @@ func PasswordSchemaType() string {
 
 func TotoSecretSchemaType() string {
 	return fmt.Sprintf("CHAR(%d)", totpSecretLength)
-}
-
-func UserIDSchemaType() string {
-	return fmt.Sprintf("CHAR(%d)", userIDLength)
 }

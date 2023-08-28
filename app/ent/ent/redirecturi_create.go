@@ -125,11 +125,6 @@ func (ruc *RedirectURICreate) check() error {
 	if _, ok := ruc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "RedirectURI.user_id"`)}
 	}
-	if v, ok := ruc.mutation.UserID(); ok {
-		if err := redirecturi.UserIDValidator(string(v)); err != nil {
-			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "RedirectURI.user_id": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -169,7 +164,7 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 		_node.ModifiedAt = value
 	}
 	if value, ok := ruc.mutation.UserID(); ok {
-		_spec.SetField(redirecturi.FieldUserID, field.TypeString, value)
+		_spec.SetField(redirecturi.FieldUserID, field.TypeUint64, value)
 		_node.UserID = value
 	}
 	return _node, _spec

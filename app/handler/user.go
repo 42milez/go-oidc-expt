@@ -2,9 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/42milez/go-oidc-server/pkg/xid"
 	"net/http"
-
-	"github.com/sony/sonyflake"
 
 	"github.com/redis/go-redis/v9"
 
@@ -22,13 +21,13 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(ec *ent.Client, rc *redis.Client, jwt *auth.JWT, sf *sonyflake.Sonyflake) (*CreateUser, error) {
+func NewCreateUser(ec *ent.Client, rc *redis.Client, idGen *xid.UniqueID, jwt *auth.JWT) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{
 				Clock: &xtime.RealClocker{},
 				DB:    ec,
-				IDGen: sf,
+				IDGen: idGen,
 			},
 		},
 		Session: &Session{

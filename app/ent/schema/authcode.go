@@ -39,12 +39,8 @@ func (AuthCode) Fields() []ent.Field {
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),
-		field.String("user_id").
-			GoType(typedef.UserID("")).
-			SchemaType(map[string]string{
-				dialect.MySQL: UserIDSchemaType(),
-			}).
-			NotEmpty().
+		field.Uint64("user_id").
+			GoType(typedef.UserID(0)).
 			Immutable(),
 	}
 }

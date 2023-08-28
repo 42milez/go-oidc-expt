@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/sony/sonyflake"
+	"github.com/42milez/go-oidc-server/pkg/xid"
 
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 
@@ -44,7 +44,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	}
 
 	cookie := handler.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
-	sf, err := sonyflake.New(sonyflake.Settings{})
+	uid, err := xid.NewUniqueID()
 
 	if err != nil {
 		return nil, nil, xerr.FailedToInitialize.Wrap(err)
@@ -77,7 +77,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  User Endpoint
 	// --------------------------------------------------
 
-	createUserHdlr, err := handler.NewCreateUser(ec, rc, jwt, sf)
+	createUserHdlr, err := handler.NewCreateUser(ec, rc, uid, jwt)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)

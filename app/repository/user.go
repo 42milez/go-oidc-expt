@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/pkg/xtime"
 
@@ -18,7 +19,11 @@ type User struct {
 }
 
 func (p *User) Create(ctx context.Context, name string, pw string) (*ent.User, error) {
-	return p.DB.User.Create().SetName(name).SetPassword(pw).Save(ctx)
+	id, err := p.IDGen.NextID()
+	if err != nil {
+		return nil, xerr.FailedToGenerateUniqueID.Wrap(err)
+	}
+	return p.DB.User.Create().SetID(id).SetName(name).SetPassword(pw).Save(ctx)
 }
 
 func (p *User) SelectByName(ctx context.Context, name string) (*ent.User, error) {

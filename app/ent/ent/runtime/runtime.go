@@ -2,7 +2,105 @@
 
 package runtime
 
-// The schema-stitching logic is generated in github.com/42milez/go-oidc-server/app/ent/ent/runtime.go
+import (
+	"time"
+
+	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/ent/ent/user"
+	"github.com/42milez/go-oidc-server/app/ent/schema"
+)
+
+// The init function reads all schema descriptors with runtime code
+// (default values, validators, hooks and policies) and stitches it
+// to their package variables.
+func init() {
+	authcodeFields := schema.AuthCode{}.Fields()
+	_ = authcodeFields
+	// authcodeDescCode is the schema descriptor for code field.
+	authcodeDescCode := authcodeFields[0].Descriptor()
+	// authcode.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	authcode.CodeValidator = func() func(string) error {
+		validators := authcodeDescCode.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(code string) error {
+			for _, fn := range fns {
+				if err := fn(code); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// authcodeDescExpireAt is the schema descriptor for expire_at field.
+	authcodeDescExpireAt := authcodeFields[1].Descriptor()
+	// authcode.DefaultExpireAt holds the default value on creation for the expire_at field.
+	authcode.DefaultExpireAt = authcodeDescExpireAt.Default.(func() time.Time)
+	// authcodeDescCreatedAt is the schema descriptor for created_at field.
+	authcodeDescCreatedAt := authcodeFields[2].Descriptor()
+	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.
+	authcode.DefaultCreatedAt = authcodeDescCreatedAt.Default.(func() time.Time)
+	redirecturiFields := schema.RedirectURI{}.Fields()
+	_ = redirecturiFields
+	// redirecturiDescURI is the schema descriptor for uri field.
+	redirecturiDescURI := redirecturiFields[0].Descriptor()
+	// redirecturi.URIValidator is a validator for the "uri" field. It is called by the builders before save.
+	redirecturi.URIValidator = redirecturiDescURI.Validators[0].(func(string) error)
+	// redirecturiDescCreatedAt is the schema descriptor for created_at field.
+	redirecturiDescCreatedAt := redirecturiFields[1].Descriptor()
+	// redirecturi.DefaultCreatedAt holds the default value on creation for the created_at field.
+	redirecturi.DefaultCreatedAt = redirecturiDescCreatedAt.Default.(func() time.Time)
+	// redirecturiDescModifiedAt is the schema descriptor for modified_at field.
+	redirecturiDescModifiedAt := redirecturiFields[2].Descriptor()
+	// redirecturi.DefaultModifiedAt holds the default value on creation for the modified_at field.
+	redirecturi.DefaultModifiedAt = redirecturiDescModifiedAt.Default.(func() time.Time)
+	// redirecturi.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
+	redirecturi.UpdateDefaultModifiedAt = redirecturiDescModifiedAt.UpdateDefault.(func() time.Time)
+	userMixin := schema.User{}.Mixin()
+	userMixinHooks0 := userMixin[0].Hooks()
+	user.Hooks[0] = userMixinHooks0[0]
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescName is the schema descriptor for name field.
+	userDescName := userFields[0].Descriptor()
+	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	user.NameValidator = func() func(string) error {
+		validators := userDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescPassword is the schema descriptor for password field.
+	userDescPassword := userFields[1].Descriptor()
+	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
+	// userDescTotpSecret is the schema descriptor for totp_secret field.
+	userDescTotpSecret := userFields[2].Descriptor()
+	// user.TotpSecretValidator is a validator for the "totp_secret" field. It is called by the builders before save.
+	user.TotpSecretValidator = userDescTotpSecret.Validators[0].(func(string) error)
+	// userDescCreatedAt is the schema descriptor for created_at field.
+	userDescCreatedAt := userFields[3].Descriptor()
+	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
+	// userDescModifiedAt is the schema descriptor for modified_at field.
+	userDescModifiedAt := userFields[4].Descriptor()
+	// user.DefaultModifiedAt holds the default value on creation for the modified_at field.
+	user.DefaultModifiedAt = userDescModifiedAt.Default.(func() time.Time)
+	// user.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
+	user.UpdateDefaultModifiedAt = userDescModifiedAt.UpdateDefault.(func() time.Time)
+}
 
 const (
 	Version = "v0.12.3"                                         // Version of ent codegen.

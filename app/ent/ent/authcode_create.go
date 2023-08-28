@@ -125,11 +125,6 @@ func (acc *AuthCodeCreate) check() error {
 	if _, ok := acc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthCode.user_id"`)}
 	}
-	if v, ok := acc.mutation.UserID(); ok {
-		if err := authcode.UserIDValidator(string(v)); err != nil {
-			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "AuthCode.user_id": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -169,7 +164,7 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 		_node.CreatedAt = value
 	}
 	if value, ok := acc.mutation.UserID(); ok {
-		_spec.SetField(authcode.FieldUserID, field.TypeString, value)
+		_spec.SetField(authcode.FieldUserID, field.TypeUint64, value)
 		_node.UserID = value
 	}
 	return _node, _spec

@@ -64,8 +64,6 @@ var (
 	DefaultModifiedAt func() time.Time
 	// UpdateDefaultModifiedAt holds the default value on update for the "modified_at" field.
 	UpdateDefaultModifiedAt func() time.Time
-	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	UserIDValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the RedirectURI queries.

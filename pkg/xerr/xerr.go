@@ -52,6 +52,7 @@ var (
 	FailedToEncodeInToBytes      InternalErr = "failed to encode struct"
 	FailedToExtractToken         InternalErr = "failed to extract token"
 	FailedToGenerateRandomBytes  InternalErr = "failed to generate random bytes"
+	FailedToGenerateUniqueID     InternalErr = "failed to generate unique id"
 	FailedToHashPassword         InternalErr = "failed to hash password"
 	FailedToInitialize           InternalErr = "failed to initialize"
 	FailedToLoadItem             InternalErr = "failed to load item"

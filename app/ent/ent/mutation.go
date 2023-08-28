@@ -42,6 +42,7 @@ type AuthCodeMutation struct {
 	expire_at     *time.Time
 	created_at    *time.Time
 	user_id       *typedef.UserID
+	adduser_id    *typedef.UserID
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*AuthCode, error)
@@ -257,6 +258,7 @@ func (m *AuthCodeMutation) ResetCreatedAt() {
 // SetUserID sets the "user_id" field.
 func (m *AuthCodeMutation) SetUserID(ti typedef.UserID) {
 	m.user_id = &ti
+	m.adduser_id = nil
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
@@ -285,9 +287,28 @@ func (m *AuthCodeMutation) OldUserID(ctx context.Context) (v typedef.UserID, err
 	return oldValue.UserID, nil
 }
 
+// AddUserID adds ti to the "user_id" field.
+func (m *AuthCodeMutation) AddUserID(ti typedef.UserID) {
+	if m.adduser_id != nil {
+		*m.adduser_id += ti
+	} else {
+		m.adduser_id = &ti
+	}
+}
+
+// AddedUserID returns the value that was added to the "user_id" field in this mutation.
+func (m *AuthCodeMutation) AddedUserID() (r typedef.UserID, exists bool) {
+	v := m.adduser_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetUserID resets all changes to the "user_id" field.
 func (m *AuthCodeMutation) ResetUserID() {
 	m.user_id = nil
+	m.adduser_id = nil
 }
 
 // Where appends a list predicates to the AuthCodeMutation builder.
@@ -414,13 +435,21 @@ func (m *AuthCodeMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *AuthCodeMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.adduser_id != nil {
+		fields = append(fields, authcode.FieldUserID)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *AuthCodeMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case authcode.FieldUserID:
+		return m.AddedUserID()
+	}
 	return nil, false
 }
 
@@ -429,6 +458,13 @@ func (m *AuthCodeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *AuthCodeMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case authcode.FieldUserID:
+		v, ok := value.(typedef.UserID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown AuthCode numeric field %s", name)
 }
@@ -530,6 +566,7 @@ type RedirectURIMutation struct {
 	created_at    *time.Time
 	modified_at   *time.Time
 	user_id       *typedef.UserID
+	adduser_id    *typedef.UserID
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*RedirectURI, error)
@@ -745,6 +782,7 @@ func (m *RedirectURIMutation) ResetModifiedAt() {
 // SetUserID sets the "user_id" field.
 func (m *RedirectURIMutation) SetUserID(ti typedef.UserID) {
 	m.user_id = &ti
+	m.adduser_id = nil
 }
 
 // UserID returns the value of the "user_id" field in the mutation.
@@ -773,9 +811,28 @@ func (m *RedirectURIMutation) OldUserID(ctx context.Context) (v typedef.UserID, 
 	return oldValue.UserID, nil
 }
 
+// AddUserID adds ti to the "user_id" field.
+func (m *RedirectURIMutation) AddUserID(ti typedef.UserID) {
+	if m.adduser_id != nil {
+		*m.adduser_id += ti
+	} else {
+		m.adduser_id = &ti
+	}
+}
+
+// AddedUserID returns the value that was added to the "user_id" field in this mutation.
+func (m *RedirectURIMutation) AddedUserID() (r typedef.UserID, exists bool) {
+	v := m.adduser_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetUserID resets all changes to the "user_id" field.
 func (m *RedirectURIMutation) ResetUserID() {
 	m.user_id = nil
+	m.adduser_id = nil
 }
 
 // Where appends a list predicates to the RedirectURIMutation builder.
@@ -902,13 +959,21 @@ func (m *RedirectURIMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *RedirectURIMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.adduser_id != nil {
+		fields = append(fields, redirecturi.FieldUserID)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *RedirectURIMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case redirecturi.FieldUserID:
+		return m.AddedUserID()
+	}
 	return nil, false
 }
 
@@ -917,6 +982,13 @@ func (m *RedirectURIMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *RedirectURIMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case redirecturi.FieldUserID:
+		v, ok := value.(typedef.UserID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown RedirectURI numeric field %s", name)
 }

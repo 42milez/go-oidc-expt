@@ -23,9 +23,9 @@ func (p *Session) SaveUserID(ctx context.Context, key string, id typedef.UserID)
 }
 
 func (p *Session) LoadUserID(ctx context.Context, key string) (typedef.UserID, error) {
-	ret, err := p.Cache.Get(ctx, key).Result()
+	ret, err := p.Cache.Get(ctx, key).Uint64()
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	return typedef.UserID(ret), nil
 }

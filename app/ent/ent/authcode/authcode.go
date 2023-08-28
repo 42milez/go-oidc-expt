@@ -62,8 +62,6 @@ var (
 	DefaultExpireAt func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	UserIDValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the AuthCode queries.
