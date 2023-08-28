@@ -13,7 +13,7 @@ help: Makefile
 
 .PHONY: build build-local
 
-## build: Build docker images to deploy
+## build: Build a docker image to deploy
 build:
 	@docker buildx build \
 		--no-cache \

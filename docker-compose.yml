@@ -44,10 +44,8 @@ services:
     security_opt:
       - apparmor:unconfined
   cache:
-    build:
-      context: docker/cache
     container_name: go-oidc-server-cache
-    image: go-oidc-server-cache:latest
+    image: redis:7.2.0
     networks:
       - dev
     ports:
