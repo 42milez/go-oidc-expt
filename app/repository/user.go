@@ -14,6 +14,7 @@ import (
 type User struct {
 	Clock xtime.Clocker
 	DB    *ent.Client
+	IDGen IDGenerator
 }
 
 func (p *User) Create(ctx context.Context, name string, pw string) (*ent.User, error) {

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/sony/sonyflake"
+
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/pkg/xtime"
@@ -28,20 +30,26 @@ const (
 
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
 	mux := chi.NewRouter()
-	dbClient, err := repository.NewDBClient(ctx, cfg)
+	dc, err := repository.NewDBClient(ctx, cfg)
 
 	if err != nil {
 		return nil, nil, xerr.FailedToInitialize.Wrap(err)
 	}
 
-	entClient := repository.NewEntClient(dbClient)
-	redisClient, err := repository.NewCacheClient(ctx, cfg)
+	ec := repository.NewEntClient(dc)
+	rc, err := repository.NewCacheClient(ctx, cfg)
 
 	if err != nil {
 		return nil, nil, xerr.FailedToInitialize.Wrap(err)
 	}
 
 	cookie := handler.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
+	sf, err := sonyflake.New(sonyflake.Settings{})
+
+	if err != nil {
+		return nil, nil, xerr.FailedToInitialize.Wrap(err)
+	}
+
 	jwt, err := auth.NewJWT(&xtime.RealClocker{})
 
 	if err != nil {
@@ -62,14 +70,14 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  Health Check Endpoint
 	// --------------------------------------------------
 
-	CheckHealthHdlr := handler.NewCheckHealth(redisClient, dbClient)
+	CheckHealthHdlr := handler.NewCheckHealth(rc, dc)
 
 	mux.HandleFunc("/health", CheckHealthHdlr.ServeHTTP)
 
 	//  User Endpoint
 	// --------------------------------------------------
 
-	createUserHdlr, err := handler.NewCreateUser(entClient, redisClient, jwt)
+	createUserHdlr, err := handler.NewCreateUser(ec, rc, jwt, sf)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
@@ -79,7 +87,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		r.Post("/", createUserHdlr.ServeHTTP)
 	})
 
-	authenticateUserHdlr, err := handler.NewAuthenticate(entClient, redisClient, cookie, jwt)
+	authenticateUserHdlr, err := handler.NewAuthenticate(ec, rc, cookie, jwt)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
@@ -106,8 +114,8 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	})
 
 	return mux, func() {
-		xutil.CloseConnection(entClient)
-		xutil.CloseConnection(redisClient)
+		xutil.CloseConnection(ec)
+		xutil.CloseConnection(rc)
 	}, nil
 }
 

@@ -7,7 +7,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
 )
 
 const (
@@ -80,8 +79,6 @@ var (
 	DefaultModifiedAt func() time.Time
 	// UpdateDefaultModifiedAt holds the default value on update for the "modified_at" field.
 	UpdateDefaultModifiedAt func() time.Time
-	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() typedef.UserID
 )
 
 // OrderOption defines the ordering options for the User queries.

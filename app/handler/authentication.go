@@ -36,7 +36,7 @@ func NewAuthenticate(ec *ent.Client, rc *redis.Client, cookie *Cookie, jwt *auth
 			Repo: &repository.Session{
 				Cache: rc,
 			},
-			Token: jwt,
+			TokenExt: jwt,
 		},
 		validator: validator.New(),
 	}, nil

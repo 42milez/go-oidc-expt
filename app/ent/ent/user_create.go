@@ -83,14 +83,6 @@ func (uc *UserCreate) SetID(ti typedef.UserID) *UserCreate {
 	return uc
 }
 
-// SetNillableID sets the "id" field if the given value is not nil.
-func (uc *UserCreate) SetNillableID(ti *typedef.UserID) *UserCreate {
-	if ti != nil {
-		uc.SetID(*ti)
-	}
-	return uc
-}
-
 // AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
 func (uc *UserCreate) AddAuthCodeIDs(ids ...int) *UserCreate {
 	uc.mutation.AddAuthCodeIDs(ids...)
@@ -163,10 +155,6 @@ func (uc *UserCreate) defaults() {
 	if _, ok := uc.mutation.ModifiedAt(); !ok {
 		v := user.DefaultModifiedAt()
 		uc.mutation.SetModifiedAt(v)
-	}
-	if _, ok := uc.mutation.ID(); !ok {
-		v := user.DefaultID()
-		uc.mutation.SetID(v)
 	}
 }
 

@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/oklog/ulid/v2"
-
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 
 	"entgo.io/ent/dialect/entsql"
@@ -37,9 +35,6 @@ func (User) Fields() []ent.Field {
 			GoType(typedef.UserID("")).
 			SchemaType(map[string]string{
 				dialect.MySQL: UserIDSchemaType(),
-			}).
-			DefaultFunc(func() typedef.UserID {
-				return makeUserID()
 			}).
 			Immutable(),
 		field.String("name").
@@ -90,8 +85,4 @@ func TotoSecretSchemaType() string {
 
 func UserIDSchemaType() string {
 	return fmt.Sprintf("CHAR(%d)", userIDLength)
-}
-
-func makeUserID() typedef.UserID {
-	return typedef.UserID(ulid.Make().String())
 }

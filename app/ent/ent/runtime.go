@@ -9,7 +9,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/ent/schema"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -106,8 +105,4 @@ func init() {
 	user.DefaultModifiedAt = userDescModifiedAt.Default.(func() time.Time)
 	// user.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
 	user.UpdateDefaultModifiedAt = userDescModifiedAt.UpdateDefault.(func() time.Time)
-	// userDescID is the schema descriptor for id field.
-	userDescID := userFields[0].Descriptor()
-	// user.DefaultID holds the default value on creation for the id field.
-	user.DefaultID = userDescID.Default.(func() typedef.UserID)
 }

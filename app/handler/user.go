@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/sony/sonyflake"
+
 	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/pkg/xtime"
@@ -20,19 +22,20 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(ec *ent.Client, rc *redis.Client, jwt *auth.JWT) (*CreateUser, error) {
+func NewCreateUser(ec *ent.Client, rc *redis.Client, jwt *auth.JWT, sf *sonyflake.Sonyflake) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{
 				Clock: &xtime.RealClocker{},
 				DB:    ec,
+				IDGen: sf,
 			},
 		},
 		Session: &Session{
 			Repo: &repository.Session{
 				Cache: rc,
 			},
-			Token: jwt,
+			TokenExt: jwt,
 		},
 		validator: validator.New(),
 	}, nil

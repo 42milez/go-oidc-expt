@@ -71,4 +71,5 @@ var (
 	FailedToUnmarshalJSON        InternalErr = "failed to unmarshal json"
 	InvalidToken                 InternalErr = "invalid token"
 	PasswordNotMatched           InternalErr = "password not matched"
+	ResponseBodyNotMatched       InternalErr = "response body not matched"
 )
