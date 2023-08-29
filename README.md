@@ -132,6 +132,9 @@ make seed
 
 ## References
 
+- Identifier
+  - [Awesome Identifiers](https://github.com/adileo/awesome-identifiers)
+  - [Universally Unique Lexicographically Sortable Identifier](https://github.com/ulid/spec)
 - OpenID Connect
   - OpenID Connect Core 1.0 incorporating errata set 1
     - [EN](https://openid.net/specs/openid-connect-core-1_0.html)
@@ -142,10 +145,8 @@ make seed
   - [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
 - Password
   - [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
-- Session ID
+- Session
   - [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
-- ULID
-  - [Universally Unique Lexicographically Sortable Identifier](https://github.com/ulid/spec)
 
 ## Notes
 
