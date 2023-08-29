@@ -5,6 +5,14 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/config"
+
+	"github.com/42milez/go-oidc-server/app/cookie"
+
+	"github.com/42milez/go-oidc-server/app/session"
+
+	"github.com/42milez/go-oidc-server/app/entity"
+
 	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/pkg/xtime"
@@ -22,7 +30,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticate(ec *ent.Client, rc *redis.Client, cookie *Cookie, jwt *auth.JWT) (*Authenticate, error) {
+func NewAuthenticate(ec *ent.Client, rc *redis.Client, cookie *cookie.Cookie, jwt *auth.JWT, sess *session.Session) (*Authenticate, error) {
 	return &Authenticate{
 		Service: &service.Authenticate{
 			Repo: &repository.User{
@@ -31,13 +39,8 @@ func NewAuthenticate(ec *ent.Client, rc *redis.Client, cookie *Cookie, jwt *auth
 			},
 			Token: jwt,
 		},
-		Cookie: cookie,
-		Session: &Session{
-			Repo: &repository.Session{
-				Cache: rc,
-			},
-			TokenExt: jwt,
-		},
+		Cookie:    cookie,
+		Session:   sess,
 		validator: validator.New(),
 	}, nil
 }
@@ -45,11 +48,11 @@ func NewAuthenticate(ec *ent.Client, rc *redis.Client, cookie *Cookie, jwt *auth
 type Authenticate struct {
 	Service   Authenticator
 	Session   SessionCreator
-	Cookie    *Cookie
+	Cookie    *cookie.Cookie
 	validator *validator.Validate
 }
 
-const sessionIDCookieName = "sid"
+const sessionIDCookieName = config.SessionIDCookieName
 
 // ServeHTTP authenticates a user
 //
@@ -88,7 +91,12 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userID, err := p.Service.Authenticate(r.Context(), body.Name, body.Password)
 
 	if err != nil {
-		if errors.Is(err, xerr.PasswordNotMatched) {
+		if errors.Is(err, xerr.UserNotFound) {
+			RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
+				Error: xerr.InvalidUsernameOrPassword,
+			})
+			return
+		} else if errors.Is(err, xerr.PasswordNotMatched) {
 			RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
 				Error: xerr.InvalidUsernameOrPassword,
 			})
@@ -99,7 +107,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	sessionID, err := p.Session.Create(&UserSession{
+	sessionID, err := p.Session.Create(r.Context(), &entity.UserSession{
 		ID: userID,
 	})
 
@@ -108,7 +116,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = p.Cookie.Set(w, sessionIDCookieName, sessionID); err != nil {
+	if err = p.Cookie.Set(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
 		ResponseJsonWithInternalServerError(w)
 		return
 	}

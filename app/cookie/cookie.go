@@ -1,7 +1,8 @@
-package handler
+package cookie
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gorilla/securecookie"
 )
@@ -10,7 +11,23 @@ type Cookie struct {
 	sc *securecookie.SecureCookie
 }
 
-func (p *Cookie) Set(w http.ResponseWriter, name, val string) error {
+func (p *Cookie) Get(r *http.Request, name string) (string, error) {
+	ck, err := r.Cookie(name)
+
+	if err != nil {
+		return "", err
+	}
+
+	var ret string
+
+	if err = p.sc.Decode(name, ck.Value, &ret); err != nil {
+		return "", err
+	}
+
+	return ret, nil
+}
+
+func (p *Cookie) Set(w http.ResponseWriter, name, val string, ttl time.Duration) error {
 	encoded, err := p.sc.Encode(name, val)
 
 	if err != nil {
@@ -21,7 +38,7 @@ func (p *Cookie) Set(w http.ResponseWriter, name, val string) error {
 		Name:     name,
 		Value:    encoded,
 		Path:     "/",
-		MaxAge:   0,
+		MaxAge:   int(time.Now().Add(ttl).Unix()),
 		Secure:   true,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,

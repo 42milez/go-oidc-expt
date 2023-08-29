@@ -2,32 +2,36 @@ package repository
 
 import (
 	"context"
-	"time"
+	"encoding/json"
 
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/redis/go-redis/v9"
 )
-
-const sessionTTL = 30 * time.Minute
 
 type Session struct {
 	Cache *redis.Client
 }
 
-func (p *Session) SaveUserID(ctx context.Context, key string, id typedef.UserID) error {
-	if err := p.Cache.Set(ctx, key, uint64(id), sessionTTL).Err(); err != nil {
-		return err
-	}
-	return nil
+func (p *Session) Write(ctx context.Context, key string, sess *entity.UserSession) (bool, error) {
+	return p.Cache.SetNX(ctx, key, sess, config.SessionTTL).Result()
 }
 
-func (p *Session) LoadUserID(ctx context.Context, key string) (typedef.UserID, error) {
-	ret, err := p.Cache.Get(ctx, key).Uint64()
+func (p *Session) Read(ctx context.Context, key string) (*entity.UserSession, error) {
+	v, err := p.Cache.Get(ctx, key).Result()
+
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return typedef.UserID(ret), nil
+
+	ret := &entity.UserSession{}
+
+	if err = json.Unmarshal([]byte(v), ret); err != nil {
+		return nil, err
+	}
+
+	return ret, nil
 }
 
 func (p *Session) Delete(ctx context.Context, key string) error {

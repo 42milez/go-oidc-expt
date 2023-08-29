@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/session"
+
 	"github.com/42milez/go-oidc-server/pkg/xid"
 
 	"github.com/redis/go-redis/v9"
@@ -22,7 +24,7 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(ec *ent.Client, rc *redis.Client, idGen *xid.UniqueID, jwt *auth.JWT) (*CreateUser, error) {
+func NewCreateUser(ec *ent.Client, rc *redis.Client, idGen *xid.UniqueID, jwt *auth.JWT, sess *session.Session) (*CreateUser, error) {
 	return &CreateUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{
@@ -31,12 +33,7 @@ func NewCreateUser(ec *ent.Client, rc *redis.Client, idGen *xid.UniqueID, jwt *a
 				IDGen: idGen,
 			},
 		},
-		Session: &Session{
-			Repo: &repository.Session{
-				Cache: rc,
-			},
-			TokenExt: jwt,
-		},
+		Session:   sess,
 		validator: validator.New(),
 	}, nil
 }

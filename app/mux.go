@@ -5,6 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/cookie"
+	"github.com/42milez/go-oidc-server/app/middleware"
+
+	"github.com/42milez/go-oidc-server/app/session"
+
 	"github.com/42milez/go-oidc-server/pkg/xid"
 
 	"github.com/42milez/go-oidc-server/pkg/xutil"
@@ -43,7 +48,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, nil, xerr.FailedToInitialize.Wrap(err)
 	}
 
-	cookie := handler.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
+	ck := cookie.NewCookie(cfg.CookieHashKey, cfg.CookieBlockKey)
 
 	if err != nil {
 		return nil, nil, xerr.FailedToInitialize.Wrap(err)
@@ -54,6 +59,8 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	if err != nil {
 		return nil, nil, xerr.FailedToInitialize.Wrap(err)
 	}
+
+	sess := session.NewSession(rc, jwt)
 
 	// ==================================================
 	//  Route
@@ -73,26 +80,30 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 
 	mux.HandleFunc("/health", CheckHealthHdlr.ServeHTTP)
 
-	//  User Endpoint
+	//  Register Endpoint
 	// --------------------------------------------------
 
-	createUserHdlr, err := handler.NewCreateUser(ec, rc, xid.UID, jwt)
+	createUserHdlr, err := handler.NewCreateUser(ec, rc, xid.UID, jwt, sess)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	mux.Route(makePattern("create"), func(r chi.Router) {
+	mux.Route(makePattern("register"), func(r chi.Router) {
 		r.Post("/", createUserHdlr.ServeHTTP)
 	})
 
-	authenticateUserHdlr, err := handler.NewAuthenticate(ec, rc, cookie, jwt)
+	//  Authentication Endpoint
+	// --------------------------------------------------
+
+	authenticateUserHdlr, err := handler.NewAuthenticate(ec, rc, ck, jwt, sess)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	mux.Route(makePattern("authenticate"), func(r chi.Router) {
+	mux.Route(makePattern("auth"), func(r chi.Router) {
+		r.Use(middleware.RestoreSession(ck, sess))
 		r.Post("/", authenticateUserHdlr.ServeHTTP)
 	})
 

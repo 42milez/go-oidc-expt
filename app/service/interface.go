@@ -8,10 +8,17 @@ import (
 
 //go:generate mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
 
-type HealthChecker interface {
-	// TODO: Combine the following two methods
+type CachePingSender interface {
 	PingCache(ctx context.Context) error
+}
+
+type DBPingSender interface {
 	PingDB(ctx context.Context) error
+}
+
+type HealthChecker interface {
+	CachePingSender
+	DBPingSender
 }
 
 type TokenGenerator interface {

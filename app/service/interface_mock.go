@@ -12,6 +12,80 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
+// MockCachePingSender is a mock of CachePingSender interface.
+type MockCachePingSender struct {
+	ctrl     *gomock.Controller
+	recorder *MockCachePingSenderMockRecorder
+}
+
+// MockCachePingSenderMockRecorder is the mock recorder for MockCachePingSender.
+type MockCachePingSenderMockRecorder struct {
+	mock *MockCachePingSender
+}
+
+// NewMockCachePingSender creates a new mock instance.
+func NewMockCachePingSender(ctrl *gomock.Controller) *MockCachePingSender {
+	mock := &MockCachePingSender{ctrl: ctrl}
+	mock.recorder = &MockCachePingSenderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCachePingSender) EXPECT() *MockCachePingSenderMockRecorder {
+	return m.recorder
+}
+
+// PingCache mocks base method.
+func (m *MockCachePingSender) PingCache(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PingCache", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// PingCache indicates an expected call of PingCache.
+func (mr *MockCachePingSenderMockRecorder) PingCache(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingCache", reflect.TypeOf((*MockCachePingSender)(nil).PingCache), ctx)
+}
+
+// MockDBPingSender is a mock of DBPingSender interface.
+type MockDBPingSender struct {
+	ctrl     *gomock.Controller
+	recorder *MockDBPingSenderMockRecorder
+}
+
+// MockDBPingSenderMockRecorder is the mock recorder for MockDBPingSender.
+type MockDBPingSenderMockRecorder struct {
+	mock *MockDBPingSender
+}
+
+// NewMockDBPingSender creates a new mock instance.
+func NewMockDBPingSender(ctrl *gomock.Controller) *MockDBPingSender {
+	mock := &MockDBPingSender{ctrl: ctrl}
+	mock.recorder = &MockDBPingSenderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDBPingSender) EXPECT() *MockDBPingSenderMockRecorder {
+	return m.recorder
+}
+
+// PingDB mocks base method.
+func (m *MockDBPingSender) PingDB(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PingDB", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// PingDB indicates an expected call of PingDB.
+func (mr *MockDBPingSenderMockRecorder) PingDB(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingDB", reflect.TypeOf((*MockDBPingSender)(nil).PingDB), ctx)
+}
+
 // MockHealthChecker is a mock of HealthChecker interface.
 type MockHealthChecker struct {
 	ctrl     *gomock.Controller

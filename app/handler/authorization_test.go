@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/session"
+
 	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/pkg/xstring"
@@ -69,7 +71,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				nil,
 			)
 			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
-			r = r.Clone(context.WithValue(r.Context(), UserIDKey{}, userID))
+			r = r.Clone(context.WithValue(r.Context(), session.UserIDKey{}, userID))
 
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.

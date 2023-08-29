@@ -41,6 +41,15 @@ const (
 )
 
 const (
+	SessionTTL = 24 * time.Hour * 30 // 30 days
+)
+
+const (
+	SessionIDCookieName = "sid"
+	SessionIDCookieTTL  = SessionTTL
+)
+
+const (
 	AuthCodeLifetime = 10 * time.Minute
 	AuthCodeLength   = 10
 )

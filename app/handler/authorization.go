@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/session"
+
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/42milez/go-oidc-server/app/validation"
 
@@ -69,7 +71,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	userID, ok := GetUserID(r.Context())
+	userID, ok := session.GetUserID(r.Context())
 
 	if !ok {
 		RespondJSON(w, http.StatusUnauthorized, &ErrResponse{

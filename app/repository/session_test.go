@@ -7,6 +7,10 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/entity"
+	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/config"
@@ -16,8 +20,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
-
-const userULID typedef.UserID = 475924035230777348
 
 func TestNewSession(t *testing.T) {
 	t.Parallel()
@@ -59,10 +61,18 @@ func TestSession_SaveID(t *testing.T) {
 		client.Del(ctx, key)
 	})
 
-	id := userULID
+	sess := &entity.UserSession{
+		ID: typedef.UserID(475924035230777348),
+	}
 
-	if err := repo.SaveUserID(ctx, key, id); err != nil {
+	ok, err := repo.Write(ctx, key, sess)
+
+	if err != nil {
 		t.Error(err)
+	}
+
+	if !ok {
+		t.Error(xerr.SessionIDAlreadyExists)
 	}
 }
 
@@ -79,9 +89,11 @@ func TestSession_LoadID(t *testing.T) {
 
 		ctx := context.Background()
 		key := "TestSession_LoadID_OK"
-		id := userULID
+		want := &entity.UserSession{
+			ID: typedef.UserID(475924035230777348),
+		}
 
-		if err := client.Set(ctx, key, uint64(id), sessionTTL).Err(); err != nil {
+		if err := client.Set(ctx, key, want, config.SessionTTL).Err(); err != nil {
 			t.Fatal(err)
 		}
 
@@ -89,14 +101,14 @@ func TestSession_LoadID(t *testing.T) {
 			client.Del(ctx, key)
 		})
 
-		got, err := repo.LoadUserID(ctx, key)
+		got, err := repo.Read(ctx, key)
 
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if got != id {
-			t.Errorf("want = %d; got = %d", id, got)
+		if d := cmp.Diff(want, got); !xutil.IsEmpty(d) {
+			t.Errorf("item not matched (-got +want)\n%s", d)
 		}
 	})
 
@@ -106,7 +118,7 @@ func TestSession_LoadID(t *testing.T) {
 		ctx := context.Background()
 		key := "TestSession_LoadID_NotFound"
 
-		_, err := repo.LoadUserID(ctx, key)
+		_, err := repo.Read(ctx, key)
 
 		if err == nil || !errors.Is(err, redis.Nil) {
 			t.Errorf("want = %+v; got = %+v", redis.Nil, err)
@@ -123,14 +135,21 @@ func TestSession_Delete(t *testing.T) {
 	}
 	ctx := context.Background()
 	key := "TestSession_Delete"
+	sess := &entity.UserSession{
+		ID: typedef.UserID(475924035230777348),
+	}
 
-	id := userULID
+	ok, err := repo.Write(ctx, key, sess)
 
-	if err := repo.SaveUserID(ctx, key, id); err != nil {
+	if err != nil {
 		t.Fatal(err)
 	}
 
-	if err := repo.Delete(ctx, key); err != nil {
+	if !ok {
+		t.Error(xerr.SessionIDAlreadyExists)
+	}
+
+	if err = repo.Delete(ctx, key); err != nil {
 		t.Error(err)
 	}
 }

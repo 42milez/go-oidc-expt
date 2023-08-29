@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"errors"
+
+	"github.com/42milez/go-oidc-server/app/ent/ent"
 
 	"github.com/42milez/go-oidc-server/pkg/xargon2"
 
@@ -9,6 +12,8 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
 )
+
+var errEntNotFoundError = &ent.NotFoundError{}
 
 type Authenticate struct {
 	Repo  UserSelector
@@ -19,7 +24,11 @@ func (p *Authenticate) Authenticate(ctx context.Context, name, pw string) (typed
 	user, err := p.Repo.SelectByName(ctx, name)
 
 	if err != nil {
-		return 0, err
+		if errors.As(err, &errEntNotFoundError) {
+			return 0, xerr.UserNotFound.Wrap(err)
+		} else {
+			return 0, err
+		}
 	}
 
 	ok, err := xargon2.ComparePassword(pw, user.Password)

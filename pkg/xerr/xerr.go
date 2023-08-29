@@ -67,10 +67,12 @@ var (
 	FailedToReadFile             InternalErr = "failed to read file"
 	FailedToReadResponseBody     InternalErr = "failed to read response body"
 	FailedToReadResponseLocation InternalErr = "failed to read response location"
-	FailedToSaveItem             InternalErr = "failed to save item"
+	FailedToSetInToCache         InternalErr = "failed to set into cache"
 	FailedToSignToken            InternalErr = "failed to sign token"
 	FailedToUnmarshalJSON        InternalErr = "failed to unmarshal json"
 	InvalidToken                 InternalErr = "invalid token"
 	PasswordNotMatched           InternalErr = "password not matched"
 	ResponseBodyNotMatched       InternalErr = "response body not matched"
+	SessionIDAlreadyExists       InternalErr = "session id already exists"
+	UserNotFound                 InternalErr = "user not found"
 )

@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/cookie"
+
 	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/ent/typedef"
@@ -105,12 +107,12 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				AnyTimes()
 
 			sessMock := NewMockSessionCreator(gomock.NewController(t))
-			sessMock.EXPECT().Create(gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
+			sessMock.EXPECT().Create(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
 			sut := Authenticate{
 				Service:   svcMock,
 				Session:   sessMock,
-				Cookie:    NewCookie(cookieHashKey, cookieBlockKey),
+				Cookie:    cookie.NewCookie(cookieHashKey, cookieBlockKey),
 				validator: validator.New(),
 			}
 			sut.ServeHTTP(w, r)
