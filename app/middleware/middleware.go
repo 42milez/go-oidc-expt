@@ -7,9 +7,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/42milez/go-oidc-server/app/cookie"
-	"github.com/42milez/go-oidc-server/app/handler"
 	"github.com/42milez/go-oidc-server/app/session"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
 func RestoreSession(ck *cookie.Cookie, sess *session.Session) func(next http.Handler) http.Handler {
@@ -25,9 +23,7 @@ func RestoreSession(ck *cookie.Cookie, sess *session.Session) func(next http.Han
 			req, err := sess.Restore(r, sessionID)
 
 			if err != nil {
-				handler.RespondJSON(w, http.StatusUnauthorized, &handler.ErrResponse{
-					Error: xerr.UnauthorizedUser,
-				})
+				next.ServeHTTP(w, r)
 				return
 			}
 

@@ -69,6 +69,16 @@ const sessionIDCookieName = config.SessionIDCookieName
 //	@failure		500			{object}	model.ErrorResponse
 //	@router			/v1/authenticate [post]
 func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if p.authorized(r) {
+		// TODO: Redirect to consent url
+		// ...
+
+		RespondJSON(w, http.StatusOK, &model.AuthenticateResponse{
+			Error: xerr.OK.Error(),
+		})
+		return
+	}
+
 	var body struct {
 		Name     string `json:"name" validate:"required"`
 		Password string `json:"password" validate:"required"`
@@ -127,4 +137,12 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	RespondJSON(w, http.StatusOK, &model.AuthenticateResponse{
 		Error: xerr.OK.Error(),
 	})
+}
+
+func (p *Authenticate) authorized(r *http.Request) bool {
+	_, err := p.Cookie.Get(r, config.SessionIDCookieName)
+	if err != nil {
+		return false
+	}
+	return true
 }
