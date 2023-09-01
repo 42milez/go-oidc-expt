@@ -3,7 +3,7 @@ set -e
 
 readonly N_LATEST="${1}"
 
-readonly SCRIPT_DIR="$(dirname "$0")"
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 . "${SCRIPT_DIR}/config.sh"
 
 cmd="atlas migrate lint --dir file://app/ent/migrations --dev-url mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"

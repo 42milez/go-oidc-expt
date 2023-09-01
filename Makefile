@@ -31,15 +31,22 @@ build-local:
 #  Utility
 # ==================================================
 
-.PHONY: clean cleanup-db debug fmt gen lint migrate resolve seed test benchmark
+.PHONY: benchmark
+.PHONY: cleanup-db
+.PHONY: cleanup-go
+.PHONY: debug
+.PHONY: fmt
+.PHONY: gen
+.PHONY: lint
+.PHONY: migrate-apply
+.PHONY: migrate-diff
+.PHONY: resolve
+.PHONY: seed
+.PHONY: test
 
 ## benchmark: Run all benchmarks
 benchmark:
 	@go test -bench . -skip Test.+ -benchmem `go list ./... | grep -v "/ent" | grep -v "/docs"`
-
-## clean: Clean up caches
-clean:
-	@go clean -cache -fuzzcache -testcache
 
 ## cleanup-db: Clean up database
 cleanup-db: export DB_HOST := 127.0.0.1
@@ -52,6 +59,10 @@ cleanup-db:
 			[[ $$table == "atlas_schema_revisions" ]] && continue; \
 			mysql -h $$DB_HOST -u $$DB_USER -P $$DB_PORT --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" -e "truncate table $$table" $$DB_NAME; \
 		done
+
+## cleanup-go: Clean up caches
+cleanup-go:
+	@go clean -cache -fuzzcache -testcache
 
 ## fmt: Run formatter
 fmt:
@@ -67,9 +78,20 @@ gen:
 lint:
 	@golangci-lint run --fix
 
-## migrate: Run migration
-migrate:
-	@echo "not implemented"
+## migrate-apply: Apply migrations
+migrate-apply:
+	@./script/atlas/migrate-apply.sh
+
+## migrate-diff: Generate migrations
+migrate-diff:
+ifndef MIGRATION_NAME
+	$(error MIGRATION_NAME is required; e.g. make MIGRATION_NAME=xxx migrate-diff)
+endif
+	@./script/atlas/migrate-diff.sh ${MIGRATION_NAME}
+
+## migrate-lint: Run analysis on the migration directory
+migrate-lint:
+	@./script/atlas/migrate-lint.sh ${N_LATEST}
 
 ## resolve: Resolve dependencies
 resolve:

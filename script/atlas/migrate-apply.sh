@@ -3,7 +3,7 @@ set -eu
 
 readonly DBNAME="idp"
 
-readonly SCRIPT_DIR="$(dirname "$0")"
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 . "${SCRIPT_DIR}/config.sh"
 
 atlas migrate apply \
