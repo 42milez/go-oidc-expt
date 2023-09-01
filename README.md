@@ -107,22 +107,22 @@ go run -mod=mod entgo.io/ent/cmd/ent new --target app/ent/schema AuthCode
 ### Generating versioned migration files
 
 ```
-./script/atlas/migrate-diff.sh <MIGRATION_NAME>
+make migrate-diff MIGRATION_NAME=<MIGRATION_NAME>
 ```
 
 ### Verifying and linting migrations
 
 ```
-./script/atlas/migrate-lint.sh [<N_LATEST>]
+make migrate-lint [N_LATEST=<N_LATEST>]
 ```
+
+If `N_LATEST` isn't specified, the diff between `main` branch and the current one is selected as the changeset.
 
 ### Applying migrations
 
 ```
-./script/atlas/migrate-apply.sh
+make migrate-apply
 ```
-
-If `N_LATEST` isn't specified, the diff between `main` branch and the current one is selected as the changeset.
 
 ### Seeding database
 
