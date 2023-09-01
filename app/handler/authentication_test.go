@@ -40,7 +40,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 
 	type want struct {
 		statusCode int
-		respFile   string
+		resp       []byte
 	}
 
 	sessionID := "dd9a0158-092c-4dc2-b470-7e68c97bfdb0"
@@ -64,15 +64,15 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				err:       nil,
 			},
 			want: want{
-				statusCode: http.StatusOK,
-				respFile:   tdAuthenticationResponse200,
+				statusCode: http.StatusFound,
+				resp:   nil,
 			},
 		},
 		"BadRequest": {
 			reqFile: tdAuthenticationRequest400,
 			want: want{
 				statusCode: http.StatusBadRequest,
-				respFile:   tdAuthenticationResponse400,
+				resp:   xtestutil.LoadFile(t, tdAuthenticationResponse400),
 			},
 		},
 		"InternalServerError": {
@@ -82,7 +82,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,
-				respFile:   tdAuthenticationResponse500,
+				resp:   xtestutil.LoadFile(t, tdAuthenticationResponse500),
 			},
 		},
 	}
@@ -121,10 +121,14 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 
 			wantResp := &xtestutil.Response{
 				StatusCode: tt.want.statusCode,
-				Body:       xtestutil.LoadFile(t, tt.want.respFile),
+				Body:       tt.want.resp,
 			}
 
-			xtestutil.AssertResponseJSON(t, resp, wantResp)
+			if tt.want.resp != nil {
+				xtestutil.AssertResponseJSON(t, resp, wantResp)
+			} else {
+				xtestutil.AssertResponse(t, resp, wantResp)
+			}
 		})
 	}
 }
