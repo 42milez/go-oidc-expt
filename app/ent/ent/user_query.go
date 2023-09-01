@@ -15,7 +15,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // UserQuery is the builder for querying User entities.

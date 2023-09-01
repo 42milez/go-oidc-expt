@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/go-cmp/cmp"
@@ -14,8 +16,6 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/config"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
-
 	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
@@ -55,17 +55,17 @@ func TestSession_SaveID(t *testing.T) {
 		Cache: client,
 	}
 	ctx := context.Background()
-	key := "TestSession_SaveID"
+	sid := "TestSession_SaveID"
 
 	t.Cleanup(func() {
-		client.Del(ctx, key)
+		client.Del(ctx, sid)
 	})
 
-	sess := &entity.UserSession{
-		ID: typedef.UserID(475924035230777348),
+	sess := &entity.Session{
+		UserID: typedef.UserID(475924035230777348),
 	}
 
-	ok, err := repo.Write(ctx, key, sess)
+	ok, err := repo.Create(ctx, typedef.SessionID(sid), sess)
 
 	if err != nil {
 		t.Error(err)
@@ -88,20 +88,20 @@ func TestSession_LoadID(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		key := "TestSession_LoadID_OK"
-		want := &entity.UserSession{
-			ID: typedef.UserID(475924035230777348),
+		sid := "TestSession_LoadID_OK"
+		want := &entity.Session{
+			UserID: typedef.UserID(475924035230777348),
 		}
 
-		if err := client.Set(ctx, key, want, config.SessionTTL).Err(); err != nil {
+		if err := client.Set(ctx, sid, want, config.SessionTTL).Err(); err != nil {
 			t.Fatal(err)
 		}
 
 		t.Cleanup(func() {
-			client.Del(ctx, key)
+			client.Del(ctx, sid)
 		})
 
-		got, err := repo.Read(ctx, key)
+		got, err := repo.Read(ctx, typedef.SessionID(sid))
 
 		if err != nil {
 			t.Fatal(err)
@@ -116,9 +116,9 @@ func TestSession_LoadID(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		key := "TestSession_LoadID_NotFound"
+		sid := "TestSession_LoadID_NotFound"
 
-		_, err := repo.Read(ctx, key)
+		_, err := repo.Read(ctx, typedef.SessionID(sid))
 
 		if err == nil || !errors.Is(err, redis.Nil) {
 			t.Errorf("want = %+v; got = %+v", redis.Nil, err)
@@ -134,12 +134,12 @@ func TestSession_Delete(t *testing.T) {
 		Cache: client,
 	}
 	ctx := context.Background()
-	key := "TestSession_Delete"
-	sess := &entity.UserSession{
-		ID: typedef.UserID(475924035230777348),
+	sid := "TestSession_Delete"
+	sess := &entity.Session{
+		UserID: typedef.UserID(475924035230777348),
 	}
 
-	ok, err := repo.Write(ctx, key, sess)
+	ok, err := repo.Create(ctx, typedef.SessionID(sid), sess)
 
 	if err != nil {
 		t.Fatal(err)
@@ -149,7 +149,7 @@ func TestSession_Delete(t *testing.T) {
 		t.Error(xerr.SessionIDAlreadyExists)
 	}
 
-	if err = repo.Delete(ctx, key); err != nil {
+	if err = repo.Delete(ctx, typedef.SessionID(sid)); err != nil {
 		t.Error(err)
 	}
 }

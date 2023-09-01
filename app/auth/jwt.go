@@ -48,7 +48,7 @@ const issuer = "github.com/42milez/go-oidc-server"
 const accessTokenSubject = "access_token"
 const nameKey = "name"
 
-func (p *JWT) GenerateAccessToken(name string) ([]byte, error) {
+func (p *JWT) MakeAccessToken(name string) ([]byte, error) {
 	token, err := jwt.
 		NewBuilder().
 		JwtID(uuid.New().String()).
@@ -83,7 +83,7 @@ func (p *JWT) validate(token jwt.Token) error {
 	return jwt.Validate(token, jwt.WithClock(p.clock))
 }
 
-func (p *JWT) ExtractToken(r *http.Request) (jwt.Token, error) {
+func (p *JWT) Extract(r *http.Request) (jwt.Token, error) {
 	token, err := p.parseRequest(r)
 
 	if err != nil {

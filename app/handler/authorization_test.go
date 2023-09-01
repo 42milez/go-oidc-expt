@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/session"
 
 	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/pkg/xstring"
-
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
 
 	"github.com/42milez/go-oidc-server/app/validation"
 

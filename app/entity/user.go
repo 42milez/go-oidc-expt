@@ -3,13 +3,14 @@ package entity
 import (
 	"encoding/json"
 
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
-type UserSession struct {
-	ID typedef.UserID
+type Session struct {
+	UserID  typedef.UserID
+	Consent bool
 }
 
-func (p *UserSession) MarshalBinary() ([]byte, error) {
+func (p *Session) MarshalBinary() ([]byte, error) {
 	return json.Marshal(p)
 }

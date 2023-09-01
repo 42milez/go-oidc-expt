@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )

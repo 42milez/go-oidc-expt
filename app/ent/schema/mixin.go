@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
 	"github.com/42milez/go-oidc-server/app/ent/ent/hook"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
 	"github.com/42milez/go-oidc-server/pkg/xid"
 	"github.com/42milez/go-oidc-server/pkg/xutil"
 )

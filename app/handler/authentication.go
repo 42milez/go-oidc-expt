@@ -110,8 +110,8 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	sessionID, err := p.Session.Create(r.Context(), &entity.UserSession{
-		ID: userID,
+	sessionID, err := p.Session.Create(r.Context(), &entity.Session{
+		UserID: userID,
 	})
 
 	if err != nil {

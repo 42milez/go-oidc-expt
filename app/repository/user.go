@@ -3,13 +3,14 @@ package repository
 import (
 	"context"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
 )
 
 type User struct {

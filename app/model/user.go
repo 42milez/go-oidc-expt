@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 type CreateUserRequest struct {

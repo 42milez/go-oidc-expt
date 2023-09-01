@@ -3,7 +3,7 @@ package schema
 import (
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"

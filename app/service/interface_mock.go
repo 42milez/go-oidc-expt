@@ -160,19 +160,19 @@ func (m *MockTokenGenerator) EXPECT() *MockTokenGeneratorMockRecorder {
 	return m.recorder
 }
 
-// GenerateAccessToken mocks base method.
-func (m *MockTokenGenerator) GenerateAccessToken(name string) ([]byte, error) {
+// MakeAccessToken mocks base method.
+func (m *MockTokenGenerator) MakeAccessToken(name string) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", name)
+	ret := m.ctrl.Call(m, "MakeAccessToken", name)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockTokenGeneratorMockRecorder) GenerateAccessToken(name interface{}) *gomock.Call {
+// MakeAccessToken indicates an expected call of MakeAccessToken.
+func (mr *MockTokenGeneratorMockRecorder) MakeAccessToken(name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateAccessToken), name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeAccessToken", reflect.TypeOf((*MockTokenGenerator)(nil).MakeAccessToken), name)
 }
 
 // MockUserCreator is a mock of UserCreator interface.

@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 
 	"github.com/42milez/go-oidc-server/pkg/xargon2"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
-
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
 )
 
 var errEntNotFoundError = &ent.NotFoundError{}

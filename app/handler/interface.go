@@ -4,12 +4,13 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/model"
 
 	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/ent/typedef"
 )
 
 //go:generate mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
@@ -36,15 +37,15 @@ type Authorizer interface {
 }
 
 type SessionCreator interface {
-	Create(ctx context.Context, sess *entity.UserSession) (string, error)
+	Create(ctx context.Context, sess *entity.Session) (string, error)
 }
 
 type SessionRestorer interface {
-	Restore(r *http.Request, sessionID string) (*http.Request, error)
+	Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error)
 }
 
 type SessionUpdater interface {
-	Update(ctx context.Context, sessionID string, sess *entity.UserSession) error
+	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error
 }
 
 type UserCreator interface {

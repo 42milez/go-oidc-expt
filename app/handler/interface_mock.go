@@ -10,9 +10,9 @@ import (
 	reflect "reflect"
 
 	ent "github.com/42milez/go-oidc-server/app/ent/ent"
-	typedef "github.com/42milez/go-oidc-server/app/ent/typedef"
 	entity "github.com/42milez/go-oidc-server/app/entity"
 	model "github.com/42milez/go-oidc-server/app/model"
+	typedef "github.com/42milez/go-oidc-server/app/typedef"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -241,7 +241,7 @@ func (m *MockSessionCreator) EXPECT() *MockSessionCreatorMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockSessionCreator) Create(ctx context.Context, sess *entity.UserSession) (string, error) {
+func (m *MockSessionCreator) Create(ctx context.Context, sess *entity.Session) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, sess)
 	ret0, _ := ret[0].(string)
@@ -279,18 +279,18 @@ func (m *MockSessionRestorer) EXPECT() *MockSessionRestorerMockRecorder {
 }
 
 // Restore mocks base method.
-func (m *MockSessionRestorer) Restore(r *http.Request, sessionID string) (*http.Request, error) {
+func (m *MockSessionRestorer) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Restore", r, sessionID)
+	ret := m.ctrl.Call(m, "Restore", r, sid)
 	ret0, _ := ret[0].(*http.Request)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Restore indicates an expected call of Restore.
-func (mr *MockSessionRestorerMockRecorder) Restore(r, sessionID interface{}) *gomock.Call {
+func (mr *MockSessionRestorerMockRecorder) Restore(r, sid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Restore", reflect.TypeOf((*MockSessionRestorer)(nil).Restore), r, sessionID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Restore", reflect.TypeOf((*MockSessionRestorer)(nil).Restore), r, sid)
 }
 
 // MockSessionUpdater is a mock of SessionUpdater interface.
@@ -317,17 +317,17 @@ func (m *MockSessionUpdater) EXPECT() *MockSessionUpdaterMockRecorder {
 }
 
 // Update mocks base method.
-func (m *MockSessionUpdater) Update(ctx context.Context, sessionID string, sess *entity.UserSession) error {
+func (m *MockSessionUpdater) Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, sessionID, sess)
+	ret := m.ctrl.Call(m, "Update", ctx, sid, sess)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockSessionUpdaterMockRecorder) Update(ctx, sessionID, sess interface{}) *gomock.Call {
+func (mr *MockSessionUpdaterMockRecorder) Update(ctx, sid, sess interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockSessionUpdater)(nil).Update), ctx, sessionID, sess)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockSessionUpdater)(nil).Update), ctx, sid, sess)
 }
 
 // MockUserCreator is a mock of UserCreator interface.

@@ -22,7 +22,7 @@ type HealthChecker interface {
 }
 
 type TokenGenerator interface {
-	GenerateAccessToken(name string) ([]byte, error)
+	MakeAccessToken(name string) ([]byte, error)
 }
 
 type UserCreator interface {
