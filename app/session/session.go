@@ -18,10 +18,11 @@ import (
 
 const nRetrySaveSession = 3
 
+type IDKey struct{}
 type UserIDKey struct{}
 
 type Session struct {
-	Repo     ReadWriter
+	Repo     ReadUpdateWriter
 	TokenExt TokenExtractor
 }
 
@@ -56,9 +57,19 @@ func (p *Session) Restore(r *http.Request, sessionID string) (*http.Request, err
 		return nil, err
 	}
 
-	ctx := context.WithValue(r.Context(), UserIDKey{}, sess.ID)
+	ctx := r.Context()
+	ctx = context.WithValue(r.Context(), IDKey{}, sessionID)
+	ctx = context.WithValue(r.Context(), UserIDKey{}, sess.ID)
 
 	return r.Clone(ctx), nil
+}
+
+func (p *Session) Update(ctx context.Context, sessionID string, sess *entity.UserSession) error {
+	_, err := p.Repo.Update(ctx, sessionID, sess)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewSession(rc *redis.Client, jwt *auth.JWT) *Session {
@@ -68,6 +79,10 @@ func NewSession(rc *redis.Client, jwt *auth.JWT) *Session {
 		},
 		TokenExt: jwt,
 	}
+}
+
+func GetSessionID(ctx context.Context) string {
+	return ctx.Value(IDKey{}).(string)
 }
 
 func GetUserID(ctx context.Context) (typedef.UserID, bool) {

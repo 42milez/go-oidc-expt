@@ -20,7 +20,12 @@ type Writer interface {
 	Write(ctx context.Context, key string, sess *entity.UserSession) (bool, error)
 }
 
-type ReadWriter interface {
+type Updater interface {
+	Update(ctx context.Context, key string, sess *entity.UserSession) (string, error)
+}
+
+type ReadUpdateWriter interface {
 	Reader
+	Updater
 	Writer
 }

@@ -43,6 +43,10 @@ type SessionRestorer interface {
 	Restore(r *http.Request, sessionID string) (*http.Request, error)
 }
 
+type SessionUpdater interface {
+	Update(ctx context.Context, sessionID string, sess *entity.UserSession) error
+}
+
 type UserCreator interface {
 	CreateUser(ctx context.Context, name, pw string) (*ent.User, error)
 }

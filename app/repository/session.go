@@ -40,3 +40,7 @@ func (p *Session) Delete(ctx context.Context, key string) error {
 	}
 	return nil
 }
+
+func (p *Session) Update(ctx context.Context, key string, sess *entity.UserSession) (string, error) {
+	return p.Cache.Set(ctx, key, sess, redis.KeepTTL).Result()
+}

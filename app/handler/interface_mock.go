@@ -293,6 +293,43 @@ func (mr *MockSessionRestorerMockRecorder) Restore(r, sessionID interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Restore", reflect.TypeOf((*MockSessionRestorer)(nil).Restore), r, sessionID)
 }
 
+// MockSessionUpdater is a mock of SessionUpdater interface.
+type MockSessionUpdater struct {
+	ctrl     *gomock.Controller
+	recorder *MockSessionUpdaterMockRecorder
+}
+
+// MockSessionUpdaterMockRecorder is the mock recorder for MockSessionUpdater.
+type MockSessionUpdaterMockRecorder struct {
+	mock *MockSessionUpdater
+}
+
+// NewMockSessionUpdater creates a new mock instance.
+func NewMockSessionUpdater(ctrl *gomock.Controller) *MockSessionUpdater {
+	mock := &MockSessionUpdater{ctrl: ctrl}
+	mock.recorder = &MockSessionUpdaterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSessionUpdater) EXPECT() *MockSessionUpdaterMockRecorder {
+	return m.recorder
+}
+
+// Update mocks base method.
+func (m *MockSessionUpdater) Update(ctx context.Context, sessionID string, sess *entity.UserSession) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, sessionID, sess)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockSessionUpdaterMockRecorder) Update(ctx, sessionID, sess interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockSessionUpdater)(nil).Update), ctx, sessionID, sess)
+}
+
 // MockUserCreator is a mock of UserCreator interface.
 type MockUserCreator struct {
 	ctrl     *gomock.Controller

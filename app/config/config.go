@@ -60,6 +60,7 @@ const (
 // OIDC: Authorization
 
 const (
-	AuthCodeLifetime = 10 * time.Minute
-	AuthCodeLength   = 10
+	AuthCodeLifetime      = 10 * time.Minute
+	AuthCodeLength        = 10
+	AuthorizationEndpoint = "/authorize"
 )
