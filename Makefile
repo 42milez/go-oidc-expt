@@ -40,6 +40,7 @@ build-local:
 .PHONY: lint
 .PHONY: migrate-apply
 .PHONY: migrate-diff
+.PHONY: migrate-lint
 .PHONY: resolve
 .PHONY: seed
 .PHONY: test
