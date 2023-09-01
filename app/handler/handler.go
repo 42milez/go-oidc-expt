@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+
+	"github.com/42milez/go-oidc-server/pkg/xutil"
 
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 
@@ -54,4 +57,23 @@ func ResponseJsonWithInternalServerError(w http.ResponseWriter) {
 	RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 		Error: xerr.UnexpectedErrorOccurred,
 	})
+}
+
+func Redirect(w http.ResponseWriter, r *http.Request, u string, code int) {
+	redirectURL, err := url.Parse(u)
+
+	if err != nil {
+		ResponseJsonWithInternalServerError(w)
+		return
+	}
+
+	if !xutil.IsEmpty(r.URL.RawQuery) {
+		redirectURL, err = url.Parse(fmt.Sprintf("%s&%s", redirectURL, r.URL.RawQuery))
+		if err != nil {
+			ResponseJsonWithInternalServerError(w)
+			return
+		}
+	}
+
+	http.Redirect(w, r, redirectURL.String(), code)
 }

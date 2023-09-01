@@ -17,8 +17,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/pkg/xtime"
 
-	"github.com/42milez/go-oidc-server/app/model"
-
 	"github.com/42milez/go-oidc-server/app/auth"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/repository"
@@ -70,12 +68,7 @@ const sessionIDCookieName = config.SessionIDCookieName
 //	@router			/v1/authenticate [post]
 func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if p.authorized(r) {
-		// TODO: Redirect to consent url
-		// ...
-
-		RespondJSON(w, http.StatusOK, &model.AuthenticateResponse{
-			Error: xerr.OK.Error(),
-		})
+		Redirect(w, r, config.ConsentURL, http.StatusFound)
 		return
 	}
 
@@ -131,12 +124,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Redirect to consent url
-	// ...
-
-	RespondJSON(w, http.StatusOK, &model.AuthenticateResponse{
-		Error: xerr.OK.Error(),
-	})
+	Redirect(w, r, config.ConsentURL, http.StatusFound)
 }
 
 func (p *Authenticate) authorized(r *http.Request) bool {
@@ -145,4 +133,8 @@ func (p *Authenticate) authorized(r *http.Request) bool {
 		return false
 	}
 	return true
+}
+
+func (p *Authenticate) redirectToConsentEndpoint() {
+
 }
