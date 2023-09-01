@@ -5,11 +5,11 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/handler/cookie"
+	"github.com/42milez/go-oidc-server/app/handler/session"
+	"github.com/42milez/go-oidc-server/app/model"
+
 	"github.com/42milez/go-oidc-server/app/config"
-
-	"github.com/42milez/go-oidc-server/app/cookie"
-
-	"github.com/42milez/go-oidc-server/app/session"
 
 	"github.com/42milez/go-oidc-server/app/entity"
 
@@ -52,38 +52,30 @@ type Authenticate struct {
 
 const sessionIDCookieName = config.SessionIDCookieName
 
-// ServeHTTP authenticates a user
+// ServeHTTP authenticates user
 //
-//	@summary		TBD
-//	@description	TBD
+//	@summary		authenticates user
+//	@description	This endpoint authenticates user.
 //	@id				Authenticate.ServeHTTP
-//	@tags			authentication
+//	@tags			User
 //	@accept			json
 //	@produce		json
-//	@param			name		body		string	true	"Username"
-//	@param			password	body		string	true	"Password"
-//	@success		200			{object}	model.AuthenticateResponse
-//	@failure		500			{object}	model.ErrorResponse
-//	@failure		500			{object}	model.ErrorResponse
-//	@router			/v1/authenticate [post]
+//	@param			user	body		model.AuthenticateRequest	true	"user credential"
+//	@success		200		{object}	model.AuthenticateResponse
+//	@failure		400		{object}	model.ErrorResponse
+//	@failure		401		{object}	model.ErrorResponse
+//	@failure		500		{object}	model.ErrorResponse
+//	@router			/v1/user/authenticate [post]
 func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if p.authorized(r) {
-		Redirect(w, r, config.ConsentURL, http.StatusFound)
-		return
-	}
+	var reqBody model.AuthenticateRequest
 
-	var body struct {
-		Name     string `json:"name" validate:"required"`
-		Password string `json:"password" validate:"required"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		log.Error().Err(err).Msg(errFailedToDecodeRequestBody)
-		ResponseJsonWithInternalServerError(w)
+		ResponseJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}
 
-	if err := p.validator.Struct(body); err != nil {
+	if err := p.validator.Struct(reqBody); err != nil {
 		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.AuthenticationFailed,
@@ -91,7 +83,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := p.Service.Authenticate(r.Context(), body.Name, body.Password)
+	userID, err := p.Service.Authenticate(r.Context(), reqBody.Name, reqBody.Password)
 
 	if err != nil {
 		if errors.Is(err, xerr.UserNotFound) {
@@ -105,7 +97,7 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		} else {
-			ResponseJsonWithInternalServerError(w)
+			ResponseJson500(w, xerr.UnexpectedErrorOccurred)
 			return
 		}
 	}
@@ -115,22 +107,14 @@ func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		ResponseJsonWithInternalServerError(w)
+		ResponseJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}
 
 	if err = p.Cookie.Set(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
-		ResponseJsonWithInternalServerError(w)
+		ResponseJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}
 
 	Redirect(w, r, config.ConsentURL, http.StatusFound)
-}
-
-func (p *Authenticate) authorized(r *http.Request) bool {
-	_, err := p.Cookie.Get(r, config.SessionIDCookieName)
-	if err != nil {
-		return false
-	}
-	return true
 }

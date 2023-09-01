@@ -1,15 +1,17 @@
-package middleware
+package handler
 
 import (
 	"errors"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/pkg/xerr"
+
+	"github.com/42milez/go-oidc-server/app/handler/cookie"
+	"github.com/42milez/go-oidc-server/app/handler/session"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/config"
-
-	"github.com/42milez/go-oidc-server/app/cookie"
-	"github.com/42milez/go-oidc-server/app/session"
 )
 
 func RestoreSession(ck *cookie.Cookie, sess *session.Session) func(next http.Handler) http.Handler {
@@ -18,7 +20,9 @@ func RestoreSession(ck *cookie.Cookie, sess *session.Session) func(next http.Han
 			sid, err := ck.Get(r, config.SessionIDCookieName)
 
 			if errors.Is(err, http.ErrNoCookie) {
-				next.ServeHTTP(w, r)
+				RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
+					Error: xerr.UnauthorizedRequest,
+				})
 				return
 			}
 

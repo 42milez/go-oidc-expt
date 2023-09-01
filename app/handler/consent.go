@@ -3,8 +3,9 @@ package handler
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/handler/session"
+
 	"github.com/42milez/go-oidc-server/app/config"
-	"github.com/42milez/go-oidc-server/app/session"
 )
 
 func NewConsent() (*Consent, error) {

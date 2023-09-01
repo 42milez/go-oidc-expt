@@ -6,21 +6,15 @@ import "github.com/swaggo/swag"
 
 const docTemplate = `{
     "schemes": {{ marshal .Schemes }},
-    "consumes": [
-        "application/json"
-    ],
-    "produces": [
-        "application/json"
-    ],
     "swagger": "2.0",
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "TBD",
+        "termsOfService": "https://example.com/terms/",
         "contact": {
-            "name": "TBD",
-            "url": "TBD",
-            "email": "TBD"
+            "name": "API Support",
+            "url": "https://example.com/support/",
+            "email": "support@example.com"
         },
         "license": {
             "name": "MIT",
@@ -31,9 +25,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/authenticate": {
-            "post": {
-                "description": "TBD",
+        "/health": {
+            "get": {
+                "description": "This endpoint checks service condition",
                 "consumes": [
                     "application/json"
                 ],
@@ -41,47 +35,27 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "authentication"
+                    "HealthCheck"
                 ],
-                "summary": "TBD",
-                "operationId": "Authenticate.ServeHTTP",
-                "parameters": [
-                    {
-                        "description": "Username",
-                        "name": "name",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Password",
-                        "name": "password",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+                "summary": "checks service condition",
+                "operationId": "CheckHealth.ServeHTTP",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.AuthenticateResponse"
+                            "$ref": "#/definitions/model.CheckHealthResponse"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "503": {
+                        "description": "Service Unavailable",
                         "schema": {
-                            "$ref": "#/definitions/model.ErrorResponse"
+                            "$ref": "#/definitions/model.CheckHealthResponse"
                         }
                     }
                 }
             }
         },
-        "/v1/authorization": {
+        "/v1/authorize": {
             "get": {
                 "description": "TBD",
                 "consumes": [
@@ -91,7 +65,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "authorization"
+                    "OIDC"
                 ],
                 "summary": "TBD",
                 "operationId": "AuthorizeGet.ServeHTTP",
@@ -135,7 +109,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "authorization"
+                    "OIDC"
                 ],
                 "summary": "TBD",
                 "operationId": "AuthorizePost.ServeHTTP",
@@ -170,9 +144,130 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/v1/user/authenticate": {
+            "post": {
+                "description": "This endpoint authenticates user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "authenticates user",
+                "operationId": "Authenticate.ServeHTTP",
+                "parameters": [
+                    {
+                        "description": "user credential",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AuthenticateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AuthenticateResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/user/register": {
+            "post": {
+                "description": "This endpoint registers user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "registers user",
+                "operationId": "Register.ServeHTTP",
+                "parameters": [
+                    {
+                        "description": "user credential",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RegisterUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RegisterUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "model.AuthenticateRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "password"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "model.AuthenticateResponse": {
             "type": "object",
             "properties": {
@@ -181,39 +276,66 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CheckHealthResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.ErrorResponse": {
             "type": "object",
+            "required": [
+                "error"
+            ],
             "properties": {
                 "error": {
                     "type": "string"
                 }
             }
-        }
-    },
-    "tags": [
-        {
-            "description": "TBD",
-            "name": "TBD",
-            "externalDocs": {
-                "description": "TBD",
-                "url": "TBD"
+        },
+        "model.RegisterUserRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "password"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.RegisterUserResponse": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
             }
         }
-    ],
-    "externalDocs": {
-        "description": "TBD",
-        "url": "TBD"
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
-	Host:             "TBD",
+	Version:          "N/A",
+	Host:             "localhost:8080",
 	BasePath:         "/v1",
 	Schemes:          []string{"http", "https"},
 	Title:            "go-oidc-server",
-	Description:      "TBD",
+	Description:      "This is an experimental implementation of OpenID Connect with Go.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

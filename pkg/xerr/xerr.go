@@ -36,7 +36,7 @@ var (
 	InvalidUsernameOrPassword   PublicErr = "invalid username or password"
 	OK                          PublicErr = "ok"
 	ServiceCurrentlyUnavailable PublicErr = "service currently unavailable"
-	UnauthorizedUser            PublicErr = "unauthorized user"
+	UnauthorizedRequest         PublicErr = "unauthorized request"
 	UnexpectedErrorOccurred     PublicErr = "unexpected error occurred"
 )
 

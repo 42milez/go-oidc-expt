@@ -14,28 +14,18 @@ import (
 
 var version = "dev"
 
-//	@title						go-oidc-server
-//	@version					1.0
-//	@description				TBD
-//	@tag.name					TBD
-//	@tag.description			TBD
-//	@tag.docs.url				TBD
-//	@tag.docs.description		TBD
-//	@termsOfService				TBD
-//	@contact.name				TBD
-//	@contact.url				TBD
-//	@contact.email				TBD
-//	@license.name				MIT
-//	@license.url				TBD
-//	@host						TBD
-//	@BasePath					/v1
-//	@accept						json
-//	@produce					json
-//	@query.collection.format	TBD
-//	@schemes					http https
-//	@externalDocs.description	TBD
-//	@externalDocs.url			TBD
-
+//	@title				go-oidc-server
+//	@version			N/A
+//	@description		This is an experimental implementation of OpenID Connect with Go.
+//	@termsOfService		https://example.com/terms/
+//	@contact.name		API Support
+//	@contact.url		https://example.com/support/
+//	@contact.email		support@example.com
+//	@license.name		MIT
+//	@license.url		TBD
+//	@host				localhost:8080
+//	@BasePath			/v1
+//	@schemes			http https
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Str("role", "idp").Logger()

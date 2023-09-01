@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/cookie"
-	"github.com/42milez/go-oidc-server/app/middleware"
-
-	"github.com/42milez/go-oidc-server/app/session"
+	"github.com/42milez/go-oidc-server/app/handler/cookie"
+	"github.com/42milez/go-oidc-server/app/handler/session"
 
 	"github.com/42milez/go-oidc-server/pkg/xid"
 
@@ -80,31 +78,25 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 
 	mux.HandleFunc("/health", CheckHealthHdlr.ServeHTTP)
 
-	//  Register Endpoint
+	//  User Endpoint
 	// --------------------------------------------------
 
-	createUserHdlr, err := handler.NewCreateUser(ec, rc, xid.UID, jwt, sess)
+	registerHdlr, err := handler.NewRegisterUser(ec, xid.UID, sess)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	mux.Route(makePattern("register"), func(r chi.Router) {
-		r.Post("/", createUserHdlr.ServeHTTP)
-	})
-
-	//  Authentication Endpoint
-	// --------------------------------------------------
-
-	authenticateUserHdlr, err := handler.NewAuthenticate(ec, rc, ck, jwt, sess)
+	authHdlr, err := handler.NewAuthenticate(ec, rc, ck, jwt, sess)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	mux.Route(makePattern("auth"), func(r chi.Router) {
-		r.Use(middleware.RestoreSession(ck, sess))
-		r.Post("/", authenticateUserHdlr.ServeHTTP)
+	mux.Route(makePattern("user"), func(r chi.Router) {
+		r.Use(handler.RestoreSession(ck, sess))
+		r.Post("/register", registerHdlr.ServeHTTP)
+		r.Post("/auth", authHdlr.ServeHTTP)
 	})
 
 	//  OpenID Endpoint

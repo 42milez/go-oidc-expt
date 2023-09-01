@@ -1,68 +1,87 @@
 basePath: /v1
-consumes:
-- application/json
 definitions:
+  model.AuthenticateRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - name
+    - password
+    type: object
   model.AuthenticateResponse:
     properties:
       error:
         type: string
     type: object
+  model.CheckHealthResponse:
+    properties:
+      status:
+        type: integer
+    type: object
   model.ErrorResponse:
     properties:
       error:
         type: string
+    required:
+    - error
     type: object
-externalDocs:
-  description: TBD
-  url: TBD
-host: TBD
+  model.RegisterUserRequest:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - name
+    - password
+    type: object
+  model.RegisterUserResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    required:
+    - id
+    - name
+    type: object
+host: localhost:8080
 info:
   contact:
-    email: TBD
-    name: TBD
-    url: TBD
-  description: TBD
+    email: support@example.com
+    name: API Support
+    url: https://example.com/support/
+  description: This is an experimental implementation of OpenID Connect with Go.
   license:
     name: MIT
     url: TBD
-  termsOfService: TBD
+  termsOfService: https://example.com/terms/
   title: go-oidc-server
-  version: "1.0"
+  version: N/A
 paths:
-  /v1/authenticate:
-    post:
+  /health:
+    get:
       consumes:
       - application/json
-      description: TBD
-      operationId: Authenticate.ServeHTTP
-      parameters:
-      - description: Username
-        in: body
-        name: name
-        required: true
-        schema:
-          type: string
-      - description: Password
-        in: body
-        name: password
-        required: true
-        schema:
-          type: string
+      description: This endpoint checks service condition
+      operationId: CheckHealth.ServeHTTP
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.AuthenticateResponse'
-        "500":
-          description: Internal Server Error
+            $ref: '#/definitions/model.CheckHealthResponse'
+        "503":
+          description: Service Unavailable
           schema:
-            $ref: '#/definitions/model.ErrorResponse'
-      summary: TBD
+            $ref: '#/definitions/model.CheckHealthResponse'
+      summary: checks service condition
       tags:
-      - authentication
-  /v1/authorization:
+      - HealthCheck
+  /v1/authorize:
     get:
       consumes:
       - application/json
@@ -92,7 +111,7 @@ paths:
             $ref: '#/definitions/model.ErrorResponse'
       summary: TBD
       tags:
-      - authorization
+      - OIDC
     post:
       consumes:
       - application/json
@@ -122,16 +141,78 @@ paths:
             $ref: '#/definitions/model.ErrorResponse'
       summary: TBD
       tags:
-      - authorization
-produces:
-- application/json
+      - OIDC
+  /v1/user/authenticate:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint authenticates user.
+      operationId: Authenticate.ServeHTTP
+      parameters:
+      - description: user credential
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.AuthenticateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AuthenticateResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: authenticates user
+      tags:
+      - User
+  /v1/user/register:
+    post:
+      consumes:
+      - application/json
+      description: This endpoint registers user.
+      operationId: Register.ServeHTTP
+      parameters:
+      - description: user credential
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RegisterUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ErrorResponse'
+      summary: registers user
+      tags:
+      - User
 schemes:
 - http
 - https
 swagger: "2.0"
-tags:
-- description: TBD
-  externalDocs:
-    description: TBD
-    url: TBD
-  name: TBD

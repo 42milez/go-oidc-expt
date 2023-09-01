@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/session"
+	"github.com/42milez/go-oidc-server/app/handler/session"
 
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/42milez/go-oidc-server/app/validation"
@@ -38,7 +38,7 @@ type AuthorizeGet struct {
 //	@summary		TBD
 //	@description	TBD
 //	@id				AuthorizeGet.ServeHTTP
-//	@tags			authorization
+//	@tags			OIDC
 //	@accept			json
 //	@produce		json
 //	@param			name		query		string	true	"TBD"
@@ -46,7 +46,7 @@ type AuthorizeGet struct {
 //	@success		200			{string}	string
 //	@failure		500			{object}	model.ErrorResponse
 //	@failure		500			{object}	model.ErrorResponse
-//	@router			/v1/authorization [get]
+//	@router			/v1/authorize [get]
 func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
 	q := &model.AuthorizeRequest{}
@@ -75,7 +75,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if !ok {
 		RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
-			Error: xerr.UnauthorizedUser,
+			Error: xerr.UnauthorizedRequest,
 		})
 		return
 	}
@@ -106,7 +106,7 @@ type AuthorizePost struct {
 //	@summary		TBD
 //	@description	TBD
 //	@id				AuthorizePost.ServeHTTP
-//	@tags			authorization
+//	@tags			OIDC
 //	@accept			json
 //	@produce		json
 //	@param			name		formData	string	true	"TBD"
@@ -114,7 +114,7 @@ type AuthorizePost struct {
 //	@success		200			{string}	string
 //	@failure		500			{object}	model.ErrorResponse
 //	@failure		500			{object}	model.ErrorResponse
-//	@router			/v1/authorization [post]
+//	@router			/v1/authorize [post]
 func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// NOT IMPLEMENTED YET
 }

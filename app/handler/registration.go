@@ -4,15 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/session"
+	"github.com/42milez/go-oidc-server/app/handler/session"
 
 	"github.com/42milez/go-oidc-server/pkg/xid"
 
-	"github.com/redis/go-redis/v9"
-
 	"github.com/42milez/go-oidc-server/pkg/xtime"
 
-	"github.com/42milez/go-oidc-server/app/auth"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/42milez/go-oidc-server/app/repository"
@@ -24,8 +21,8 @@ import (
 	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
-func NewCreateUser(ec *ent.Client, rc *redis.Client, idGen *xid.UniqueID, jwt *auth.JWT, sess *session.Session) (*CreateUser, error) {
-	return &CreateUser{
+func NewRegisterUser(ec *ent.Client, idGen *xid.UniqueID, sess *session.Session) (*RegisterUser, error) {
+	return &RegisterUser{
 		Service: &service.CreateUser{
 			Repo: &repository.User{
 				Clock: &xtime.RealClocker{},
@@ -38,14 +35,28 @@ func NewCreateUser(ec *ent.Client, rc *redis.Client, idGen *xid.UniqueID, jwt *a
 	}, nil
 }
 
-type CreateUser struct {
+type RegisterUser struct {
 	Service   UserCreator
 	Session   SessionRestorer
 	validator *validator.Validate
 }
 
-func (p *CreateUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var req model.CreateUserRequest
+// ServeHTTP registers user
+//
+//	@summary		registers user
+//	@description	This endpoint registers user.
+//	@id				Register.ServeHTTP
+//	@tags			User
+//	@accept			json
+//	@produce		json
+//	@param			user	body		model.RegisterUserRequest	true	"user credential"
+//	@success		200		{object}	model.RegisterUserResponse
+//	@failure		400		{object}	model.ErrorResponse
+//	@failure		401		{object}	model.ErrorResponse
+//	@failure		500		{object}	model.ErrorResponse
+//	@router			/v1/user/register [post]
+func (p *RegisterUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var req model.RegisterUserRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
@@ -87,7 +98,7 @@ func (p *SelectUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resp := model.CreateUserResponse{
+	resp := model.RegisterUserResponse{
 		ID:   user.ID,
 		Name: user.Name,
 	}
