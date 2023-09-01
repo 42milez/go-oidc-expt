@@ -65,14 +65,14 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			},
 			want: want{
 				statusCode: http.StatusFound,
-				resp:   nil,
+				resp:       nil,
 			},
 		},
 		"BadRequest": {
 			reqFile: tdAuthenticationRequest400,
 			want: want{
 				statusCode: http.StatusBadRequest,
-				resp:   xtestutil.LoadFile(t, tdAuthenticationResponse400),
+				resp:       xtestutil.LoadFile(t, tdAuthenticationResponse400),
 			},
 		},
 		"InternalServerError": {
@@ -82,7 +82,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,
-				resp:   xtestutil.LoadFile(t, tdAuthenticationResponse500),
+				resp:       xtestutil.LoadFile(t, tdAuthenticationResponse500),
 			},
 		},
 	}

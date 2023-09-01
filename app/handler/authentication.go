@@ -134,7 +134,3 @@ func (p *Authenticate) authorized(r *http.Request) bool {
 	}
 	return true
 }
-
-func (p *Authenticate) redirectToConsentEndpoint() {
-
-}
