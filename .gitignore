@@ -15,6 +15,7 @@
 # vendor/
 
 # go-oidc-server
-app/idp/auth/cert
+app/auth/cert
 bin/
 secret/
+cookie.txt
