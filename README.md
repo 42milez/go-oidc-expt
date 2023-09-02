@@ -28,9 +28,9 @@ ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/
 ### Generate key pair for signing access token
 
 ```
-mkdir -p app/idp/auth/cert
-openssl ecparam -genkey -name prime256v1 -noout -out app/idp/auth/cert/private.pem
-openssl ec -in app/idp/auth/cert/private.pem -pubout -out app/idp/auth/cert/public.pem
+mkdir -p app/auth/cert
+openssl ecparam -genkey -name prime256v1 -noout -out app/auth/cert/private.pem
+openssl ec -in app/auth/cert/private.pem -pubout -out app/auth/cert/public.pem
 ```
 
 References:
@@ -70,7 +70,15 @@ The containers:
 ### Apply migrations
 
 ```
-./script/atlas/migrate-apply.sh idp
+./script/atlas/migrate-apply.sh
+```
+
+## API document
+
+API document is available on the following URL:
+
+```
+http://localhost:8080/swagger/index.html
 ```
 
 ## Commands and scripts
@@ -79,7 +87,6 @@ The commands described later require the following parameters:
 
 | Parameter      | Detail                                                                                                                 |
 |----------------|------------------------------------------------------------------------------------------------------------------------|
-| APP_NAME       | Application name ( `idp` or `auth` )                                                                                   |
 | MIGRATION_NAME | A part of migration file name. The filename is determined according to the format `%Y%m%d%H%i%S_<MIGRATION_NAME>.sql`. |
 | N_LATEST       | The number of latest migration files to be analyzed. `migrate-list.sh` runs analysis on them.                          |
 
@@ -89,40 +96,58 @@ The commands described later require the following parameters:
 go generate ./...
 ```
 
+### Generating database schema
+
+e.g. The following command generates `AuthCode` schema.
+
+```
+go run -mod=mod entgo.io/ent/cmd/ent new --target app/ent/schema AuthCode
+```
+
 ### Generating versioned migration files
 
 ```
-./script/atlas/migrate-diff.sh <APP_NAME> <MIGRATION_NAME>
+make migrate-diff MIGRATION_NAME=<MIGRATION_NAME>
 ```
 
 ### Verifying and linting migrations
 
 ```
-./script/atlas/migrate-lint.sh <APP_NAME> [<N_LATEST>]
-```
-
-### Applying migrations
-
-```
-./script/atlas/migrate-apply.sh <APP_NAME>
+make migrate-lint [N_LATEST=<N_LATEST>]
 ```
 
 If `N_LATEST` isn't specified, the diff between `main` branch and the current one is selected as the changeset.
 
+### Applying migrations
+
+```
+make migrate-apply
+```
+
+### Seeding database
+
+```
+make seed
+```
+
 ## References
 
+- Identifier
+  - [Awesome Identifiers](https://github.com/adileo/awesome-identifiers)
+  - [sonyflake](https://github.com/sony/sonyflake)
+  - [Universally Unique Lexicographically Sortable Identifier](https://github.com/ulid/spec)
 - OpenID Connect
   - OpenID Connect Core 1.0 incorporating errata set 1
-    - [EN](https://openid.net/specs/openid-connect-core-1_0.html)
-    - [JA](https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html)
+    - [English](https://openid.net/specs/openid-connect-core-1_0.html)
+    - [Japanese](https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html)
 - OTP
   - [RFC4226: An HMAC-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc4226)
   - [RFC6238: Time-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc6238)
   - [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
 - Password
   - [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
-- ULID
-  - [Universally Unique Lexicographically Sortable Identifier](https://github.com/ulid/spec)
+- Session
+  - [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
 
 ## Notes
 

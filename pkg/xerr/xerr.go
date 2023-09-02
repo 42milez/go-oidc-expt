@@ -1,49 +1,78 @@
 package xerr
 
-import "fmt"
-
-const (
-	FailToEstablishConnection   GeneralErr = "failed to establish connection"
-	FailedToCloseConnection     GeneralErr = "failed to close connection"
-	FailedToCloseResponseBody   GeneralErr = "failed to close response body"
-	FailedToDecodeInToBytes     GeneralErr = "failed to decode string"
-	FailedToEncodeInToBytes     GeneralErr = "failed to encode struct"
-	FailedToGenerateRandomBytes GeneralErr = "failed to generate random bytes"
-	FailedToInitialize          GeneralErr = "failed to initialize"
-	FailedToPingCache           GeneralErr = "failed to ping cache"
-	FailedToPingDatabase        GeneralErr = "failed to ping database"
-	FailedToReachHost           GeneralErr = "failed to reach host"
-	FailedToReadContextValue    GeneralErr = "failed to read context value"
-	FailedToReadFile            GeneralErr = "failed to read file"
-	FailedToResponseBody        GeneralErr = "failed to response body"
-	FailedToUnmarshalJSON       GeneralErr = "failed to unmarshal json"
-	FailedToDecodeInToStruct    GeneralErr = "failed to decode into struct"
+import (
+	"errors"
+	"fmt"
 )
 
-type GeneralErr string
+type OpenIDErr error
 
-func (v GeneralErr) Error() string {
-	return string(v)
-}
-
-const (
-	AuthenticationFailed        HTTPErr = "authentication failed"
-	ServiceCurrentlyUnavailable HTTPErr = "service currently unavailable"
-	UnexpectedErrorOccurred     HTTPErr = "unexpected error occurred"
+var (
+	InvalidResponseType = errors.New("invalid response type")
 )
 
-type HTTPErr string
+type InternalErr string
 
-func (v HTTPErr) Error() string {
+func (v InternalErr) Error() string {
 	return string(v)
 }
 
-type Err string
+func (v InternalErr) Wrap(e error) error {
+	return fmt.Errorf("%w ( %w )", v, e)
+}
 
-func (v Err) Error() string {
+type PublicErr string
+
+func (v PublicErr) Error() string {
 	return string(v)
 }
 
-func Wrap(e1, e2 error) error {
-	return fmt.Errorf("%w (%w)", e1, e2)
-}
+// --------------------------------------------------
+
+var (
+	AuthenticationFailed        PublicErr = "authentication failed"
+	InvalidParameter            PublicErr = "invalid parameter"
+	InvalidRequest              PublicErr = "invalid request"
+	InvalidUsernameOrPassword   PublicErr = "invalid username or password"
+	OK                          PublicErr = "ok"
+	ServiceCurrentlyUnavailable PublicErr = "service currently unavailable"
+	UnauthorizedRequest         PublicErr = "unauthorized request"
+	UnexpectedErrorOccurred     PublicErr = "unexpected error occurred"
+)
+
+var (
+	FailToEstablishConnection    InternalErr = "failed to establish connection"
+	FailedToBuildToken           InternalErr = "failed to build token"
+	FailedToCloseConnection      InternalErr = "failed to close connection"
+	FailedToCloseResponseBody    InternalErr = "failed to close response body"
+	FailedToCreateUser           InternalErr = "failed to create user"
+	FailedToDecodeInToBytes      InternalErr = "failed to decode string"
+	FailedToDecodeInToStruct     InternalErr = "failed to decode into struct"
+	FailedToDeleteItem           InternalErr = "failed to delete item"
+	FailedToEncodeInToBytes      InternalErr = "failed to encode struct"
+	FailedToExtractToken         InternalErr = "failed to extract token"
+	FailedToGenerateRandomBytes  InternalErr = "failed to generate random bytes"
+	FailedToGenerateUniqueID     InternalErr = "failed to generate unique id"
+	FailedToHashPassword         InternalErr = "failed to hash password"
+	FailedToInitialize           InternalErr = "failed to initialize"
+	FailedToLoadItem             InternalErr = "failed to load item"
+	FailedToParseEnvVal          InternalErr = "failed to parse environment variable"
+	FailedToParsePrivateKey      InternalErr = "failed to parse private key"
+	FailedToParsePublicKey       InternalErr = "failed to parse public key"
+	FailedToParseRequest         InternalErr = "failed to parse request"
+	FailedToPingCache            InternalErr = "failed to ping cache"
+	FailedToPingDatabase         InternalErr = "failed to ping database"
+	FailedToReachHost            InternalErr = "failed to reach host"
+	FailedToReadContextValue     InternalErr = "failed to read context value"
+	FailedToReadFile             InternalErr = "failed to read file"
+	FailedToReadResponseBody     InternalErr = "failed to read response body"
+	FailedToReadResponseLocation InternalErr = "failed to read response location"
+	FailedToSetInToCache         InternalErr = "failed to set into cache"
+	FailedToSignToken            InternalErr = "failed to sign token"
+	FailedToUnmarshalJSON        InternalErr = "failed to unmarshal json"
+	InvalidToken                 InternalErr = "invalid token"
+	PasswordNotMatched           InternalErr = "password not matched"
+	ResponseBodyNotMatched       InternalErr = "response body not matched"
+	SessionIDAlreadyExists       InternalErr = "session id already exists"
+	UserNotFound                 InternalErr = "user not found"
+)
