@@ -1,0 +1,32 @@
+openapi: "3.1.0"
+info:
+  version: 1.0.0
+  title: go-oidc-server
+  description: An experimental implementation of OpenID Connect with Go
+  termsOfService: http://example.com/terms/
+  contact:
+    name: API Support
+    email: support@example.com
+    url: https://example.com/support/
+  license:
+    name: MIT
+    url: TBD
+servers:
+  - url: http://localhost:8080/v1
+    description: Development Environment
+  - url: https://staging.idp.example.com/v1
+    description: Staging Environment
+  - url: https://idp.example.com/v1
+    description: Production Environment
+paths:
+  /health:
+    $ref: 'paths/health/health.yml'
+  /user/register:
+    $ref: 'paths/user/register.yml'
+  /user/authenticate:
+    $ref: 'paths/user/authenticate.yml'
+components:
+  schemas:
+    allOf:
+      - $ref: 'schemas/health.yml'
+      - $ref: 'schemas/user.yml'

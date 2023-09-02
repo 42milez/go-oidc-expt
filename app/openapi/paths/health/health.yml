@@ -1,0 +1,16 @@
+get:
+  description: Check the health of service.
+  operationId: checkHealth
+  responses:
+    '200':
+      description: service operational
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Health'
+    '500':
+      description: service not operational
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Health'

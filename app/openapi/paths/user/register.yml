@@ -1,0 +1,11 @@
+post:
+  description: Creates a new user in the database.
+  operationId: registerUser
+  requestBody:
+    description: User to register onto the database
+    required: true
+    content:
+      schema:
+        allOf:
+          - $ref: '#/components/schemas/User'
+          - $ref: '#/components/schemas/NewUser'

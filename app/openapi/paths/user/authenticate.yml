@@ -1,0 +1,9 @@
+post:
+  description: Authenticates a user.
+  operationId: authenticateUser
+  requestBody:
+    description: User to authenticate
+    required: true
+    content:
+      schema:
+        $ref: '#/components/schemas/NewUser'
