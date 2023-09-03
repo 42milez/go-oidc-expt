@@ -1,10 +1,10 @@
-package handler
+package api
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/handler/session"
+	"github.com/42milez/go-oidc-server/app/api/session"
 
 	"github.com/42milez/go-oidc-server/pkg/xid"
 

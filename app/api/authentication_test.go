@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/handler/cookie"
+	"github.com/42milez/go-oidc-server/app/api/cookie"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 

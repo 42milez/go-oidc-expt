@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/handler/cookie"
-	"github.com/42milez/go-oidc-server/app/handler/session"
+	"github.com/42milez/go-oidc-server/app/api"
+	"github.com/42milez/go-oidc-server/app/api/cookie"
+	"github.com/42milez/go-oidc-server/app/api/session"
 
 	"github.com/42milez/go-oidc-server/pkg/xid"
 
@@ -16,7 +17,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/auth"
 	"github.com/42milez/go-oidc-server/app/config"
-	"github.com/42milez/go-oidc-server/app/handler"
 	"github.com/42milez/go-oidc-server/app/repository"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 
@@ -74,27 +74,27 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  Health Check Endpoint
 	// --------------------------------------------------
 
-	CheckHealthHdlr := handler.NewCheckHealth(rc, dc)
+	CheckHealthHdlr := api.NewCheckHealth(rc, dc)
 
 	mux.HandleFunc("/health", CheckHealthHdlr.ServeHTTP)
 
 	//  User Endpoint
 	// --------------------------------------------------
 
-	registerHdlr, err := handler.NewRegisterUser(ec, xid.UID, sess)
+	registerHdlr, err := api.NewRegisterUser(ec, xid.UID, sess)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	authHdlr, err := handler.NewAuthenticate(ec, rc, ck, jwt, sess)
+	authHdlr, err := api.NewAuthenticate(ec, rc, ck, jwt, sess)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
 	mux.Route(makePattern("user"), func(r chi.Router) {
-		r.Use(handler.RestoreSession(ck, sess))
+		r.Use(api.RestoreSession(ck, sess))
 		r.Post("/register", registerHdlr.ServeHTTP)
 		r.Post("/auth", authHdlr.ServeHTTP)
 	})
@@ -102,13 +102,13 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  OpenID Endpoint
 	// --------------------------------------------------
 
-	authorizeGet, err := handler.NewAuthorizeGet()
+	authorizeGet, err := api.NewAuthorizeGet()
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
 
-	authorizePost := handler.NewAuthorizePost()
+	authorizePost := api.NewAuthorizePost()
 
 	mux.Route(makePattern("authorize"), func(r chi.Router) {
 		r.Get("/", authorizeGet.ServeHTTP)

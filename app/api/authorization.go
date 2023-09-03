@@ -1,9 +1,9 @@
-package handler
+package api
 
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/handler/session"
+	"github.com/42milez/go-oidc-server/app/api/session"
 
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/42milez/go-oidc-server/app/validation"

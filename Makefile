@@ -11,7 +11,8 @@ help: Makefile
 #  Build
 # ==================================================
 
-.PHONY: build build-local
+.PHONY: build
+.PHONY: build-local
 
 ## build: Build a docker image to deploy
 build:
@@ -113,7 +114,10 @@ test:
 #  Docker
 # ==================================================
 
-.PHONY: up down start stop
+.PHONY: down
+.PHONY: start
+.PHONY: stop
+.PHONY: up
 
 ## up: Create and start containers
 up:

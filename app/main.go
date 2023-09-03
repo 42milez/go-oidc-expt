@@ -6,6 +6,8 @@ import (
 	"net"
 	"os"
 
+	"github.com/42milez/go-oidc-server/pkg/xid"
+
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/rs/zerolog"
@@ -30,10 +32,15 @@ func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Str("role", "idp").Logger()
 
-	cfg, err := config.New()
+	var cfg *config.Config
+	var err error
 
-	if err != nil {
+	if cfg, err = config.New(); err != nil {
 		log.Fatal().Stack().Err(err).Msg("failed to parse env variable")
+	}
+
+	if err = xid.Init(); err != nil {
+		log.Fatal().Stack().Err(err).Msg("failed to initialize id generator")
 	}
 
 	if err = run(context.Background(), cfg); err != nil {

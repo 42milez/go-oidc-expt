@@ -7,6 +7,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/42milez/go-oidc-server/pkg/xid"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/pkg/xargon2"
@@ -168,9 +170,15 @@ func run(ctx context.Context, client *ent.Client) error {
 
 func main() {
 	ctx := context.Background()
-	cfg, err := config.New()
 
-	if err != nil {
+	var cfg *config.Config
+	var err error
+
+	if cfg, err = config.New(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err = xid.Init(); err != nil {
 		log.Fatal(err)
 	}
 

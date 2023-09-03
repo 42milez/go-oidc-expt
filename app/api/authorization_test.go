@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/handler/session"
+	"github.com/42milez/go-oidc-server/app/api/session"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 

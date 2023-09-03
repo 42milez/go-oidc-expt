@@ -1,12 +1,13 @@
-package handler
+package api
 
 import (
 	"encoding/json"
 	"errors"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/handler/cookie"
-	"github.com/42milez/go-oidc-server/app/handler/session"
+	"github.com/42milez/go-oidc-server/app/api/cookie"
+	"github.com/42milez/go-oidc-server/app/api/session"
+
 	"github.com/42milez/go-oidc-server/app/model"
 
 	"github.com/42milez/go-oidc-server/app/config"
