@@ -22,19 +22,6 @@ type Health struct {
 	Status string `json:"status"`
 }
 
-// NewUser defines model for NewUser.
-type NewUser struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
-}
-
-// User defines model for User.
-type User struct {
-	Id       uint64 `json:"id"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-}
-
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
@@ -250,18 +237,17 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7xUTW/bOhD8K8S+d1RE530UgU7NR9H60CZo0lPgA0OtLaYUyZIrO0Gg/16QkhzLUVL3",
-	"0tuCmJ2dWe7uE0hbO2vQUIDiCYKssBYp/IRCUxUj561DTwo7CAlqUkSPDqGAQF6ZFbRtBh5/NMpjCcXt",
-	"gFtkA87e3aMkaDP4gptvAf1LbiNqnGDOwIkQNtaXvy6bKHYSpuoPxYXWl0sobp/gb49LKOAv/twO3veC",
-	"D2rbbF+uSnqW1teCoIBGGXr3H2wLKkO4iol7EtWUqkUbYcosbeSU1pCQFEOshdLRb+Oc9fQeH0TtNObS",
-	"1pD1HYPTqzm77gCQQeNjQkXkQsH5TgLvSXjsQolBeuVIWRMZDMMHh17VaEhopmJOiiOA2SW7dGjmF+zc",
-	"GoOS2EZRxT5ayEAriSbg8wfC5/nNVsbN2UWsRujrcLm8Rr9WEnt5e+oShscGKtIRs7JHVpXyKKBfo4cM",
-	"1uhDp/c4n+WzSGwdGuEUFPBvfpzP0t9Tlf6HV9sZXmFq5tjzeYXyO6MKWQeMLkMnMIfE7JP7eTmA+6WI",
-	"/xmcNaGbg39ms+HT0KQ6wjmtZErm9yEWG3YrRm9NW18hTcNYba+MbWUJHf3//0eLG0tjAQnLm4Cei4Yq",
-	"NBRLp2FwNkw0/XQHFZhgMfVlt3dRafu6FcJAZ7Z83DN8mLntHr8wF58ZWTYysLuz5BtsR59uGq2fnXtc",
-	"qUD9RZt0fe6x92twkzwzZdLolYLEnQgTE/e1Z/0N/4ddtO05O6hdi9cbNvhm1pAduTmofW0G3WaHJHlc",
-	"4wLXqK2LJ4h9MGvlrYnx6LwVnGsrha5soOJkdjLj6+NkbEx1TWKlzOpVmnglQ4fJVeny3Zs0SXjlbdnI",
-	"dBjf4pziWrQ/AwAA//9rn2b3dAcAAA==",
+	"H4sIAAAAAAAC/7xUz0/cOhD+V6x57xji8J4qoZzKj6rdQwsq9IQ4GGd2Y+p4XHuygFD+98pOFjawIHrp",
+	"bWR98833zYznATR1nhw6jlA/QNQtdiqHX1BZblPkA3kMbHCEsOI+R3zvEWqIHIxbwTAUEPBXbwI2UF9u",
+	"cFfFBkfXN6gZhgQ0bkmJQpNjpTmF2CljE13vPQX+iHeq8xZLTR0U4FSXOA7PFuJ8BEABfUgJLbOPtZRb",
+	"CXIikTAU0GDUwXg25BKDE3jnMZgOHSsrTMrJcQIIWopTj25xIo7JOdQsbg234jNBAdZodBGT2EnO18XF",
+	"o4yLo5NUjTF08XR5jmFtNE7ynqnLGAkFsGGbMCvaI9PovYhhjQEKWGOIo979siqrREwenfIGavi/3C8r",
+	"KMArbvMgZPs4qxXmZs49H7eofwpuUYzA5DKOAkvIzCG7XzQb8DT8NNHoycVx9P9V1WZo6HId5b01OifL",
+	"m5iKbXYoRf8GXEIN/8inJZPThsmpQt6GudpJmXiUpWzy/+GvFnfEcwEZK/uIQaqeW3ScSudl8BR3NP1w",
+	"CxWFEin1Zbe3UT9inn36RBj5iJr7Z4bfZ+4b3maml+bSs2ASMwPbv5ZDj8Ns6K639sl5wJWJjOF118cB",
+	"J78Ob7NnYVxevUaxulZxx8Z9n1j/wL+y9nQJ9eXbnRjbULyzXVevN2zjW5Bjmrl5V/uGAsafHbPkeY0T",
+	"XKMln06Q+OTWJpBL8ey81VJa0sq2FLk+qA4qud7PxuZU56xWxq1epUlXMo6Y0jS+3L5JOwnPAjW9zofx",
+	"Lc5dXFfD7wAAAP//Ehew4lwGAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
