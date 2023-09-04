@@ -70,11 +70,19 @@ func (_ Unimplemented) RegisterUser(w http.ResponseWriter, r *http.Request) {
 // ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler            ServerInterface
-	HandlerMiddlewares []MiddlewareFunc
+	HandlerMiddlewares MiddlewareFuncMap
 	ErrorHandlerFunc   func(w http.ResponseWriter, r *http.Request, err error)
 }
 
-type MiddlewareFunc func(http.Handler) http.Handler
+type MiddlewareFuncMap map[string][]func(http.Handler) http.Handler
+
+func NewMiddlewareFuncMap() *MiddlewareFuncMap {
+	return &MiddlewareFuncMap{
+		"CheckHealth":      nil,
+		"AuthenticateUser": nil,
+		"RegisterUser":     nil,
+	}
+}
 
 // CheckHealth operation middleware
 func (siw *ServerInterfaceWrapper) CheckHealth(w http.ResponseWriter, r *http.Request) {
@@ -83,10 +91,6 @@ func (siw *ServerInterfaceWrapper) CheckHealth(w http.ResponseWriter, r *http.Re
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CheckHealth(w, r)
 	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
@@ -99,10 +103,6 @@ func (siw *ServerInterfaceWrapper) AuthenticateUser(w http.ResponseWriter, r *ht
 		siw.Handler.AuthenticateUser(w, r)
 	}))
 
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
@@ -113,10 +113,6 @@ func (siw *ServerInterfaceWrapper) RegisterUser(w http.ResponseWriter, r *http.R
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.RegisterUser(w, r)
 	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
 
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
@@ -198,7 +194,7 @@ func Handler(si ServerInterface) http.Handler {
 type ChiServerOptions struct {
 	BaseURL          string
 	BaseRouter       chi.Router
-	Middlewares      []MiddlewareFunc
+	Middlewares      MiddlewareFuncMap
 	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
 
@@ -235,12 +231,15 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	}
 
 	r.Group(func(r chi.Router) {
+		r.Use(options.Middlewares["CheckHealth"]...)
 		r.Get(options.BaseURL+"/health", wrapper.CheckHealth)
 	})
 	r.Group(func(r chi.Router) {
+		r.Use(options.Middlewares["AuthenticateUser"]...)
 		r.Post(options.BaseURL+"/user/authenticate", wrapper.AuthenticateUser)
 	})
 	r.Group(func(r chi.Router) {
+		r.Use(options.Middlewares["RegisterUser"]...)
 		r.Post(options.BaseURL+"/user/register", wrapper.RegisterUser)
 	})
 

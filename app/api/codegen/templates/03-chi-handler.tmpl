@@ -6,7 +6,7 @@ func Handler(si ServerInterface) http.Handler {
 type ChiServerOptions struct {
     BaseURL string
     BaseRouter chi.Router
-    Middlewares []MiddlewareFunc
+    Middlewares MiddlewareFuncMap
     ErrorHandlerFunc   func(w http.ResponseWriter, r *http.Request, err error)
 }
 
@@ -43,6 +43,7 @@ ErrorHandlerFunc: options.ErrorHandlerFunc,
 }
 {{end}}
 {{range .}}r.Group(func(r chi.Router) {
+r.Use(options.Middlewares["{{.OperationId}}"]...)
 r.{{.Method | lower | title }}(options.BaseURL+"{{.Path | swaggerUriToChiUri}}", wrapper.{{.OperationId}})
 })
 {{end}}
