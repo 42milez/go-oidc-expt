@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/gob"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"golang.org/x/crypto/argon2"
 )

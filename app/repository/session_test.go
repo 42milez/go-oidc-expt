@@ -7,18 +7,17 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
+	"github.com/42milez/go-oidc-server/app/pkg/xutil"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/entity"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 	"github.com/google/go-cmp/cmp"
-
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/redis/go-redis/v9"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
 func TestNewSession(t *testing.T) {

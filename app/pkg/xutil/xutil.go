@@ -1,7 +1,7 @@
 package xutil
 
 import (
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/rs/zerolog/log"
 )
 

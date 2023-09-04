@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/42milez/go-oidc-server/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xid"
 
 	"github.com/42milez/go-oidc-server/app/config"
 

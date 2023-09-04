@@ -5,6 +5,11 @@ import (
 	"errors"
 	"net/http"
 
+	auth "github.com/42milez/go-oidc-server/app/pkg/xjwt"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/api/cookie"
 	"github.com/42milez/go-oidc-server/app/api/session"
 
@@ -16,15 +21,10 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/42milez/go-oidc-server/pkg/xtime"
-
-	"github.com/42milez/go-oidc-server/app/auth"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
 	"github.com/rs/zerolog/log"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/go-playground/validator/v10"
 )

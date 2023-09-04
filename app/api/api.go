@@ -8,9 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/42milez/go-oidc-server/pkg/xutil"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 
 	"github.com/rs/zerolog/log"
 )

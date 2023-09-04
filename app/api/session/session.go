@@ -4,15 +4,17 @@ import (
 	"context"
 	"net/http"
 
+	auth "github.com/42milez/go-oidc-server/app/pkg/xjwt"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 
-	"github.com/42milez/go-oidc-server/app/auth"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/app/entity"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"github.com/google/uuid"
 )
 

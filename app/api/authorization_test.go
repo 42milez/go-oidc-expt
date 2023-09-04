@@ -7,17 +7,16 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/api/validation"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xstring"
+	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
+
 	"github.com/42milez/go-oidc-server/app/api/session"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
-
-	"github.com/42milez/go-oidc-server/pkg/xstring"
-
-	"github.com/42milez/go-oidc-server/app/validation"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 	"github.com/golang/mock/gomock"
 )
 

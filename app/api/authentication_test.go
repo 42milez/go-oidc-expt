@@ -6,11 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
+
 	"github.com/42milez/go-oidc-server/app/api/cookie"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/golang/mock/gomock"

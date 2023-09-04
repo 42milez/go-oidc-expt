@@ -4,14 +4,14 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/app/model"
 
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
 
 	"github.com/redis/go-redis/v9"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/rs/zerolog/log"
 )

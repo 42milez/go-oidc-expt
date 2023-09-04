@@ -7,13 +7,11 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
+	"github.com/42milez/go-oidc-server/app/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/pkg/xargon2"
-
-	"github.com/42milez/go-oidc-server/pkg/xrandom"
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"

@@ -3,13 +3,13 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/api/validation"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/app/api/session"
 
 	"github.com/42milez/go-oidc-server/app/model"
-	"github.com/42milez/go-oidc-server/app/validation"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )

@@ -13,16 +13,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xstring"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xstring"
+	"github.com/42milez/go-oidc-server/app/pkg/xutil"
+
 	"github.com/google/go-cmp/cmp"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/redis/go-redis/v9"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
 //  Assertion

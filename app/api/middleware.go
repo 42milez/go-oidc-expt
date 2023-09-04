@@ -4,10 +4,10 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/app/api/cookie"
 	"github.com/42milez/go-oidc-server/app/api/session"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 

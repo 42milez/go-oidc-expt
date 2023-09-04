@@ -5,22 +5,20 @@ import (
 	"fmt"
 	"net/http"
 
+	auth "github.com/42milez/go-oidc-server/app/pkg/xjwt"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+	"github.com/42milez/go-oidc-server/app/pkg/xutil"
+
 	"github.com/42milez/go-oidc-server/app/api"
 	"github.com/42milez/go-oidc-server/app/api/cookie"
 	"github.com/42milez/go-oidc-server/app/api/session"
 
-	"github.com/42milez/go-oidc-server/pkg/xid"
-
-	"github.com/42milez/go-oidc-server/pkg/xutil"
-
-	"github.com/42milez/go-oidc-server/pkg/xtime"
-
-	"github.com/42milez/go-oidc-server/app/auth"
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/repository"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 
 	_ "github.com/42milez/go-oidc-server/app/docs"
 	"github.com/go-chi/chi/v5"

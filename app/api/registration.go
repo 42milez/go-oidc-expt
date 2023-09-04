@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/api/session"
-
-	"github.com/42milez/go-oidc-server/pkg/xid"
-
-	"github.com/42milez/go-oidc-server/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/model"
@@ -17,8 +17,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-playground/validator/v10"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
 )
 
 func NewRegisterUser(ec *ent.Client, idGen *xid.UniqueID, sess *session.Session) (*RegisterUser, error) {

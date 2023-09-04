@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xtime"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"

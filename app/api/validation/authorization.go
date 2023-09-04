@@ -3,7 +3,8 @@ package validation
 import (
 	"strings"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+
 	"github.com/go-playground/validator/v10"
 	"golang.org/x/exp/slices"
 )

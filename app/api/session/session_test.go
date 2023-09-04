@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 const userULID typedef.UserID = 475924034190589956
