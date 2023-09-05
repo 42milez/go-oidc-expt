@@ -4,9 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
-
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 )
 
 func TestHealthCheck_PingCache(t *testing.T) {

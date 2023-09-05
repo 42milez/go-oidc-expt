@@ -3,7 +3,8 @@ package config
 import (
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+
 	"github.com/caarlos0/env/v8"
 )
 

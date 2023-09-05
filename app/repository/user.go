@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
-	"github.com/42milez/go-oidc-server/pkg/xtime"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"

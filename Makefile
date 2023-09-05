@@ -11,7 +11,8 @@ help: Makefile
 #  Build
 # ==================================================
 
-.PHONY: build build-local
+.PHONY: build
+.PHONY: build-local
 
 ## build: Build a docker image to deploy
 build:
@@ -68,12 +69,10 @@ cleanup-go:
 ## fmt: Run formatter
 fmt:
 	@go fmt ./...
-	@swag fmt -d app
 
 ## gen: Run generator
 gen:
 	@go generate ./...
-	@swag init -d app -o app/docs
 
 ## lint: Run linters
 lint:
@@ -113,7 +112,10 @@ test:
 #  Docker
 # ==================================================
 
-.PHONY: up down start stop
+.PHONY: down
+.PHONY: start
+.PHONY: stop
+.PHONY: up
 
 ## up: Create and start containers
 up:
