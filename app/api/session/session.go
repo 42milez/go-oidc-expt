@@ -60,8 +60,8 @@ func (p *Session) Restore(r *http.Request, sid typedef.SessionID) (*http.Request
 	}
 
 	ctx := r.Context()
-	ctx = context.WithValue(r.Context(), IDKey{}, sid)
-	ctx = context.WithValue(r.Context(), UserIDKey{}, sess.UserID)
+	ctx = context.WithValue(ctx, IDKey{}, sid)
+	ctx = context.WithValue(ctx, UserIDKey{}, sess.UserID)
 
 	return r.Clone(ctx), nil
 }
