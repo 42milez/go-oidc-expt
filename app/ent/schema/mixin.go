@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xutil"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"entgo.io/ent"
@@ -11,8 +14,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
 	"github.com/42milez/go-oidc-server/app/ent/ent/hook"
-	"github.com/42milez/go-oidc-server/pkg/xid"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
 )
 
 // BaseMixin to be shared will all different schemas.

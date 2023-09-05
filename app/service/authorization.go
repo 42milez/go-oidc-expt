@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
 
-	"github.com/42milez/go-oidc-server/pkg/xrandom"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"

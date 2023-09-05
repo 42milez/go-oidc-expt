@@ -1,0 +1,40 @@
+type ChiServerOptions struct {
+    BaseURL          string
+    BaseRouter       *chi.Mux
+    Middlewares      *MiddlewareFuncMap
+    ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
+}
+
+// MuxWithOptions creates http.Handler with additional options
+func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
+    r := options.BaseRouter
+
+    if r == nil {
+        r = chi.NewRouter()
+    }
+
+    if options.ErrorHandlerFunc == nil {
+        options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+            http.Error(w, err.Error(), http.StatusBadRequest)
+        }
+    }
+
+    {{if .}}
+    wrapper := ServerInterfaceWrapper{
+        Handler:          si,
+        ErrorHandlerFunc: options.ErrorHandlerFunc,
+    }
+    {{end}}
+
+    {{range .}}
+    r.Group(func(r chi.Router) {
+        mw, ok := options.Middlewares.m["{{.OperationId}}"]
+        if ok {
+            r.Use(mw...)
+        }
+        r.{{.Method | lower | title}}(options.BaseURL+"{{.Path | swaggerUriToChiUri}}", wrapper.{{.OperationId}}())
+    })
+    {{end}}
+
+    return r
+}

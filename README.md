@@ -28,9 +28,9 @@ ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/
 ### Generate key pair for signing access token
 
 ```
-mkdir -p app/auth/cert
-openssl ecparam -genkey -name prime256v1 -noout -out app/auth/cert/private.pem
-openssl ec -in app/auth/cert/private.pem -pubout -out app/auth/cert/public.pem
+mkdir -p app/pkg/xjwt/cert
+openssl ecparam -genkey -name prime256v1 -noout -out app/pkg/xjwt/cert/private.pem
+openssl ec -in app/pkg/xjwt/cert/private.pem -pubout -out app/pkg/xjwt/cert/public.pem
 ```
 
 References:
@@ -44,9 +44,8 @@ limactl start --name=go-oidc-server lima.yml
 ```
 
 The virtual machine:
-
-  - can be stopped with `limactl stop go-oidc-server`
-  - can be deleted with `limactl delete go-oidc-server`
+- can be stopped with `limactl stop go-oidc-server`
+- can be deleted with `limactl delete go-oidc-server`
 
 ### Create and switch docker context:
 
@@ -62,23 +61,14 @@ make up
 ```
 
 The containers:
-
-  - can be stopped with `make stop`
-    - The stopped containers can be started with `make start`
-  - can be stopped and removed with `make down`
+- can be stopped with `make stop`
+  - The stopped containers can be started with `make start`
+- can be stopped and removed with `make down`
 
 ### Apply migrations
 
 ```
 ./script/atlas/migrate-apply.sh
-```
-
-## API document
-
-API document is available on the following URL:
-
-```
-http://localhost:8080/swagger/index.html
 ```
 
 ## Commands and scripts
@@ -129,6 +119,10 @@ make migrate-apply
 ```
 make seed
 ```
+
+## Documents
+
+- API specification (Swagger UI) is available on `http://localhost:8080`.
 
 ## References
 

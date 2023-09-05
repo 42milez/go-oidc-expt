@@ -7,11 +7,11 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
+	"github.com/42milez/go-oidc-server/app/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/pkg/xargon2"
-
-	"github.com/42milez/go-oidc-server/pkg/xrandom"
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
@@ -23,7 +23,7 @@ const nUserMin = 1
 const nAuthCodeMin = 1
 const nRedirectUriMin = 1
 
-func print(data any) {
+func printSeeds(data any) {
 	v := reflect.ValueOf(data)
 	for i := 0; i < v.Len(); i++ {
 		fmt.Printf("%+v\n", v.Index(i).Interface())
@@ -56,7 +56,7 @@ func insertUsers(ctx context.Context, client *ent.Client, nUser int) ([]*ent.Use
 		params[i].password = pwHash
 	}
 
-	print(params)
+	printSeeds(params)
 
 	builders := make([]*ent.UserCreate, len(params))
 
@@ -96,7 +96,7 @@ func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User,
 		params[i].userID = users[i%nUser].ID
 	}
 
-	print(params)
+	printSeeds(params)
 
 	builders := make([]*ent.AuthCodeCreate, len(params))
 
@@ -129,7 +129,7 @@ func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.Us
 		params[i].userID = users[i%nUser].ID
 	}
 
-	print(params)
+	printSeeds(params)
 
 	builders := make([]*ent.RedirectURICreate, len(params))
 
@@ -168,9 +168,15 @@ func run(ctx context.Context, client *ent.Client) error {
 
 func main() {
 	ctx := context.Background()
-	cfg, err := config.New()
 
-	if err != nil {
+	var cfg *config.Config
+	var err error
+
+	if cfg, err = config.New(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err = xid.Init(); err != nil {
 		log.Fatal(err)
 	}
 

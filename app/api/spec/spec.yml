@@ -1,0 +1,89 @@
+openapi: "3.1.0"
+info:
+  version: 1.0.0
+  title: go-oidc-server
+  description: An experimental implementation of OpenID Connect with Go
+  termsOfService: http://example.com/terms/
+  contact:
+    name: API Support
+    email: support@example.com
+    url: https://example.com/support/
+  license:
+    name: MIT
+    url: TBD
+servers:
+  - url: http://localhost:8080/v1
+    description: Development Environment
+  - url: https://staging.idp.example.com/v1
+    description: Staging Environment
+  - url: https://idp.example.com/v1
+    description: Production Environment
+paths:
+  /health:
+    get:
+      description: Check the health of service.
+      operationId: checkHealth
+      responses:
+        '200':
+          description: service operational
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '500':
+          description: service not operational
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+  /user/register:
+    post:
+      description: Creates a new user in the database.
+      operationId: registerUser
+      requestBody:
+        description: User to register onto the database
+        required: true
+        content:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/User'
+              - $ref: '#/components/schemas/NewUser'
+  /user/authenticate:
+    post:
+      description: Authenticates a user.
+      operationId: authenticateUser
+      requestBody:
+        description: User to authenticate
+        required: true
+        content:
+          schema:
+            $ref: '#/components/schemas/NewUser'
+components:
+  schemas:
+    Health:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+    User:
+      allOf:
+        - $ref: '#/components/schemas/NewUser'
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: uint64
+    NewUser:
+      type: object
+      required:
+        - name
+        - password
+      properties:
+        name:
+          type: string
+        password:
+          type: string
