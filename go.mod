@@ -1,6 +1,6 @@
 module github.com/42milez/go-oidc-server
 
-go 1.21.0
+go 1.21
 
 require (
 	ariga.io/atlas v0.14.0
