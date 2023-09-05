@@ -69,12 +69,10 @@ cleanup-go:
 ## fmt: Run formatter
 fmt:
 	@go fmt ./...
-	@swag fmt -d app
 
 ## gen: Run generator
 gen:
 	@go generate ./...
-	@swag init -d app -o app/docs
 
 ## lint: Run linters
 lint:

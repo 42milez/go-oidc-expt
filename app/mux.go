@@ -9,7 +9,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/api/cookie"
 	"github.com/42milez/go-oidc-server/app/api/session"
 	"github.com/42milez/go-oidc-server/app/config"
-	_ "github.com/42milez/go-oidc-server/app/docs"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
 	auth "github.com/42milez/go-oidc-server/app/pkg/xjwt"
@@ -75,19 +74,10 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  Route
 	// ==================================================
 
-	//  Swagger Endpoint
-	// --------------------------------------------------
-
-	//if cfg.IsDevelopment() {
-	//	mux.HandleFunc("/swagger/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8080/swagger/doc.json")))
-	//}
-
 	//  Health Check Endpoint
 	// --------------------------------------------------
 
 	checkHealthHdlr = api.NewCheckHealth(rc, dc)
-
-	//mux.HandleFunc("/health", CheckHealthHdlr.ServeHTTP)
 
 	//  User Endpoint
 	// --------------------------------------------------
@@ -103,12 +93,6 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	if err != nil {
 		return nil, nil, fmt.Errorf("%w: %w", xerr.FailedToInitialize, err)
 	}
-
-	//mux.Route(makePattern("user"), func(r chi.Router) {
-	//	r.Use(RestoreSession(ck, sess))
-	//	r.Post("/register", registerHdlr.ServeHTTP)
-	//	r.Post("/auth", authHdlr.ServeHTTP)
-	//})
 
 	//  OpenID Endpoint
 	// --------------------------------------------------

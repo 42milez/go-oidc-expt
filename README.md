@@ -73,14 +73,6 @@ The containers:
 ./script/atlas/migrate-apply.sh
 ```
 
-## API document
-
-API document is available on the following URL:
-
-```
-http://localhost:8080/swagger/index.html
-```
-
 ## Commands and scripts
 
 The commands described later require the following parameters:
