@@ -19,7 +19,7 @@ require (
 	github.com/rs/zerolog v1.30.0
 	github.com/sony/sonyflake v1.2.0
 	github.com/swaggo/http-swagger/v2 v2.0.2
-	github.com/swaggo/swag v1.16.1
+	github.com/swaggo/swag v1.16.2
 	golang.org/x/crypto v0.12.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 	golang.org/x/sync v0.3.0
