@@ -23,7 +23,7 @@ const nUserMin = 1
 const nAuthCodeMin = 1
 const nRedirectUriMin = 1
 
-func print(data any) {
+func printSeeds(data any) {
 	v := reflect.ValueOf(data)
 	for i := 0; i < v.Len(); i++ {
 		fmt.Printf("%+v\n", v.Index(i).Interface())
@@ -56,7 +56,7 @@ func insertUsers(ctx context.Context, client *ent.Client, nUser int) ([]*ent.Use
 		params[i].password = pwHash
 	}
 
-	print(params)
+	printSeeds(params)
 
 	builders := make([]*ent.UserCreate, len(params))
 
@@ -96,7 +96,7 @@ func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User,
 		params[i].userID = users[i%nUser].ID
 	}
 
-	print(params)
+	printSeeds(params)
 
 	builders := make([]*ent.AuthCodeCreate, len(params))
 
@@ -129,7 +129,7 @@ func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.Us
 		params[i].userID = users[i%nUser].ID
 	}
 
-	print(params)
+	printSeeds(params)
 
 	builders := make([]*ent.RedirectURICreate, len(params))
 
