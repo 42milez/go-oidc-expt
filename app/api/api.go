@@ -10,7 +10,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
-
 	"github.com/rs/zerolog/log"
 )
 

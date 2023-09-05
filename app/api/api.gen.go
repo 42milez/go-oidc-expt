@@ -35,86 +35,98 @@ type User struct {
 	Password string `json:"password"`
 }
 
+// --------------------------------------------------
+//  Interface
+// --------------------------------------------------
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 
-	// (GET /health)
+	// GET: /health
 	CheckHealth(w http.ResponseWriter, r *http.Request)
 
-	// (POST /user/authenticate)
+	// POST: /user/authenticate
 	AuthenticateUser(w http.ResponseWriter, r *http.Request)
 
-	// (POST /user/register)
+	// POST: /user/register
 	RegisterUser(w http.ResponseWriter, r *http.Request)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
-
 type Unimplemented struct{}
 
-// (GET /health)
+// GET: /health
 func (_ Unimplemented) CheckHealth(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// (POST /user/authenticate)
+// POST: /user/authenticate
 func (_ Unimplemented) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// (POST /user/register)
+// POST: /user/register
 func (_ Unimplemented) RegisterUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// --------------------------------------------------
+//  Middleware
+// --------------------------------------------------
+
 // ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler            ServerInterface
-	HandlerMiddlewares MiddlewareFuncMap
-	ErrorHandlerFunc   func(w http.ResponseWriter, r *http.Request, err error)
+	Handler          ServerInterface
+	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
-
-type MiddlewareFuncMap map[string][]func(http.Handler) http.Handler
 
 func NewMiddlewareFuncMap() *MiddlewareFuncMap {
 	return &MiddlewareFuncMap{
-		"CheckHealth":      nil,
-		"AuthenticateUser": nil,
-		"RegisterUser":     nil,
+		m: make(map[string][]func(http.Handler) http.Handler),
 	}
 }
 
+type MiddlewareFuncMap struct {
+	m map[string][]func(http.Handler) http.Handler
+}
+
+func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf []func(http.Handler) http.Handler) {
+	mfm.m["CheckHealth"] = mf
+}
+
+func (mfm *MiddlewareFuncMap) SetAuthenticateUserMW(mf []func(http.Handler) http.Handler) {
+	mfm.m["AuthenticateUser"] = mf
+}
+
+func (mfm *MiddlewareFuncMap) SetRegisterUserMW(mf []func(http.Handler) http.Handler) {
+	mfm.m["RegisterUser"] = mf
+}
+
 // CheckHealth operation middleware
-func (siw *ServerInterfaceWrapper) CheckHealth(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func (siw *ServerInterfaceWrapper) CheckHealth() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.CheckHealth(w, r)
-	}))
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
+		siw.Handler.CheckHealth(w, r.WithContext(ctx))
+	})
 }
 
 // AuthenticateUser operation middleware
-func (siw *ServerInterfaceWrapper) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func (siw *ServerInterfaceWrapper) AuthenticateUser() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.AuthenticateUser(w, r)
-	}))
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
+		siw.Handler.AuthenticateUser(w, r.WithContext(ctx))
+	})
 }
 
 // RegisterUser operation middleware
-func (siw *ServerInterfaceWrapper) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+func (siw *ServerInterfaceWrapper) RegisterUser() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
 
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.RegisterUser(w, r)
-	}))
-
-	handler.ServeHTTP(w, r.WithContext(ctx))
+		siw.Handler.RegisterUser(w, r.WithContext(ctx))
+	})
 }
 
 type UnescapedCookieParamError struct {
@@ -186,61 +198,54 @@ func (e *TooManyValuesForParamError) Error() string {
 	return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
 }
 
-// Handler creates http.Handler with routing matching OpenAPI spec.
-func Handler(si ServerInterface) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{})
-}
-
 type ChiServerOptions struct {
 	BaseURL          string
-	BaseRouter       chi.Router
-	Middlewares      MiddlewareFuncMap
+	BaseRouter       *chi.Mux
+	Middlewares      *MiddlewareFuncMap
 	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
 
-// HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
-func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{
-		BaseRouter: r,
-	})
-}
-
-func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{
-		BaseURL:    baseURL,
-		BaseRouter: r,
-	})
-}
-
-// HandlerWithOptions creates http.Handler with additional options
-func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handler {
+// MuxWithOptions creates http.Handler with additional options
+func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
 	r := options.BaseRouter
 
 	if r == nil {
 		r = chi.NewRouter()
 	}
+
 	if options.ErrorHandlerFunc == nil {
 		options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 	}
+
 	wrapper := ServerInterfaceWrapper{
-		Handler:            si,
-		HandlerMiddlewares: options.Middlewares,
-		ErrorHandlerFunc:   options.ErrorHandlerFunc,
+		Handler:          si,
+		ErrorHandlerFunc: options.ErrorHandlerFunc,
 	}
 
 	r.Group(func(r chi.Router) {
-		r.Use(options.Middlewares["CheckHealth"]...)
-		r.Get(options.BaseURL+"/health", wrapper.CheckHealth)
+		mw, ok := options.Middlewares.m["CheckHealth"]
+		if ok {
+			r.Use(mw...)
+		}
+		r.Get(options.BaseURL+"/health", wrapper.CheckHealth())
 	})
+
 	r.Group(func(r chi.Router) {
-		r.Use(options.Middlewares["AuthenticateUser"]...)
-		r.Post(options.BaseURL+"/user/authenticate", wrapper.AuthenticateUser)
+		mw, ok := options.Middlewares.m["AuthenticateUser"]
+		if ok {
+			r.Use(mw...)
+		}
+		r.Post(options.BaseURL+"/user/authenticate", wrapper.AuthenticateUser())
 	})
+
 	r.Group(func(r chi.Router) {
-		r.Use(options.Middlewares["RegisterUser"]...)
-		r.Post(options.BaseURL+"/user/register", wrapper.RegisterUser)
+		mw, ok := options.Middlewares.m["RegisterUser"]
+		if ok {
+			r.Use(mw...)
+		}
+		r.Post(options.BaseURL+"/user/register", wrapper.RegisterUser())
 	})
 
 	return r

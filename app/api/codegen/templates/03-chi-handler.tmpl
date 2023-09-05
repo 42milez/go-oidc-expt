@@ -1,51 +1,40 @@
-// Handler creates http.Handler with routing matching OpenAPI spec.
-func Handler(si ServerInterface) http.Handler {
-  return HandlerWithOptions(si, ChiServerOptions{})
-}
-
 type ChiServerOptions struct {
-    BaseURL string
-    BaseRouter chi.Router
-    Middlewares MiddlewareFuncMap
-    ErrorHandlerFunc   func(w http.ResponseWriter, r *http.Request, err error)
+    BaseURL          string
+    BaseRouter       *chi.Mux
+    Middlewares      *MiddlewareFuncMap
+    ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
 
-// HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
-func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
-    return HandlerWithOptions(si, ChiServerOptions {
-        BaseRouter: r,
-    })
-}
+// MuxWithOptions creates http.Handler with additional options
+func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
+    r := options.BaseRouter
 
-func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
-    return HandlerWithOptions(si, ChiServerOptions {
-        BaseURL: baseURL,
-        BaseRouter: r,
-    })
-}
-
-// HandlerWithOptions creates http.Handler with additional options
-func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handler {
-r := options.BaseRouter
-
-if r == nil {
-r = chi.NewRouter()
-}
-if options.ErrorHandlerFunc == nil {
-    options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
-        http.Error(w, err.Error(), http.StatusBadRequest)
+    if r == nil {
+        r = chi.NewRouter()
     }
-}
-{{if .}}wrapper := ServerInterfaceWrapper{
-Handler: si,
-HandlerMiddlewares: options.Middlewares,
-ErrorHandlerFunc: options.ErrorHandlerFunc,
-}
-{{end}}
-{{range .}}r.Group(func(r chi.Router) {
-r.Use(options.Middlewares["{{.OperationId}}"]...)
-r.{{.Method | lower | title }}(options.BaseURL+"{{.Path | swaggerUriToChiUri}}", wrapper.{{.OperationId}})
-})
-{{end}}
-return r
+
+    if options.ErrorHandlerFunc == nil {
+        options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+            http.Error(w, err.Error(), http.StatusBadRequest)
+        }
+    }
+
+    {{if .}}
+    wrapper := ServerInterfaceWrapper{
+        Handler:          si,
+        ErrorHandlerFunc: options.ErrorHandlerFunc,
+    }
+    {{end}}
+
+    {{range .}}
+    r.Group(func(r chi.Router) {
+        mw, ok := options.Middlewares.m["{{.OperationId}}"]
+        if ok {
+            r.Use(mw...)
+        }
+        r.{{.Method | lower | title}}(options.BaseURL+"{{.Path | swaggerUriToChiUri}}", wrapper.{{.OperationId}}())
+    })
+    {{end}}
+
+    return r
 }
