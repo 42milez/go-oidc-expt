@@ -3,7 +3,7 @@ module github.com/42milez/go-oidc-server
 go 1.20
 
 require (
-	ariga.io/atlas v0.13.3
+	ariga.io/atlas v0.14.0
 	entgo.io/ent v0.12.3
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/go-chi/chi/v5 v5.0.10
