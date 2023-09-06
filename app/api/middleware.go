@@ -14,7 +14,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/config"
 )
 
-func RestoreSession(ck *cookie.Cookie, sess *session.Session) func(next http.Handler) http.Handler {
+func RestoreSession(ck *cookie.Cookie, sess *session.Session) MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			sid, err := ck.Get(r, config.SessionIDCookieName)

@@ -1,4 +1,4 @@
-package auth
+package xjwt
 
 import (
 	_ "embed"

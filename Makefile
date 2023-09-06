@@ -2,7 +2,7 @@ PROJECT_NAME := go-oidc-server
 VERSION := $(shell git tag --sort=-v:refname | head -n 1)
 GITHUB_ID := 42milez
 
-.PHONY: help
+.PHONY: $(shell cat $(MAKEFILE_LIST) | awk -F':' '/^[a-z0-9_-]+:/ {print $$1}')
 
 help: Makefile
 	@sed -n "s/^##//p" $< | column -t -s ":" |  sed -e "s/^/ /"
@@ -10,9 +10,6 @@ help: Makefile
 # ==================================================
 #  Build
 # ==================================================
-
-.PHONY: build
-.PHONY: build-local
 
 ## build: Build a docker image to deploy
 build:
@@ -31,20 +28,6 @@ build-local:
 # ==================================================
 #  Utility
 # ==================================================
-
-.PHONY: benchmark
-.PHONY: cleanup-db
-.PHONY: cleanup-go
-.PHONY: debug
-.PHONY: fmt
-.PHONY: gen
-.PHONY: lint
-.PHONY: migrate-apply
-.PHONY: migrate-diff
-.PHONY: migrate-lint
-.PHONY: resolve
-.PHONY: seed
-.PHONY: test
 
 ## benchmark: Run all benchmarks
 benchmark:
@@ -112,11 +95,6 @@ test:
 #  Docker
 # ==================================================
 
-.PHONY: down
-.PHONY: start
-.PHONY: stop
-.PHONY: up
-
 ## up: Create and start containers
 up:
 	@docker-compose up -d
@@ -125,10 +103,6 @@ up:
 down:
 	@docker-compose down
 
-## destroy: Destroy all resources
-destroy:
-	@docker-compose down --volumes
-
 ## start: Start containers
 start:
 	@docker-compose start
@@ -136,3 +110,7 @@ start:
 ## stop: Stop containers
 stop:
 	@docker-compose stop
+
+## destroy: Destroy all resources
+destroy:
+	@docker-compose down --volumes

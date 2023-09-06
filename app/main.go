@@ -6,6 +6,8 @@ import (
 	"net"
 	"os"
 
+	"github.com/42milez/go-oidc-server/app/api"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
 
 	"github.com/42milez/go-oidc-server/app/config"
@@ -57,7 +59,7 @@ func run(ctx context.Context, cfg *config.Config) error {
 	log.Info().Msgf("listening on tcp://%s", lis.Addr().String())
 	log.Info().Msgf("application starting in %s (version: %s)\n", cfg.Env, version)
 
-	mux, cleanup, err := NewMux(ctx, cfg)
+	mux, cleanup, err := api.NewMux(ctx, cfg)
 
 	if err != nil {
 		log.Fatal().Stack().Err(err).Msg("failed to build routes")
