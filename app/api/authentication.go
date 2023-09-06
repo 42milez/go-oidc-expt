@@ -29,8 +29,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticate(ec *ent.Client, rc *redis.Client, cookie *cookie.Cookie, jwt *auth.JWT, sess *session.Session) (*Authenticate, error) {
-	return &Authenticate{
+func NewAuthenticateUser(ec *ent.Client, rc *redis.Client, cookie *cookie.Cookie, jwt *auth.JWT, sess *session.Session) (*AuthenticateUser, error) {
+	return &AuthenticateUser{
 		Service: &service.Authenticate{
 			Repo: &repository.User{
 				Clock: &xtime.RealClocker{},
@@ -44,7 +44,7 @@ func NewAuthenticate(ec *ent.Client, rc *redis.Client, cookie *cookie.Cookie, jw
 	}, nil
 }
 
-type Authenticate struct {
+type AuthenticateUser struct {
 	Service   Authenticator
 	Session   SessionCreator
 	Cookie    *cookie.Cookie
@@ -57,7 +57,7 @@ const sessionIDCookieName = config.SessionIDCookieName
 //
 //	@summary		authenticates user
 //	@description	This endpoint authenticates user.
-//	@id				Authenticate.ServeHTTP
+//	@id				AuthenticateUser.ServeHTTP
 //	@tags			User
 //	@accept			json
 //	@produce		json
@@ -67,7 +67,7 @@ const sessionIDCookieName = config.SessionIDCookieName
 //	@failure		401		{object}	model.ErrorResponse
 //	@failure		500		{object}	model.ErrorResponse
 //	@router			/v1/user/authenticate [post]
-func (p *Authenticate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var reqBody model.AuthenticateRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {

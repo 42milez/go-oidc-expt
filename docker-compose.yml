@@ -18,6 +18,7 @@ services:
       - type: bind
         source: .
         target: /workspace
+        read_only: true
       - type: volume
         source: app_build_cache
         target: /root/.cache/go-build
@@ -78,9 +79,11 @@ services:
       - type: bind
         source: ./docker/db/conf.d
         target: /etc/mysql/conf.d
+        read_only: true
       - type: bind
         source: ./docker/db/docker-entrypoint-initdb.d
         target: /docker-entrypoint-initdb.d
+        read_only: true
       - type: volume
         source: db_data
         target: /var/lib/mysql
@@ -98,14 +101,36 @@ services:
         condition: on-failure
         max_attempts: 3
   swagger-ui:
-    build:
-      context: docker/swagger-ui
     container_name: go-oidc-server-swagger-ui
-    image: go-oidc-server-swagger-ui:latest
+    image: 42milez/swagger-ui:v5.6.2
     networks:
       - dev
     ports:
-      - "8888:8080"
+      - "8880:8080"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: ./app/api/spec/spec.yml
+        target: /spec.yml
+        read_only: true
+    environment:
+      SWAGGER_JSON: /spec.yml
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 64M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+  swagger-editor:
+    container_name: go-oidc-server-swagger-editor
+    image: 42milez/swagger-editor:v4.10.2
+    networks:
+      - dev
+    ports:
+      - "8881:8080"
     stdin_open: true
     tty: true
     volumes:
@@ -113,7 +138,7 @@ services:
         source: ./app/api/spec/spec.yml
         target: /spec.yml
     environment:
-      SWAGGER_JSON: /spec.yml
+      SWAGGER_FILE: /spec.yml
     deploy:
       resources:
         limits:

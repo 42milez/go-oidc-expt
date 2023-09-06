@@ -28,8 +28,7 @@ func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
 
     {{range .}}
     r.Group(func(r chi.Router) {
-        mw, ok := options.Middlewares.m["{{.OperationId}}"]
-        if ok {
+        if mw := options.Middlewares.raw("{{.OperationId}}"); mw != nil {
             r.Use(mw...)
         }
         r.{{.Method | lower | title}}(options.BaseURL+"{{.Path | swaggerUriToChiUri}}", wrapper.{{.OperationId}}())

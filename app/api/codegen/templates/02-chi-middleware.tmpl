@@ -8,18 +8,32 @@ type ServerInterfaceWrapper struct {
     ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
 
+type MiddlewareFunc func(http.Handler) http.Handler
+
 func NewMiddlewareFuncMap() *MiddlewareFuncMap {
     return &MiddlewareFuncMap{
-        m: make(map[string][]func(http.Handler) http.Handler),
+        m: make(map[string][]MiddlewareFunc),
     }
 }
 
 type MiddlewareFuncMap struct {
-    m map[string][]func(http.Handler) http.Handler
+    m map[string][]MiddlewareFunc
+}
+
+func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler {
+    ret := make([]func(http.Handler) http.Handler, len(mfm.m[key]), len(mfm.m[key]))
+    v, ok := mfm.m[key]
+    if !ok {
+        return nil
+    }
+    for i, f := range v {
+        ret[i] = f
+    }
+    return ret
 }
 
 {{range .}}
-func (mfm *MiddlewareFuncMap) Set{{.OperationId}}MW(mf []func(http.Handler) http.Handler) {
+func (mfm *MiddlewareFuncMap) Set{{.OperationId}}MW(mf []MiddlewareFunc) {
     mfm.m["{{.OperationId}}"] = mf
 }
 {{end}}

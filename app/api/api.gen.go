@@ -80,25 +80,39 @@ type ServerInterfaceWrapper struct {
 	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
 
+type MiddlewareFunc func(http.Handler) http.Handler
+
 func NewMiddlewareFuncMap() *MiddlewareFuncMap {
 	return &MiddlewareFuncMap{
-		m: make(map[string][]func(http.Handler) http.Handler),
+		m: make(map[string][]MiddlewareFunc),
 	}
 }
 
 type MiddlewareFuncMap struct {
-	m map[string][]func(http.Handler) http.Handler
+	m map[string][]MiddlewareFunc
 }
 
-func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf []func(http.Handler) http.Handler) {
+func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler {
+	ret := make([]func(http.Handler) http.Handler, len(mfm.m[key]), len(mfm.m[key]))
+	v, ok := mfm.m[key]
+	if !ok {
+		return nil
+	}
+	for i, f := range v {
+		ret[i] = f
+	}
+	return ret
+}
+
+func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf []MiddlewareFunc) {
 	mfm.m["CheckHealth"] = mf
 }
 
-func (mfm *MiddlewareFuncMap) SetAuthenticateUserMW(mf []func(http.Handler) http.Handler) {
+func (mfm *MiddlewareFuncMap) SetAuthenticateUserMW(mf []MiddlewareFunc) {
 	mfm.m["AuthenticateUser"] = mf
 }
 
-func (mfm *MiddlewareFuncMap) SetRegisterUserMW(mf []func(http.Handler) http.Handler) {
+func (mfm *MiddlewareFuncMap) SetRegisterUserMW(mf []MiddlewareFunc) {
 	mfm.m["RegisterUser"] = mf
 }
 
@@ -225,24 +239,21 @@ func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
 	}
 
 	r.Group(func(r chi.Router) {
-		mw, ok := options.Middlewares.m["CheckHealth"]
-		if ok {
+		if mw := options.Middlewares.raw("CheckHealth"); mw != nil {
 			r.Use(mw...)
 		}
 		r.Get(options.BaseURL+"/health", wrapper.CheckHealth())
 	})
 
 	r.Group(func(r chi.Router) {
-		mw, ok := options.Middlewares.m["AuthenticateUser"]
-		if ok {
+		if mw := options.Middlewares.raw("AuthenticateUser"); mw != nil {
 			r.Use(mw...)
 		}
 		r.Post(options.BaseURL+"/user/authenticate", wrapper.AuthenticateUser())
 	})
 
 	r.Group(func(r chi.Router) {
-		mw, ok := options.Middlewares.m["RegisterUser"]
-		if ok {
+		if mw := options.Middlewares.raw("RegisterUser"); mw != nil {
 			r.Use(mw...)
 		}
 		r.Post(options.BaseURL+"/user/register", wrapper.RegisterUser())
