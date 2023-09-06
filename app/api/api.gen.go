@@ -39,8 +39,8 @@ type User struct {
 //  Interface
 // --------------------------------------------------
 
-// ServerInterface represents all server handlers.
-type ServerInterface interface {
+// HandlerInterface represents all server handlers.
+type HandlerInterface interface {
 
 	// GET: /health
 	CheckHealth(w http.ResponseWriter, r *http.Request)
@@ -52,31 +52,13 @@ type ServerInterface interface {
 	RegisterUser(w http.ResponseWriter, r *http.Request)
 }
 
-// Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
-type Unimplemented struct{}
-
-// GET: /health
-func (_ Unimplemented) CheckHealth(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// POST: /user/authenticate
-func (_ Unimplemented) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// POST: /user/register
-func (_ Unimplemented) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
 // --------------------------------------------------
 //  Middleware
 // --------------------------------------------------
 
-// ServerInterfaceWrapper converts contexts to parameters.
-type ServerInterfaceWrapper struct {
-	Handler          ServerInterface
+// HandlerInterfaceWrapper converts contexts to parameters.
+type HandlerInterfaceWrapper struct {
+	Handler          HandlerInterface
 	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
 
@@ -117,7 +99,7 @@ func (mfm *MiddlewareFuncMap) SetRegisterUserMW(mf []MiddlewareFunc) {
 }
 
 // CheckHealth operation middleware
-func (siw *ServerInterfaceWrapper) CheckHealth() http.HandlerFunc {
+func (siw *HandlerInterfaceWrapper) CheckHealth() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -126,7 +108,7 @@ func (siw *ServerInterfaceWrapper) CheckHealth() http.HandlerFunc {
 }
 
 // AuthenticateUser operation middleware
-func (siw *ServerInterfaceWrapper) AuthenticateUser() http.HandlerFunc {
+func (siw *HandlerInterfaceWrapper) AuthenticateUser() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -135,7 +117,7 @@ func (siw *ServerInterfaceWrapper) AuthenticateUser() http.HandlerFunc {
 }
 
 // RegisterUser operation middleware
-func (siw *ServerInterfaceWrapper) RegisterUser() http.HandlerFunc {
+func (siw *HandlerInterfaceWrapper) RegisterUser() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
@@ -220,7 +202,7 @@ type ChiServerOptions struct {
 }
 
 // MuxWithOptions creates http.Handler with additional options
-func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
+func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 	r := options.BaseRouter
 
 	if r == nil {
@@ -233,7 +215,7 @@ func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
 		}
 	}
 
-	wrapper := ServerInterfaceWrapper{
+	wrapper := HandlerInterfaceWrapper{
 		Handler:          si,
 		ErrorHandlerFunc: options.ErrorHandlerFunc,
 	}

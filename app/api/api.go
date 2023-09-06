@@ -26,9 +26,23 @@ const (
 	apiVersionCurrent = apiVersionV1
 )
 
-var checkHealthHdlr *CheckHealth
-var authenticateUserHdlr *AuthenticateUser
-var registerUserHdlr *RegisterUser
+var checkHealth *CheckHealth
+var authUser *AuthenticateUser
+var regUser *RegisterUser
+
+type HandlerImpl struct{}
+
+func (p *HandlerImpl) CheckHealth(w http.ResponseWriter, r *http.Request) {
+	checkHealth.ServeHTTP(w, r)
+}
+
+func (p *HandlerImpl) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
+	authUser.ServeHTTP(w, r)
+}
+
+func (p *HandlerImpl) RegisterUser(w http.ResponseWriter, r *http.Request) {
+	regUser.ServeHTTP(w, r)
+}
 
 func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
 	var dc *sql.DB
@@ -57,13 +71,13 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, nil, err
 	}
 
-	checkHealthHdlr = NewCheckHealth(rc, dc)
+	checkHealth = NewCheckHealth(rc, dc)
 
-	if registerUserHdlr, err = NewRegisterUser(ec, xid.UID, sess); err != nil {
+	if regUser, err = NewRegisterUser(ec, xid.UID, sess); err != nil {
 		return nil, nil, err
 	}
 
-	if authenticateUserHdlr, err = NewAuthenticateUser(ec, rc, ck, jwt, sess); err != nil {
+	if authUser, err = NewAuthenticateUser(ec, rc, ck, jwt, sess); err != nil {
 		return nil, nil, err
 	}
 
@@ -75,7 +89,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		RestoreSession(ck, sess),
 	})
 
-	mux := MuxWithOptions(&ServerInterfaceImpl{}, &ChiServerOptions{
+	mux := MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseURL:     fmt.Sprintf("/%s/%s", config.AppName, apiVersionCurrent),
 		BaseRouter:  chi.NewRouter(),
 		Middlewares: mw,
@@ -85,18 +99,4 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		xutil.CloseConnection(ec)
 		xutil.CloseConnection(rc)
 	}, nil
-}
-
-type ServerInterfaceImpl struct{}
-
-func (p *ServerInterfaceImpl) CheckHealth(w http.ResponseWriter, r *http.Request) {
-	checkHealthHdlr.ServeHTTP(w, r)
-}
-
-func (p *ServerInterfaceImpl) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
-	authenticateUserHdlr.ServeHTTP(w, r)
-}
-
-func (p *ServerInterfaceImpl) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	registerUserHdlr.ServeHTTP(w, r)
 }

@@ -6,7 +6,7 @@ type ChiServerOptions struct {
 }
 
 // MuxWithOptions creates http.Handler with additional options
-func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
+func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
     r := options.BaseRouter
 
     if r == nil {
@@ -20,7 +20,7 @@ func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
     }
 
     {{if .}}
-    wrapper := ServerInterfaceWrapper{
+    wrapper := HandlerInterfaceWrapper{
         Handler:          si,
         ErrorHandlerFunc: options.ErrorHandlerFunc,
     }
