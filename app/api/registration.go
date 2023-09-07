@@ -39,34 +39,18 @@ type RegisterUser struct {
 	validator *validator.Validate
 }
 
-// ServeHTTP registers user
-//
-//	@summary		registers user
-//	@description	This endpoint registers user.
-//	@id				Register.ServeHTTP
-//	@tags			User
-//	@accept			json
-//	@produce		json
-//	@param			user	body		model.RegisterUserRequest	true	"user credential"
-//	@success		200		{object}	model.RegisterUserResponse
-//	@failure		400		{object}	model.ErrorResponse
-//	@failure		401		{object}	model.ErrorResponse
-//	@failure		500		{object}	model.ErrorResponse
-//	@router			/v1/user/register [post]
 func (p *RegisterUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var req model.RegisterUserRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+		RespondJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}
 
 	if err := p.validator.Struct(req); err != nil {
 		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.AuthenticationFailed,
+			Error: xerr.InvalidRequest,
 		})
 		return
 	}

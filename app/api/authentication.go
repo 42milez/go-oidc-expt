@@ -53,33 +53,19 @@ type AuthenticateUser struct {
 
 const sessionIDCookieName = config.SessionIDCookieName
 
-// ServeHTTP authenticates user
-//
-//	@summary		authenticates user
-//	@description	This endpoint authenticates user.
-//	@id				AuthenticateUser.ServeHTTP
-//	@tags			User
-//	@accept			json
-//	@produce		json
-//	@param			user	body		model.AuthenticateRequest	true	"user credential"
-//	@success		200		{object}	model.AuthenticateResponse
-//	@failure		400		{object}	model.ErrorResponse
-//	@failure		401		{object}	model.ErrorResponse
-//	@failure		500		{object}	model.ErrorResponse
-//	@router			/v1/user/authenticate [post]
 func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var reqBody model.AuthenticateRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		log.Error().Err(err).Msg(errFailedToDecodeRequestBody)
-		ResponseJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}
 
 	if err := p.validator.Struct(reqBody); err != nil {
 		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.AuthenticationFailed,
+			Error: xerr.InvalidRequest,
 		})
 		return
 	}
@@ -98,7 +84,7 @@ func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		} else {
-			ResponseJson500(w, xerr.UnexpectedErrorOccurred)
+			RespondJson500(w, xerr.UnexpectedErrorOccurred)
 			return
 		}
 	}
@@ -108,12 +94,12 @@ func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		ResponseJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}
 
 	if err = p.Cookie.Set(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
-		ResponseJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}
 

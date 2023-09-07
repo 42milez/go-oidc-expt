@@ -33,20 +33,6 @@ type AuthorizeGet struct {
 	validator *validator.Validate
 }
 
-// ServeHTTP authorizes a request that asking to access the resources belonging to a user
-//
-//	@summary		TBD
-//	@description	TBD
-//	@id				AuthorizeGet.ServeHTTP
-//	@tags			OIDC
-//	@accept			json
-//	@produce		json
-//	@param			name		query		string	true	"TBD"
-//	@param			password	query		string	true	"TBD"
-//	@success		200			{string}	string
-//	@failure		500			{object}	model.ErrorResponse
-//	@failure		500			{object}	model.ErrorResponse
-//	@router			/v1/authorize [get]
 func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
 	q := &model.AuthorizeRequest{}
@@ -101,20 +87,6 @@ type AuthorizePost struct {
 	Validator *validator.Validate
 }
 
-// ServeHTTP authorizes a request that asking to access the resources belonging to a user
-//
-//	@summary		TBD
-//	@description	TBD
-//	@id				AuthorizePost.ServeHTTP
-//	@tags			OIDC
-//	@accept			json
-//	@produce		json
-//	@param			name		formData	string	true	"TBD"
-//	@param			password	formData	string	true	"TBD"
-//	@success		200			{string}	string
-//	@failure		500			{object}	model.ErrorResponse
-//	@failure		500			{object}	model.ErrorResponse
-//	@router			/v1/authorize [post]
 func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// NOT IMPLEMENTED YET
 }

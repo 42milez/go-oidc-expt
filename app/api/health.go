@@ -31,17 +31,6 @@ type CheckHealth struct {
 	Service HealthChecker
 }
 
-// ServeHTTP checks service condition
-//
-//	@summary		checks service condition
-//	@description	This endpoint checks service condition
-//	@id				CheckHealth.ServeHTTP
-//	@tags			HealthCheck
-//	@accept			json
-//	@produce		json
-//	@success		200	{object}	model.CheckHealthResponse
-//	@failure		503	{object}	model.CheckHealthResponse
-//	@router			/health [get]
 func (p *CheckHealth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	errResp := func() {
 		RespondJSON(w, http.StatusInternalServerError, &model.CheckHealthResponse{

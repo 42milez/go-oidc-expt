@@ -2,8 +2,9 @@ package api
 
 import (
 	"errors"
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/api/cookie"
 	"github.com/42milez/go-oidc-server/app/api/session"
@@ -26,7 +27,7 @@ func RestoreSession(ck *cookie.Cookie, sess *session.Session) MiddlewareFunc {
 			req, err := sess.Restore(r, typedef.SessionID(sid))
 
 			if err != nil {
-				ResponseJson500(w, xerr.UnexpectedErrorOccurred)
+				RespondJson500(w, xerr.UnexpectedErrorOccurred)
 				return
 			}
 

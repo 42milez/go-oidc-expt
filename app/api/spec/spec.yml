@@ -72,6 +72,25 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/UserName'
                 - $ref: '#/components/schemas/UserPassword'
+      responses:
+        '200':
+          description: Successfully registered.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Registration failed due to invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Registration failed due to unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /authenticate:
     post:
       description: Authenticates a user.
@@ -87,6 +106,31 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/UserName'
                 - $ref: '#/components/schemas/UserPassword'
+      responses:
+        '200':
+          description: Successfully authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Authentication failed due to invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Authentication failed due to invalid username or password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Authentication failed due to unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     Health:
@@ -128,3 +172,17 @@ components:
         password:
           type: string
           example: 'username0'
+    ErrorResponse:
+      description: 'represents error'
+      type: object
+      required:
+        - status
+        - detail
+      properties:
+        status:
+          type: integer
+          format: uint64
+          example: 500
+        detail:
+          type: string
+          example: 'unexpected error occurred'
