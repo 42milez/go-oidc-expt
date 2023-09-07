@@ -18,11 +18,17 @@ servers:
     description: Staging Environment
   - url: https://idp.example.com/v1
     description: Production Environment
+tags:
+  - name: authentication
+  - name: healthcheck
+  - name: registration
 paths:
   /health:
     get:
       description: Check the health of service.
       operationId: checkHealth
+      tags:
+        - healthcheck
       responses:
         '200':
           description: service operational
@@ -40,24 +46,30 @@ paths:
     post:
       description: Creates a new user in the database.
       operationId: registerUser
+      tags:
+        - registration
       requestBody:
         description: User to register onto the database
         required: true
         content:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/User'
-              - $ref: '#/components/schemas/NewUser'
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/User'
+                - $ref: '#/components/schemas/NewUser'
   /user/authenticate:
     post:
       description: Authenticates a user.
       operationId: authenticateUser
+      tags:
+        - authentication
       requestBody:
         description: User to authenticate
         required: true
         content:
-          schema:
-            $ref: '#/components/schemas/NewUser'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
 components:
   schemas:
     Health:

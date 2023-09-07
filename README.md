@@ -15,7 +15,14 @@ TBD ( Use the image upload to Docker Hub )
 ### Install required packages
 
 ```
-brew install ariga/tap/atlas docker-buildx docker-compose golangci-lint lima openssl@3
+brew install \
+  ariga/tap/atlas \
+  daveshanley/vacuum/vacuum
+  docker-buildx \
+  docker-compose \
+  golangci-lint \
+  lima \
+  openssl@3 \
 ```
 
 ### Enable docker-buildx
@@ -134,6 +141,8 @@ make seed
   - OpenID Connect Core 1.0 incorporating errata set 1
     - [English](https://openid.net/specs/openid-connect-core-1_0.html)
     - [Japanese](https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html)
+- OpenAPI
+  - [OpenAPI.Tools](https://openapi.tools/)
 - OTP
   - [RFC4226: An HMAC-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc4226)
   - [RFC6238: Time-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc6238)
