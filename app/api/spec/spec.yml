@@ -12,23 +12,38 @@ info:
     name: MIT
     url: TBD
 servers:
-  - url: http://localhost:8080/v1
+  - url: http://localhost:8080/{basePath}
     description: Development Environment
-  - url: https://staging.idp.example.com/v1
+    variables:
+      basePath:
+        enum:
+          - 'v1'
+        default: 'v1'
+  - url: https://staging.idp.example.com/{basePath}
     description: Staging Environment
-  - url: https://idp.example.com/v1
+    variables:
+      basePath:
+        enum:
+          - 'v1'
+        default: 'v1'
+  - url: https://idp.example.com/{basePath}
     description: Production Environment
+    variables:
+      basePath:
+        enum:
+          - 'v1'
+        default: 'v1'
 tags:
-  - name: authentication
-  - name: healthcheck
-  - name: registration
+  - name: HealthCheck
+  - name: Registration
+  - name: Authentication
 paths:
   /health:
     get:
       description: Check the health of service.
       operationId: checkHealth
       tags:
-        - healthcheck
+        - HealthCheck
       responses:
         '200':
           description: service operational
@@ -42,12 +57,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
-  /user/register:
+  /register:
     post:
       description: Creates a new user in the database.
       operationId: registerUser
       tags:
-        - registration
+        - Registration
       requestBody:
         description: User to register onto the database
         required: true
@@ -55,33 +70,38 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/User'
-                - $ref: '#/components/schemas/NewUser'
-  /user/authenticate:
+                - $ref: '#/components/schemas/UserName'
+                - $ref: '#/components/schemas/UserPassword'
+  /authenticate:
     post:
       description: Authenticates a user.
       operationId: authenticateUser
       tags:
-        - authentication
+        - Authentication
       requestBody:
         description: User to authenticate
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewUser'
+              allOf:
+                - $ref: '#/components/schemas/UserName'
+                - $ref: '#/components/schemas/UserPassword'
 components:
   schemas:
     Health:
+      description: represents the status of service.
       type: object
       required:
         - status
       properties:
         status:
-          type: string
+          type: integer
+          format: uint64
+          example: 200
     User:
+      description: represents user data.
       allOf:
-        - $ref: '#/components/schemas/NewUser'
         - type: object
           required:
             - id
@@ -89,13 +109,22 @@ components:
             id:
               type: integer
               format: uint64
-    NewUser:
+        - $ref: '#/components/schemas/UserName'
+    UserName:
+      description: represents a part of user data.
       type: object
       required:
         - name
-        - password
       properties:
         name:
           type: string
+          example: 'username0'
+    UserPassword:
+      description: 'represents the password of user'
+      type: object
+      required:
+        - password
+      properties:
         password:
           type: string
+          example: 'username0'

@@ -17,23 +17,44 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// Health defines model for Health.
+// Health represents the status of service.
 type Health struct {
-	Status string `json:"status"`
-}
-
-// NewUser defines model for NewUser.
-type NewUser struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	Status uint64 `json:"status"`
 }
 
 // User defines model for User.
 type User struct {
-	Id       uint64 `json:"id"`
+	Id   uint64 `json:"id"`
+	Name string `json:"name"`
+}
+
+// UserName represents a part of user data.
+type UserName struct {
+	Name string `json:"name"`
+}
+
+// UserPassword represents the password of user
+type UserPassword struct {
+	Password string `json:"password"`
+}
+
+// AuthenticateUserJSONBody defines parameters for AuthenticateUser.
+type AuthenticateUserJSONBody struct {
 	Name     string `json:"name"`
 	Password string `json:"password"`
 }
+
+// RegisterUserJSONBody defines parameters for RegisterUser.
+type RegisterUserJSONBody struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+// AuthenticateUserJSONRequestBody defines body for AuthenticateUser for application/json ContentType.
+type AuthenticateUserJSONRequestBody AuthenticateUserJSONBody
+
+// RegisterUserJSONRequestBody defines body for RegisterUser for application/json ContentType.
+type RegisterUserJSONRequestBody RegisterUserJSONBody
 
 // --------------------------------------------------
 //  Interface
@@ -42,13 +63,13 @@ type User struct {
 // HandlerInterface represents all server handlers.
 type HandlerInterface interface {
 
+	// POST: /authenticate
+	AuthenticateUser(w http.ResponseWriter, r *http.Request)
+
 	// GET: /health
 	CheckHealth(w http.ResponseWriter, r *http.Request)
 
-	// POST: /user/authenticate
-	AuthenticateUser(w http.ResponseWriter, r *http.Request)
-
-	// POST: /user/register
+	// POST: /register
 	RegisterUser(w http.ResponseWriter, r *http.Request)
 }
 
@@ -86,25 +107,16 @@ func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler 
 	return ret
 }
 
-func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf []MiddlewareFunc) {
-	mfm.m["CheckHealth"] = mf
-}
-
 func (mfm *MiddlewareFuncMap) SetAuthenticateUserMW(mf []MiddlewareFunc) {
 	mfm.m["AuthenticateUser"] = mf
 }
 
-func (mfm *MiddlewareFuncMap) SetRegisterUserMW(mf []MiddlewareFunc) {
-	mfm.m["RegisterUser"] = mf
+func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf []MiddlewareFunc) {
+	mfm.m["CheckHealth"] = mf
 }
 
-// CheckHealth operation middleware
-func (siw *HandlerInterfaceWrapper) CheckHealth() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
-		siw.Handler.CheckHealth(w, r.WithContext(ctx))
-	})
+func (mfm *MiddlewareFuncMap) SetRegisterUserMW(mf []MiddlewareFunc) {
+	mfm.m["RegisterUser"] = mf
 }
 
 // AuthenticateUser operation middleware
@@ -113,6 +125,15 @@ func (siw *HandlerInterfaceWrapper) AuthenticateUser() http.HandlerFunc {
 		ctx := r.Context()
 
 		siw.Handler.AuthenticateUser(w, r.WithContext(ctx))
+	})
+}
+
+// CheckHealth operation middleware
+func (siw *HandlerInterfaceWrapper) CheckHealth() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		siw.Handler.CheckHealth(w, r.WithContext(ctx))
 	})
 }
 
@@ -221,6 +242,13 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 	}
 
 	r.Group(func(r chi.Router) {
+		if mw := options.Middlewares.raw("AuthenticateUser"); mw != nil {
+			r.Use(mw...)
+		}
+		r.Post(options.BaseURL+"/authenticate", wrapper.AuthenticateUser())
+	})
+
+	r.Group(func(r chi.Router) {
 		if mw := options.Middlewares.raw("CheckHealth"); mw != nil {
 			r.Use(mw...)
 		}
@@ -228,17 +256,10 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("AuthenticateUser"); mw != nil {
-			r.Use(mw...)
-		}
-		r.Post(options.BaseURL+"/user/authenticate", wrapper.AuthenticateUser())
-	})
-
-	r.Group(func(r chi.Router) {
 		if mw := options.Middlewares.raw("RegisterUser"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Post(options.BaseURL+"/user/register", wrapper.RegisterUser())
+		r.Post(options.BaseURL+"/register", wrapper.RegisterUser())
 	})
 
 	return r
@@ -247,18 +268,20 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7xUTW/bOhD8K8S+d1RE530UgU7NR9H60CZo0lPgA0OtLaYUyZIrO0Gg/16QkhzLUVL3",
-	"0tuCmJ2dWe7uE0hbO2vQUIDiCYKssBYp/IRCUxUj561DTwo7CAlqUkSPDqGAQF6ZFbRtBh5/NMpjCcXt",
-	"gFtkA87e3aMkaDP4gptvAf1LbiNqnGDOwIkQNtaXvy6bKHYSpuoPxYXWl0sobp/gb49LKOAv/twO3veC",
-	"D2rbbF+uSnqW1teCoIBGGXr3H2wLKkO4iol7EtWUqkUbYcosbeSU1pCQFEOshdLRb+Oc9fQeH0TtNObS",
-	"1pD1HYPTqzm77gCQQeNjQkXkQsH5TgLvSXjsQolBeuVIWRMZDMMHh17VaEhopmJOiiOA2SW7dGjmF+zc",
-	"GoOS2EZRxT5ayEAriSbg8wfC5/nNVsbN2UWsRujrcLm8Rr9WEnt5e+oShscGKtIRs7JHVpXyKKBfo4cM",
-	"1uhDp/c4n+WzSGwdGuEUFPBvfpzP0t9Tlf6HV9sZXmFq5tjzeYXyO6MKWQeMLkMnMIfE7JP7eTmA+6WI",
-	"/xmcNaGbg39ms+HT0KQ6wjmtZErm9yEWG3YrRm9NW18hTcNYba+MbWUJHf3//0eLG0tjAQnLm4Cei4Yq",
-	"NBRLp2FwNkw0/XQHFZhgMfVlt3dRafu6FcJAZ7Z83DN8mLntHr8wF58ZWTYysLuz5BtsR59uGq2fnXtc",
-	"qUD9RZt0fe6x92twkzwzZdLolYLEnQgTE/e1Z/0N/4ddtO05O6hdi9cbNvhm1pAduTmofW0G3WaHJHlc",
-	"4wLXqK2LJ4h9MGvlrYnx6LwVnGsrha5soOJkdjLj6+NkbEx1TWKlzOpVmnglQ4fJVeny3Zs0SXjlbdnI",
-	"dBjf4pziWrQ/AwAA//9rn2b3dAcAAA==",
+	"H4sIAAAAAAAC/9RVTY/bNhD9K8S0R0XSph8IdOpmt2h9aNfoJqfAB640lphSJEuOvAkM/fdiKFmWbO82",
+	"WyAFejEI+c3M45s3wz2UtnXWoKEAxR5C2WAr4/FXlJoaPlUYSq8cKWugAI/OY+AAQQ2KQJK6IOxWBPQ7",
+	"VWIKCThvHXpSOCSNED7hJ9k6jVC8zvMEtta3kqCAThn68XtIgD47hAKUIazRQ98n4PGvTnmsoPhwSLSZ",
+	"gPbhI5YEfQLvA3quILW+20LxYX/CQVX8++KKqrpUbQ/fetxCAd9kR/myUbuMqfwuW4R+kzytXRfQi0qS",
+	"TA/0Y8xzckvhpCeWehZ8KrYZs0xSA4P5a368biCvTH122xj7lLprGcKj9dU/OsKNwAPRM4pulunf0Jzi",
+	"z6kyVJmt5dSlNSRLilVaqTQn7Jyznn4aq6albSEZJYPr9UrcDwBIoPMc0BC5UGTZLCAbk2QszFKIayPw",
+	"k0OvWjQktVAcE88MYD3uHJrVrbixxmBJ4lFRI36xkIBWJZqAxw7Cb6t3E413b2+5GqFvw932fhi0kd4J",
+	"u4jJWENFUdfavrKqKl/xeMZm7NCHge9Vmqc5J7YOjXQKCvguvUq5A05SE5uVyY4aNKRKSZGes4HOPXA9",
+	"Q7FTuZtsTu57vP2qOkG9H6zBjcVAb231+dA0NLGAdE4zUlmTfQxc5bCfloP+ZbP4BUM7ObzfRCMtb8gI",
+	"QVYs9Jgbk3yH0anBWRPY6qbTOgGSdWDbzi7PGTdcImumLVvjBVlvGiz/jFM1AE/27FLdCB7X9oLHHl7n",
+	"+YvUfU6qscIFiUZmYqIlNbvrh/+0uLG0JNAfWzBER51G/T3WKtDwdlx29o3H0dMGH4fNq0xsCS/gBxku",
+	"dOKPMev/1eMHVYQ1ZBd3fZHjBxn85Pc+gWELhXipZe1b3KG2jtel+NnslLeGz4tVXGSZtqXUjQ1UvMnf",
+	"5NmeSa0lNT1vNumVfNCD5Q9/DB3dyk7zw7+7ggTQdC3z210NrE6p3JOslamfpMEvQhgwqapcOt+/X4XQ",
+	"2tuqK+Mj8hynr8FlM7VzepnmU8Rcx8+Lbs++n+y9ftP/HQAA//8+XkgPdgoAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

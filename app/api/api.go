@@ -90,7 +90,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	})
 
 	mux := MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
-		BaseURL:     fmt.Sprintf("/%s/%s", config.AppName, apiVersionCurrent),
+		BaseURL:     fmt.Sprintf("/%s", apiVersionCurrent),
 		BaseRouter:  chi.NewRouter(),
 		Middlewares: mw,
 	})

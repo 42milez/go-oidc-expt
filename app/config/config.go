@@ -41,7 +41,6 @@ func New() (*Config, error) {
 // Application
 
 const (
-	AppName    = "idp"
 	ConsentURL = "/consent"
 )
 

@@ -13,7 +13,7 @@ help: Makefile
 
 ## build: Build a docker image to deploy
 build:
-	@docker buildx build \
+	@docker build \
 		--no-cache \
 		-f docker/app/Dockerfile \
 		-t ${GITHUB_ID}/${PROJECT_NAME}:${VERSION} \
@@ -93,6 +93,22 @@ test:
 	@go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`
 
 # ==================================================
+#  Lima
+# ==================================================
+
+lc-create:
+	@limactl create --tty=false --name=$(PROJECT_NAME) lima.yml
+
+lc-start:
+	@limactl start $(PROJECT_NAME)
+
+lc-stop:
+	@limactl stop $(PROJECT_NAME)
+
+lc-delete:
+	@limactl delete $(PROJECT_NAME)
+
+# ==================================================
 #  Docker
 # ==================================================
 
@@ -112,6 +128,6 @@ start:
 stop:
 	@docker-compose stop
 
-## destroy: Destroy all resources
+## destroy: Delete all resources
 destroy:
 	@docker-compose down --volumes
