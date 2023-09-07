@@ -85,12 +85,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 400
+                detail: invalid request
         '500':
           description: Registration failed due to unexpected error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 500
+                detail: unexpected error occurred
   /authenticate:
     post:
       description: Authenticates a user.
@@ -119,18 +125,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 400
+                detail: invalid request
         '401':
           description: Authentication failed due to invalid username or password.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 401
+                detail: invalid username or password
         '500':
           description: Authentication failed due to unexpected error.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 500
+                detail: unexpected error occurred
 components:
   schemas:
     Health:
@@ -182,7 +197,7 @@ components:
         status:
           type: integer
           format: uint64
-          example: 500
+          example: 0
         detail:
           type: string
-          example: 'unexpected error occurred'
+          example: ''
