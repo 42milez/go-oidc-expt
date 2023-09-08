@@ -53,7 +53,7 @@ type AuthenticateUser struct {
 
 const sessionIDCookieName = config.SessionIDCookieName
 
-func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request, params *AuthenticateUserParams) {
 	var reqBody model.AuthenticateRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {

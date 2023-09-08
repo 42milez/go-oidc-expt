@@ -88,6 +88,12 @@ paths:
       operationId: authenticateUser
       tags:
         - Authentication
+      parameters:
+        - in: cookie
+          description: Session ID
+          name: sid
+          schema:
+            type: string
       requestBody:
         description: User to authenticate
         required: true

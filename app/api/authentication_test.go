@@ -115,7 +115,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				Cookie:    cookie.NewCookie(cookieHashKey, cookieBlockKey),
 				validator: validator.New(),
 			}
-			sut.ServeHTTP(w, r)
+			sut.ServeHTTP(w, r, nil)
 
 			resp := w.Result()
 

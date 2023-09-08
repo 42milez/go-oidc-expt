@@ -3,8 +3,9 @@ package api
 import (
 	"context"
 	"database/sql"
-	chimw "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"net/http"
+
+	chimw "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 
 	"github.com/42milez/go-oidc-server/app/api/cookie"
 	"github.com/42milez/go-oidc-server/app/api/session"
@@ -31,8 +32,8 @@ func (p *HandlerImpl) CheckHealth(w http.ResponseWriter, r *http.Request) {
 	checkHealth.ServeHTTP(w, r)
 }
 
-func (p *HandlerImpl) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
-	authUser.ServeHTTP(w, r)
+func (p *HandlerImpl) AuthenticateUser(w http.ResponseWriter, r *http.Request, params *AuthenticateUserParams) {
+	authUser.ServeHTTP(w, r, params)
 }
 
 func (p *HandlerImpl) RegisterUser(w http.ResponseWriter, r *http.Request) {

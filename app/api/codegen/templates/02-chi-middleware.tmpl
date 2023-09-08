@@ -77,7 +77,7 @@ func (siw *HandlerInterfaceWrapper) {{$opid}}() http.HandlerFunc {
 
         {{if .RequiresParamObject}}
         // Parameter object where we will unmarshal all parameters from the context
-        var params {{.OperationId}}Params
+        params := &{{.OperationId}}Params{}
 
         {{range $paramIdx, $param := .QueryParams}}
         {{if (or (or .Required .IsPassThrough) (or .IsJson .IsStyled))}}
