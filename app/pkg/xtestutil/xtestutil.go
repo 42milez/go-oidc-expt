@@ -2,10 +2,8 @@ package xtestutil
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -13,16 +11,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/datastore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 
 	"github.com/google/go-cmp/cmp"
-
-	"entgo.io/ent/dialect"
-	entsql "entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/redis/go-redis/v9"
 )
 
 //  Assertion
@@ -176,29 +172,35 @@ const TestDBUser = "idp_test"
 const TestDBPassword = "idp_test"
 const TestDBName = "idp_test"
 
-func NewEntClient(t *testing.T) (*ent.Client, *sql.DB) {
-	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", TestDBUser, TestDBPassword, TestDBHost, TestDBPort,
-		TestDBName)
+func NewDatabase(t *testing.T) *datastore.Database {
+	t.Helper()
 
-	db, err := sql.Open(dialect.MySQL, dataSrc)
-	if err != nil {
-		t.Fatalf("failed to open database: %+v", err)
+	var cfg *config.Config
+	var err error
+
+	if cfg, err = config.New(); err != nil {
+		t.Fatal(err)
 	}
 
-	drv := entsql.OpenDB(dialect.MySQL, db)
-	entClient := ent.NewClient(ent.Driver(drv))
+	cfg.DBAdmin = TestDBUser
+	cfg.DBPassword = TestDBPassword
+	cfg.DBHost = TestDBHost
+	cfg.DBPort = TestDBPort
+	cfg.DBName = TestDBName
+
+	var db *datastore.Database
+
+	if db, err = datastore.NewDatabase(context.Background(), cfg); err != nil {
+		t.Fatal(err)
+	}
 
 	t.Cleanup(func() {
-		closeDB(t, entClient)
+		if err = db.Client.Close(); err != nil {
+			t.Fatal(err)
+		}
 	})
 
-	return entClient, db
-}
-
-func closeDB(t *testing.T, client *ent.Client) {
-	if err := client.Close(); err != nil {
-		t.Fatalf("failed to close connection: %+v", err)
-	}
+	return db
 }
 
 const TestRedisHost = "127.0.0.1"
@@ -206,29 +208,32 @@ const TestRedisPort = 16379
 const TestRedisPassword = ""
 const TestRedisDB = 1
 
-func NewRedisClient(t *testing.T) *redis.Client {
+func NewCache(t *testing.T) *datastore.Cache {
 	t.Helper()
 
-	opt := redis.Options{
-		Addr:     fmt.Sprintf("%s:%d", TestRedisHost, TestRedisPort),
-		Password: TestRedisPassword,
-		DB:       TestRedisDB,
-	}
-	client := redis.NewClient(&opt)
+	var cfg *config.Config
+	var err error
 
-	if err := client.Ping(context.Background()).Err(); err != nil {
-		t.Fatalf("failed to establish connection: %+v", err)
+	if cfg, err = config.New(); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg.RedisHost = TestRedisHost
+	cfg.RedisPort = TestRedisPort
+	cfg.RedisPassword = TestRedisPassword
+	cfg.RedisDB = TestRedisDB
+
+	var cache *datastore.Cache
+
+	if cache, err = datastore.NewCache(context.Background(), cfg); err != nil {
+		t.Fatal(err)
 	}
 
 	t.Cleanup(func() {
-		closeRedis(t, client)
+		if err = cache.Client.Close(); err != nil {
+			t.Fatal(err)
+		}
 	})
 
-	return client
-}
-
-func closeRedis(t *testing.T, client *redis.Client) {
-	if err := client.Close(); err != nil {
-		t.Fatalf("failed to close connection: %+v", err)
-	}
+	return cache
 }

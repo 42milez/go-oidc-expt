@@ -3,6 +3,9 @@ package service
 import (
 	"context"
 
+	"github.com/42milez/go-oidc-server/app/entity"
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 )
 
@@ -31,4 +34,16 @@ type UserCreator interface {
 
 type UserSelector interface {
 	SelectByName(ctx context.Context, name string) (*ent.User, error)
+}
+
+type SessionCreator interface {
+	Create(ctx context.Context, sid typedef.SessionID, sess *entity.Session) (bool, error)
+}
+
+type SessionReader interface {
+	Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error)
+}
+
+type SessionUpdater interface {
+	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) (string, error)
 }

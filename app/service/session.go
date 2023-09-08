@@ -1,17 +1,12 @@
-package session
+package service
 
 import (
 	"context"
 	"net/http"
 
-	auth "github.com/42milez/go-oidc-server/app/pkg/xjwt"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/app/repository"
-	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/app/entity"
 
@@ -23,12 +18,11 @@ const nRetrySaveSession = 3
 type IDKey struct{}
 type UserIDKey struct{}
 
-type Session struct {
-	Repo     ReadUpdateWriter
-	TokenExt TokenExtractor
+type CreateSession struct {
+	repo SessionCreator
 }
 
-func (p *Session) Create(ctx context.Context, sess *entity.Session) (string, error) {
+func (p *CreateSession) Create(ctx context.Context, sess *entity.Session) (string, error) {
 	var id uuid.UUID
 	var ok bool
 	var err error
@@ -37,7 +31,7 @@ func (p *Session) Create(ctx context.Context, sess *entity.Session) (string, err
 		if id, err = uuid.NewRandom(); err != nil {
 			return "", err
 		}
-		if ok, err = p.Repo.Create(ctx, typedef.SessionID(id.String()), sess); err != nil {
+		if ok, err = p.repo.Create(ctx, typedef.SessionID(id.String()), sess); err != nil {
 			return "", err
 		}
 		if ok {
@@ -52,8 +46,12 @@ func (p *Session) Create(ctx context.Context, sess *entity.Session) (string, err
 	return id.String(), nil
 }
 
-func (p *Session) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
-	sess, err := p.Repo.Read(r.Context(), sid)
+type RestoreSession struct {
+	repo SessionReader
+}
+
+func (p *RestoreSession) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
+	sess, err := p.repo.Read(r.Context(), sid)
 
 	if err != nil {
 		return nil, err
@@ -66,21 +64,16 @@ func (p *Session) Restore(r *http.Request, sid typedef.SessionID) (*http.Request
 	return r.Clone(ctx), nil
 }
 
-func (p *Session) Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error {
+type UpdateSession struct {
+	Repo SessionUpdater
+}
+
+func (p *UpdateSession) Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error {
 	_, err := p.Repo.Update(ctx, sid, sess)
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-func NewSession(rc *redis.Client, jwt *auth.JWT) *Session {
-	return &Session{
-		Repo: &repository.Session{
-			Cache: rc,
-		},
-		TokenExt: jwt,
-	}
 }
 
 func GetSessionID(ctx context.Context) string {

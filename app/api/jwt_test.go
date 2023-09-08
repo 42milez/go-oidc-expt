@@ -1,4 +1,4 @@
-package xjwt
+package api
 
 import (
 	"bytes"
@@ -31,7 +31,7 @@ func TestEmbed(t *testing.T) {
 }
 
 func TestJWT_GenerateAccessToken(t *testing.T) {
-	jwtUtil, err := NewJWT(&xtime.RealClocker{})
+	jwtUtil, err := NewJWT(&xtime.RealClocker{}, rawPrivateKey, rawPublicKey)
 
 	if err != nil {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
@@ -78,7 +78,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	jwtUtil, err := NewJWT(c)
+	jwtUtil, err := NewJWT(c, rawPrivateKey, rawPublicKey)
 
 	if err != nil {
 		t.Fatal(err)
@@ -117,7 +117,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		jwtUtil, err := NewJWT(c)
+		jwtUtil, err := NewJWT(c, rawPrivateKey, rawPublicKey)
 
 		if err != nil {
 			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
@@ -144,7 +144,7 @@ func TestJWT_Validate(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		jwtUtil, err := NewJWT(xtestutil.FixedTomorrowClocker{})
+		jwtUtil, err := NewJWT(xtestutil.FixedTomorrowClocker{}, rawPrivateKey, rawPublicKey)
 
 		if err != nil {
 			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)

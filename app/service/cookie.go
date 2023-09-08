@@ -1,4 +1,4 @@
-package cookie
+package service
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ type Cookie struct {
 	sc *securecookie.SecureCookie
 }
 
-func (p *Cookie) Get(r *http.Request, name string) (string, error) {
+func (p *Cookie) Read(r *http.Request, name string) (string, error) {
 	ck, err := r.Cookie(name)
 
 	if err != nil {
@@ -27,7 +27,7 @@ func (p *Cookie) Get(r *http.Request, name string) (string, error) {
 	return ret, nil
 }
 
-func (p *Cookie) Set(w http.ResponseWriter, name, val string, ttl time.Duration) error {
+func (p *Cookie) Write(w http.ResponseWriter, name, val string, ttl time.Duration) error {
 	encoded, err := p.sc.Encode(name, val)
 
 	if err != nil {
@@ -47,8 +47,8 @@ func (p *Cookie) Set(w http.ResponseWriter, name, val string, ttl time.Duration)
 	return nil
 }
 
-func NewCookie(hashKey, blockKey string) *Cookie {
+func NewCookie(hashKey, blockKey []byte) *Cookie {
 	return &Cookie{
-		sc: securecookie.New([]byte(hashKey), []byte(blockKey)),
+		sc: securecookie.New(hashKey, blockKey),
 	}
 }

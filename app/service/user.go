@@ -12,7 +12,7 @@ import (
 )
 
 type CreateUser struct {
-	Repo UserCreator
+	repo UserCreator
 }
 
 func (p *CreateUser) CreateUser(ctx context.Context, name, pw string) (*ent.User, error) {
@@ -23,7 +23,7 @@ func (p *CreateUser) CreateUser(ctx context.Context, name, pw string) (*ent.User
 		return nil, err
 	}
 
-	ret, err := p.Repo.Create(ctx, name, hash)
+	ret, err := p.repo.Create(ctx, name, hash)
 
 	if err != nil {
 		log.Error().Err(err).Msg(xerr.FailedToCreateUser.Wrap(err).Error())

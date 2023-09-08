@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/datastore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
@@ -35,13 +37,13 @@ func TestNewSession(t *testing.T) {
 
 	ctx := context.Background()
 
-	sess, err := NewCacheClient(ctx, cfg)
+	cache, err := datastore.NewCache(ctx, cfg)
 
 	if err != nil {
 		t.Fatalf("%s: %+v", xerr.FailedToInitialize, err)
 	}
 
-	if err = sess.Close(); err != nil {
+	if err = cache.Client.Close(); err != nil {
 		t.Errorf("%s: %+v", xerr.FailedToCloseConnection, err)
 	}
 }
@@ -49,15 +51,15 @@ func TestNewSession(t *testing.T) {
 func TestSession_SaveID(t *testing.T) {
 	t.Parallel()
 
-	client := xtestutil.NewRedisClient(t)
-	repo := Session{
-		Cache: client,
+	cache := xtestutil.NewCache(t)
+	repo := CreateSession{
+		Cache: cache,
 	}
 	ctx := context.Background()
 	sid := "TestSession_SaveID"
 
 	t.Cleanup(func() {
-		client.Del(ctx, sid)
+		cache.Client.Del(ctx, sid)
 	})
 
 	sess := &entity.Session{
@@ -78,9 +80,9 @@ func TestSession_SaveID(t *testing.T) {
 func TestSession_LoadID(t *testing.T) {
 	t.Parallel()
 
-	client := xtestutil.NewRedisClient(t)
-	repo := Session{
-		Cache: client,
+	cache := xtestutil.NewCache(t)
+	repo := ReadSession{
+		Cache: cache,
 	}
 
 	t.Run("OK", func(t *testing.T) {
@@ -92,12 +94,12 @@ func TestSession_LoadID(t *testing.T) {
 			UserID: typedef.UserID(475924035230777348),
 		}
 
-		if err := client.Set(ctx, sid, want, config.SessionTTL).Err(); err != nil {
+		if err := cache.Client.Set(ctx, sid, want, config.SessionTTL).Err(); err != nil {
 			t.Fatal(err)
 		}
 
 		t.Cleanup(func() {
-			client.Del(ctx, sid)
+			cache.Client.Del(ctx, sid)
 		})
 
 		got, err := repo.Read(ctx, typedef.SessionID(sid))
@@ -128,9 +130,9 @@ func TestSession_LoadID(t *testing.T) {
 func TestSession_Delete(t *testing.T) {
 	t.Parallel()
 
-	client := xtestutil.NewRedisClient(t)
-	repo := Session{
-		Cache: client,
+	cache := xtestutil.NewCache(t)
+	repo := DeleteSession{
+		Cache: cache,
 	}
 	ctx := context.Background()
 	sid := "TestSession_Delete"
@@ -138,7 +140,7 @@ func TestSession_Delete(t *testing.T) {
 		UserID: typedef.UserID(475924035230777348),
 	}
 
-	ok, err := repo.Create(ctx, typedef.SessionID(sid), sess)
+	ok, err := cache.Client.SetNX(ctx, sid, sess, config.SessionTTL).Result()
 
 	if err != nil {
 		t.Fatal(err)

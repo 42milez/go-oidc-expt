@@ -21,9 +21,6 @@ type Config struct {
 	RedisPassword string `env:"REDIS_PASSWORD" envDefault:""`
 	RedisDB       int    `env:"REDIS_DB" envDefault:"0"`
 	CI            bool   `env:"CI" envDefault:"false"`
-	// TODO: Move hash key and block key into file
-	CookieHashKey  string `env:"COOKIE_HASH_KEY" envDefault:"nlmUN8ccpAIgCFWtminsNkr6uJU0YrPquFE7eqbXAH1heOYddNjV1Ni3YSZWdpob"`
-	CookieBlockKey string `env:"COOKIE_BLOCK_KEY" envDefault:"aMe6Jbqnnee4lXR0PHC2Eg5gaB5Mv5p5"`
 }
 
 func (p *Config) IsDevelopment() bool {

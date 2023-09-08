@@ -5,56 +5,28 @@ import (
 	"errors"
 	"net/http"
 
-	auth "github.com/42milez/go-oidc-server/app/pkg/xjwt"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-	"github.com/42milez/go-oidc-server/app/pkg/xtime"
-
-	"github.com/42milez/go-oidc-server/app/api/cookie"
-	"github.com/42milez/go-oidc-server/app/api/session"
-
-	"github.com/42milez/go-oidc-server/app/model"
 
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/42milez/go-oidc-server/app/entity"
 
-	"github.com/redis/go-redis/v9"
-
-	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/repository"
-	"github.com/42milez/go-oidc-server/app/service"
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-playground/validator/v10"
 )
 
-func NewAuthenticateUser(ec *ent.Client, rc *redis.Client, cookie *cookie.Cookie, jwt *auth.JWT, sess *session.Session) (*AuthenticateUser, error) {
-	return &AuthenticateUser{
-		Service: &service.Authenticate{
-			Repo: &repository.User{
-				Clock: &xtime.RealClocker{},
-				DB:    ec,
-			},
-			Token: jwt,
-		},
-		Cookie:    cookie,
-		Session:   sess,
-		validator: validator.New(),
-	}, nil
-}
-
-type AuthenticateUser struct {
-	Service   Authenticator
-	Session   SessionCreator
-	Cookie    *cookie.Cookie
+type AuthenticateUserHdlr struct {
+	service   Authenticator
+	cookie    CookieWriter
+	session   SessionCreator
 	validator *validator.Validate
 }
 
 const sessionIDCookieName = config.SessionIDCookieName
 
-func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request, params *AuthenticateUserParams) {
-	var reqBody model.AuthenticateRequest
+func (p *AuthenticateUserHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request, params *AuthenticateUserParams) {
+	var reqBody AuthenticateUserJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		log.Error().Err(err).Msg(errFailedToDecodeRequestBody)
@@ -70,7 +42,7 @@ func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request, par
 		return
 	}
 
-	userID, err := p.Service.Authenticate(r.Context(), reqBody.Name, reqBody.Password)
+	userID, err := p.service.Authenticate(r.Context(), reqBody.Name, reqBody.Password)
 
 	if err != nil {
 		if errors.Is(err, xerr.UserNotFound) {
@@ -89,7 +61,7 @@ func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request, par
 		}
 	}
 
-	sessionID, err := p.Session.Create(r.Context(), &entity.Session{
+	sessionID, err := p.session.Create(r.Context(), &entity.Session{
 		UserID: userID,
 	})
 
@@ -98,7 +70,7 @@ func (p *AuthenticateUser) ServeHTTP(w http.ResponseWriter, r *http.Request, par
 		return
 	}
 
-	if err = p.Cookie.Set(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
+	if err = p.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
 		RespondJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}

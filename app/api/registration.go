@@ -5,42 +5,19 @@ import (
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-	"github.com/42milez/go-oidc-server/app/pkg/xid"
-	"github.com/42milez/go-oidc-server/app/pkg/xtime"
-
-	"github.com/42milez/go-oidc-server/app/api/session"
-
-	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/model"
-	"github.com/42milez/go-oidc-server/app/repository"
-	"github.com/42milez/go-oidc-server/app/service"
 	"github.com/rs/zerolog/log"
 
 	"github.com/go-playground/validator/v10"
 )
 
-func NewRegisterUser(ec *ent.Client, idGen *xid.UniqueID, sess *session.Session) (*RegisterUser, error) {
-	return &RegisterUser{
-		Service: &service.CreateUser{
-			Repo: &repository.User{
-				Clock: &xtime.RealClocker{},
-				DB:    ec,
-				IDGen: idGen,
-			},
-		},
-		Session:   sess,
-		validator: validator.New(),
-	}, nil
-}
-
-type RegisterUser struct {
-	Service   UserCreator
-	Session   SessionRestorer
+type RegisterUserHdlr struct {
+	service   UserCreator
+	session   SessionRestorer
 	validator *validator.Validate
 }
 
-func (p *RegisterUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var req model.RegisterUserRequest
+func (p *RegisterUserHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var req RegisterUserJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RespondJson500(w, xerr.UnexpectedErrorOccurred)
@@ -55,7 +32,7 @@ func (p *RegisterUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := p.Service.CreateUser(r.Context(), req.Name, req.Password)
+	_, err := p.service.CreateUser(r.Context(), req.Name, req.Password)
 
 	if err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
@@ -80,8 +57,8 @@ func (p *SelectUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	resp := model.RegisterUserResponse{
-		ID:   user.ID,
+	resp := User{
+		Id:   uint64(user.ID),
 		Name: user.Name,
 	}
 

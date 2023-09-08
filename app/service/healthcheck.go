@@ -5,13 +5,13 @@ import (
 )
 
 type CheckHealth struct {
-	Repo HealthChecker
+	repo HealthChecker
 }
 
 func (p *CheckHealth) CheckCacheStatus(ctx context.Context) error {
-	return p.Repo.PingCache(ctx)
+	return p.repo.PingCache(ctx)
 }
 
 func (p *CheckHealth) CheckDBStatus(ctx context.Context) error {
-	return p.Repo.PingDB(ctx)
+	return p.repo.PingDB(ctx)
 }

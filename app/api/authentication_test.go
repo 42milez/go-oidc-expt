@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
+	"github.com/42milez/go-oidc-server/app/service"
 
-	"github.com/42milez/go-oidc-server/app/api/cookie"
+	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 
@@ -44,8 +44,6 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 	}
 
 	sessionID := "dd9a0158-092c-4dc2-b470-7e68c97bfdb0"
-	cookieHashKey := "nlmUN8ccpAIgCFWtminsNkr6uJU0YrPquFE7eqbXAH1heOYddNjV1Ni3YSZWdpob"
-	cookieBlockKey := "aMe6Jbqnnee4lXR0PHC2Eg5gaB5Mv5p5"
 
 	tests := map[string]struct {
 		reqFile      string
@@ -109,10 +107,10 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			sessMock := NewMockSessionCreator(gomock.NewController(t))
 			sessMock.EXPECT().Create(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
-			sut := AuthenticateUser{
-				Service:   svcMock,
-				Session:   sessMock,
-				Cookie:    cookie.NewCookie(cookieHashKey, cookieBlockKey),
+			sut := AuthenticateUserHdlr{
+				service:   svcMock,
+				session:   sessMock,
+				cookie:    service.NewCookie(rawHashKey, rawBlockKey),
 				validator: validator.New(),
 			}
 			sut.ServeHTTP(w, r, nil)

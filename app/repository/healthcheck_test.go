@@ -9,9 +9,9 @@ import (
 )
 
 func TestHealthCheck_PingCache(t *testing.T) {
-	client := xtestutil.NewRedisClient(t)
+	cache := xtestutil.NewCache(t)
 	ch := &CheckHealth{
-		Cache: client,
+		cache: cache,
 	}
 	if err := ch.PingCache(context.Background()); err != nil {
 		t.Errorf("%s: %+v", xerr.FailedToPingCache, err)
@@ -19,9 +19,9 @@ func TestHealthCheck_PingCache(t *testing.T) {
 }
 
 func TestHealthCheck_PingDB(t *testing.T) {
-	_, client := xtestutil.NewEntClient(t)
+	db := xtestutil.NewDatabase(t)
 	ch := &CheckHealth{
-		DB: client,
+		db: db,
 	}
 	if err := ch.PingDB(context.Background()); err != nil {
 		t.Errorf("%s: %+v", xerr.FailedToPingDatabase, err)

@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 
+	"github.com/42milez/go-oidc-server/app/datastore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -14,23 +16,23 @@ import (
 )
 
 type User struct {
-	Clock xtime.Clocker
-	DB    *ent.Client
-	IDGen IDGenerator
+	clock xtime.Clocker
+	db    *datastore.Database
+	idGen IDGenerator
 }
 
 func (p *User) Create(ctx context.Context, name string, pw string) (*ent.User, error) {
-	return p.DB.User.Create().SetName(name).SetPassword(pw).Save(ctx)
+	return p.db.Client.User.Create().SetName(name).SetPassword(pw).Save(ctx)
 }
 
 func (p *User) SelectByName(ctx context.Context, name string) (*ent.User, error) {
-	return p.DB.User.Query().Where(user.NameEQ(name)).First(ctx)
+	return p.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
 }
 
 func (p *User) SelectRedirectUriByUserID(ctx context.Context, userID typedef.UserID) ([]*ent.RedirectURI, error) {
-	return p.DB.RedirectURI.Query().Where(redirecturi.UserIDEQ(userID)).All(ctx)
+	return p.db.Client.RedirectURI.Query().Where(redirecturi.UserIDEQ(userID)).All(ctx)
 }
 
 func (p *User) SaveAuthorizationCode(ctx context.Context, userID typedef.UserID, code string) (*ent.AuthCode, error) {
-	return p.DB.AuthCode.Create().SetUserID(userID).SetCode(code).Save(ctx)
+	return p.db.Client.AuthCode.Create().SetUserID(userID).SetCode(code).Save(ctx)
 }

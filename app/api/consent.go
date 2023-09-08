@@ -3,23 +3,17 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/api/session"
+	"github.com/42milez/go-oidc-server/app/service"
 
 	"github.com/42milez/go-oidc-server/app/config"
 )
 
-func NewConsent() (*Consent, error) {
-	return &Consent{
-		Session: nil,
-	}, nil
-}
-
 type Consent struct {
-	Session SessionUpdater
+	//Session SessionUpdater
 }
 
 func (p *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	_ = session.GetSessionID(r.Context())
+	_ = service.GetSessionID(r.Context())
 
 	// TODO: Save consent status into cache
 	// ...

@@ -2,5 +2,6 @@
 *.out
 
 # go-oidc-server
+*.key
 *.pem
 cookie.txt

@@ -12,11 +12,11 @@ info:
     name: MIT
     url: TBD
 servers:
-  - url: http://localhost:8080/
+  - url: http://localhost:8080
     description: Development Environment
-  - url: https://staging.idp.example.com/
+  - url: https://staging.idp.example.com
     description: Staging Environment
-  - url: https://idp.example.com/
+  - url: https://idp.example.com
     description: Production Environment
 tags:
   - name: HealthCheck
@@ -89,11 +89,12 @@ paths:
       tags:
         - Authentication
       parameters:
-        - in: cookie
+        - name: sid
           description: Session ID
-          name: sid
+          in: cookie
           schema:
             type: string
+          example: MTY5NDA4Nzc4MnxNNjBEOHUwTUxMLThObHBKajA2bkxkRFZJZC1kZnROc21WZjZFbFEtaVpmaHF4YkVvRk5uak9WYkdtRVM3eXctS1l4Q0FHeldab2M9fHDaZZGFzG1bSJdDRhgWPmMCQPuuFWg1h3VSE1WzOL8q
       requestBody:
         description: User to authenticate
         required: true
@@ -168,18 +169,22 @@ components:
       properties:
         name:
           type: string
-          example: 'username0'
+          x-oapi-codegen-extra-tags:
+            validate: required
+          example: username0
     UserPassword:
-      description: 'represents the password of user'
+      description: represents the password of user
       type: object
       required:
         - password
       properties:
         password:
           type: string
-          example: 'username0'
+          x-oapi-codegen-extra-tags:
+            validate: required
+          example: username0
     ErrorResponse:
-      description: 'represents error'
+      description: represents error
       type: object
       required:
         - status

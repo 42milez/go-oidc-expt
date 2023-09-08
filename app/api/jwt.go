@@ -1,7 +1,6 @@
-package xjwt
+package api
 
 import (
-	_ "embed"
 	"net/http"
 	"time"
 
@@ -14,24 +13,18 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
-//go:embed cert/private.pem
-var rawPrivateKey []byte
-
-//go:embed cert/public.pem
-var rawPublicKey []byte
-
 type JWT struct {
 	privateKey, publicKey jwk.Key
 	clock                 xtime.Clocker
 }
 
-func NewJWT(clock xtime.Clocker) (*JWT, error) {
-	priKey, err := parseKey(rawPrivateKey)
+func NewJWT(clock xtime.Clocker, rawPriKey, rawPubKey []byte) (*JWT, error) {
+	priKey, err := parseKey(rawPriKey)
 	if err != nil {
 		return nil, xerr.FailedToParsePrivateKey.Wrap(err)
 	}
 
-	pubKey, err := parseKey(rawPublicKey)
+	pubKey, err := parseKey(rawPubKey)
 	if err != nil {
 		return nil, xerr.FailedToParsePublicKey.Wrap(err)
 	}

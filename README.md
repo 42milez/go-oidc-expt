@@ -27,7 +27,7 @@ TBD ( Use the image upload to Docker Hub )
 ### Generate key pair for signing access token
 
 ```
-./script/bootstrap/key-pair.sh
+./script/bootstrap/keypair.sh
 ```
 
 The script creates a key pair in `app/pkg/xjwt/cert`.
