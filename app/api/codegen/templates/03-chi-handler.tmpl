@@ -1,5 +1,4 @@
 type ChiServerOptions struct {
-    BaseURL          string
     BaseRouter       *chi.Mux
     Middlewares      *MiddlewareFuncMap
     ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
@@ -31,7 +30,7 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
         if mw := options.Middlewares.raw("{{.OperationId}}"); mw != nil {
             r.Use(mw...)
         }
-        r.{{.Method | lower | title}}(options.BaseURL+"{{.Path | swaggerUriToChiUri}}", wrapper.{{.OperationId}}())
+        r.{{.Method | lower | title}}("{{.Path | swaggerUriToChiUri}}", wrapper.{{.OperationId}}())
     })
     {{end}}
 

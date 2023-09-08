@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	chimw "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/api/cookie"
@@ -20,11 +20,6 @@ import (
 )
 
 //go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config codegen/config.yml -o api.gen.go spec/spec.yml
-
-const (
-	apiVersionV1      = "v1"
-	apiVersionCurrent = apiVersionV1
-)
 
 var checkHealth *CheckHealth
 var authUser *AuthenticateUser
@@ -81,6 +76,17 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		return nil, nil, err
 	}
 
+	mux := chi.NewRouter()
+	swag, err := GetSwagger()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	swag.Servers = nil
+
+	mux.Use(chimw.OapiRequestValidator(swag))
+
 	mw := NewMiddlewareFuncMap()
 	mw.SetAuthenticateUserMW([]MiddlewareFunc{
 		RestoreSession(ck, sess),
@@ -89,9 +95,8 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		RestoreSession(ck, sess),
 	})
 
-	mux := MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
-		BaseURL:     fmt.Sprintf("/%s", apiVersionCurrent),
-		BaseRouter:  chi.NewRouter(),
+	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
+		BaseRouter:  mux,
 		Middlewares: mw,
 	})
 

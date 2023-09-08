@@ -12,27 +12,12 @@ info:
     name: MIT
     url: TBD
 servers:
-  - url: http://localhost:8080/{basePath}
+  - url: http://localhost:8080/
     description: Development Environment
-    variables:
-      basePath:
-        enum:
-          - 'v1'
-        default: 'v1'
-  - url: https://staging.idp.example.com/{basePath}
+  - url: https://staging.idp.example.com/
     description: Staging Environment
-    variables:
-      basePath:
-        enum:
-          - 'v1'
-        default: 'v1'
-  - url: https://idp.example.com/{basePath}
+  - url: https://idp.example.com/
     description: Production Environment
-    variables:
-      basePath:
-        enum:
-          - 'v1'
-        default: 'v1'
 tags:
   - name: HealthCheck
   - name: Registration
