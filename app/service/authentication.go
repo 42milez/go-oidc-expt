@@ -15,12 +15,12 @@ import (
 var errEntNotFoundError = &ent.NotFoundError{}
 
 type Authenticate struct {
-	repo     UserSelector
+	repo     UserByNameReader
 	tokenGen TokenGenerator
 }
 
-func (p *Authenticate) Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error) {
-	user, err := p.repo.SelectByName(ctx, name)
+func (a *Authenticate) Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error) {
+	user, err := a.repo.ReadUserByName(ctx, name)
 
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {

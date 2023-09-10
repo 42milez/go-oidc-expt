@@ -33,7 +33,7 @@ type AuthorizeGet struct {
 	validator *validator.Validate
 }
 
-func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ag *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
 	q := &model.AuthorizeRequest{}
 
@@ -44,7 +44,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := p.validator.Struct(q); err != nil {
+	if err := ag.validator.Struct(q); err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.InvalidRequest,
 		})
@@ -66,7 +66,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	location, err := p.Service.Authorize(r.Context(), userID, q)
+	location, err := ag.Service.Authorize(r.Context(), userID, q)
 
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{

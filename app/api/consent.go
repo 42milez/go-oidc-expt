@@ -12,7 +12,7 @@ type Consent struct {
 	//Session SessionUpdater
 }
 
-func (p *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = service.GetSessionID(r.Context())
 
 	// TODO: Save consent status into cache

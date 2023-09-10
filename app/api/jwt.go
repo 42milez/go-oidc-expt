@@ -1,6 +1,7 @@
 package api
 
 import (
+	_ "embed"
 	"net/http"
 	"time"
 
@@ -13,40 +14,64 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
+const issuer = "github.com/42milez/go-oidc-server"
+const accessTokenSubject = "access_token"
+const nameKey = "name"
+
+//go:embed secret/keypair/private.pem
+var rawPrivateKey []byte
+
+//go:embed secret/keypair/public.pem
+var rawPublicKey []byte
+
+func NewJWT(clock xtime.Clocker) (*JWT, error) {
+	var err error
+
+	parseKey := func(key []byte) (jwk.Key, error) {
+		return jwk.ParseKey(key, jwk.WithPEM(true))
+	}
+
+	ret := &JWT{
+		clock: clock,
+	}
+
+	if ret.privateKey, err = parseKey(rawPrivateKey); err != nil {
+		return nil, xerr.FailedToParsePrivateKey.Wrap(err)
+	}
+
+	if ret.publicKey, err = parseKey(rawPublicKey); err != nil {
+		return nil, xerr.FailedToParsePublicKey.Wrap(err)
+	}
+
+	return ret, nil
+}
+
 type JWT struct {
 	privateKey, publicKey jwk.Key
 	clock                 xtime.Clocker
 }
 
-func NewJWT(clock xtime.Clocker, rawPriKey, rawPubKey []byte) (*JWT, error) {
-	priKey, err := parseKey(rawPriKey)
+func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
+	ret, err := j.parseRequest(r)
+
 	if err != nil {
-		return nil, xerr.FailedToParsePrivateKey.Wrap(err)
+		return nil, xerr.FailedToParseRequest.Wrap(err)
 	}
 
-	pubKey, err := parseKey(rawPubKey)
-	if err != nil {
-		return nil, xerr.FailedToParsePublicKey.Wrap(err)
+	if err = j.validate(ret); err != nil {
+		return nil, xerr.InvalidToken.Wrap(err)
 	}
 
-	return &JWT{
-		privateKey: priKey,
-		publicKey:  pubKey,
-		clock:      clock,
-	}, nil
+	return ret, nil
 }
 
-const issuer = "github.com/42milez/go-oidc-server"
-const accessTokenSubject = "access_token"
-const nameKey = "name"
-
-func (p *JWT) MakeAccessToken(name string) ([]byte, error) {
+func (j *JWT) MakeAccessToken(name string) ([]byte, error) {
 	token, err := jwt.
 		NewBuilder().
 		JwtID(uuid.New().String()).
 		Issuer(issuer).
 		Subject(accessTokenSubject).
-		IssuedAt(p.clock.Now().Add(30*time.Minute)).
+		IssuedAt(j.clock.Now().Add(30*time.Minute)).
 		Claim(nameKey, name).
 		Build()
 
@@ -54,37 +79,19 @@ func (p *JWT) MakeAccessToken(name string) ([]byte, error) {
 		return nil, xerr.FailedToBuildToken.Wrap(err)
 	}
 
-	signed, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, p.privateKey))
+	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
 
 	if err != nil {
 		return nil, xerr.FailedToSignToken.Wrap(err)
 	}
 
-	return signed, nil
+	return ret, nil
 }
 
-func parseKey(key []byte) (jwk.Key, error) {
-	return jwk.ParseKey(key, jwk.WithPEM(true))
+func (j *JWT) parseRequest(r *http.Request) (jwt.Token, error) {
+	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, j.publicKey), jwt.WithValidate(false))
 }
 
-func (p *JWT) parseRequest(r *http.Request) (jwt.Token, error) {
-	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, p.publicKey), jwt.WithValidate(false))
-}
-
-func (p *JWT) validate(token jwt.Token) error {
-	return jwt.Validate(token, jwt.WithClock(p.clock))
-}
-
-func (p *JWT) Extract(r *http.Request) (jwt.Token, error) {
-	token, err := p.parseRequest(r)
-
-	if err != nil {
-		return nil, xerr.FailedToParseRequest.Wrap(err)
-	}
-
-	if err = p.validate(token); err != nil {
-		return nil, xerr.InvalidToken.Wrap(err)
-	}
-
-	return token, nil
+func (j *JWT) validate(token jwt.Token) error {
+	return jwt.Validate(token, jwt.WithClock(j.clock))
 }

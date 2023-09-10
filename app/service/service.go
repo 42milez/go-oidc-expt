@@ -1,18 +1,29 @@
 package service
 
 import (
-	"github.com/42milez/go-oidc-server/app/datastore"
-	"github.com/42milez/go-oidc-server/app/repository"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+	"github.com/gorilla/securecookie"
 )
 
 // --------------------------------------------------
 //  AUTHENTICATION
 // --------------------------------------------------
 
-func NewAuthenticate(repo UserSelector, tokenGen TokenGenerator) *Authenticate {
+func NewAuthenticate(repo UserByNameReader, tokenGen TokenGenerator) *Authenticate {
 	return &Authenticate{
 		repo:     repo,
 		tokenGen: tokenGen,
+	}
+}
+
+// --------------------------------------------------
+//  COOKIE
+// --------------------------------------------------
+
+func NewCookie(hashKey, blockKey []byte, clock xtime.Clocker) *Cookie {
+	return &Cookie{
+		clock: clock,
+		sc:    securecookie.New(hashKey, blockKey),
 	}
 }
 
@@ -30,19 +41,15 @@ func NewCheckHealth(repo HealthChecker) *CheckHealth {
 //  SESSION
 // --------------------------------------------------
 
-func NewCreateSession(cache *datastore.Cache) *CreateSession {
+func NewCreateSession(repo SessionCreator) *CreateSession {
 	return &CreateSession{
-		repo: &repository.CreateSession{
-			Cache: cache,
-		},
+		repo: repo,
 	}
 }
 
-func NewRestoreSession(cache *datastore.Cache) *RestoreSession {
+func NewRestoreSession(repo SessionReader) *RestoreSession {
 	return &RestoreSession{
-		repo: &repository.ReadSession{
-			Cache: cache,
-		},
+		repo: repo,
 	}
 }
 

@@ -22,7 +22,7 @@ type CreateSession struct {
 	repo SessionCreator
 }
 
-func (p *CreateSession) Create(ctx context.Context, sess *entity.Session) (string, error) {
+func (cs *CreateSession) Create(ctx context.Context, sess *entity.Session) (string, error) {
 	var id uuid.UUID
 	var ok bool
 	var err error
@@ -31,7 +31,7 @@ func (p *CreateSession) Create(ctx context.Context, sess *entity.Session) (strin
 		if id, err = uuid.NewRandom(); err != nil {
 			return "", err
 		}
-		if ok, err = p.repo.Create(ctx, typedef.SessionID(id.String()), sess); err != nil {
+		if ok, err = cs.repo.Create(ctx, typedef.SessionID(id.String()), sess); err != nil {
 			return "", err
 		}
 		if ok {
@@ -50,8 +50,8 @@ type RestoreSession struct {
 	repo SessionReader
 }
 
-func (p *RestoreSession) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
-	sess, err := p.repo.Read(r.Context(), sid)
+func (rs *RestoreSession) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
+	sess, err := rs.repo.Read(r.Context(), sid)
 
 	if err != nil {
 		return nil, err
@@ -68,8 +68,8 @@ type UpdateSession struct {
 	Repo SessionUpdater
 }
 
-func (p *UpdateSession) Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error {
-	_, err := p.Repo.Update(ctx, sid, sess)
+func (up *UpdateSession) Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error {
+	_, err := up.Repo.Update(ctx, sid, sess)
 	if err != nil {
 		return err
 	}

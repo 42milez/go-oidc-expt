@@ -51,17 +51,23 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  HANDLER OPTION
 	// --------------------------------------------------
 
+	var idGen *xid.UniqueID
+
+	if idGen, err = xid.GetUniqueID(); err != nil {
+		return nil, nil, err
+	}
+
 	option := &HandlerOption{
 		cache:           cache,
-		cookie:          service.NewCookie(rawHashKey, rawBlockKey),
+		cookie:          service.NewCookie(rawHashKey, rawBlockKey, xtime.RealClocker{}),
 		db:              db,
-		idGenerator:     xid.UID,
-		sessionCreator:  service.NewCreateSession(cache),
-		sessionRestorer: service.NewRestoreSession(cache),
+		idGenerator:     idGen,
+		sessionCreator:  service.NewCreateSession(repository.NewSession(cache)),
+		sessionRestorer: service.NewRestoreSession(repository.NewSession(cache)),
 		validationUtil:  validator.New(),
 	}
 
-	if option.jwtUtil, err = NewJWT(xtime.RealClocker{}, rawPrivateKey, rawPublicKey); err != nil {
+	if option.jwtUtil, err = NewJWT(xtime.RealClocker{}); err != nil {
 		return nil, nil, err
 	}
 
@@ -70,8 +76,8 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	// --------------------------------------------------
 
 	checkHealthHdlr = NewCheckHealthHdlr(option)
-	registerUserHdlr = NewRegisterUserHdlr(option)
-	authenticateUserHdlr = NewAuthenticateUserHdlr(option)
+	registerUserHdlr = NewRegisterHdlr(option)
+	authenticateUserHdlr = NewAuthenticateHdlr(option)
 
 	// --------------------------------------------------
 	//  ROUTER
@@ -92,10 +98,10 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	mux.Use(chimw.OapiRequestValidator(swag))
 
 	mw = NewMiddlewareFuncMap()
-	mw.SetAuthenticateUserMW([]MiddlewareFunc{
+	mw.SetAuthenticateMW([]MiddlewareFunc{
 		//RestoreSession(ck, sess),
 	})
-	mw.SetRegisterUserMW([]MiddlewareFunc{
+	mw.SetRegisterMW([]MiddlewareFunc{
 		//RestoreSession(ck, sess),
 	})
 
@@ -116,16 +122,16 @@ func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {
 	}
 }
 
-func NewRegisterUserHdlr(option *HandlerOption) *RegisterUserHdlr {
-	return &RegisterUserHdlr{
+func NewRegisterHdlr(option *HandlerOption) *RegisterHdlr {
+	return &RegisterHdlr{
 		service:   service.NewCreateUser(repository.NewUser(option.db, option.idGenerator)),
 		session:   option.sessionRestorer,
 		validator: option.validationUtil,
 	}
 }
 
-func NewAuthenticateUserHdlr(option *HandlerOption) *AuthenticateUserHdlr {
-	return &AuthenticateUserHdlr{
+func NewAuthenticateHdlr(option *HandlerOption) *AuthenticateHdlr {
+	return &AuthenticateHdlr{
 		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.jwtUtil),
 		cookie:    option.cookie,
 		session:   option.sessionCreator,

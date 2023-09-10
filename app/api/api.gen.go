@@ -45,29 +45,29 @@ type UserPassword struct {
 	Password string `json:"password" validate:"required"`
 }
 
-// AuthenticateUserJSONBody defines parameters for AuthenticateUser.
-type AuthenticateUserJSONBody struct {
+// AuthenticateJSONBody defines parameters for Authenticate.
+type AuthenticateJSONBody struct {
 	Name     string `json:"name" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
-// AuthenticateUserParams defines parameters for AuthenticateUser.
-type AuthenticateUserParams struct {
+// AuthenticateParams defines parameters for Authenticate.
+type AuthenticateParams struct {
 	// Sid Session ID
 	Sid *string `form:"sid,omitempty" json:"sid,omitempty"`
 }
 
-// RegisterUserJSONBody defines parameters for RegisterUser.
-type RegisterUserJSONBody struct {
+// RegisterJSONBody defines parameters for Register.
+type RegisterJSONBody struct {
 	Name     string `json:"name" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
-// AuthenticateUserJSONRequestBody defines body for AuthenticateUser for application/json ContentType.
-type AuthenticateUserJSONRequestBody AuthenticateUserJSONBody
+// AuthenticateJSONRequestBody defines body for Authenticate for application/json ContentType.
+type AuthenticateJSONRequestBody AuthenticateJSONBody
 
-// RegisterUserJSONRequestBody defines body for RegisterUser for application/json ContentType.
-type RegisterUserJSONRequestBody RegisterUserJSONBody
+// RegisterJSONRequestBody defines body for Register for application/json ContentType.
+type RegisterJSONRequestBody RegisterJSONBody
 
 // --------------------------------------------------
 //  Interface
@@ -77,13 +77,13 @@ type RegisterUserJSONRequestBody RegisterUserJSONBody
 type HandlerInterface interface {
 
 	// POST: /authenticate
-	AuthenticateUser(w http.ResponseWriter, r *http.Request, params *AuthenticateUserParams)
+	Authenticate(w http.ResponseWriter, r *http.Request, params *AuthenticateParams)
 
 	// GET: /health
 	CheckHealth(w http.ResponseWriter, r *http.Request)
 
 	// POST: /register
-	RegisterUser(w http.ResponseWriter, r *http.Request)
+	Register(w http.ResponseWriter, r *http.Request)
 }
 
 // --------------------------------------------------
@@ -120,27 +120,27 @@ func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler 
 	return ret
 }
 
-func (mfm *MiddlewareFuncMap) SetAuthenticateUserMW(mf []MiddlewareFunc) {
-	mfm.m["AuthenticateUser"] = mf
+func (mfm *MiddlewareFuncMap) SetAuthenticateMW(mf []MiddlewareFunc) {
+	mfm.m["Authenticate"] = mf
 }
 
 func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf []MiddlewareFunc) {
 	mfm.m["CheckHealth"] = mf
 }
 
-func (mfm *MiddlewareFuncMap) SetRegisterUserMW(mf []MiddlewareFunc) {
-	mfm.m["RegisterUser"] = mf
+func (mfm *MiddlewareFuncMap) SetRegisterMW(mf []MiddlewareFunc) {
+	mfm.m["Register"] = mf
 }
 
-// AuthenticateUser operation middleware
-func (siw *HandlerInterfaceWrapper) AuthenticateUser() http.HandlerFunc {
+// Authenticate operation middleware
+func (siw *HandlerInterfaceWrapper) Authenticate() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
 		var err error
 
 		// Parameter object where we will unmarshal all parameters from the context
-		params := &AuthenticateUserParams{}
+		params := &AuthenticateParams{}
 
 		var cookie *http.Cookie
 		if cookie, err = r.Cookie("sid"); err == nil {
@@ -154,7 +154,7 @@ func (siw *HandlerInterfaceWrapper) AuthenticateUser() http.HandlerFunc {
 
 		}
 
-		siw.Handler.AuthenticateUser(w, r.WithContext(ctx), params)
+		siw.Handler.Authenticate(w, r.WithContext(ctx), params)
 	})
 }
 
@@ -167,12 +167,12 @@ func (siw *HandlerInterfaceWrapper) CheckHealth() http.HandlerFunc {
 	})
 }
 
-// RegisterUser operation middleware
-func (siw *HandlerInterfaceWrapper) RegisterUser() http.HandlerFunc {
+// Register operation middleware
+func (siw *HandlerInterfaceWrapper) Register() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		siw.Handler.RegisterUser(w, r.WithContext(ctx))
+		siw.Handler.Register(w, r.WithContext(ctx))
 	})
 }
 
@@ -271,10 +271,10 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 	}
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("AuthenticateUser"); mw != nil {
+		if mw := options.Middlewares.raw("Authenticate"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Post("/authenticate", wrapper.AuthenticateUser())
+		r.Post("/authenticate", wrapper.Authenticate())
 	})
 
 	r.Group(func(r chi.Router) {
@@ -285,10 +285,10 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("RegisterUser"); mw != nil {
+		if mw := options.Middlewares.raw("Register"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Post("/register", wrapper.RegisterUser())
+		r.Post("/register", wrapper.Register())
 	})
 
 	return r
@@ -297,26 +297,26 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/9RXb3PauBP+Kh79fi8NNim5af3qkhBKeiWkkD9XOrwQ8oIVbEmVZELD8N1vJBuwDUm4",
-	"ay9zeZPROLurZ3cfPbssEeGJ4AyYVihYIkUiSLA9nkvJZR+U4EyB+RCCIpIKTTlDAZIgJCjj54CxRC4S",
-	"kguQmoLKzDWmsTnBAiciBhQg5CL9Q5iT0pKyKVq5SGmsU1Wy81004TLBGgUopUz/1tw6UqZhChKtVi6S",
-	"8D2lEkIUfFuHcdf3jjYefHwPRJurOoBjHT2bi47AyUI5fOIokHNKoL6T3B7QR/5PwN6H9kaBNDfgOO5N",
-	"UPBtWcFAQ/P3xRtdtKhxLGiN8BCmwGqw0BLXNJ7aKHMc0xBrsGXIca2qKGm4D+ES/V/CBAXof96WRV5O",
-	"Ic/Av8QJoNXIfbreqQLphFjj+jpl6/Nci7AjsNSmPQXnaoNYHmXLPWNsvvo7JPwVFbL3PdXFK6zUA5fh",
-	"i8wTueE6uZ20RCHSa6W2uXM3PWNK2YSbWIQzjYm2yBL78pFKheBS/54jrROeIDdvDTq5unAGmQFyUSqN",
-	"Q6S1UIHnFRy8PIhnilku3glzYCFA0gSYxrFDjY89GwNTw54AdtFyzjhjQLTzQHXkfOTIRTElkMtaDqd7",
-	"cb2BcX3aMrdpkInqTQaZCOTwKuisjWfqTrXtxZTXOA1JzUiHbeAcpMrwNup+3TeBuQCGBUUBeldv1E3X",
-	"BNaR7YiHUx0B05TYtiyR4Erv8uakYGVehGGAeQSGKzb7i7BidZPTCUucgAaprKKUow5AGajORQu5BXp1",
-	"r78eX7ZOmpePpNlli8vL+9PzXufm4fpm0f18HfXGndM/8P3J0Xi2mPXbw0/Ds8ZsyPo9ctS4G94P2+P2",
-	"uca3IsGddvPr7Hbenx2nePbh7uss1P3b7jv4k+hBI25+8dsdiEM8Pup+mHRaeDj82H782BgPPoWtfjS9",
-	"u0q6Z1+u0rR9N21E724H5427x97n99+RISEKEOF8RmHLMEVD5OYjzZSwMnqMLhmeg9KnPPyx5jAwW28s",
-	"RGwKRznz7pUpz7IQaqvJh0ngAVq5EYnVyL6rcmuMhaO5U6JH8Z1qmYJ9uNnAtmQ68v2/ldVLENEeYIOU",
-	"EFBqksbxjxK60Cp68yAIG65t1wZEmVUnJ28R2m4KTd9fuQfCLm8xe/AX3oih/gTTGEInTMFUu4Ihz6jx",
-	"kxmt5drhcqP4pfQar5zePkA21+N/3L2UGWkmGsJsPXQ4Iak0TN0mevxqfayiqds9LJuC3yquaGT+50Wb",
-	"XXEKewT4LAIyszM7M6xsi2Udtsb58vkvPtH8hj3FyZE5G1g4Pry9v+pyxnUZQKEFmbetU15/CVOqdLYB",
-	"75+BZxLy6cfgIdsFKbMtMSvhGKs9nejnUfNp+Obkf10VhzPNS7n+94bBGutbmQQZN+Shc+ANaeMzmT2v",
-	"jEVHlPEy22v3bY8tmEPMhVnAnXM2p5Izcy4t94HnxZzgOOJKB+/99759GxUSaTylbPpkDPMDQWU2dRqK",
-	"evHXxW60K8nDlNjMnwu4E2i0qcLmJ0JRpMxF+edSkQrfK2NlNVr9FQAA//8a900gbhEAAA==",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

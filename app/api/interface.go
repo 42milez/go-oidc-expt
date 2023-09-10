@@ -40,7 +40,7 @@ type UserCreator interface {
 	CreateUser(ctx context.Context, name, pw string) (*ent.User, error)
 }
 
-type UserSelector interface {
+type UserReader interface {
 	SelectUser(ctx context.Context) (*ent.User, error)
 }
 

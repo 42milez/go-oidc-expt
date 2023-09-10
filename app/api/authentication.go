@@ -5,18 +5,18 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/42milez/go-oidc-server/app/entity"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/go-playground/validator/v10"
 )
 
-type AuthenticateUserHdlr struct {
+type AuthenticateHdlr struct {
 	service   Authenticator
 	cookie    CookieWriter
 	session   SessionCreator
@@ -25,8 +25,8 @@ type AuthenticateUserHdlr struct {
 
 const sessionIDCookieName = config.SessionIDCookieName
 
-func (p *AuthenticateUserHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request, params *AuthenticateUserParams) {
-	var reqBody AuthenticateUserJSONRequestBody
+func (au *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request, params *AuthenticateParams) {
+	var reqBody AuthenticateJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		log.Error().Err(err).Msg(errFailedToDecodeRequestBody)
@@ -34,7 +34,7 @@ func (p *AuthenticateUserHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	if err := p.validator.Struct(reqBody); err != nil {
+	if err := au.validator.Struct(reqBody); err != nil {
 		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.InvalidRequest,
@@ -42,7 +42,7 @@ func (p *AuthenticateUserHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	userID, err := p.service.Authenticate(r.Context(), reqBody.Name, reqBody.Password)
+	userID, err := au.service.Authenticate(r.Context(), reqBody.Name, reqBody.Password)
 
 	if err != nil {
 		if errors.Is(err, xerr.UserNotFound) {
@@ -61,7 +61,7 @@ func (p *AuthenticateUserHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request,
 		}
 	}
 
-	sessionID, err := p.session.Create(r.Context(), &entity.Session{
+	sessionID, err := au.session.Create(r.Context(), &entity.Session{
 		UserID: userID,
 	})
 
@@ -70,7 +70,7 @@ func (p *AuthenticateUserHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	if err = p.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
+	if err = au.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
 		RespondJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}

@@ -107,10 +107,10 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			sessMock := NewMockSessionCreator(gomock.NewController(t))
 			sessMock.EXPECT().Create(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
-			sut := AuthenticateUserHdlr{
+			sut := AuthenticateHdlr{
 				service:   svcMock,
 				session:   sessMock,
-				cookie:    service.NewCookie(rawHashKey, rawBlockKey),
+				cookie:    service.NewCookie(rawHashKey, rawBlockKey, xtestutil.FixedClocker{}),
 				validator: validator.New(),
 			}
 			sut.ServeHTTP(w, r, nil)

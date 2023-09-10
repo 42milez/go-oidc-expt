@@ -4,26 +4,23 @@ import (
 	"context"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 )
 
-func TestHealthCheck_PingCache(t *testing.T) {
-	cache := xtestutil.NewCache(t)
+func TestCheckHealth_PingCache(t *testing.T) {
 	ch := &CheckHealth{
-		cache: cache,
+		cache: xtestutil.NewCache(t),
 	}
 	if err := ch.PingCache(context.Background()); err != nil {
-		t.Errorf("%s: %+v", xerr.FailedToPingCache, err)
+		t.Error(err)
 	}
 }
 
-func TestHealthCheck_PingDB(t *testing.T) {
-	db := xtestutil.NewDatabase(t)
+func TestCheckHealth_PingDB(t *testing.T) {
 	ch := &CheckHealth{
-		db: db,
+		db: xtestutil.NewDatabase(t),
 	}
-	if err := ch.PingDB(context.Background()); err != nil {
-		t.Errorf("%s: %+v", xerr.FailedToPingDatabase, err)
+	if err := ch.PingDatabase(context.Background()); err != nil {
+		t.Error(err)
 	}
 }

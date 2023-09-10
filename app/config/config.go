@@ -8,6 +8,10 @@ import (
 	"github.com/caarlos0/env/v8"
 )
 
+// --------------------------------------------------
+//  ENVIRONMENT VARIABLE
+// --------------------------------------------------
+
 type Config struct {
 	Env           string `env:"ENV" envDefault:"dev"`
 	Port          int    `env:"PORT" envDefault:"80"`
@@ -20,7 +24,6 @@ type Config struct {
 	RedisPort     int    `env:"REDIS_PORT" envDefault:"6379"`
 	RedisPassword string `env:"REDIS_PASSWORD" envDefault:""`
 	RedisDB       int    `env:"REDIS_DB" envDefault:"0"`
-	CI            bool   `env:"CI" envDefault:"false"`
 }
 
 func (p *Config) IsDevelopment() bool {
@@ -35,29 +38,37 @@ func New() (*Config, error) {
 	return cfg, nil
 }
 
-// Application
+// --------------------------------------------------
+//  APPLICATION
+// --------------------------------------------------
 
 const (
 	ConsentURL = "/consent"
 )
 
-// Session
+// --------------------------------------------------
+//  SESSION
+// --------------------------------------------------
 
 const (
 	SessionTTL = 24 * time.Hour * 30 // 30 days
 )
 
-// Cookie
+// --------------------------------------------------
+//  COOKIE
+// --------------------------------------------------
 
 const (
 	SessionIDCookieName = "sid"
 	SessionIDCookieTTL  = SessionTTL
 )
 
-// OIDC: Authorization
+// --------------------------------------------------
+//  OIDC: AUTHORIZATION
+// --------------------------------------------------
 
 const (
-	AuthCodeLifetime      = 10 * time.Minute
 	AuthCodeLength        = 10
+	AuthCodeLifetime      = 10 * time.Minute
 	AuthorizationEndpoint = "/authorize"
 )

@@ -256,31 +256,31 @@ func (mr *MockUserCreatorMockRecorder) CreateUser(ctx, name, pw interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserCreator)(nil).CreateUser), ctx, name, pw)
 }
 
-// MockUserSelector is a mock of UserSelector interface.
-type MockUserSelector struct {
+// MockUserReader is a mock of UserReader interface.
+type MockUserReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockUserSelectorMockRecorder
+	recorder *MockUserReaderMockRecorder
 }
 
-// MockUserSelectorMockRecorder is the mock recorder for MockUserSelector.
-type MockUserSelectorMockRecorder struct {
-	mock *MockUserSelector
+// MockUserReaderMockRecorder is the mock recorder for MockUserReader.
+type MockUserReaderMockRecorder struct {
+	mock *MockUserReader
 }
 
-// NewMockUserSelector creates a new mock instance.
-func NewMockUserSelector(ctrl *gomock.Controller) *MockUserSelector {
-	mock := &MockUserSelector{ctrl: ctrl}
-	mock.recorder = &MockUserSelectorMockRecorder{mock}
+// NewMockUserReader creates a new mock instance.
+func NewMockUserReader(ctrl *gomock.Controller) *MockUserReader {
+	mock := &MockUserReader{ctrl: ctrl}
+	mock.recorder = &MockUserReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUserSelector) EXPECT() *MockUserSelectorMockRecorder {
+func (m *MockUserReader) EXPECT() *MockUserReaderMockRecorder {
 	return m.recorder
 }
 
 // SelectUser mocks base method.
-func (m *MockUserSelector) SelectUser(ctx context.Context) (*ent.User, error) {
+func (m *MockUserReader) SelectUser(ctx context.Context) (*ent.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SelectUser", ctx)
 	ret0, _ := ret[0].(*ent.User)
@@ -289,9 +289,9 @@ func (m *MockUserSelector) SelectUser(ctx context.Context) (*ent.User, error) {
 }
 
 // SelectUser indicates an expected call of SelectUser.
-func (mr *MockUserSelectorMockRecorder) SelectUser(ctx interface{}) *gomock.Call {
+func (mr *MockUserReaderMockRecorder) SelectUser(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectUser", reflect.TypeOf((*MockUserSelector)(nil).SelectUser), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectUser", reflect.TypeOf((*MockUserReader)(nil).SelectUser), ctx)
 }
 
 // MockSessionCreator is a mock of SessionCreator interface.

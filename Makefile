@@ -86,9 +86,6 @@ seed:
 	@go run ./script/seed/main.go
 
 ## test: Run all tests
-test: export CI := true
-test: export DB_PORT := 13306
-test: export REDIS_PORT := 16379
 test:
 	@go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`
 

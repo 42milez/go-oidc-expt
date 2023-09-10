@@ -4,19 +4,24 @@ import (
 	"github.com/sony/sonyflake"
 )
 
-var UID *UniqueID
+var uid *UniqueID
 
-// TODO: Separate the ID generator as an independent container.
-
-func Init() error {
-	sf, err := sonyflake.New(sonyflake.Settings{})
-	if err != nil {
-		return err
+func GetUniqueID() (*UniqueID, error) {
+	if uid != nil {
+		return uid, nil
 	}
-	UID = &UniqueID{
+
+	sf, err := sonyflake.New(sonyflake.Settings{})
+
+	if err != nil {
+		return nil, err
+	}
+
+	uid = &UniqueID{
 		generator: sf,
 	}
-	return nil
+
+	return uid, nil
 }
 
 type UniqueID struct {

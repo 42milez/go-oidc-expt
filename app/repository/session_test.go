@@ -3,11 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
-	"os"
-	"strconv"
 	"testing"
-
-	"github.com/42milez/go-oidc-server/app/datastore"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
@@ -22,38 +18,12 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func TestNewSession(t *testing.T) {
-	t.Parallel()
-
-	if err := os.Setenv("REDIS_DB", strconv.Itoa(xtestutil.TestRedisDB)); err != nil {
-		t.Error(err)
-	}
-
-	cfg, err := config.New()
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	ctx := context.Background()
-
-	cache, err := datastore.NewCache(ctx, cfg)
-
-	if err != nil {
-		t.Fatalf("%s: %+v", xerr.FailedToInitialize, err)
-	}
-
-	if err = cache.Client.Close(); err != nil {
-		t.Errorf("%s: %+v", xerr.FailedToCloseConnection, err)
-	}
-}
-
 func TestSession_SaveID(t *testing.T) {
 	t.Parallel()
 
 	cache := xtestutil.NewCache(t)
-	repo := CreateSession{
-		Cache: cache,
+	repo := Session{
+		cache: cache,
 	}
 	ctx := context.Background()
 	sid := "TestSession_SaveID"
@@ -81,8 +51,8 @@ func TestSession_LoadID(t *testing.T) {
 	t.Parallel()
 
 	cache := xtestutil.NewCache(t)
-	repo := ReadSession{
-		Cache: cache,
+	repo := Session{
+		cache: cache,
 	}
 
 	t.Run("OK", func(t *testing.T) {
@@ -131,8 +101,8 @@ func TestSession_Delete(t *testing.T) {
 	t.Parallel()
 
 	cache := xtestutil.NewCache(t)
-	repo := DeleteSession{
-		Cache: cache,
+	repo := Session{
+		cache: cache,
 	}
 	ctx := context.Background()
 	sid := "TestSession_Delete"

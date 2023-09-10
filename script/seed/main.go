@@ -10,7 +10,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/datastore"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
-	"github.com/42milez/go-oidc-server/app/pkg/xid"
 	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -174,10 +173,6 @@ func main() {
 	var err error
 
 	if cfg, err = config.New(); err != nil {
-		log.Fatal(err)
-	}
-
-	if err = xid.Init(); err != nil {
 		log.Fatal(err)
 	}
 

@@ -8,8 +8,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/api"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xid"
-
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/rs/zerolog"
@@ -18,18 +16,6 @@ import (
 
 var version = "dev"
 
-// @title			go-oidc-server
-// @version		N/A
-// @description	This is an experimental implementation of OpenID Connect with Go.
-// @termsOfService	https://example.com/terms/
-// @contact.name	API Support
-// @contact.url	https://example.com/support/
-// @contact.email	support@example.com
-// @license.name	MIT
-// @license.url	TBD
-// @host			localhost:8080
-// @BasePath		/v1
-// @schemes		http https
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Str("role", "idp").Logger()
@@ -39,10 +25,6 @@ func main() {
 
 	if cfg, err = config.New(); err != nil {
 		log.Fatal().Stack().Err(err).Msg("failed to parse env variable")
-	}
-
-	if err = xid.Init(); err != nil {
-		log.Fatal().Stack().Err(err).Msg("failed to initialize id generator")
 	}
 
 	if err = run(context.Background(), cfg); err != nil {

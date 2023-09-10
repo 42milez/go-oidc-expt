@@ -11,30 +11,34 @@ import (
 
 //go:generate mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
 
+// --------------------------------------------------
+//  HEALTH CHECK
+// --------------------------------------------------
+
 type CachePingSender interface {
 	PingCache(ctx context.Context) error
 }
 
-type DBPingSender interface {
-	PingDB(ctx context.Context) error
+type DatabasePingSender interface {
+	PingDatabase(ctx context.Context) error
 }
 
 type HealthChecker interface {
 	CachePingSender
-	DBPingSender
+	DatabasePingSender
 }
+
+// --------------------------------------------------
+//  JWT
+// --------------------------------------------------
 
 type TokenGenerator interface {
 	MakeAccessToken(name string) ([]byte, error)
 }
 
-type UserCreator interface {
-	Create(ctx context.Context, name string, pw string) (*ent.User, error)
-}
-
-type UserSelector interface {
-	SelectByName(ctx context.Context, name string) (*ent.User, error)
-}
+// --------------------------------------------------
+//  SESSION
+// --------------------------------------------------
 
 type SessionCreator interface {
 	Create(ctx context.Context, sid typedef.SessionID, sess *entity.Session) (bool, error)
@@ -46,4 +50,16 @@ type SessionReader interface {
 
 type SessionUpdater interface {
 	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) (string, error)
+}
+
+// --------------------------------------------------
+//  USER
+// --------------------------------------------------
+
+type UserCreator interface {
+	CreateUser(ctx context.Context, name string, pw string) (*ent.User, error)
+}
+
+type UserByNameReader interface {
+	ReadUserByName(ctx context.Context, name string) (*ent.User, error)
 }

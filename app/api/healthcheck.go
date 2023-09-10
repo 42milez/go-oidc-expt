@@ -12,22 +12,22 @@ type CheckHealthHdlr struct {
 	service HealthChecker
 }
 
-func (p *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ch *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	errResp := func() {
-		RespondJSON(w, http.StatusInternalServerError, &Health{
+		RespondJSON(w, http.StatusServiceUnavailable, &Health{
 			Status: http.StatusServiceUnavailable,
 		})
 	}
 	ctx := r.Context()
 
-	if err := p.service.CheckCacheStatus(ctx); err != nil {
-		log.Error().Err(err).Msgf("%s: %+v", xerr.FailedToPingCache, err)
+	if err := ch.service.CheckCacheStatus(ctx); err != nil {
+		log.Error().Err(err).Msg(xerr.FailedToPingCache.Error())
 		errResp()
 		return
 	}
 
-	if err := p.service.CheckDBStatus(ctx); err != nil {
-		log.Error().Err(err).Msgf("%s: %+v", xerr.FailedToPingDatabase, err)
+	if err := ch.service.CheckDBStatus(ctx); err != nil {
+		log.Error().Err(err).Msg(xerr.FailedToPingDatabase.Error())
 		errResp()
 		return
 	}

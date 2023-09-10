@@ -4,15 +4,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+
 	"github.com/gorilla/securecookie"
 )
 
 type Cookie struct {
-	sc *securecookie.SecureCookie
+	clock xtime.Clocker
+	sc    *securecookie.SecureCookie
 }
 
-func (p *Cookie) Read(r *http.Request, name string) (string, error) {
-	ck, err := r.Cookie(name)
+func (c *Cookie) Read(r *http.Request, name string) (string, error) {
+	cookie, err := r.Cookie(name)
 
 	if err != nil {
 		return "", err
@@ -20,15 +23,15 @@ func (p *Cookie) Read(r *http.Request, name string) (string, error) {
 
 	var ret string
 
-	if err = p.sc.Decode(name, ck.Value, &ret); err != nil {
+	if err = c.sc.Decode(name, cookie.Value, &ret); err != nil {
 		return "", err
 	}
 
 	return ret, nil
 }
 
-func (p *Cookie) Write(w http.ResponseWriter, name, val string, ttl time.Duration) error {
-	encoded, err := p.sc.Encode(name, val)
+func (c *Cookie) Write(w http.ResponseWriter, name, val string, ttl time.Duration) error {
+	encoded, err := c.sc.Encode(name, val)
 
 	if err != nil {
 		return err
@@ -45,10 +48,4 @@ func (p *Cookie) Write(w http.ResponseWriter, name, val string, ttl time.Duratio
 	})
 
 	return nil
-}
-
-func NewCookie(hashKey, blockKey []byte) *Cookie {
-	return &Cookie{
-		sc: securecookie.New(hashKey, blockKey),
-	}
 }

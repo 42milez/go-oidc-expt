@@ -45,7 +45,7 @@ paths:
   /register:
     post:
       description: Creates a new user in the database.
-      operationId: registerUser
+      operationId: register
       tags:
         - Registration
       requestBody:
@@ -85,7 +85,7 @@ paths:
   /authenticate:
     post:
       description: Authenticates a user.
-      operationId: authenticateUser
+      operationId: authenticate
       tags:
         - Authentication
       parameters:
