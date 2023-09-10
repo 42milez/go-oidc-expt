@@ -159,6 +159,8 @@ components:
           properties:
             id:
               type: integer
+              x-oapi-codegen-extra-tags:
+                validate: required
               format: uint64
         - $ref: '#/components/schemas/UserName'
     UserName:

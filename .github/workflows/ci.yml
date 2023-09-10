@@ -18,8 +18,8 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - name: Create key pair
         run: |
-          ./scripts/bootstrap/key.sh
-          ./scripts/bootstrap/keypair.sh
+          ./script/bootstrap/key.sh
+          ./script/bootstrap/keypair.sh
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
@@ -41,8 +41,8 @@ jobs:
         run: .github/scripts/waiter/db.sh
       - name: Create key pair
         run: |
-          ./scripts/bootstrap/key.sh
-          ./scripts/bootstrap/keypair.sh
+          ./script/bootstrap/key.sh
+          ./script/bootstrap/keypair.sh
       - name: Run all tests
         run: make test
   notify:
