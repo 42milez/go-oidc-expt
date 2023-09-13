@@ -149,37 +149,37 @@ func (siw *HandlerInterfaceWrapper) {{$opid}}() http.HandlerFunc {
         {{end}}
 
         {{range .CookieParams}}
-        var cookie *http.Cookie
-        if cookie, err = r.Cookie("{{.ParamName}}"); err == nil {
-            {{if .IsPassThrough}}
-            params.{{.GoName}} = {{if not .Required}}&{{end}}cookie.Value
-            {{end}}
-            {{if .IsJson}}
-            var value {{.TypeDef}}
-            var decoded string
-            if decoded, err := url.QueryUnescape(cookie.Value); err != nil {
-                err = fmt.Errorf("Error unescaping cookie parameter '{{.ParamName}}'")
-                siw.ErrorHandlerFunc(w, r, &UnescapedCookieParamError{ParamName: "{{.ParamName}}", Err: err})
-                return
-            }
-            if err = json.Unmarshal([]byte(decoded), &value); err != nil {
-                siw.ErrorHandlerFunc(w, r, &UnmarshalingParamError{ParamName: "{{.ParamName}}", Err: err})
-                return
-            }
-            params.{{.GoName}} = {{if not .Required}}&{{end}}value
-            {{end}}
-            {{if .IsStyled}}
-            var value {{.TypeDef}}
-            if runtime.BindStyledParameter("simple",{{.Explode}}, "{{.ParamName}}", cookie.Value, &value); err != nil {
-                siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "{{.ParamName}}", Err: err})
-                return
-            }
-            params.{{.GoName}} = {{if not .Required}}&{{end}}value
-            {{end}}
-        } {{if .Required}} else {
-            siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "{{.ParamName}}"})
-            return
-        }
+        // var cookie *http.Cookie
+        // if cookie, err = r.Cookie("{{.ParamName}}"); err == nil {
+        //     {{if .IsPassThrough}}
+        //     params.{{.GoName}} = {{if not .Required}}&{{end}}cookie.Value
+        //     {{end}}
+        //     {{if .IsJson}}
+        //     var value {{.TypeDef}}
+        //     var decoded string
+        //     if decoded, err := url.QueryUnescape(cookie.Value); err != nil {
+        //         err = fmt.Errorf("Error unescaping cookie parameter '{{.ParamName}}'")
+        //         siw.ErrorHandlerFunc(w, r, &UnescapedCookieParamError{ParamName: "{{.ParamName}}", Err: err})
+        //         return
+        //     }
+        //     if err = json.Unmarshal([]byte(decoded), &value); err != nil {
+        //         siw.ErrorHandlerFunc(w, r, &UnmarshalingParamError{ParamName: "{{.ParamName}}", Err: err})
+        //         return
+        //     }
+        //     params.{{.GoName}} = {{if not .Required}}&{{end}}value
+        //     {{end}}
+        //     {{if .IsStyled}}
+        //     var value {{.TypeDef}}
+        //     if runtime.BindStyledParameter("simple",{{.Explode}}, "{{.ParamName}}", cookie.Value, &value); err != nil {
+        //         siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "{{.ParamName}}", Err: err})
+        //         return
+        //     }
+        //     params.{{.GoName}} = {{if not .Required}}&{{end}}value
+        //     {{end}}
+        // } {{if .Required}} else {
+        //     siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "{{.ParamName}}"})
+        //     return
+        // }
         {{end}}
         {{end}}
         {{end}}

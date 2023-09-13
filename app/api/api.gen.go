@@ -15,7 +15,6 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
-	"github.com/oapi-codegen/runtime"
 )
 
 // ErrorResponse represents error
@@ -142,17 +141,19 @@ func (siw *HandlerInterfaceWrapper) Authenticate() http.HandlerFunc {
 		// Parameter object where we will unmarshal all parameters from the context
 		params := &AuthenticateParams{}
 
-		var cookie *http.Cookie
-		if cookie, err = r.Cookie("sid"); err == nil {
-
-			var value string
-			if runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value); err != nil {
-				siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sid", Err: err})
-				return
-			}
-			params.Sid = &value
-
-		}
+		// var cookie *http.Cookie
+		// if cookie, err = r.Cookie("sid"); err == nil {
+		//
+		//
+		//
+		//     var value string
+		//     if runtime.BindStyledParameter("simple",true, "sid", cookie.Value, &value); err != nil {
+		//         siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sid", Err: err})
+		//         return
+		//     }
+		//     params.Sid = &value
+		//
+		// }
 
 		siw.Handler.Authenticate(w, r.WithContext(ctx), params)
 	})
