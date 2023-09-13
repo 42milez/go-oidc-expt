@@ -8,11 +8,11 @@ import (
 	"github.com/42milez/go-oidc-server/app/config"
 )
 
-type Consent struct {
+type ConsentHdlr struct {
 	//Session SessionUpdater
 }
 
-func (c *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = service.GetSessionID(r.Context())
 
 	// TODO: Save consent status into cache

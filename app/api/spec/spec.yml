@@ -19,9 +19,10 @@ servers:
   - url: https://idp.example.com
     description: Production Environment
 tags:
+  - name: Authentication
+  - name: Authorization
   - name: HealthCheck
   - name: Registration
-  - name: Authentication
 paths:
   /health:
     get:
@@ -89,12 +90,7 @@ paths:
       tags:
         - Authentication
       parameters:
-        - name: sid
-          description: Session ID
-          in: cookie
-          schema:
-            type: string
-          example: MTY5NDA4Nzc4MnxNNjBEOHUwTUxMLThObHBKajA2bkxkRFZJZC1kZnROc21WZjZFbFEtaVpmaHF4YkVvRk5uak9WYkdtRVM3eXctS1l4Q0FHeldab2M9fHDaZZGFzG1bSJdDRhgWPmMCQPuuFWg1h3VSE1WzOL8q
+        - $ref: '#/components/parameters/SessionId'
       requestBody:
         description: User to authenticate
         required: true
@@ -138,7 +134,35 @@ paths:
               example:
                 status: 500
                 detail: unexpected error occurred
+  /consent:
+    post:
+      description: Grant relying party permission to use user data.
+      operationId: consent
+      tags:
+        - Authorization
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '302':
+          description: Successfully consented.
+        '500':
+          description: Consent failed due to unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 500
+                detail: unexpected error occurred
 components:
+  parameters:
+    SessionId:
+      name: sid
+      description: Session ID
+      in: cookie
+      schema:
+        type: string
+      example: MTY5NDA4Nzc4MnxNNjBEOHUwTUxMLThObHBKajA2bkxkRFZJZC1kZnROc21WZjZFbFEtaVpmaHF4YkVvRk5uak9WYkdtRVM3eXctS1l4Q0FHeldab2M9fHDaZZGFzG1bSJdDRhgWPmMCQPuuFWg1h3VSE1WzOL8q
   schemas:
     Health:
       description: represents the status of service.
