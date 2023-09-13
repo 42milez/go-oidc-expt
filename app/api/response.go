@@ -51,7 +51,7 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 	}
 }
 
-func ResponseJson500(w http.ResponseWriter, msg xerr.PublicErr) {
+func RespondJson500(w http.ResponseWriter, msg xerr.PublicErr) {
 	RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
 		Error: msg,
 	})
@@ -61,14 +61,14 @@ func Redirect(w http.ResponseWriter, r *http.Request, u string, code int) {
 	redirectURL, err := url.Parse(u)
 
 	if err != nil {
-		ResponseJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}
 
 	if !xutil.IsEmpty(r.URL.RawQuery) {
 		redirectURL, err = url.Parse(fmt.Sprintf("%s&%s", redirectURL, r.URL.RawQuery))
 		if err != nil {
-			ResponseJson500(w, xerr.UnexpectedErrorOccurred)
+			RespondJson500(w, xerr.UnexpectedErrorOccurred)
 			return
 		}
 	}

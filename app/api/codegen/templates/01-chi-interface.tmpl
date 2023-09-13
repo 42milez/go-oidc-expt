@@ -2,19 +2,10 @@
 //  Interface
 // --------------------------------------------------
 
-// ServerInterface represents all server handlers.
-type ServerInterface interface {
+// HandlerInterface represents all server handlers.
+type HandlerInterface interface {
     {{range .}}{{.SummaryAsComment}}
     // {{.Method}}: {{.Path}}
-    {{.OperationId}}(w http.ResponseWriter, r *http.Request{{genParamArgs .PathParams}}{{if .RequiresParamObject}}, params {{.OperationId}}Params{{end}})
+    {{.OperationId}}(w http.ResponseWriter, r *http.Request{{genParamArgs .PathParams}})
     {{end}}
 }
-
-// Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
-type Unimplemented struct {}
-{{range .}}{{.SummaryAsComment}}
-// {{.Method}}: {{.Path}}
-func (_ Unimplemented) {{.OperationId}}(w http.ResponseWriter, r *http.Request{{genParamArgs .PathParams}}{{if .RequiresParamObject}}, params {{.OperationId}}Params{{end}}) {
-    w.WriteHeader(http.StatusNotImplemented)
-}
-{{end}}

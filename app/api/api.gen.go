@@ -17,66 +17,93 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// Health defines model for Health.
-type Health struct {
-	Status string `json:"status"`
+// ErrorResponse represents error
+type ErrorResponse struct {
+	Detail string `json:"detail"`
+	Status uint64 `json:"status"`
 }
 
-// NewUser defines model for NewUser.
-type NewUser struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
+// Health represents the status of service.
+type Health struct {
+	Status uint64 `json:"status"`
 }
 
 // User defines model for User.
 type User struct {
-	Id       uint64 `json:"id"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	Id   uint64 `json:"id" validate:"required"`
+	Name string `json:"name" validate:"required"`
 }
+
+// UserName represents a part of user data.
+type UserName struct {
+	Name string `json:"name" validate:"required"`
+}
+
+// UserPassword represents the password of user
+type UserPassword struct {
+	Password string `json:"password" validate:"required"`
+}
+
+// SessionId defines model for SessionId.
+type SessionId = string
+
+// AuthenticateJSONBody defines parameters for Authenticate.
+type AuthenticateJSONBody struct {
+	Name     string `json:"name" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+// AuthenticateParams defines parameters for Authenticate.
+type AuthenticateParams struct {
+	// Sid Session ID
+	Sid *SessionId `form:"sid,omitempty" json:"sid,omitempty"`
+}
+
+// ConsentParams defines parameters for Consent.
+type ConsentParams struct {
+	// Sid Session ID
+	Sid *SessionId `form:"sid,omitempty" json:"sid,omitempty"`
+}
+
+// RegisterJSONBody defines parameters for Register.
+type RegisterJSONBody struct {
+	Name     string `json:"name" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
+// AuthenticateJSONRequestBody defines body for Authenticate for application/json ContentType.
+type AuthenticateJSONRequestBody AuthenticateJSONBody
+
+// RegisterJSONRequestBody defines body for Register for application/json ContentType.
+type RegisterJSONRequestBody RegisterJSONBody
 
 // --------------------------------------------------
 //  Interface
 // --------------------------------------------------
 
-// ServerInterface represents all server handlers.
-type ServerInterface interface {
+// HandlerInterface represents all server handlers.
+type HandlerInterface interface {
+
+	// POST: /authenticate
+	Authenticate(w http.ResponseWriter, r *http.Request)
+
+	// POST: /consent
+	Consent(w http.ResponseWriter, r *http.Request)
 
 	// GET: /health
 	CheckHealth(w http.ResponseWriter, r *http.Request)
 
-	// POST: /user/authenticate
-	AuthenticateUser(w http.ResponseWriter, r *http.Request)
-
-	// POST: /user/register
-	RegisterUser(w http.ResponseWriter, r *http.Request)
-}
-
-// Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
-type Unimplemented struct{}
-
-// GET: /health
-func (_ Unimplemented) CheckHealth(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// POST: /user/authenticate
-func (_ Unimplemented) AuthenticateUser(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
-}
-
-// POST: /user/register
-func (_ Unimplemented) RegisterUser(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusNotImplemented)
+	// POST: /register
+	Register(w http.ResponseWriter, r *http.Request)
 }
 
 // --------------------------------------------------
 //  Middleware
 // --------------------------------------------------
 
-// ServerInterfaceWrapper converts contexts to parameters.
-type ServerInterfaceWrapper struct {
-	Handler          ServerInterface
+// HandlerInterfaceWrapper converts contexts to parameters.
+type HandlerInterfaceWrapper struct {
+	Handler          HandlerInterface
 	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
 
@@ -104,43 +131,20 @@ func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler 
 	return ret
 }
 
+func (mfm *MiddlewareFuncMap) SetAuthenticateMW(mf []MiddlewareFunc) {
+	mfm.m["Authenticate"] = mf
+}
+
+func (mfm *MiddlewareFuncMap) SetConsentMW(mf []MiddlewareFunc) {
+	mfm.m["Consent"] = mf
+}
+
 func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf []MiddlewareFunc) {
 	mfm.m["CheckHealth"] = mf
 }
 
-func (mfm *MiddlewareFuncMap) SetAuthenticateUserMW(mf []MiddlewareFunc) {
-	mfm.m["AuthenticateUser"] = mf
-}
-
-func (mfm *MiddlewareFuncMap) SetRegisterUserMW(mf []MiddlewareFunc) {
-	mfm.m["RegisterUser"] = mf
-}
-
-// CheckHealth operation middleware
-func (siw *ServerInterfaceWrapper) CheckHealth() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
-		siw.Handler.CheckHealth(w, r.WithContext(ctx))
-	})
-}
-
-// AuthenticateUser operation middleware
-func (siw *ServerInterfaceWrapper) AuthenticateUser() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
-		siw.Handler.AuthenticateUser(w, r.WithContext(ctx))
-	})
-}
-
-// RegisterUser operation middleware
-func (siw *ServerInterfaceWrapper) RegisterUser() http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
-		siw.Handler.RegisterUser(w, r.WithContext(ctx))
-	})
+func (mfm *MiddlewareFuncMap) SetRegisterMW(mf []MiddlewareFunc) {
+	mfm.m["Register"] = mf
 }
 
 type UnescapedCookieParamError struct {
@@ -213,14 +217,13 @@ func (e *TooManyValuesForParamError) Error() string {
 }
 
 type ChiServerOptions struct {
-	BaseURL          string
 	BaseRouter       *chi.Mux
 	Middlewares      *MiddlewareFuncMap
 	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
 }
 
 // MuxWithOptions creates http.Handler with additional options
-func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
+func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 	r := options.BaseRouter
 
 	if r == nil {
@@ -233,30 +236,32 @@ func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
 		}
 	}
 
-	wrapper := ServerInterfaceWrapper{
-		Handler:          si,
-		ErrorHandlerFunc: options.ErrorHandlerFunc,
-	}
+	r.Group(func(r chi.Router) {
+		if mw := options.Middlewares.raw("Authenticate"); mw != nil {
+			r.Use(mw...)
+		}
+		r.Post("/authenticate", si.Authenticate)
+	})
+
+	r.Group(func(r chi.Router) {
+		if mw := options.Middlewares.raw("Consent"); mw != nil {
+			r.Use(mw...)
+		}
+		r.Post("/consent", si.Consent)
+	})
 
 	r.Group(func(r chi.Router) {
 		if mw := options.Middlewares.raw("CheckHealth"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Get(options.BaseURL+"/health", wrapper.CheckHealth())
+		r.Get("/health", si.CheckHealth)
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("AuthenticateUser"); mw != nil {
+		if mw := options.Middlewares.raw("Register"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Post(options.BaseURL+"/user/authenticate", wrapper.AuthenticateUser())
-	})
-
-	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("RegisterUser"); mw != nil {
-			r.Use(mw...)
-		}
-		r.Post(options.BaseURL+"/user/register", wrapper.RegisterUser())
+		r.Post("/register", si.Register)
 	})
 
 	return r
@@ -265,18 +270,28 @@ func MuxWithOptions(si ServerInterface, options *ChiServerOptions) *chi.Mux {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7xUTW/bOhD8K8S+d1RE530UgU7NR9H60CZo0lPgA0OtLaYUyZIrO0Gg/16QkhzLUVL3",
-	"0tuCmJ2dWe7uE0hbO2vQUIDiCYKssBYp/IRCUxUj561DTwo7CAlqUkSPDqGAQF6ZFbRtBh5/NMpjCcXt",
-	"gFtkA87e3aMkaDP4gptvAf1LbiNqnGDOwIkQNtaXvy6bKHYSpuoPxYXWl0sobp/gb49LKOAv/twO3veC",
-	"D2rbbF+uSnqW1teCoIBGGXr3H2wLKkO4iol7EtWUqkUbYcosbeSU1pCQFEOshdLRb+Oc9fQeH0TtNObS",
-	"1pD1HYPTqzm77gCQQeNjQkXkQsH5TgLvSXjsQolBeuVIWRMZDMMHh17VaEhopmJOiiOA2SW7dGjmF+zc",
-	"GoOS2EZRxT5ayEAriSbg8wfC5/nNVsbN2UWsRujrcLm8Rr9WEnt5e+oShscGKtIRs7JHVpXyKKBfo4cM",
-	"1uhDp/c4n+WzSGwdGuEUFPBvfpzP0t9Tlf6HV9sZXmFq5tjzeYXyO6MKWQeMLkMnMIfE7JP7eTmA+6WI",
-	"/xmcNaGbg39ms+HT0KQ6wjmtZErm9yEWG3YrRm9NW18hTcNYba+MbWUJHf3//0eLG0tjAQnLm4Cei4Yq",
-	"NBRLp2FwNkw0/XQHFZhgMfVlt3dRafu6FcJAZ7Z83DN8mLntHr8wF58ZWTYysLuz5BtsR59uGq2fnXtc",
-	"qUD9RZt0fe6x92twkzwzZdLolYLEnQgTE/e1Z/0N/4ddtO05O6hdi9cbNvhm1pAduTmofW0G3WaHJHlc",
-	"4wLXqK2LJ4h9MGvlrYnx6LwVnGsrha5soOJkdjLj6+NkbEx1TWKlzOpVmnglQ4fJVeny3Zs0SXjlbdnI",
-	"dBjf4pziWrQ/AwAA//9rn2b3dAcAAA==",
+	"H4sIAAAAAAAC/9RX31fbuBL+V3x076OJEwj3tHm6QAjQbQhNKGzD4UGRJ7GILamSDAFO/vc9IzuxnbiU",
+	"brs9y1tij2a+b775IT8TJhMlBQhrSOeZKKppAha0+zcCY7gUZyH+CcEwzZXlUpDO6pV31iU+gQVNVAyk",
+	"Q/qXX/bPuwft8yfW7ovF+fnd4fHg9PPD5edF/+NlNJicHv5B7w52J/PFfNgbfxgfteZjMRyw3db1+G7c",
+	"m/SOLb1SCT3ttb/Mr+6H8/2Uzt9ff5mHdnjV34M/mR214vanZu8U4pBOdvvvp6ddOh6f9J5OWpPRh7A7",
+	"jGbXF0n/6NNFmvauZ61o72p03Lp+Gnx895X4hCN8JuWcA/GJoAniNjwkPjEsgoQiWfuo3GOruZiR5XK5",
+	"eunycqy11EMwSgoD27nRoDQYTKkHaEl8orRUoC0Hk5lbymP8VWSO+JtBfWIstamp2DV9MpU6oZZ0SMqF",
+	"/V+7OMiFhRlogmg1fE25hpB0blZu/FXc2/UJObkDZjHUKdDYRi9ysRF4mStPTj0D+p4zaGyRqwG92/wJ",
+	"2HVoPxvQGIHG8WBKOjfPGxi4q9jvRvTJYkdSxXeYDGEGYgcWVtMdS2fOyz2NeUgtuDTkuJabKHlYh/CZ",
+	"/FfDlHTIf4KiwYK8hAKEf46Ft7z1v53v1ID2QmppY0XZnXlJIuopqi3KUzq8KZDIvRS1h8b4tLlVhL8i",
+	"Qy7et1S8oMY8SB1+t/JUbrgit0VLlTz9LmrrmNv00JSLqURfTApLmXXIEtf5xKRKSW3/nyNtMJkU0+jg",
+	"4swbZQbEJ6nGA5G1ynSCoHQgyJ0EmMxq8g6EBwsFmicgLI09jmfcbzTAHA4UiLOudySFAGa9B24j70QS",
+	"n8ScQT7Wcjj9s8s1jMvDLkazoBMzmI6yIZDD20DnbALMO7dOi5nckTxkOzg6nID3oE2Gt9VoNproWCoQ",
+	"VHHSIXuNVgNVU9RGTpGApjYCYTlzsjwTJY3drpuDkhV2BFYANgHWimOP66xi5YIUe++mvnkLk6DYi9jA",
+	"WBBg7KEMH1dig3DAqFIxRuBSBHcG0T2XdkwxvF43K14xVNbdtLx1BVjNDFp4Vnq0yr0oaKtTcBWebTaX",
+	"9d1m84dYfQ8iqQE2ShkDY6ZpHD9W0IVu9LVfBWHd88V+JVy4NvZyiUixUtvN5tJ/Jezquq/BXyom7K4p",
+	"5TGEXpgCZnsDQ86o9ZOMVnPNk3o9Giv0Wr+ZXh0gx3X/b6uXCpxhzEKY3aM8yViqsVILovu/TcdNNA13",
+	"YcnWxc3GUXKL7wKGgTLO9bPqRFNhPQ3xIxczt7sfPQU64dnlGqMaqO7y6hg7yiP87AQrNfxec7fmul/u",
+	"0JwWvDl982z9sLBS86eyrtH6sjyDGlWPImBzd2nJDDeuyxsKonF++/4HR28eoSYpOTJvDYvGr5f1VwUX",
+	"0lYBlBTITrs85fnXMOPGZp8A9Y11pCFf/wIesgbiwkmCfTShpkaJ4crrG1zpq4x4UlhZ4fnvW/ArrG9l",
+	"u2d1oV+729/QPHyB2ctDsXyQZHWZXeqz5VON0oV7iKXCrw/vWNxzLUWS7aziy6YTBLFkNI6ksZ13zXdN",
+	"1xsbRWTpDNfkt3zg15HJbBo8VI3yp9W2twstw5Q55i853HJ0u87C+vtoY/djrNKbYnmUXpRnWulxJa/L",
+	"2+VfAQAA///z9472nxMAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

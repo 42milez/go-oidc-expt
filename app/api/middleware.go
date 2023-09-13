@@ -6,33 +6,24 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
-	"github.com/42milez/go-oidc-server/app/api/cookie"
-	"github.com/42milez/go-oidc-server/app/api/session"
-
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/config"
 )
 
-func RestoreSession(ck *cookie.Cookie, sess *session.Session) MiddlewareFunc {
+func RestoreSession(option *HandlerOption) MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			sid, err := ck.Get(r, config.SessionIDCookieName)
-
+			sid, err := option.cookie.Read(r, config.SessionIDCookieName)
 			if errors.Is(err, http.ErrNoCookie) {
-				RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
-					Error: xerr.UnauthorizedRequest,
-				})
-				return
-			}
-
-			req, err := sess.Restore(r, typedef.SessionID(sid))
-
-			if err != nil {
 				next.ServeHTTP(w, r)
 				return
 			}
-
+			req, err := option.sessionRestorer.Restore(r, typedef.SessionID(sid))
+			if err != nil {
+				RespondJson500(w, xerr.UnexpectedErrorOccurred)
+				return
+			}
 			next.ServeHTTP(w, req)
 		})
 	}

@@ -3,11 +3,11 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/service"
+
 	"github.com/42milez/go-oidc-server/app/api/validation"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-
-	"github.com/42milez/go-oidc-server/app/api/session"
 
 	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/go-playground/validator/v10"
@@ -33,21 +33,7 @@ type AuthorizeGet struct {
 	validator *validator.Validate
 }
 
-// ServeHTTP authorizes a request that asking to access the resources belonging to a user
-//
-//	@summary		TBD
-//	@description	TBD
-//	@id				AuthorizeGet.ServeHTTP
-//	@tags			OIDC
-//	@accept			json
-//	@produce		json
-//	@param			name		query		string	true	"TBD"
-//	@param			password	query		string	true	"TBD"
-//	@success		200			{string}	string
-//	@failure		500			{object}	model.ErrorResponse
-//	@failure		500			{object}	model.ErrorResponse
-//	@router			/v1/authorize [get]
-func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ag *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
 	q := &model.AuthorizeRequest{}
 
@@ -58,7 +44,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := p.validator.Struct(q); err != nil {
+	if err := ag.validator.Struct(q); err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.InvalidRequest,
 		})
@@ -71,7 +57,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	userID, ok := session.GetUserID(r.Context())
+	sess, ok := service.GetSession(r.Context())
 
 	if !ok {
 		RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
@@ -80,7 +66,7 @@ func (p *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	location, err := p.Service.Authorize(r.Context(), userID, q)
+	location, err := ag.Service.Authorize(r.Context(), sess.UserID, q)
 
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
@@ -101,20 +87,6 @@ type AuthorizePost struct {
 	Validator *validator.Validate
 }
 
-// ServeHTTP authorizes a request that asking to access the resources belonging to a user
-//
-//	@summary		TBD
-//	@description	TBD
-//	@id				AuthorizePost.ServeHTTP
-//	@tags			OIDC
-//	@accept			json
-//	@produce		json
-//	@param			name		formData	string	true	"TBD"
-//	@param			password	formData	string	true	"TBD"
-//	@success		200			{string}	string
-//	@failure		500			{object}	model.ErrorResponse
-//	@failure		500			{object}	model.ErrorResponse
-//	@router			/v1/authorize [post]
 func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// NOT IMPLEMENTED YET
 }

@@ -3,26 +3,49 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/api/session"
+	"github.com/42milez/go-oidc-server/app/entity"
+	"github.com/42milez/go-oidc-server/app/typedef"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+
+	"github.com/42milez/go-oidc-server/app/service"
 
 	"github.com/42milez/go-oidc-server/app/config"
 )
 
-func NewConsent() (*Consent, error) {
-	return &Consent{
-		Session: nil,
-	}, nil
+type ConsentHdlr struct {
+	session SessionUpdater
 }
 
-type Consent struct {
-	Session SessionUpdater
-}
+func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-func (p *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	_ = session.GetSessionID(r.Context())
+	var sessId typedef.SessionID
+	var sess *entity.Session
+	var ok bool
 
-	// TODO: Save consent status into cache
-	// ...
+	if sessId, ok = service.GetSessionID(ctx); !ok {
+		RespondJSON(w, http.StatusUnauthorized, &ErrorResponse{
+			Detail: xerr.UnauthorizedRequest.Error(),
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	if sess, ok = service.GetSession(ctx); !ok {
+		RespondJSON(w, http.StatusUnauthorized, &ErrorResponse{
+			Detail: xerr.UnauthorizedRequest.Error(),
+			Status: http.StatusUnauthorized,
+		})
+		return
+	}
+
+	sess.Consent = true
+
+	if err := ch.session.Update(ctx, sessId, sess); err != nil {
+		RespondJson500(w, xerr.UnexpectedErrorOccurred)
+		return
+	}
 
 	Redirect(w, r, config.AuthorizationEndpoint, http.StatusFound)
 }

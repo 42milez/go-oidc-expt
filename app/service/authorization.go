@@ -20,18 +20,18 @@ type Authorize struct {
 	Repo *repository.User
 }
 
-func (p *Authorize) Authorize(ctx context.Context, userID typedef.UserID, param *model.AuthorizeRequest) (string, error) {
+func (a *Authorize) Authorize(ctx context.Context, userID typedef.UserID, param *model.AuthorizeRequest) (string, error) {
 	code, err := xrandom.MakeCryptoRandomString(config.AuthCodeLength)
 
 	if err != nil {
 		return "", err
 	}
 
-	if _, err = p.Repo.SaveAuthorizationCode(ctx, userID, code); err != nil {
+	if _, err = a.Repo.CreateAuthorizationCode(ctx, userID, code); err != nil {
 		return "", err
 	}
 
-	ru, err := p.Repo.SelectRedirectUriByUserID(ctx, userID)
+	ru, err := a.Repo.ReadRedirectUriByUserID(ctx, userID)
 
 	if err != nil {
 		return "", err

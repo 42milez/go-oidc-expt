@@ -12,17 +12,24 @@ info:
     name: MIT
     url: TBD
 servers:
-  - url: http://localhost:8080/v1
+  - url: http://localhost:8080
     description: Development Environment
-  - url: https://staging.idp.example.com/v1
+  - url: https://staging.idp.example.com
     description: Staging Environment
-  - url: https://idp.example.com/v1
+  - url: https://idp.example.com
     description: Production Environment
+tags:
+  - name: Authentication
+  - name: Authorization
+  - name: HealthCheck
+  - name: Registration
 paths:
   /health:
     get:
       description: Check the health of service.
       operationId: checkHealth
+      tags:
+        - HealthCheck
       responses:
         '200':
           description: service operational
@@ -36,54 +43,183 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
-  /user/register:
+  /register:
     post:
       description: Creates a new user in the database.
-      operationId: registerUser
+      operationId: register
+      tags:
+        - Registration
       requestBody:
         description: User to register onto the database
         required: true
         content:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/User'
-              - $ref: '#/components/schemas/NewUser'
-  /user/authenticate:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserName'
+                - $ref: '#/components/schemas/UserPassword'
+      responses:
+        '200':
+          description: Successfully registered.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Registration failed due to invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 400
+                detail: invalid request
+        '500':
+          description: Registration failed due to unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 500
+                detail: unexpected error occurred
+  /authenticate:
     post:
       description: Authenticates a user.
-      operationId: authenticateUser
+      operationId: authenticate
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
       requestBody:
         description: User to authenticate
         required: true
         content:
-          schema:
-            $ref: '#/components/schemas/NewUser'
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserName'
+                - $ref: '#/components/schemas/UserPassword'
+      responses:
+        '200':
+          description: Successfully authenticated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Authentication failed due to invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 400
+                detail: invalid request
+        '401':
+          description: Authentication failed due to invalid username or password.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 401
+                detail: invalid username or password
+        '500':
+          description: Authentication failed due to unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 500
+                detail: unexpected error occurred
+  /consent:
+    post:
+      description: Grant relying party permission to use user data.
+      operationId: consent
+      tags:
+        - Authorization
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '302':
+          description: Successfully consented.
+        '500':
+          description: Consent failed due to unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: 500
+                detail: unexpected error occurred
 components:
+  parameters:
+    SessionId:
+      name: sid
+      description: Session ID
+      in: cookie
+      schema:
+        type: string
+      example: MTY5NDA4Nzc4MnxNNjBEOHUwTUxMLThObHBKajA2bkxkRFZJZC1kZnROc21WZjZFbFEtaVpmaHF4YkVvRk5uak9WYkdtRVM3eXctS1l4Q0FHeldab2M9fHDaZZGFzG1bSJdDRhgWPmMCQPuuFWg1h3VSE1WzOL8q
   schemas:
     Health:
+      description: represents the status of service.
       type: object
       required:
         - status
       properties:
         status:
-          type: string
+          type: integer
+          format: uint64
+          example: 200
     User:
+      description: represents user data.
       allOf:
-        - $ref: '#/components/schemas/NewUser'
         - type: object
           required:
             - id
           properties:
             id:
               type: integer
+              x-oapi-codegen-extra-tags:
+                validate: required
               format: uint64
-    NewUser:
+        - $ref: '#/components/schemas/UserName'
+    UserName:
+      description: represents a part of user data.
       type: object
       required:
         - name
-        - password
       properties:
         name:
           type: string
+          x-oapi-codegen-extra-tags:
+            validate: required
+          example: username0
+    UserPassword:
+      description: represents the password of user
+      type: object
+      required:
+        - password
+      properties:
         password:
           type: string
+          x-oapi-codegen-extra-tags:
+            validate: required
+          example: username0
+    ErrorResponse:
+      description: represents error
+      type: object
+      required:
+        - status
+        - detail
+      properties:
+        status:
+          type: integer
+          format: uint64
+          example: 0
+        detail:
+          type: string
+          example: ''

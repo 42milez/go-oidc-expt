@@ -2,9 +2,8 @@ package repository
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
-	"os"
-	"strconv"
 	"testing"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -20,54 +19,27 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func TestNewSession(t *testing.T) {
+func TestSession_Create(t *testing.T) {
 	t.Parallel()
-
-	if err := os.Setenv("REDIS_DB", strconv.Itoa(xtestutil.TestRedisDB)); err != nil {
-		t.Error(err)
-	}
-
-	cfg, err := config.New()
-
-	if err != nil {
-		t.Error(err)
-	}
 
 	ctx := context.Background()
-
-	sess, err := NewCacheClient(ctx, cfg)
-
-	if err != nil {
-		t.Fatalf("%s: %+v", xerr.FailedToInitialize, err)
-	}
-
-	if err = sess.Close(); err != nil {
-		t.Errorf("%s: %+v", xerr.FailedToCloseConnection, err)
-	}
-}
-
-func TestSession_SaveID(t *testing.T) {
-	t.Parallel()
-
-	client := xtestutil.NewRedisClient(t)
 	repo := Session{
-		Cache: client,
+		cache: xtestutil.NewCache(t),
 	}
-	ctx := context.Background()
-	sid := "TestSession_SaveID"
+	sid := typedef.SessionID("TestSession_Create")
 
 	t.Cleanup(func() {
-		client.Del(ctx, sid)
+		repo.cache.Client.Del(ctx, string(sid))
 	})
 
 	sess := &entity.Session{
 		UserID: typedef.UserID(475924035230777348),
 	}
 
-	ok, err := repo.Create(ctx, typedef.SessionID(sid), sess)
+	ok, err := repo.Create(ctx, sid, sess)
 
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if !ok {
@@ -75,29 +47,28 @@ func TestSession_SaveID(t *testing.T) {
 	}
 }
 
-func TestSession_LoadID(t *testing.T) {
+func TestSession_Read(t *testing.T) {
 	t.Parallel()
 
-	client := xtestutil.NewRedisClient(t)
 	repo := Session{
-		Cache: client,
+		cache: xtestutil.NewCache(t),
 	}
 
 	t.Run("OK", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		sid := "TestSession_LoadID_OK"
+		sid := "TestSession_Read_OK"
 		want := &entity.Session{
 			UserID: typedef.UserID(475924035230777348),
 		}
 
-		if err := client.Set(ctx, sid, want, config.SessionTTL).Err(); err != nil {
+		if err := repo.cache.Client.SetNX(ctx, sid, want, config.SessionTTL).Err(); err != nil {
 			t.Fatal(err)
 		}
 
 		t.Cleanup(func() {
-			client.Del(ctx, sid)
+			repo.cache.Client.Del(ctx, sid)
 		})
 
 		got, err := repo.Read(ctx, typedef.SessionID(sid))
@@ -115,10 +86,77 @@ func TestSession_LoadID(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		sid := "TestSession_LoadID_NotFound"
+		sid := "TestSession_Read_NotFound"
 
 		_, err := repo.Read(ctx, typedef.SessionID(sid))
 
+		// TODO: Replace 'redis.Nil' with other error.
+		if err == nil || !errors.Is(err, redis.Nil) {
+			t.Errorf("want = %+v; got = %+v", redis.Nil, err)
+		}
+	})
+}
+
+func TestSession_Update(t *testing.T) {
+	t.Parallel()
+
+	repo := Session{
+		cache: xtestutil.NewCache(t),
+	}
+
+	t.Run("OK", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		sid := typedef.SessionID("TestSession_Update_OK")
+		sess := &entity.Session{
+			UserID:  typedef.UserID(475924035230777348),
+			Consent: false,
+		}
+
+		if err := repo.cache.Client.SetNX(ctx, string(sid), sess, config.SessionTTL).Err(); err != nil {
+			t.Fatal(err)
+		}
+
+		t.Cleanup(func() {
+			repo.cache.Client.Del(ctx, string(sid))
+		})
+
+		want := &entity.Session{
+			UserID:  typedef.UserID(475924035230777348),
+			Consent: true,
+		}
+
+		if _, err := repo.Update(ctx, sid, want); err != nil {
+			t.Error(err)
+		}
+
+		v, err := repo.cache.Client.Get(ctx, string(sid)).Result()
+
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		got := &entity.Session{}
+
+		if err = json.Unmarshal([]byte(v), got); err != nil {
+			t.Fatal(err)
+		}
+
+		if d := cmp.Diff(want, got); !xutil.IsEmpty(d) {
+			t.Errorf("item not matched (-got +want)\n%s", d)
+		}
+	})
+
+	t.Run("NotFound", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		sid := "TestSession_Read_NotFound"
+
+		_, err := repo.Read(ctx, typedef.SessionID(sid))
+
+		// TODO: Replace 'redis.Nil' with other error.
 		if err == nil || !errors.Is(err, redis.Nil) {
 			t.Errorf("want = %+v; got = %+v", redis.Nil, err)
 		}
@@ -128,27 +166,24 @@ func TestSession_LoadID(t *testing.T) {
 func TestSession_Delete(t *testing.T) {
 	t.Parallel()
 
-	client := xtestutil.NewRedisClient(t)
-	repo := Session{
-		Cache: client,
-	}
 	ctx := context.Background()
+	repo := Session{
+		cache: xtestutil.NewCache(t),
+	}
 	sid := "TestSession_Delete"
 	sess := &entity.Session{
 		UserID: typedef.UserID(475924035230777348),
 	}
 
-	ok, err := repo.Create(ctx, typedef.SessionID(sid), sess)
-
-	if err != nil {
+	if _, err := repo.cache.Client.SetNX(ctx, sid, sess, config.SessionTTL).Result(); err != nil {
 		t.Fatal(err)
 	}
 
-	if !ok {
-		t.Error(xerr.SessionIDAlreadyExists)
-	}
+	t.Cleanup(func() {
+		repo.cache.Client.Del(ctx, sid)
+	})
 
-	if err = repo.Delete(ctx, typedef.SessionID(sid)); err != nil {
+	if err := repo.Delete(ctx, typedef.SessionID(sid)); err != nil {
 		t.Error(err)
 	}
 }

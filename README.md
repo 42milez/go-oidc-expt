@@ -15,37 +15,37 @@ TBD ( Use the image upload to Docker Hub )
 ### Install required packages
 
 ```
-brew install ariga/tap/atlas docker-buildx docker-compose golangci-lint lima openssl@3
+./script/bootstrap/brew.sh
 ```
 
 ### Enable docker-buildx
 
 ```
-mkdir -p ~/.docker/cli-plugins
-ln -sfn /opt/homebrew/opt/docker-buildx/bin/docker-buildx ~/.docker/cli-plugins/docker-buildx
+./script/bootstrap/docker.sh
 ```
 
 ### Generate key pair for signing access token
 
 ```
-mkdir -p app/pkg/xjwt/cert
-openssl ecparam -genkey -name prime256v1 -noout -out app/pkg/xjwt/cert/private.pem
-openssl ec -in app/pkg/xjwt/cert/private.pem -pubout -out app/pkg/xjwt/cert/public.pem
+./script/bootstrap/keypair.sh
 ```
+
+The script creates a key pair in `app/pkg/xjwt/cert`.
 
 References:
 
 - [Generating an Elliptic Curve keys](https://cloud.google.com/iot/docs/how-tos/credentials/keys#generating_an_elliptic_curve_keys)
 
-### Create and start the virtual machine
+### Create and start the virtual machine thant runs docker containers
 
 ```
-limactl start --name=go-oidc-server lima.yml
+make lc-create
+make lc-start
 ```
 
 The virtual machine:
-- can be stopped with `limactl stop go-oidc-server`
-- can be deleted with `limactl delete go-oidc-server`
+- can be stopped with `make lc-stop`
+- can be deleted with `make lc-delete`
 
 ### Create and switch docker context:
 
@@ -62,8 +62,9 @@ make up
 
 The containers:
 - can be stopped with `make stop`
-  - The stopped containers can be started with `make start`
+  - Stopped containers can be started with `make start`
 - can be stopped and removed with `make down`
+- and volumes can be deleted with `make destroy`
 
 ### Apply migrations
 
@@ -83,7 +84,7 @@ The commands described later require the following parameters:
 ### Generating assets
 
 ```
-go generate ./...
+make gen
 ```
 
 ### Generating database schema
@@ -134,6 +135,8 @@ make seed
   - OpenID Connect Core 1.0 incorporating errata set 1
     - [English](https://openid.net/specs/openid-connect-core-1_0.html)
     - [Japanese](https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html)
+- OpenAPI
+  - [OpenAPI.Tools](https://openapi.tools/)
 - OTP
   - [RFC4226: An HMAC-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc4226)
   - [RFC6238: Time-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc6238)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"net"
 	"net/http"
 	"os"
@@ -30,7 +31,7 @@ func (s *Server) Run(ctx context.Context) error {
 
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
-		if err := s.srv.Serve(s.lis); (err != nil) && (err != http.ErrServerClosed) {
+		if err := s.srv.Serve(s.lis); (err != nil) && (!errors.Is(err, http.ErrServerClosed)) {
 			log.Error().Err(err).Msg("failed to close")
 			return err
 		}

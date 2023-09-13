@@ -11,6 +11,6 @@ type Session struct {
 	Consent bool
 }
 
-func (p *Session) MarshalBinary() ([]byte, error) {
-	return json.Marshal(p)
+func (s *Session) MarshalBinary() ([]byte, error) {
+	return json.Marshal(s)
 }

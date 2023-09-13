@@ -7,8 +7,9 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/datastore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
-	"github.com/42milez/go-oidc-server/app/pkg/xid"
 	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -16,7 +17,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
-	"github.com/42milez/go-oidc-server/app/repository"
 )
 
 const nUserMin = 1
@@ -30,8 +30,8 @@ func printSeeds(data any) {
 	}
 }
 
-func insertUsers(ctx context.Context, client *ent.Client, nUser int) ([]*ent.User, error) {
-	if client == nil {
+func insertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent.User, error) {
+	if db == nil {
 		return nil, fmt.Errorf("database client required")
 	}
 
@@ -61,14 +61,14 @@ func insertUsers(ctx context.Context, client *ent.Client, nUser int) ([]*ent.Use
 	builders := make([]*ent.UserCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = client.User.Create().SetName(v.name).SetPassword(v.password)
+		builders[i] = db.Client.User.Create().SetName(v.name).SetPassword(v.password)
 	}
 
-	return client.User.CreateBulk(builders...).Save(ctx)
+	return db.Client.User.CreateBulk(builders...).Save(ctx)
 }
 
-func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User, nCodeByUser int) ([]*ent.AuthCode, error) {
-	if client == nil {
+func insertAuthCodes(ctx context.Context, db *datastore.Database, users []*ent.User, nCodeByUser int) ([]*ent.AuthCode, error) {
+	if db == nil {
 		return nil, fmt.Errorf("database client required")
 	}
 
@@ -101,14 +101,14 @@ func insertAuthCodes(ctx context.Context, client *ent.Client, users []*ent.User,
 	builders := make([]*ent.AuthCodeCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = client.AuthCode.Create().SetCode(v.code).SetExpireAt(v.expireAt).SetUserID(v.userID)
+		builders[i] = db.Client.AuthCode.Create().SetCode(v.code).SetExpireAt(v.expireAt).SetUserID(v.userID)
 	}
 
-	return client.AuthCode.CreateBulk(builders...).Save(ctx)
+	return db.Client.AuthCode.CreateBulk(builders...).Save(ctx)
 }
 
-func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.User, nUriByUser int) ([]*ent.RedirectURI, error) {
-	if client == nil {
+func insertRedirectURIs(ctx context.Context, db *datastore.Database, users []*ent.User, nUriByUser int) ([]*ent.RedirectURI, error) {
+	if db == nil {
 		return nil, fmt.Errorf("database client required")
 	}
 
@@ -134,30 +134,30 @@ func insertRedirectURIs(ctx context.Context, client *ent.Client, users []*ent.Us
 	builders := make([]*ent.RedirectURICreate, len(params))
 
 	for i, v := range params {
-		builders[i] = client.RedirectURI.Create().SetURI(v.uri).SetUserID(v.userID)
+		builders[i] = db.Client.RedirectURI.Create().SetURI(v.uri).SetUserID(v.userID)
 	}
 
-	return client.RedirectURI.CreateBulk(builders...).Save(ctx)
+	return db.Client.RedirectURI.CreateBulk(builders...).Save(ctx)
 }
 
-func run(ctx context.Context, client *ent.Client) error {
+func run(ctx context.Context, db *datastore.Database) error {
 	nUser := 10
 	nAuthCodeByUser := 3
 	nRedirectUriByUser := 3
 
-	users, err := insertUsers(ctx, client, nUser)
+	users, err := insertUsers(ctx, db, nUser)
 
 	if err != nil {
 		return err
 	}
 
-	_, err = insertAuthCodes(ctx, client, users, nAuthCodeByUser)
+	_, err = insertAuthCodes(ctx, db, users, nAuthCodeByUser)
 
 	if err != nil {
 		return err
 	}
 
-	_, err = insertRedirectURIs(ctx, client, users, nRedirectUriByUser)
+	_, err = insertRedirectURIs(ctx, db, users, nRedirectUriByUser)
 
 	if err != nil {
 		return err
@@ -176,20 +176,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err = xid.Init(); err != nil {
-		log.Fatal(err)
-	}
-
 	cfg.DBPort = 13306
-	dbClient, err := repository.NewDBClient(ctx, cfg)
+	db, err := datastore.NewDatabase(ctx, cfg)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	entClient := repository.NewEntClient(dbClient)
-
-	if err = run(ctx, entClient); err != nil {
+	if err = run(ctx, db); err != nil {
 		log.Fatal(err)
 	}
 }

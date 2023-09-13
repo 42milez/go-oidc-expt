@@ -1,4 +1,4 @@
-package xjwt
+package api
 
 import (
 	"bytes"
@@ -19,25 +19,32 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
-func TestEmbed(t *testing.T) {
+func TestJWT_Embed(t *testing.T) {
+	t.Parallel()
+
 	want := []byte("-----BEGIN EC PRIVATE KEY-----")
+
 	if !bytes.Contains(rawPrivateKey, want) {
 		t.Errorf("invalid format: want = %s; got = %s", want, rawPrivateKey)
 	}
+
 	want = []byte("-----BEGIN PUBLIC KEY-----")
+
 	if !bytes.Contains(rawPublicKey, want) {
 		t.Errorf("invalid format: want = %s; got = %s", want, rawPublicKey)
 	}
 }
 
-func TestJWT_GenerateAccessToken(t *testing.T) {
-	jwtUtil, err := NewJWT(&xtime.RealClocker{})
+func TestJWT_MakeAccessToken(t *testing.T) {
+	t.Parallel()
+
+	j, err := NewJWT(&xtime.RealClocker{})
 
 	if err != nil {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 	}
 
-	got, err := jwtUtil.MakeAccessToken("test_user")
+	got, err := j.MakeAccessToken("test_user")
 
 	if err != nil {
 		t.Fatal(err)
@@ -48,17 +55,16 @@ func TestJWT_GenerateAccessToken(t *testing.T) {
 	}
 }
 
-func TestJWT_ParseRequest(t *testing.T) {
+func TestJWT_ExtractAccessToken(t *testing.T) {
 	t.Parallel()
 
-	c := xtestutil.FixedClocker{}
-
+	clock := xtestutil.FixedClocker{}
 	want, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
 		Issuer(issuer).
 		Subject(accessTokenSubject).
-		IssuedAt(c.Now()).
-		Expiration(c.Now().Add(30*time.Minute)).
+		IssuedAt(clock.Now()).
+		Expiration(clock.Now().Add(30*time.Minute)).
 		Claim(nameKey, "test_user").
 		Build()
 
@@ -78,7 +84,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	jwtUtil, err := NewJWT(c)
+	j, err := NewJWT(clock)
 
 	if err != nil {
 		t.Fatal(err)
@@ -87,7 +93,7 @@ func TestJWT_ParseRequest(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "https://github.com/42milez", nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", signed))
 
-	got, err := jwtUtil.parseRequest(req)
+	got, err := j.ExtractAccessToken(req)
 
 	if err != nil {
 		t.Fatal(err)
@@ -96,62 +102,4 @@ func TestJWT_ParseRequest(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("want = %+v; got = %+v", want, got)
 	}
-}
-
-func TestJWT_Validate(t *testing.T) {
-	t.Parallel()
-
-	c := xtestutil.FixedClocker{}
-
-	t.Run("OK", func(t *testing.T) {
-		token, err := jwt.NewBuilder().
-			JwtID(uuid.New().String()).
-			Issuer(issuer).
-			Subject(accessTokenSubject).
-			IssuedAt(c.Now()).
-			Expiration(c.Now().Add(30*time.Minute)).
-			Claim(nameKey, "test_user").
-			Build()
-
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		jwtUtil, err := NewJWT(c)
-
-		if err != nil {
-			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
-		}
-
-		if err = jwtUtil.validate(token); err != nil {
-			t.Error(err)
-		}
-	})
-
-	t.Run("NG", func(t *testing.T) {
-		t.Parallel()
-
-		token, err := jwt.NewBuilder().
-			JwtID(uuid.New().String()).
-			Issuer(issuer).
-			Subject(accessTokenSubject).
-			IssuedAt(c.Now()).
-			Expiration(c.Now().Add(30*time.Minute)).
-			Claim(nameKey, "test_user").
-			Build()
-
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		jwtUtil, err := NewJWT(xtestutil.FixedTomorrowClocker{})
-
-		if err != nil {
-			t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
-		}
-
-		if err = jwtUtil.validate(token); err == nil {
-			t.Errorf("want = ( error ); got = nil")
-		}
-	})
 }
