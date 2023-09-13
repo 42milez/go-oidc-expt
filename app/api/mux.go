@@ -99,10 +99,10 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 
 	mw = NewMiddlewareFuncMap()
 	mw.SetAuthenticateMW([]MiddlewareFunc{
-		//RestoreSession(ck, sess),
+		RestoreSession(option),
 	})
 	mw.SetRegisterMW([]MiddlewareFunc{
-		//RestoreSession(ck, sess),
+		RestoreSession(option),
 	})
 
 	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{

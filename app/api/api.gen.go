@@ -136,8 +136,6 @@ func (siw *HandlerInterfaceWrapper) Authenticate() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		var err error
-
 		// Parameter object where we will unmarshal all parameters from the context
 		params := &AuthenticateParams{}
 
