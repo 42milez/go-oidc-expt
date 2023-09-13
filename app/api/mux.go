@@ -101,15 +101,9 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	mux.Use(chimw.OapiRequestValidator(swag))
 
 	mw = NewMiddlewareFuncMap()
-	mw.SetAuthenticateMW([]MiddlewareFunc{
-		RestoreSession(option),
-	})
-	mw.SetConsentMW([]MiddlewareFunc{
-		RestoreSession(option),
-	})
-	mw.SetRegisterMW([]MiddlewareFunc{
-		RestoreSession(option),
-	})
+
+	rs := RestoreSession(option)
+	mw.SetAuthenticateMW(rs).SetConsentMW(rs).SetRegisterMW(rs)
 
 	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,

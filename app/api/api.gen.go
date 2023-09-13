@@ -131,20 +131,30 @@ func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler 
 	return ret
 }
 
-func (mfm *MiddlewareFuncMap) SetAuthenticateMW(mf []MiddlewareFunc) {
-	mfm.m["Authenticate"] = mf
+func (mfm *MiddlewareFuncMap) SetAuthenticateMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+	mfm.append("Authenticate", mf...)
+	return mfm
 }
 
-func (mfm *MiddlewareFuncMap) SetConsentMW(mf []MiddlewareFunc) {
-	mfm.m["Consent"] = mf
+func (mfm *MiddlewareFuncMap) SetConsentMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+	mfm.append("Consent", mf...)
+	return mfm
 }
 
-func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf []MiddlewareFunc) {
-	mfm.m["CheckHealth"] = mf
+func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+	mfm.append("CheckHealth", mf...)
+	return mfm
 }
 
-func (mfm *MiddlewareFuncMap) SetRegisterMW(mf []MiddlewareFunc) {
-	mfm.m["Register"] = mf
+func (mfm *MiddlewareFuncMap) SetRegisterMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+	mfm.append("Register", mf...)
+	return mfm
+}
+
+func (mfm *MiddlewareFuncMap) append(key string, mf ...MiddlewareFunc) {
+	for _, v := range mf {
+		mfm.m[key] = append(mfm.m[key], v)
+	}
 }
 
 type UnescapedCookieParamError struct {

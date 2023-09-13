@@ -33,10 +33,17 @@ func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler 
 }
 
 {{range .}}
-func (mfm *MiddlewareFuncMap) Set{{.OperationId}}MW(mf []MiddlewareFunc) {
-    mfm.m["{{.OperationId}}"] = mf
+func (mfm *MiddlewareFuncMap) Set{{.OperationId}}MW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+    mfm.append("{{.OperationId}}", mf...)
+    return mfm
 }
 {{end}}
+
+func (mfm *MiddlewareFuncMap) append(key string, mf ...MiddlewareFunc) {
+    for _, v := range mf {
+        mfm.m[key] = append(mfm.m[key], v)
+    }
+}
 
 type UnescapedCookieParamError struct {
     ParamName string
