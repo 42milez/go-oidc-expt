@@ -18,19 +18,12 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
         }
     }
 
-    {{if .}}
-    wrapper := HandlerInterfaceWrapper{
-        Handler:          si,
-        ErrorHandlerFunc: options.ErrorHandlerFunc,
-    }
-    {{end}}
-
     {{range .}}
     r.Group(func(r chi.Router) {
         if mw := options.Middlewares.raw("{{.OperationId}}"); mw != nil {
             r.Use(mw...)
         }
-        r.{{.Method | lower | title}}("{{.Path | swaggerUriToChiUri}}", wrapper.{{.OperationId}}())
+        r.{{.Method | lower | title}}("{{.Path | swaggerUriToChiUri}}", si.{{.OperationId}})
     })
     {{end}}
 

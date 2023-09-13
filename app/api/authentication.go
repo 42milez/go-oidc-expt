@@ -25,7 +25,7 @@ type AuthenticateHdlr struct {
 
 const sessionIDCookieName = config.SessionIDCookieName
 
-func (au *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request, params *AuthenticateParams) {
+func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var reqBody AuthenticateJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
@@ -34,7 +34,7 @@ func (au *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request, pa
 		return
 	}
 
-	if err := au.validator.Struct(reqBody); err != nil {
+	if err := ah.validator.Struct(reqBody); err != nil {
 		log.Error().Err(err).Msg(errValidationError)
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
 			Error: xerr.InvalidRequest,
@@ -42,7 +42,7 @@ func (au *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request, pa
 		return
 	}
 
-	userID, err := au.service.Authenticate(r.Context(), reqBody.Name, reqBody.Password)
+	userID, err := ah.service.Authenticate(r.Context(), reqBody.Name, reqBody.Password)
 
 	if err != nil {
 		if errors.Is(err, xerr.UserNotFound) {
@@ -61,7 +61,7 @@ func (au *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request, pa
 		}
 	}
 
-	sessionID, err := au.session.Create(r.Context(), &entity.Session{
+	sessionID, err := ah.session.Create(r.Context(), &entity.Session{
 		UserID: userID,
 	})
 
@@ -70,7 +70,7 @@ func (au *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request, pa
 		return
 	}
 
-	if err = au.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
+	if err = ah.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
 		RespondJson500(w, xerr.UnexpectedErrorOccurred)
 		return
 	}

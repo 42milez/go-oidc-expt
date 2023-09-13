@@ -15,7 +15,9 @@ import (
 
 const nRetrySaveSession = 3
 
-type IDKey struct{}
+type SessionIDKey struct{}
+type SessionKey struct{}
+
 type UserIDKey struct{}
 
 type CreateSession struct {
@@ -58,29 +60,31 @@ func (rs *RestoreSession) Restore(r *http.Request, sid typedef.SessionID) (*http
 	}
 
 	ctx := r.Context()
-	ctx = context.WithValue(ctx, IDKey{}, sid)
+	ctx = context.WithValue(ctx, SessionIDKey{}, sid)
+	ctx = context.WithValue(ctx, SessionKey{}, sess)
 	ctx = context.WithValue(ctx, UserIDKey{}, sess.UserID)
 
 	return r.Clone(ctx), nil
 }
 
 type UpdateSession struct {
-	Repo SessionUpdater
+	repo SessionUpdater
 }
 
 func (up *UpdateSession) Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error {
-	_, err := up.Repo.Update(ctx, sid, sess)
+	_, err := up.repo.Update(ctx, sid, sess)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetSessionID(ctx context.Context) string {
-	return ctx.Value(IDKey{}).(string)
+func GetSession(ctx context.Context) (sess *entity.Session, ok bool) {
+	sess, ok = ctx.Value(SessionKey{}).(*entity.Session)
+	return
 }
 
-func GetUserID(ctx context.Context) (typedef.UserID, bool) {
-	ret, ok := ctx.Value(UserIDKey{}).(typedef.UserID)
-	return ret, ok
+func GetSessionID(ctx context.Context) (sessId typedef.SessionID, ok bool) {
+	sessId, ok = ctx.Value(SessionIDKey{}).(typedef.SessionID)
+	return
 }

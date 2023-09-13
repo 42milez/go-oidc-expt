@@ -113,7 +113,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				cookie:    service.NewCookie(rawHashKey, rawBlockKey, xtestutil.FixedClocker{}),
 				validator: validator.New(),
 			}
-			sut.ServeHTTP(w, r, nil)
+			sut.ServeHTTP(w, r)
 
 			resp := w.Result()
 

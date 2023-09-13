@@ -53,6 +53,12 @@ func NewRestoreSession(repo SessionReader) *RestoreSession {
 	}
 }
 
+func NewUpdateSession(repo SessionUpdater) *UpdateSession {
+	return &UpdateSession{
+		repo: repo,
+	}
+}
+
 // --------------------------------------------------
 //  USER
 // --------------------------------------------------

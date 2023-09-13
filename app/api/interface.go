@@ -52,6 +52,10 @@ type SessionRestorer interface {
 	Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error)
 }
 
+type SessionUpdater interface {
+	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error
+}
+
 type CookieReader interface {
 	Read(r *http.Request, name string) (string, error)
 }

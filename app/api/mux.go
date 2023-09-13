@@ -26,6 +26,7 @@ type HandlerOption struct {
 	jwtUtil         *JWT
 	sessionCreator  *service.CreateSession
 	sessionRestorer *service.RestoreSession
+	sessionUpdater  *service.UpdateSession
 	validationUtil  *validator.Validate
 }
 
@@ -64,6 +65,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 		idGenerator:     idGen,
 		sessionCreator:  service.NewCreateSession(repository.NewSession(cache)),
 		sessionRestorer: service.NewRestoreSession(repository.NewSession(cache)),
+		sessionUpdater:  service.NewUpdateSession(repository.NewSession(cache)),
 		validationUtil:  validator.New(),
 	}
 
@@ -75,9 +77,10 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	//  HANDLER
 	// --------------------------------------------------
 
-	checkHealthHdlr = NewCheckHealthHdlr(option)
-	registerUserHdlr = NewRegisterHdlr(option)
 	authenticateUserHdlr = NewAuthenticateHdlr(option)
+	checkHealthHdlr = NewCheckHealthHdlr(option)
+	consentHdlr = NewConsentHdlr(option)
+	registerUserHdlr = NewRegisterHdlr(option)
 
 	// --------------------------------------------------
 	//  ROUTER
@@ -101,6 +104,9 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	mw.SetAuthenticateMW([]MiddlewareFunc{
 		RestoreSession(option),
 	})
+	mw.SetConsentMW([]MiddlewareFunc{
+		RestoreSession(option),
+	})
 	mw.SetRegisterMW([]MiddlewareFunc{
 		RestoreSession(option),
 	})
@@ -116,9 +122,24 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	}, nil
 }
 
+func NewAuthenticateHdlr(option *HandlerOption) *AuthenticateHdlr {
+	return &AuthenticateHdlr{
+		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.jwtUtil),
+		cookie:    option.cookie,
+		session:   option.sessionCreator,
+		validator: option.validationUtil,
+	}
+}
+
 func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {
 	return &CheckHealthHdlr{
 		service: service.NewCheckHealth(repository.NewCheckHealth(option.db, option.cache)),
+	}
+}
+
+func NewConsentHdlr(option *HandlerOption) *ConsentHdlr {
+	return &ConsentHdlr{
+		session: option.sessionUpdater,
 	}
 }
 
@@ -129,18 +150,3 @@ func NewRegisterHdlr(option *HandlerOption) *RegisterHdlr {
 		validator: option.validationUtil,
 	}
 }
-
-func NewAuthenticateHdlr(option *HandlerOption) *AuthenticateHdlr {
-	return &AuthenticateHdlr{
-		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.jwtUtil),
-		cookie:    option.cookie,
-		session:   option.sessionCreator,
-		validator: option.validationUtil,
-	}
-}
-
-//func NewConsent() (*Consent, error) {
-//	return &Consent{
-//		Session: nil,
-//	}, nil
-//}

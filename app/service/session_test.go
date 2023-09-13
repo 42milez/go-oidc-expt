@@ -1,30 +1,23 @@
 package service
 
-import (
-	"context"
-	"testing"
+import "testing"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+func TestCreateSession_Create(t *testing.T) {
+	// NOT IMPLEMENTED
+}
 
-	"github.com/42milez/go-oidc-server/app/typedef"
-)
+func TestRestoreSession_Restore(t *testing.T) {
+	// NOT IMPLEMENTED
+}
 
-const userULID typedef.UserID = 475924034190589956
+func TestUpdateSession_Update(t *testing.T) {
+	// NOT IMPLEMENTED
+}
 
-func TestGetUserID(t *testing.T) {
-	t.Parallel()
+func TestGetSession(t *testing.T) {
+	// NOT IMPLEMENTED
+}
 
-	ctx := context.Background()
-	want := userULID
-
-	ctx = context.WithValue(ctx, UserIDKey{}, want)
-	got, ok := GetUserID(ctx)
-
-	if !ok {
-		t.Fatalf("%s", xerr.FailedToReadContextValue)
-	}
-
-	if want != got {
-		t.Errorf("want = %+v; got = %+v", want, got)
-	}
+func TestGetSessionID(t *testing.T) {
+	// NOT IMPLEMENTED
 }

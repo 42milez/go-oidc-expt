@@ -57,7 +57,7 @@ func (ag *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	userID, ok := service.GetUserID(r.Context())
+	sess, ok := service.GetSession(r.Context())
 
 	if !ok {
 		RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
@@ -66,7 +66,7 @@ func (ag *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	location, err := ag.Service.Authorize(r.Context(), userID, q)
+	location, err := ag.Service.Authorize(r.Context(), sess.UserID, q)
 
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
