@@ -75,14 +75,7 @@ paths:
                 status: 400
                 detail: invalid request
         '500':
-          description: Registration failed due to unexpected error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: 500
-                detail: unexpected error occurred
+          $ref: '#/components/responses/InternalServerError'
   /authenticate:
     post:
       description: Authenticates a user.
@@ -126,14 +119,7 @@ paths:
                 status: 401
                 detail: invalid username or password
         '500':
-          description: Authentication failed due to unexpected error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: 500
-                detail: unexpected error occurred
+          $ref: '#/components/responses/InternalServerError'
   /consent:
     post:
       description: Grant relying party permission to use user data.
@@ -146,23 +132,146 @@ paths:
         '302':
           description: Successfully consented.
         '500':
-          description: Consent failed due to unexpected error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: 500
-                detail: unexpected error occurred
+          $ref: '#/components/responses/InternalServerError'
+  /authorize:
+    get:
+      description: Authorize a user, and the user receive authorization code after successfully authorized.
+      operationId: authorize
+      tags:
+        - Authorization
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/Nonce'
+        - $ref: '#/components/parameters/RedirectUri'
+        - $ref: '#/components/parameters/ResponseType'
+        - $ref: '#/components/parameters/Scope'
+        - $ref: '#/components/parameters/State'
+        - $ref: '#/components/parameters/Display'
+        - $ref: '#/components/parameters/IdTokenHint'
+        - $ref: '#/components/parameters/MaxAge'
+        - $ref: '#/components/parameters/Prompt'
+      responses:
+        '302':
+          description: Successfully authorized.
+        '400':
+          description: Invalid authorization parameters.
+        '401':
+          description: User not authenticated.
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   parameters:
     SessionId:
       name: sid
-      description: Session ID
       in: cookie
+      description: Session ID
       schema:
         type: string
       example: MTY5NDA4Nzc4MnxNNjBEOHUwTUxMLThObHBKajA2bkxkRFZJZC1kZnROc21WZjZFbFEtaVpmaHF4YkVvRk5uak9WYkdtRVM3eXctS1l4Q0FHeldab2M9fHDaZZGFzG1bSJdDRhgWPmMCQPuuFWg1h3VSE1WzOL8q
+    ClientId:
+      name: client_id
+      in: query
+      description: client_id ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: true
+      x-oapi-codegen-extra-tags:
+        validate: required
+      schema:
+        type: string
+      example: ''
+    Nonce:
+      name: nonce
+      in: query
+      description: nonce ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: true
+      x-oapi-codegen-extra-tags:
+        validate: required
+      schema:
+        type: string
+      example: ''
+    RedirectUri:
+      name: redirect_uri
+      in: query
+      description: redirect_uri ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: true
+      x-oapi-codegen-extra-tags:
+        validate: required
+      schema:
+        type: string
+      example: ''
+    ResponseType:
+      name: response_type
+      in: query
+      description: response_type ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: true
+      x-oapi-codegen-extra-tags:
+        validate: required
+      schema:
+        type: string
+      example: ''
+    Scope:
+      name: scope
+      in: query
+      description: scope ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: true
+      x-oapi-codegen-extra-tags:
+        validate: required
+      schema:
+        type: string
+      example: ''
+    State:
+      name: state
+      in: query
+      description: state ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: true
+      x-oapi-codegen-extra-tags:
+        validate: required
+      schema:
+        type: string
+      example: ''
+    Display:
+      name: display
+      in: query
+      description: display ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: false
+      schema:
+        type: string
+      example: ''
+    IdTokenHint:
+      name: id_token_hint
+      in: query
+      description: id_token_hint ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: false
+      schema:
+        type: string
+      example: ''
+    MaxAge:
+      name: max_age
+      in: query
+      description: max_age ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: false
+      schema:
+        type: integer
+        format: uint64
+      example: 0
+    Prompt:
+      name: prompt
+      in: query
+      description: prompt ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      required: false
+      schema:
+        type: string
+      example: ''
+  responses:
+    InternalServerError:
+      description: Operation failed due to unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 500
+            detail: unexpected error occurred
   schemas:
     Health:
       description: represents the status of service.

@@ -44,8 +44,41 @@ type UserPassword struct {
 	Password string `json:"password" validate:"required"`
 }
 
+// ClientId defines model for ClientId.
+type ClientId = string
+
+// Display defines model for Display.
+type Display = string
+
+// IdTokenHint defines model for IdTokenHint.
+type IdTokenHint = string
+
+// MaxAge defines model for MaxAge.
+type MaxAge = uint64
+
+// Nonce defines model for Nonce.
+type Nonce = string
+
+// Prompt defines model for Prompt.
+type Prompt = string
+
+// RedirectUri defines model for RedirectUri.
+type RedirectUri = string
+
+// ResponseType defines model for ResponseType.
+type ResponseType = string
+
+// Scope defines model for Scope.
+type Scope = string
+
 // SessionId defines model for SessionId.
 type SessionId = string
+
+// State defines model for State.
+type State = string
+
+// InternalServerError represents error
+type InternalServerError = ErrorResponse
 
 // AuthenticateJSONBody defines parameters for Authenticate.
 type AuthenticateJSONBody struct {
@@ -55,6 +88,42 @@ type AuthenticateJSONBody struct {
 
 // AuthenticateParams defines parameters for Authenticate.
 type AuthenticateParams struct {
+	// Sid Session ID
+	Sid *SessionId `form:"sid,omitempty" json:"sid,omitempty"`
+}
+
+// AuthorizeParams defines parameters for Authorize.
+type AuthorizeParams struct {
+	// ClientId client_id ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	ClientId ClientId `form:"client_id" json:"client_id" validate:"required"`
+
+	// Nonce nonce ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	Nonce Nonce `form:"nonce" json:"nonce" validate:"required"`
+
+	// RedirectUri redirect_uri ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	RedirectUri RedirectUri `form:"redirect_uri" json:"redirect_uri" validate:"required"`
+
+	// ResponseType response_type ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	ResponseType ResponseType `form:"response_type" json:"response_type" validate:"required"`
+
+	// Scope scope ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	Scope Scope `form:"scope" json:"scope" validate:"required"`
+
+	// State state ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	State State `form:"state" json:"state" validate:"required"`
+
+	// Display display ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	Display *Display `form:"display,omitempty" json:"display,omitempty"`
+
+	// IdTokenHint id_token_hint ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	IdTokenHint *IdTokenHint `form:"id_token_hint,omitempty" json:"id_token_hint,omitempty"`
+
+	// MaxAge max_age ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	MaxAge *MaxAge `form:"max_age,omitempty" json:"max_age,omitempty"`
+
+	// Prompt prompt ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+	Prompt *Prompt `form:"prompt,omitempty" json:"prompt,omitempty"`
+
 	// Sid Session ID
 	Sid *SessionId `form:"sid,omitempty" json:"sid,omitempty"`
 }
@@ -86,6 +155,9 @@ type HandlerInterface interface {
 
 	// POST: /authenticate
 	Authenticate(w http.ResponseWriter, r *http.Request)
+
+	// GET: /authorize
+	Authorize(w http.ResponseWriter, r *http.Request)
 
 	// POST: /consent
 	Consent(w http.ResponseWriter, r *http.Request)
@@ -133,6 +205,11 @@ func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler 
 
 func (mfm *MiddlewareFuncMap) SetAuthenticateMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
 	mfm.append("Authenticate", mf...)
+	return mfm
+}
+
+func (mfm *MiddlewareFuncMap) SetAuthorizeMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+	mfm.append("Authorize", mf...)
 	return mfm
 }
 
@@ -254,6 +331,13 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 	})
 
 	r.Group(func(r chi.Router) {
+		if mw := options.Middlewares.raw("Authorize"); mw != nil {
+			r.Use(mw...)
+		}
+		r.Get("/authorize", si.Authorize)
+	})
+
+	r.Group(func(r chi.Router) {
 		if mw := options.Middlewares.raw("Consent"); mw != nil {
 			r.Use(mw...)
 		}
@@ -280,28 +364,34 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/9RX31fbuBL+V3x076OJEwj3tHm6QAjQbQhNKGzD4UGRJ7GILamSDAFO/vc9IzuxnbiU",
-	"brs9y1tij2a+b775IT8TJhMlBQhrSOeZKKppAha0+zcCY7gUZyH+CcEwzZXlUpDO6pV31iU+gQVNVAyk",
-	"Q/qXX/bPuwft8yfW7ovF+fnd4fHg9PPD5edF/+NlNJicHv5B7w52J/PFfNgbfxgfteZjMRyw3db1+G7c",
-	"m/SOLb1SCT3ttb/Mr+6H8/2Uzt9ff5mHdnjV34M/mR214vanZu8U4pBOdvvvp6ddOh6f9J5OWpPRh7A7",
-	"jGbXF0n/6NNFmvauZ61o72p03Lp+Gnx895X4hCN8JuWcA/GJoAniNjwkPjEsgoQiWfuo3GOruZiR5XK5",
-	"eunycqy11EMwSgoD27nRoDQYTKkHaEl8orRUoC0Hk5lbymP8VWSO+JtBfWIstamp2DV9MpU6oZZ0SMqF",
-	"/V+7OMiFhRlogmg1fE25hpB0blZu/FXc2/UJObkDZjHUKdDYRi9ysRF4mStPTj0D+p4zaGyRqwG92/wJ",
-	"2HVoPxvQGIHG8WBKOjfPGxi4q9jvRvTJYkdSxXeYDGEGYgcWVtMdS2fOyz2NeUgtuDTkuJabKHlYh/CZ",
-	"/FfDlHTIf4KiwYK8hAKEf46Ft7z1v53v1ID2QmppY0XZnXlJIuopqi3KUzq8KZDIvRS1h8b4tLlVhL8i",
-	"Qy7et1S8oMY8SB1+t/JUbrgit0VLlTz9LmrrmNv00JSLqURfTApLmXXIEtf5xKRKSW3/nyNtMJkU0+jg",
-	"4swbZQbEJ6nGA5G1ynSCoHQgyJ0EmMxq8g6EBwsFmicgLI09jmfcbzTAHA4UiLOudySFAGa9B24j70QS",
-	"n8ScQT7Wcjj9s8s1jMvDLkazoBMzmI6yIZDD20DnbALMO7dOi5nckTxkOzg6nID3oE2Gt9VoNproWCoQ",
-	"VHHSIXuNVgNVU9RGTpGApjYCYTlzsjwTJY3drpuDkhV2BFYANgHWimOP66xi5YIUe++mvnkLk6DYi9jA",
-	"WBBg7KEMH1dig3DAqFIxRuBSBHcG0T2XdkwxvF43K14xVNbdtLx1BVjNDFp4Vnq0yr0oaKtTcBWebTaX",
-	"9d1m84dYfQ8iqQE2ShkDY6ZpHD9W0IVu9LVfBWHd88V+JVy4NvZyiUixUtvN5tJ/Jezquq/BXyom7K4p",
-	"5TGEXpgCZnsDQ86o9ZOMVnPNk3o9Giv0Wr+ZXh0gx3X/b6uXCpxhzEKY3aM8yViqsVILovu/TcdNNA13",
-	"YcnWxc3GUXKL7wKGgTLO9bPqRFNhPQ3xIxczt7sfPQU64dnlGqMaqO7y6hg7yiP87AQrNfxec7fmul/u",
-	"0JwWvDl982z9sLBS86eyrtH6sjyDGlWPImBzd2nJDDeuyxsKonF++/4HR28eoSYpOTJvDYvGr5f1VwUX",
-	"0lYBlBTITrs85fnXMOPGZp8A9Y11pCFf/wIesgbiwkmCfTShpkaJ4crrG1zpq4x4UlhZ4fnvW/ArrG9l",
-	"u2d1oV+729/QPHyB2ctDsXyQZHWZXeqz5VON0oV7iKXCrw/vWNxzLUWS7aziy6YTBLFkNI6ksZ13zXdN",
-	"1xsbRWTpDNfkt3zg15HJbBo8VI3yp9W2twstw5Q55i853HJ0u87C+vtoY/djrNKbYnmUXpRnWulxJa/L",
-	"2+VfAQAA///z9472nxMAAA==",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

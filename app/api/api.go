@@ -14,6 +14,7 @@ var rawBlockKey []byte
 var rawHashKey []byte
 
 var authenticateUserHdlr *AuthenticateHdlr
+var authorizeGetHdlr *AuthorizeGet
 var checkHealthHdlr *CheckHealthHdlr
 var consentHdlr *ConsentHdlr
 var registerUserHdlr *RegisterHdlr
@@ -22,6 +23,10 @@ type HandlerImpl struct{}
 
 func (_ *HandlerImpl) Authenticate(w http.ResponseWriter, r *http.Request) {
 	authenticateUserHdlr.ServeHTTP(w, r)
+}
+
+func (_ *HandlerImpl) Authorize(w http.ResponseWriter, r *http.Request) {
+	authorizeGetHdlr.ServeHTTP(w, r)
 }
 
 func (_ *HandlerImpl) CheckHealth(w http.ResponseWriter, r *http.Request) {
