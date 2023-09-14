@@ -140,7 +140,6 @@ paths:
       tags:
         - Authorization
       parameters:
-        - $ref: '#/components/parameters/SessionId'
         - $ref: '#/components/parameters/ClientId'
         - $ref: '#/components/parameters/Nonce'
         - $ref: '#/components/parameters/RedirectUri'
@@ -151,6 +150,7 @@ paths:
         - $ref: '#/components/parameters/IdTokenHint'
         - $ref: '#/components/parameters/MaxAge'
         - $ref: '#/components/parameters/Prompt'
+        - $ref: '#/components/parameters/SessionId'
       responses:
         '302':
           description: Successfully authorized.
@@ -169,99 +169,108 @@ components:
       schema:
         type: string
       example: MTY5NDA4Nzc4MnxNNjBEOHUwTUxMLThObHBKajA2bkxkRFZJZC1kZnROc21WZjZFbFEtaVpmaHF4YkVvRk5uak9WYkdtRVM3eXctS1l4Q0FHeldab2M9fHDaZZGFzG1bSJdDRhgWPmMCQPuuFWg1h3VSE1WzOL8q
+      x-go-json-ignore: true
     ClientId:
       name: client_id
       in: query
-      description: client_id ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
+      description: represents "client_id" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
       required: true
-      x-oapi-codegen-extra-tags:
-        validate: required
       schema:
         type: string
       example: ''
-    Nonce:
-      name: nonce
-      in: query
-      description: nonce ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: true
       x-oapi-codegen-extra-tags:
-        validate: required
-      schema:
-        type: string
-      example: ''
-    RedirectUri:
-      name: redirect_uri
-      in: query
-      description: redirect_uri ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: true
-      x-oapi-codegen-extra-tags:
-        validate: required
-      schema:
-        type: string
-      example: ''
-    ResponseType:
-      name: response_type
-      in: query
-      description: response_type ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: true
-      x-oapi-codegen-extra-tags:
-        validate: required
-      schema:
-        type: string
-      example: ''
-    Scope:
-      name: scope
-      in: query
-      description: scope ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: true
-      x-oapi-codegen-extra-tags:
-        validate: required
-      schema:
-        type: string
-      example: ''
-    State:
-      name: state
-      in: query
-      description: state ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: true
-      x-oapi-codegen-extra-tags:
-        validate: required
-      schema:
-        type: string
-      example: ''
+        validate: required,alphanum
     Display:
       name: display
       in: query
-      description: display ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: false
+      description: represents "display" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
       schema:
         type: string
       example: ''
+      x-oapi-codegen-extra-tags:
+        validate: required
     IdTokenHint:
       name: id_token_hint
       in: query
-      description: id_token_hint ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: false
+      description: represents "id_token_hint" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
       schema:
         type: string
       example: ''
+      x-oapi-codegen-extra-tags:
+        validate: required,alpha
     MaxAge:
       name: max_age
       in: query
-      description: max_age ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: false
+      description: represents "max_age" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
       schema:
         type: integer
         format: uint64
       example: 0
-    Prompt:
-      name: prompt
+      x-oapi-codegen-extra-tags:
+        validate: required
+    Nonce:
+      name: nonce
       in: query
-      description: prompt ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-      required: false
+      description: represents "nonce" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
       schema:
         type: string
       example: ''
+      x-oapi-codegen-extra-tags:
+        validate: required,ascii
+    Prompt:
+      name: prompt
+      in: query
+      description: represents "prompt" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
+      schema:
+        type: string
+      example: ''
+      x-oapi-codegen-extra-tags:
+        validate: required
+    RedirectUri:
+      name: redirect_uri
+      in: query
+      description: represents "redirect_uri" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
+      schema:
+        type: string
+      example: ''
+      x-oapi-codegen-extra-tags:
+        validate: required,printascii
+    ResponseType:
+      name: response_type
+      in: query
+      description: represents "response_type" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
+      schema:
+        type: string
+      example: ''
+      x-oapi-codegen-extra-tags:
+        validate: required,response-type-validator
+    Scope:
+      name: scope
+      in: query
+      description: represents "scope" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
+      schema:
+        type: string
+      example: ''
+      x-oapi-codegen-extra-tags:
+        validate: required,scope-validator
+    State:
+      name: state
+      in: query
+      description: represents "state" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      required: true
+      schema:
+        type: string
+      example: ''
+      x-oapi-codegen-extra-tags:
+        validate: required,alphanum
   responses:
     InternalServerError:
       description: Operation failed due to unexpected error.
@@ -292,9 +301,9 @@ components:
           properties:
             id:
               type: integer
+              format: uint64
               x-oapi-codegen-extra-tags:
                 validate: required
-              format: uint64
         - $ref: '#/components/schemas/UserName'
     UserName:
       description: represents a part of user data.
@@ -304,9 +313,9 @@ components:
       properties:
         name:
           type: string
+          example: username0
           x-oapi-codegen-extra-tags:
             validate: required
-          example: username0
     UserPassword:
       description: represents the password of user
       type: object
@@ -315,9 +324,9 @@ components:
       properties:
         password:
           type: string
+          example: username0
           x-oapi-codegen-extra-tags:
             validate: required
-          example: username0
     ErrorResponse:
       description: represents error
       type: object

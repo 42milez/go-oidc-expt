@@ -89,49 +89,49 @@ type AuthenticateJSONBody struct {
 // AuthenticateParams defines parameters for Authenticate.
 type AuthenticateParams struct {
 	// Sid Session ID
-	Sid *SessionId `form:"sid,omitempty" json:"sid,omitempty"`
+	Sid *SessionId `form:"sid,omitempty" json:"-"`
 }
 
 // AuthorizeParams defines parameters for Authorize.
 type AuthorizeParams struct {
-	// ClientId client_id ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	ClientId ClientId `form:"client_id" json:"client_id" validate:"required"`
+	// ClientId represents "client_id" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	ClientId ClientId `form:"client_id" json:"client_id" validate:"required,alphanum"`
 
-	// Nonce nonce ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	Nonce Nonce `form:"nonce" json:"nonce" validate:"required"`
+	// Nonce represents "nonce" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	Nonce Nonce `form:"nonce" json:"nonce" validate:"required,ascii"`
 
-	// RedirectUri redirect_uri ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	RedirectUri RedirectUri `form:"redirect_uri" json:"redirect_uri" validate:"required"`
+	// RedirectUri represents "redirect_uri" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	RedirectUri RedirectUri `form:"redirect_uri" json:"redirect_uri" validate:"required,printascii"`
 
-	// ResponseType response_type ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	ResponseType ResponseType `form:"response_type" json:"response_type" validate:"required"`
+	// ResponseType represents "response_type" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	ResponseType ResponseType `form:"response_type" json:"response_type" validate:"required,response-type-validator"`
 
-	// Scope scope ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	Scope Scope `form:"scope" json:"scope" validate:"required"`
+	// Scope represents "scope" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	Scope Scope `form:"scope" json:"scope" validate:"required,scope-validator"`
 
-	// State state ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	State State `form:"state" json:"state" validate:"required"`
+	// State represents "state" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	State State `form:"state" json:"state" validate:"required,alphanum"`
 
-	// Display display ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	Display *Display `form:"display,omitempty" json:"display,omitempty"`
+	// Display represents "display" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	Display Display `form:"display" json:"display" validate:"required"`
 
-	// IdTokenHint id_token_hint ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	IdTokenHint *IdTokenHint `form:"id_token_hint,omitempty" json:"id_token_hint,omitempty"`
+	// IdTokenHint represents "id_token_hint" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	IdTokenHint IdTokenHint `form:"id_token_hint" json:"id_token_hint" validate:"required,alpha"`
 
-	// MaxAge max_age ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	MaxAge *MaxAge `form:"max_age,omitempty" json:"max_age,omitempty"`
+	// MaxAge represents "max_age" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	MaxAge MaxAge `form:"max_age" json:"max_age" validate:"required"`
 
-	// Prompt prompt ( https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest )
-	Prompt *Prompt `form:"prompt,omitempty" json:"prompt,omitempty"`
+	// Prompt represents "prompt" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	Prompt Prompt `form:"prompt" json:"prompt" validate:"required"`
 
 	// Sid Session ID
-	Sid *SessionId `form:"sid,omitempty" json:"sid,omitempty"`
+	Sid *SessionId `form:"sid,omitempty" json:"-"`
 }
 
 // ConsentParams defines parameters for Consent.
 type ConsentParams struct {
 	// Sid Session ID
-	Sid *SessionId `form:"sid,omitempty" json:"sid,omitempty"`
+	Sid *SessionId `form:"sid,omitempty" json:"-"`
 }
 
 // RegisterJSONBody defines parameters for Register.
@@ -364,34 +364,36 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"kHu4IQAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
