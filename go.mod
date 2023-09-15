@@ -18,7 +18,6 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/lestrrat-go/jwx/v2 v2.0.12
 	github.com/mattn/go-runewidth v0.0.15
-	github.com/oapi-codegen/runtime v1.0.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/redis/go-redis/v9 v9.1.0
 	github.com/rivo/uniseg v0.2.0
@@ -33,7 +32,6 @@ require (
 
 require (
 	github.com/agext/levenshtein v1.2.1 // indirect
-	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
