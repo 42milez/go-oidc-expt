@@ -14,7 +14,7 @@ var rawBlockKey []byte
 var rawHashKey []byte
 
 var authenticateUserHdlr *AuthenticateHdlr
-var authorizeGetHdlr *AuthorizeGet
+var authorizeGetHdlr *AuthorizeGetHdlr
 var checkHealthHdlr *CheckHealthHdlr
 var consentHdlr *ConsentHdlr
 var registerUserHdlr *RegisterHdlr

@@ -17,6 +17,16 @@ func NewAuthenticate(repo UserByNameReader, tokenGen TokenGenerator) *Authentica
 }
 
 // --------------------------------------------------
+//  Authorization
+// --------------------------------------------------
+
+func NewAuthorize(repo Authorizer) *Authorize {
+	return &Authorize{
+		repo: repo,
+	}
+}
+
+// --------------------------------------------------
 //  COOKIE
 // --------------------------------------------------
 

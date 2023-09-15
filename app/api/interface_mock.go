@@ -12,7 +12,7 @@ import (
 
 	ent "github.com/42milez/go-oidc-server/app/ent/ent"
 	entity "github.com/42milez/go-oidc-server/app/entity"
-	model "github.com/42milez/go-oidc-server/app/model"
+	service "github.com/42milez/go-oidc-server/app/service"
 	typedef "github.com/42milez/go-oidc-server/app/typedef"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -204,7 +204,7 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // Authorize mocks base method.
-func (m *MockAuthorizer) Authorize(ctx context.Context, userID typedef.UserID, param *model.AuthorizeRequest) (string, error) {
+func (m *MockAuthorizer) Authorize(ctx context.Context, userID typedef.UserID, param *service.AuthorizeParams) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Authorize", ctx, userID, param)
 	ret0, _ := ret[0].(string)

@@ -125,6 +125,12 @@ func NewAuthenticateHdlr(option *HandlerOption) *AuthenticateHdlr {
 	}
 }
 
+func NewAuthorizeGetHdlr(option *HandlerOption) *AuthorizeGetHdlr {
+	return &AuthorizeGetHdlr{
+		service: service.NewAuthorize(repository.NewUser(option.db, option.idGenerator)),
+	}
+}
+
 func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {
 	return &CheckHealthHdlr{
 		service: service.NewCheckHealth(repository.NewCheckHealth(option.db, option.cache)),

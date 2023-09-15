@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/service"
+
 	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/app/model"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 )
@@ -33,7 +33,7 @@ type Authenticator interface {
 }
 
 type Authorizer interface {
-	Authorize(ctx context.Context, userID typedef.UserID, param *model.AuthorizeRequest) (string, error)
+	Authorize(ctx context.Context, userID typedef.UserID, param *service.AuthorizeParams) (string, error)
 }
 
 type UserCreator interface {
