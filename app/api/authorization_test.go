@@ -64,7 +64,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(
 				http.MethodGet,
-				"http://idp/v1/authorize",
+				"https://example.com/authorize",
 				nil,
 			)
 			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
