@@ -2,8 +2,9 @@ package api
 
 import (
 	"context"
-	"github.com/42milez/go-oidc-server/app/api/validation"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/api/validation"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
 
