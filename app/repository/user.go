@@ -18,7 +18,7 @@ type User struct {
 	idGen IDGenerator
 }
 
-func (u *User) CreateAuthorizationCode(ctx context.Context, userID typedef.UserID, code string) (*ent.AuthCode, error) {
+func (u *User) CreateAuthCode(ctx context.Context, userID typedef.UserID, code string) (*ent.AuthCode, error) {
 	return u.db.Client.AuthCode.Create().SetUserID(userID).SetCode(code).Save(ctx)
 }
 

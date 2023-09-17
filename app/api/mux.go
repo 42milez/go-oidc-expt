@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/api/validation"
+
 	"github.com/42milez/go-oidc-server/app/datastore"
 
 	"github.com/42milez/go-oidc-server/app/config"
@@ -82,6 +84,10 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	consentHdlr = NewConsentHdlr(option)
 	registerUserHdlr = NewRegisterHdlr(option)
 
+	if authorizeGetHdlr, err = NewAuthorizeGetHdlr(option); err != nil {
+		return nil, nil, err
+	}
+
 	// --------------------------------------------------
 	//  ROUTER
 	// --------------------------------------------------
@@ -101,15 +107,9 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	mux.Use(chimw.OapiRequestValidator(swag))
 
 	mw = NewMiddlewareFuncMap()
-	mw.SetAuthenticateMW([]MiddlewareFunc{
-		RestoreSession(option),
-	})
-	mw.SetConsentMW([]MiddlewareFunc{
-		RestoreSession(option),
-	})
-	mw.SetRegisterMW([]MiddlewareFunc{
-		RestoreSession(option),
-	})
+
+	rs := RestoreSession(option)
+	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs)
 
 	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,
@@ -129,6 +129,17 @@ func NewAuthenticateHdlr(option *HandlerOption) *AuthenticateHdlr {
 		session:   option.sessionCreator,
 		validator: option.validationUtil,
 	}
+}
+
+func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
+	v, err := validation.NewAuthorizeValidator()
+	if err != nil {
+		return nil, err
+	}
+	return &AuthorizeGetHdlr{
+		service:   service.NewAuthorize(repository.NewUser(option.db, option.idGenerator)),
+		validator: v,
+	}, nil
 }
 
 func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {

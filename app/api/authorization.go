@@ -5,37 +5,20 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/service"
 
-	"github.com/42milez/go-oidc-server/app/api/validation"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
-	"github.com/42milez/go-oidc-server/app/model"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
 
-func NewAuthorizeGet() (*AuthorizeGet, error) {
-	v, err := validation.NewAuthorizeValidator()
-
-	if err != nil {
-		return nil, err
-	}
-
-	ret := &AuthorizeGet{
-		validator: v,
-	}
-
-	return ret, nil
-}
-
-type AuthorizeGet struct {
-	Service   Authorizer
+type AuthorizeGetHdlr struct {
+	service   Authorizer
 	validator *validator.Validate
 }
 
-func (ag *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
-	q := &model.AuthorizeRequest{}
+	q := &AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
@@ -66,7 +49,11 @@ func (ag *AuthorizeGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	location, err := ag.Service.Authorize(r.Context(), sess.UserID, q)
+	params := &service.AuthorizeParams{
+		RedirectUri: q.RedirectUri,
+		State:       q.State,
+	}
+	location, err := ag.service.Authorize(r.Context(), sess.UserID, params)
 
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{

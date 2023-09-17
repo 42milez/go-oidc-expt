@@ -37,6 +37,23 @@ type TokenGenerator interface {
 }
 
 // --------------------------------------------------
+//  OPENID CONNECT
+// --------------------------------------------------
+
+type AuthCodeCreator interface {
+	CreateAuthCode(ctx context.Context, userId typedef.UserID, code string) (*ent.AuthCode, error)
+}
+
+type RedirectUriByUserIdReader interface {
+	ReadRedirectUriByUserID(ctx context.Context, userID typedef.UserID) ([]*ent.RedirectURI, error)
+}
+
+type Authorizer interface {
+	AuthCodeCreator
+	RedirectUriByUserIdReader
+}
+
+// --------------------------------------------------
 //  SESSION
 // --------------------------------------------------
 
