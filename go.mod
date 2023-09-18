@@ -7,7 +7,7 @@ require (
 	entgo.io/ent v0.12.3
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/deepmap/oapi-codegen v1.14.0
-	github.com/getkin/kin-openapi v0.119.0
+	github.com/getkin/kin-openapi v0.120.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.15.3
 	github.com/go-sql-driver/mysql v1.7.1
@@ -59,7 +59,7 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
-	github.com/perimeterx/marshmallow v1.1.4 // indirect
+	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
