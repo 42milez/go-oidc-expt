@@ -40,6 +40,7 @@ type AuthCodeMutation struct {
 	id            *int
 	code          *string
 	expire_at     *time.Time
+	used          *bool
 	created_at    *time.Time
 	user_id       *typedef.UserID
 	adduser_id    *typedef.UserID
@@ -219,6 +220,42 @@ func (m *AuthCodeMutation) ResetExpireAt() {
 	m.expire_at = nil
 }
 
+// SetUsed sets the "used" field.
+func (m *AuthCodeMutation) SetUsed(b bool) {
+	m.used = &b
+}
+
+// Used returns the value of the "used" field in the mutation.
+func (m *AuthCodeMutation) Used() (r bool, exists bool) {
+	v := m.used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUsed returns the old "used" field's value of the AuthCode entity.
+// If the AuthCode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AuthCodeMutation) OldUsed(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUsed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUsed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUsed: %w", err)
+	}
+	return oldValue.Used, nil
+}
+
+// ResetUsed resets all changes to the "used" field.
+func (m *AuthCodeMutation) ResetUsed() {
+	m.used = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *AuthCodeMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -345,12 +382,15 @@ func (m *AuthCodeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AuthCodeMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.code != nil {
 		fields = append(fields, authcode.FieldCode)
 	}
 	if m.expire_at != nil {
 		fields = append(fields, authcode.FieldExpireAt)
+	}
+	if m.used != nil {
+		fields = append(fields, authcode.FieldUsed)
 	}
 	if m.created_at != nil {
 		fields = append(fields, authcode.FieldCreatedAt)
@@ -370,6 +410,8 @@ func (m *AuthCodeMutation) Field(name string) (ent.Value, bool) {
 		return m.Code()
 	case authcode.FieldExpireAt:
 		return m.ExpireAt()
+	case authcode.FieldUsed:
+		return m.Used()
 	case authcode.FieldCreatedAt:
 		return m.CreatedAt()
 	case authcode.FieldUserID:
@@ -387,6 +429,8 @@ func (m *AuthCodeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCode(ctx)
 	case authcode.FieldExpireAt:
 		return m.OldExpireAt(ctx)
+	case authcode.FieldUsed:
+		return m.OldUsed(ctx)
 	case authcode.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case authcode.FieldUserID:
@@ -413,6 +457,13 @@ func (m *AuthCodeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetExpireAt(v)
+		return nil
+	case authcode.FieldUsed:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUsed(v)
 		return nil
 	case authcode.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -497,6 +548,9 @@ func (m *AuthCodeMutation) ResetField(name string) error {
 		return nil
 	case authcode.FieldExpireAt:
 		m.ResetExpireAt()
+		return nil
+	case authcode.FieldUsed:
+		m.ResetUsed()
 		return nil
 	case authcode.FieldCreatedAt:
 		m.ResetCreatedAt()

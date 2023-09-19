@@ -14,6 +14,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(10)"}},
 		{Name: "expire_at", Type: field.TypeTime},
+		{Name: "used", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "user_id", Type: field.TypeUint64},
 	}
@@ -25,7 +26,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "auth_codes_users_auth_codes",
-				Columns:    []*schema.Column{AuthCodesColumns[4]},
+				Columns:    []*schema.Column{AuthCodesColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

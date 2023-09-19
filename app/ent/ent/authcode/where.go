@@ -65,6 +65,11 @@ func ExpireAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldExpireAt, v))
 }
 
+// Used applies equality check predicate on the "used" field. It's identical to UsedEQ.
+func Used(v bool) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldUsed, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
@@ -179,6 +184,16 @@ func ExpireAtLT(v time.Time) predicate.AuthCode {
 // ExpireAtLTE applies the LTE predicate on the "expire_at" field.
 func ExpireAtLTE(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLTE(FieldExpireAt, v))
+}
+
+// UsedEQ applies the EQ predicate on the "used" field.
+func UsedEQ(v bool) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldUsed, v))
+}
+
+// UsedNEQ applies the NEQ predicate on the "used" field.
+func UsedNEQ(v bool) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNEQ(FieldUsed, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

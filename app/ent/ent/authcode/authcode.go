@@ -17,6 +17,8 @@ const (
 	FieldCode = "code"
 	// FieldExpireAt holds the string denoting the expire_at field in the database.
 	FieldExpireAt = "expire_at"
+	// FieldUsed holds the string denoting the used field in the database.
+	FieldUsed = "used"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUserID holds the string denoting the user_id field in the database.
@@ -30,6 +32,7 @@ var Columns = []string{
 	FieldID,
 	FieldCode,
 	FieldExpireAt,
+	FieldUsed,
 	FieldCreatedAt,
 	FieldUserID,
 }
@@ -60,6 +63,8 @@ var (
 	CodeValidator func(string) error
 	// DefaultExpireAt holds the default value on creation for the "expire_at" field.
 	DefaultExpireAt func() time.Time
+	// DefaultUsed holds the default value on creation for the "used" field.
+	DefaultUsed bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 )
@@ -80,6 +85,11 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 // ByExpireAt orders the results by the expire_at field.
 func ByExpireAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldExpireAt, opts...).ToFunc()
+}
+
+// ByUsed orders the results by the used field.
+func ByUsed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUsed, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

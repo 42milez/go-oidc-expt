@@ -1,4 +1,5 @@
-h1:foe3FWTnHoMZwm9g3387Ot5LICnasNPV1LyybgzYJoI=
+h1:HvBXSYbAQKcZq5nTitqkGsmImyTVcSkObv8ukP1mtTY=
 20230828112924_initial.sql h1:5wvXZrlTL/ID9KiMiVLzyPRjW581wAIIO/NX1R7mvkg=
 20230828131109_change_password_size.sql h1:Ssi6+M29rtRVrEKojYeGLSxOffPdAE9pboqnabQSxHA=
 20230919061308_authcode.sql h1:1IBmd3Hn5YoFxFaLTM1wS1rrBaHUNywKWpoInhTXp1A=
+20230919063918_add_used_column_to_authcodes.sql h1:kXYilUt33XZ8sRYzPw3tkrp5HbmPhfp/SylToI5lJYA=

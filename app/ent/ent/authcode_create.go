@@ -41,6 +41,20 @@ func (acc *AuthCodeCreate) SetNillableExpireAt(t *time.Time) *AuthCodeCreate {
 	return acc
 }
 
+// SetUsed sets the "used" field.
+func (acc *AuthCodeCreate) SetUsed(b bool) *AuthCodeCreate {
+	acc.mutation.SetUsed(b)
+	return acc
+}
+
+// SetNillableUsed sets the "used" field if the given value is not nil.
+func (acc *AuthCodeCreate) SetNillableUsed(b *bool) *AuthCodeCreate {
+	if b != nil {
+		acc.SetUsed(*b)
+	}
+	return acc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (acc *AuthCodeCreate) SetCreatedAt(t time.Time) *AuthCodeCreate {
 	acc.mutation.SetCreatedAt(t)
@@ -100,6 +114,10 @@ func (acc *AuthCodeCreate) defaults() {
 		v := authcode.DefaultExpireAt()
 		acc.mutation.SetExpireAt(v)
 	}
+	if _, ok := acc.mutation.Used(); !ok {
+		v := authcode.DefaultUsed
+		acc.mutation.SetUsed(v)
+	}
 	if _, ok := acc.mutation.CreatedAt(); !ok {
 		v := authcode.DefaultCreatedAt()
 		acc.mutation.SetCreatedAt(v)
@@ -118,6 +136,9 @@ func (acc *AuthCodeCreate) check() error {
 	}
 	if _, ok := acc.mutation.ExpireAt(); !ok {
 		return &ValidationError{Name: "expire_at", err: errors.New(`ent: missing required field "AuthCode.expire_at"`)}
+	}
+	if _, ok := acc.mutation.Used(); !ok {
+		return &ValidationError{Name: "used", err: errors.New(`ent: missing required field "AuthCode.used"`)}
 	}
 	if _, ok := acc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AuthCode.created_at"`)}
@@ -158,6 +179,10 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 	if value, ok := acc.mutation.ExpireAt(); ok {
 		_spec.SetField(authcode.FieldExpireAt, field.TypeTime, value)
 		_node.ExpireAt = value
+	}
+	if value, ok := acc.mutation.Used(); ok {
+		_spec.SetField(authcode.FieldUsed, field.TypeBool, value)
+		_node.Used = value
 	}
 	if value, ok := acc.mutation.CreatedAt(); ok {
 		_spec.SetField(authcode.FieldCreatedAt, field.TypeTime, value)

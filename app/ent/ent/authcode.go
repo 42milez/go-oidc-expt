@@ -22,6 +22,8 @@ type AuthCode struct {
 	Code string `json:"code,omitempty"`
 	// ExpireAt holds the value of the "expire_at" field.
 	ExpireAt time.Time `json:"expire_at,omitempty"`
+	// Used holds the value of the "used" field.
+	Used bool `json:"used,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UserID holds the value of the "user_id" field.
@@ -35,6 +37,8 @@ func (*AuthCode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case authcode.FieldUsed:
+			values[i] = new(sql.NullBool)
 		case authcode.FieldID, authcode.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case authcode.FieldCode:
@@ -75,6 +79,12 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field expire_at", values[i])
 			} else if value.Valid {
 				ac.ExpireAt = value.Time
+			}
+		case authcode.FieldUsed:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field used", values[i])
+			} else if value.Valid {
+				ac.Used = value.Bool
 			}
 		case authcode.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -136,6 +146,9 @@ func (ac *AuthCode) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("expire_at=")
 	builder.WriteString(ac.ExpireAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("used=")
+	builder.WriteString(fmt.Sprintf("%v", ac.Used))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ac.CreatedAt.Format(time.ANSIC))
