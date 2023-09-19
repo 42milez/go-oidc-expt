@@ -27,20 +27,6 @@ func (acu *AuthCodeUpdate) Where(ps ...predicate.AuthCode) *AuthCodeUpdate {
 	return acu
 }
 
-// SetUsed sets the "used" field.
-func (acu *AuthCodeUpdate) SetUsed(b bool) *AuthCodeUpdate {
-	acu.mutation.SetUsed(b)
-	return acu
-}
-
-// SetNillableUsed sets the "used" field if the given value is not nil.
-func (acu *AuthCodeUpdate) SetNillableUsed(b *bool) *AuthCodeUpdate {
-	if b != nil {
-		acu.SetUsed(*b)
-	}
-	return acu
-}
-
 // Mutation returns the AuthCodeMutation object of the builder.
 func (acu *AuthCodeUpdate) Mutation() *AuthCodeMutation {
 	return acu.mutation
@@ -82,9 +68,6 @@ func (acu *AuthCodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := acu.mutation.Used(); ok {
-		_spec.SetField(authcode.FieldUsed, field.TypeBool, value)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, acu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{authcode.Label}
@@ -103,20 +86,6 @@ type AuthCodeUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *AuthCodeMutation
-}
-
-// SetUsed sets the "used" field.
-func (acuo *AuthCodeUpdateOne) SetUsed(b bool) *AuthCodeUpdateOne {
-	acuo.mutation.SetUsed(b)
-	return acuo
-}
-
-// SetNillableUsed sets the "used" field if the given value is not nil.
-func (acuo *AuthCodeUpdateOne) SetNillableUsed(b *bool) *AuthCodeUpdateOne {
-	if b != nil {
-		acuo.SetUsed(*b)
-	}
-	return acuo
 }
 
 // Mutation returns the AuthCodeMutation object of the builder.
@@ -189,9 +158,6 @@ func (acuo *AuthCodeUpdateOne) sqlSave(ctx context.Context) (_node *AuthCode, er
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := acuo.mutation.Used(); ok {
-		_spec.SetField(authcode.FieldUsed, field.TypeBool, value)
 	}
 	_node = &AuthCode{config: acuo.config}
 	_spec.Assign = _node.assignValues

@@ -65,14 +65,20 @@ func ExpireAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldExpireAt, v))
 }
 
-// Used applies equality check predicate on the "used" field. It's identical to UsedEQ.
-func Used(v bool) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldUsed, v))
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// UsedAt applies equality check predicate on the "used_at" field. It's identical to UsedAtEQ.
+func UsedAt(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldUsedAt, v))
+}
+
+// ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
+func ClientID(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldClientID, vc))
 }
 
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
@@ -186,16 +192,6 @@ func ExpireAtLTE(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLTE(FieldExpireAt, v))
 }
 
-// UsedEQ applies the EQ predicate on the "used" field.
-func UsedEQ(v bool) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldUsed, v))
-}
-
-// UsedNEQ applies the NEQ predicate on the "used" field.
-func UsedNEQ(v bool) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNEQ(FieldUsed, v))
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
@@ -234,6 +230,130 @@ func CreatedAtLT(v time.Time) predicate.AuthCode {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UsedAtEQ applies the EQ predicate on the "used_at" field.
+func UsedAtEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldUsedAt, v))
+}
+
+// UsedAtNEQ applies the NEQ predicate on the "used_at" field.
+func UsedAtNEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNEQ(FieldUsedAt, v))
+}
+
+// UsedAtIn applies the In predicate on the "used_at" field.
+func UsedAtIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldIn(FieldUsedAt, vs...))
+}
+
+// UsedAtNotIn applies the NotIn predicate on the "used_at" field.
+func UsedAtNotIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNotIn(FieldUsedAt, vs...))
+}
+
+// UsedAtGT applies the GT predicate on the "used_at" field.
+func UsedAtGT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGT(FieldUsedAt, v))
+}
+
+// UsedAtGTE applies the GTE predicate on the "used_at" field.
+func UsedAtGTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGTE(FieldUsedAt, v))
+}
+
+// UsedAtLT applies the LT predicate on the "used_at" field.
+func UsedAtLT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLT(FieldUsedAt, v))
+}
+
+// UsedAtLTE applies the LTE predicate on the "used_at" field.
+func UsedAtLTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLTE(FieldUsedAt, v))
+}
+
+// ClientIDEQ applies the EQ predicate on the "client_id" field.
+func ClientIDEQ(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldClientID, vc))
+}
+
+// ClientIDNEQ applies the NEQ predicate on the "client_id" field.
+func ClientIDNEQ(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldNEQ(FieldClientID, vc))
+}
+
+// ClientIDIn applies the In predicate on the "client_id" field.
+func ClientIDIn(vs ...typedef.ClientId) predicate.AuthCode {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = string(vs[i])
+	}
+	return predicate.AuthCode(sql.FieldIn(FieldClientID, v...))
+}
+
+// ClientIDNotIn applies the NotIn predicate on the "client_id" field.
+func ClientIDNotIn(vs ...typedef.ClientId) predicate.AuthCode {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = string(vs[i])
+	}
+	return predicate.AuthCode(sql.FieldNotIn(FieldClientID, v...))
+}
+
+// ClientIDGT applies the GT predicate on the "client_id" field.
+func ClientIDGT(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldGT(FieldClientID, vc))
+}
+
+// ClientIDGTE applies the GTE predicate on the "client_id" field.
+func ClientIDGTE(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldGTE(FieldClientID, vc))
+}
+
+// ClientIDLT applies the LT predicate on the "client_id" field.
+func ClientIDLT(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldLT(FieldClientID, vc))
+}
+
+// ClientIDLTE applies the LTE predicate on the "client_id" field.
+func ClientIDLTE(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldLTE(FieldClientID, vc))
+}
+
+// ClientIDContains applies the Contains predicate on the "client_id" field.
+func ClientIDContains(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldContains(FieldClientID, vc))
+}
+
+// ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
+func ClientIDHasPrefix(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldHasPrefix(FieldClientID, vc))
+}
+
+// ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
+func ClientIDHasSuffix(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldHasSuffix(FieldClientID, vc))
+}
+
+// ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
+func ClientIDEqualFold(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldEqualFold(FieldClientID, vc))
+}
+
+// ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
+func ClientIDContainsFold(v typedef.ClientId) predicate.AuthCode {
+	vc := string(v)
+	return predicate.AuthCode(sql.FieldContainsFold(FieldClientID, vc))
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.

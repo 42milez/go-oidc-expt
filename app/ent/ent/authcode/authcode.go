@@ -17,10 +17,12 @@ const (
 	FieldCode = "code"
 	// FieldExpireAt holds the string denoting the expire_at field in the database.
 	FieldExpireAt = "expire_at"
-	// FieldUsed holds the string denoting the used field in the database.
-	FieldUsed = "used"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldUsedAt holds the string denoting the used_at field in the database.
+	FieldUsedAt = "used_at"
+	// FieldClientID holds the string denoting the client_id field in the database.
+	FieldClientID = "client_id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// Table holds the table name of the authcode in the database.
@@ -32,8 +34,9 @@ var Columns = []string{
 	FieldID,
 	FieldCode,
 	FieldExpireAt,
-	FieldUsed,
 	FieldCreatedAt,
+	FieldUsedAt,
+	FieldClientID,
 	FieldUserID,
 }
 
@@ -63,10 +66,10 @@ var (
 	CodeValidator func(string) error
 	// DefaultExpireAt holds the default value on creation for the "expire_at" field.
 	DefaultExpireAt func() time.Time
-	// DefaultUsed holds the default value on creation for the "used" field.
-	DefaultUsed bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultUsedAt holds the default value on creation for the "used_at" field.
+	DefaultUsedAt time.Time
 )
 
 // OrderOption defines the ordering options for the AuthCode queries.
@@ -87,14 +90,19 @@ func ByExpireAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldExpireAt, opts...).ToFunc()
 }
 
-// ByUsed orders the results by the used field.
-func ByUsed(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUsed, opts...).ToFunc()
-}
-
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUsedAt orders the results by the used_at field.
+func ByUsedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUsedAt, opts...).ToFunc()
+}
+
+// ByClientID orders the results by the client_id field.
+func ByClientID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldClientID, opts...).ToFunc()
 }
 
 // ByUserID orders the results by the user_id field.

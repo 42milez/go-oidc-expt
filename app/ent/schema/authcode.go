@@ -36,10 +36,14 @@ func (AuthCode) Fields() []ent.Field {
 				return time.Now().Add(config.AuthCodeLifetime)
 			}).
 			Immutable(),
-		field.Bool("used").
-			Default(false),
 		field.Time("created_at").
 			Default(time.Now).
+			Immutable(),
+		field.Time("used_at").
+			Default(time.Now()).
+			Immutable(),
+		field.String("client_id").
+			GoType(typedef.ClientId("")).
 			Immutable(),
 		field.Uint64("user_id").
 			GoType(typedef.UserID(0)).

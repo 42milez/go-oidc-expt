@@ -22,10 +22,12 @@ type AuthCode struct {
 	Code string `json:"code,omitempty"`
 	// ExpireAt holds the value of the "expire_at" field.
 	ExpireAt time.Time `json:"expire_at,omitempty"`
-	// Used holds the value of the "used" field.
-	Used bool `json:"used,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UsedAt holds the value of the "used_at" field.
+	UsedAt time.Time `json:"used_at,omitempty"`
+	// ClientID holds the value of the "client_id" field.
+	ClientID typedef.ClientId `json:"client_id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID       typedef.UserID `json:"user_id,omitempty"`
 	user_id      *typedef.UserID
@@ -37,13 +39,11 @@ func (*AuthCode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case authcode.FieldUsed:
-			values[i] = new(sql.NullBool)
 		case authcode.FieldID, authcode.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case authcode.FieldCode:
+		case authcode.FieldCode, authcode.FieldClientID:
 			values[i] = new(sql.NullString)
-		case authcode.FieldExpireAt, authcode.FieldCreatedAt:
+		case authcode.FieldExpireAt, authcode.FieldCreatedAt, authcode.FieldUsedAt:
 			values[i] = new(sql.NullTime)
 		case authcode.ForeignKeys[0]: // user_id
 			values[i] = new(sql.NullInt64)
@@ -80,17 +80,23 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ac.ExpireAt = value.Time
 			}
-		case authcode.FieldUsed:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field used", values[i])
-			} else if value.Valid {
-				ac.Used = value.Bool
-			}
 		case authcode.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				ac.CreatedAt = value.Time
+			}
+		case authcode.FieldUsedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field used_at", values[i])
+			} else if value.Valid {
+				ac.UsedAt = value.Time
+			}
+		case authcode.FieldClientID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field client_id", values[i])
+			} else if value.Valid {
+				ac.ClientID = typedef.ClientId(value.String)
 			}
 		case authcode.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -147,11 +153,14 @@ func (ac *AuthCode) String() string {
 	builder.WriteString("expire_at=")
 	builder.WriteString(ac.ExpireAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("used=")
-	builder.WriteString(fmt.Sprintf("%v", ac.Used))
-	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ac.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("used_at=")
+	builder.WriteString(ac.UsedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("client_id=")
+	builder.WriteString(fmt.Sprintf("%v", ac.ClientID))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", ac.UserID))

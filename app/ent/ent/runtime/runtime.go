@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/ent/schema"
 )
@@ -39,14 +41,24 @@ func init() {
 	authcodeDescExpireAt := authcodeFields[1].Descriptor()
 	// authcode.DefaultExpireAt holds the default value on creation for the expire_at field.
 	authcode.DefaultExpireAt = authcodeDescExpireAt.Default.(func() time.Time)
-	// authcodeDescUsed is the schema descriptor for used field.
-	authcodeDescUsed := authcodeFields[2].Descriptor()
-	// authcode.DefaultUsed holds the default value on creation for the used field.
-	authcode.DefaultUsed = authcodeDescUsed.Default.(bool)
 	// authcodeDescCreatedAt is the schema descriptor for created_at field.
-	authcodeDescCreatedAt := authcodeFields[3].Descriptor()
+	authcodeDescCreatedAt := authcodeFields[2].Descriptor()
 	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.
 	authcode.DefaultCreatedAt = authcodeDescCreatedAt.Default.(func() time.Time)
+	// authcodeDescUsedAt is the schema descriptor for used_at field.
+	authcodeDescUsedAt := authcodeFields[3].Descriptor()
+	// authcode.DefaultUsedAt holds the default value on creation for the used_at field.
+	authcode.DefaultUsedAt = authcodeDescUsedAt.Default.(time.Time)
+	consentFields := schema.Consent{}.Fields()
+	_ = consentFields
+	// consentDescClientID is the schema descriptor for client_id field.
+	consentDescClientID := consentFields[1].Descriptor()
+	// consent.ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
+	consent.ClientIDValidator = consentDescClientID.Validators[0].(func(string) error)
+	// consentDescCreatedAt is the schema descriptor for created_at field.
+	consentDescCreatedAt := consentFields[2].Descriptor()
+	// consent.DefaultCreatedAt holds the default value on creation for the created_at field.
+	consent.DefaultCreatedAt = consentDescCreatedAt.Default.(func() time.Time)
 	redirecturiFields := schema.RedirectURI{}.Fields()
 	_ = redirecturiFields
 	// redirecturiDescURI is the schema descriptor for uri field.
@@ -63,6 +75,20 @@ func init() {
 	redirecturi.DefaultModifiedAt = redirecturiDescModifiedAt.Default.(func() time.Time)
 	// redirecturi.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
 	redirecturi.UpdateDefaultModifiedAt = redirecturiDescModifiedAt.UpdateDefault.(func() time.Time)
+	relyingpartyFields := schema.RelyingParty{}.Fields()
+	_ = relyingpartyFields
+	// relyingpartyDescClientSecret is the schema descriptor for client_secret field.
+	relyingpartyDescClientSecret := relyingpartyFields[1].Descriptor()
+	// relyingparty.ClientSecretValidator is a validator for the "client_secret" field. It is called by the builders before save.
+	relyingparty.ClientSecretValidator = relyingpartyDescClientSecret.Validators[0].(func(string) error)
+	// relyingpartyDescCreatedAt is the schema descriptor for created_at field.
+	relyingpartyDescCreatedAt := relyingpartyFields[2].Descriptor()
+	// relyingparty.DefaultCreatedAt holds the default value on creation for the created_at field.
+	relyingparty.DefaultCreatedAt = relyingpartyDescCreatedAt.Default.(func() time.Time)
+	// relyingpartyDescModifiedAt is the schema descriptor for modified_at field.
+	relyingpartyDescModifiedAt := relyingpartyFields[3].Descriptor()
+	// relyingparty.DefaultModifiedAt holds the default value on creation for the modified_at field.
+	relyingparty.DefaultModifiedAt = relyingpartyDescModifiedAt.Default.(func() time.Time)
 	userMixin := schema.User{}.Mixin()
 	userMixinHooks0 := userMixin[0].Hooks()
 	user.Hooks[0] = userMixinHooks0[0]

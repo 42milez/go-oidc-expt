@@ -21,6 +21,18 @@ func (f AuthCodeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthCodeMutation", m)
 }
 
+// The ConsentFunc type is an adapter to allow the use of ordinary
+// function as Consent mutator.
+type ConsentFunc func(context.Context, *ent.ConsentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConsentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ConsentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConsentMutation", m)
+}
+
 // The RedirectURIFunc type is an adapter to allow the use of ordinary
 // function as RedirectURI mutator.
 type RedirectURIFunc func(context.Context, *ent.RedirectURIMutation) (ent.Value, error)
@@ -31,6 +43,18 @@ func (f RedirectURIFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RedirectURIMutation", m)
+}
+
+// The RelyingPartyFunc type is an adapter to allow the use of ordinary
+// function as RelyingParty mutator.
+type RelyingPartyFunc func(context.Context, *ent.RelyingPartyMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f RelyingPartyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RelyingPartyMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RelyingPartyMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary
