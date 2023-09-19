@@ -24,7 +24,7 @@ type AuthCode struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UsedAt holds the value of the "used_at" field.
-	UsedAt time.Time `json:"used_at,omitempty"`
+	UsedAt *time.Time `json:"used_at,omitempty"`
 	// RelyingPartyID holds the value of the "relying_party_id" field.
 	RelyingPartyID   int `json:"relying_party_id,omitempty"`
 	relying_party_id *int
@@ -87,7 +87,8 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field used_at", values[i])
 			} else if value.Valid {
-				ac.UsedAt = value.Time
+				ac.UsedAt = new(time.Time)
+				*ac.UsedAt = value.Time
 			}
 		case authcode.FieldRelyingPartyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -147,8 +148,10 @@ func (ac *AuthCode) String() string {
 	builder.WriteString("created_at=")
 	builder.WriteString(ac.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("used_at=")
-	builder.WriteString(ac.UsedAt.Format(time.ANSIC))
+	if v := ac.UsedAt; v != nil {
+		builder.WriteString("used_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("relying_party_id=")
 	builder.WriteString(fmt.Sprintf("%v", ac.RelyingPartyID))

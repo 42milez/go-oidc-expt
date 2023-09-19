@@ -83,7 +83,7 @@ resolve:
 
 ## seed: Seeding database
 seed:
-	@go run ./script/seed/main.go
+	@go run ./script/seed/*.go
 
 ## test: Run all tests
 test:

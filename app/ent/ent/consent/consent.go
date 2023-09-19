@@ -15,8 +15,8 @@ const (
 	FieldID = "id"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
-	// FieldClientID holds the string denoting the client_id field in the database.
-	FieldClientID = "client_id"
+	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
+	FieldRelyingPartyID = "relying_party_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// Table holds the table name of the consent in the database.
@@ -27,7 +27,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldUserID,
-	FieldClientID,
+	FieldRelyingPartyID,
 	FieldCreatedAt,
 }
 
@@ -53,8 +53,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
-	ClientIDValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 )
@@ -72,9 +70,9 @@ func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
-// ByClientID orders the results by the client_id field.
-func ByClientID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldClientID, opts...).ToFunc()
+// ByRelyingPartyID orders the results by the relying_party_id field.
+func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

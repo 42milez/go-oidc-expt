@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -24,6 +25,26 @@ type AuthCodeUpdate struct {
 // Where appends a list predicates to the AuthCodeUpdate builder.
 func (acu *AuthCodeUpdate) Where(ps ...predicate.AuthCode) *AuthCodeUpdate {
 	acu.mutation.Where(ps...)
+	return acu
+}
+
+// SetUsedAt sets the "used_at" field.
+func (acu *AuthCodeUpdate) SetUsedAt(t time.Time) *AuthCodeUpdate {
+	acu.mutation.SetUsedAt(t)
+	return acu
+}
+
+// SetNillableUsedAt sets the "used_at" field if the given value is not nil.
+func (acu *AuthCodeUpdate) SetNillableUsedAt(t *time.Time) *AuthCodeUpdate {
+	if t != nil {
+		acu.SetUsedAt(*t)
+	}
+	return acu
+}
+
+// ClearUsedAt clears the value of the "used_at" field.
+func (acu *AuthCodeUpdate) ClearUsedAt() *AuthCodeUpdate {
+	acu.mutation.ClearUsedAt()
 	return acu
 }
 
@@ -68,6 +89,12 @@ func (acu *AuthCodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := acu.mutation.UsedAt(); ok {
+		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
+	}
+	if acu.mutation.UsedAtCleared() {
+		_spec.ClearField(authcode.FieldUsedAt, field.TypeTime)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, acu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{authcode.Label}
@@ -86,6 +113,26 @@ type AuthCodeUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *AuthCodeMutation
+}
+
+// SetUsedAt sets the "used_at" field.
+func (acuo *AuthCodeUpdateOne) SetUsedAt(t time.Time) *AuthCodeUpdateOne {
+	acuo.mutation.SetUsedAt(t)
+	return acuo
+}
+
+// SetNillableUsedAt sets the "used_at" field if the given value is not nil.
+func (acuo *AuthCodeUpdateOne) SetNillableUsedAt(t *time.Time) *AuthCodeUpdateOne {
+	if t != nil {
+		acuo.SetUsedAt(*t)
+	}
+	return acuo
+}
+
+// ClearUsedAt clears the value of the "used_at" field.
+func (acuo *AuthCodeUpdateOne) ClearUsedAt() *AuthCodeUpdateOne {
+	acuo.mutation.ClearUsedAt()
+	return acuo
 }
 
 // Mutation returns the AuthCodeMutation object of the builder.
@@ -158,6 +205,12 @@ func (acuo *AuthCodeUpdateOne) sqlSave(ctx context.Context) (_node *AuthCode, er
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := acuo.mutation.UsedAt(); ok {
+		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
+	}
+	if acuo.mutation.UsedAtCleared() {
+		_spec.ClearField(authcode.FieldUsedAt, field.TypeTime)
 	}
 	_node = &AuthCode{config: acuo.config}
 	_spec.Assign = _node.assignValues

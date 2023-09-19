@@ -45,16 +45,8 @@ func init() {
 	authcodeDescCreatedAt := authcodeFields[2].Descriptor()
 	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.
 	authcode.DefaultCreatedAt = authcodeDescCreatedAt.Default.(func() time.Time)
-	// authcodeDescUsedAt is the schema descriptor for used_at field.
-	authcodeDescUsedAt := authcodeFields[3].Descriptor()
-	// authcode.DefaultUsedAt holds the default value on creation for the used_at field.
-	authcode.DefaultUsedAt = authcodeDescUsedAt.Default.(time.Time)
 	consentFields := schema.Consent{}.Fields()
 	_ = consentFields
-	// consentDescClientID is the schema descriptor for client_id field.
-	consentDescClientID := consentFields[1].Descriptor()
-	// consent.ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
-	consent.ClientIDValidator = consentDescClientID.Validators[0].(func(string) error)
 	// consentDescCreatedAt is the schema descriptor for created_at field.
 	consentDescCreatedAt := consentFields[2].Descriptor()
 	// consent.DefaultCreatedAt holds the default value on creation for the created_at field.

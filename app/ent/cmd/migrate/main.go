@@ -48,6 +48,8 @@ func main() {
 		schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
 		schema.WithDialect(dialect.MySQL),           // Ent dialect to use
 		schema.WithFormatter(atlas.DefaultFormatter),
+		schema.WithDropIndex(true),
+		schema.WithDropColumn(true),
 	}
 
 	if len(os.Args) != 2 {

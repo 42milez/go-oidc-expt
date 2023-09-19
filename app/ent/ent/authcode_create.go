@@ -117,10 +117,6 @@ func (acc *AuthCodeCreate) defaults() {
 		v := authcode.DefaultCreatedAt()
 		acc.mutation.SetCreatedAt(v)
 	}
-	if _, ok := acc.mutation.UsedAt(); !ok {
-		v := authcode.DefaultUsedAt
-		acc.mutation.SetUsedAt(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -138,9 +134,6 @@ func (acc *AuthCodeCreate) check() error {
 	}
 	if _, ok := acc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AuthCode.created_at"`)}
-	}
-	if _, ok := acc.mutation.UsedAt(); !ok {
-		return &ValidationError{Name: "used_at", err: errors.New(`ent: missing required field "AuthCode.used_at"`)}
 	}
 	if _, ok := acc.mutation.RelyingPartyID(); !ok {
 		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "AuthCode.relying_party_id"`)}
@@ -185,7 +178,7 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := acc.mutation.UsedAt(); ok {
 		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
-		_node.UsedAt = value
+		_node.UsedAt = &value
 	}
 	if value, ok := acc.mutation.RelyingPartyID(); ok {
 		_spec.SetField(authcode.FieldRelyingPartyID, field.TypeInt, value)

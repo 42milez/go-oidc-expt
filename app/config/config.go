@@ -64,11 +64,20 @@ const (
 )
 
 // --------------------------------------------------
+//  OIDC: RELYING PARTY
+// --------------------------------------------------
+
+const (
+	ClientIdLength     = 30
+	ClientSecretLength = 30
+)
+
+// --------------------------------------------------
 //  OIDC: AUTHORIZATION
 // --------------------------------------------------
 
 const (
-	AuthCodeLength        = 10
+	AuthCodeLength        = 30
 	AuthCodeLifetime      = 10 * time.Minute
 	AuthorizationEndpoint = "/authorize"
 )

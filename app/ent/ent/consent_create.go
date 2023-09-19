@@ -27,9 +27,9 @@ func (cc *ConsentCreate) SetUserID(ti typedef.UserID) *ConsentCreate {
 	return cc
 }
 
-// SetClientID sets the "client_id" field.
-func (cc *ConsentCreate) SetClientID(ti typedef.ClientId) *ConsentCreate {
-	cc.mutation.SetClientID(ti)
+// SetRelyingPartyID sets the "relying_party_id" field.
+func (cc *ConsentCreate) SetRelyingPartyID(i int) *ConsentCreate {
+	cc.mutation.SetRelyingPartyID(i)
 	return cc
 }
 
@@ -93,13 +93,8 @@ func (cc *ConsentCreate) check() error {
 	if _, ok := cc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Consent.user_id"`)}
 	}
-	if _, ok := cc.mutation.ClientID(); !ok {
-		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "Consent.client_id"`)}
-	}
-	if v, ok := cc.mutation.ClientID(); ok {
-		if err := consent.ClientIDValidator(string(v)); err != nil {
-			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "Consent.client_id": %w`, err)}
-		}
+	if _, ok := cc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "Consent.relying_party_id"`)}
 	}
 	if _, ok := cc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Consent.created_at"`)}
@@ -134,9 +129,9 @@ func (cc *ConsentCreate) createSpec() (*Consent, *sqlgraph.CreateSpec) {
 		_spec.SetField(consent.FieldUserID, field.TypeUint64, value)
 		_node.UserID = value
 	}
-	if value, ok := cc.mutation.ClientID(); ok {
-		_spec.SetField(consent.FieldClientID, field.TypeString, value)
-		_node.ClientID = value
+	if value, ok := cc.mutation.RelyingPartyID(); ok {
+		_spec.SetField(consent.FieldRelyingPartyID, field.TypeInt, value)
+		_node.RelyingPartyID = value
 	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.SetField(consent.FieldCreatedAt, field.TypeTime, value)

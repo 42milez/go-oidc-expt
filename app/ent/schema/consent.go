@@ -19,9 +19,7 @@ func (Consent) Fields() []ent.Field {
 		field.Uint64("user_id").
 			GoType(typedef.UserID(0)).
 			Immutable(),
-		field.String("client_id").
-			GoType(typedef.ClientId("")).
-			NotEmpty().
+		field.Int("relying_party_id").
 			Immutable(),
 		field.Time("created_at").
 			Default(time.Now).
@@ -32,6 +30,6 @@ func (Consent) Fields() []ent.Field {
 // Indexes of the Consent
 func (Consent) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("user_id", "client_id"),
+		index.Fields("user_id", "relying_party_id"),
 	}
 }

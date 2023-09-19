@@ -264,6 +264,16 @@ func UsedAtLTE(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLTE(FieldUsedAt, v))
 }
 
+// UsedAtIsNil applies the IsNil predicate on the "used_at" field.
+func UsedAtIsNil() predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldIsNull(FieldUsedAt))
+}
+
+// UsedAtNotNil applies the NotNil predicate on the "used_at" field.
+func UsedAtNotNil() predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNotNull(FieldUsedAt))
+}
+
 // RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
 func RelyingPartyIDEQ(v int) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, v))

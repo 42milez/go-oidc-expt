@@ -65,8 +65,6 @@ var (
 	DefaultExpireAt func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
-	// DefaultUsedAt holds the default value on creation for the "used_at" field.
-	DefaultUsedAt time.Time
 )
 
 // OrderOption defines the ordering options for the AuthCode queries.

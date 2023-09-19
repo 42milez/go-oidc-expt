@@ -38,8 +38,8 @@ func (AuthCode) Fields() []ent.Field {
 			Default(time.Now).
 			Immutable(),
 		field.Time("used_at").
-			Default(time.Now()).
-			Immutable(),
+			Optional().
+			Nillable(),
 		field.Int("relying_party_id").
 			Immutable(),
 	}

@@ -12,10 +12,10 @@ var (
 	// AuthCodesColumns holds the columns for the "auth_codes" table.
 	AuthCodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(10)"}},
+		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(30)"}},
 		{Name: "expire_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "used_at", Type: field.TypeTime},
+		{Name: "used_at", Type: field.TypeTime, Nullable: true},
 		{Name: "relying_party_id", Type: field.TypeInt},
 	}
 	// AuthCodesTable holds the schema information for the "auth_codes" table.
@@ -43,7 +43,7 @@ var (
 	ConsentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "user_id", Type: field.TypeUint64},
-		{Name: "client_id", Type: field.TypeString},
+		{Name: "relying_party_id", Type: field.TypeInt},
 		{Name: "created_at", Type: field.TypeTime},
 	}
 	// ConsentsTable holds the schema information for the "consents" table.
@@ -61,7 +61,7 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "consent_user_id_client_id",
+				Name:    "consent_user_id_relying_party_id",
 				Unique:  false,
 				Columns: []*schema.Column{ConsentsColumns[1], ConsentsColumns[2]},
 			},
