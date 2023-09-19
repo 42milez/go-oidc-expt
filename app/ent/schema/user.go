@@ -46,7 +46,7 @@ func (User) Fields() []ent.Field {
 			NotEmpty(),
 		field.String("totp_secret").
 			SchemaType(map[string]string{
-				dialect.MySQL: TotoSecretSchemaType(),
+				dialect.MySQL: TotpSecretSchemaType(),
 			}).
 			// TOTP secret is encoded with base32 encoding.
 			// https://datatracker.ietf.org/doc/html/rfc4648#page-8
@@ -77,6 +77,6 @@ func PasswordSchemaType() string {
 	return fmt.Sprintf("VARCHAR(%d)", passwordLength)
 }
 
-func TotoSecretSchemaType() string {
+func TotpSecretSchemaType() string {
 	return fmt.Sprintf("CHAR(%d)", totpSecretLength)
 }
