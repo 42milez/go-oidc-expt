@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
@@ -25,7 +25,7 @@ type UserQuery struct {
 	order            []user.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.User
-	withAuthCodes    *AuthCodeQuery
+	withConsents     *ConsentQuery
 	withRedirectUris *RedirectURIQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -63,9 +63,9 @@ func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	return uq
 }
 
-// QueryAuthCodes chains the current query on the "auth_codes" edge.
-func (uq *UserQuery) QueryAuthCodes() *AuthCodeQuery {
-	query := (&AuthCodeClient{config: uq.config}).Query()
+// QueryConsents chains the current query on the "consents" edge.
+func (uq *UserQuery) QueryConsents() *ConsentQuery {
+	query := (&ConsentClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,8 +76,8 @@ func (uq *UserQuery) QueryAuthCodes() *AuthCodeQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(authcode.Table, authcode.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.AuthCodesTable, user.AuthCodesColumn),
+			sqlgraph.To(consent.Table, consent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -299,7 +299,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		order:            append([]user.OrderOption{}, uq.order...),
 		inters:           append([]Interceptor{}, uq.inters...),
 		predicates:       append([]predicate.User{}, uq.predicates...),
-		withAuthCodes:    uq.withAuthCodes.Clone(),
+		withConsents:     uq.withConsents.Clone(),
 		withRedirectUris: uq.withRedirectUris.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
@@ -307,14 +307,14 @@ func (uq *UserQuery) Clone() *UserQuery {
 	}
 }
 
-// WithAuthCodes tells the query-builder to eager-load the nodes that are connected to
-// the "auth_codes" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithAuthCodes(opts ...func(*AuthCodeQuery)) *UserQuery {
-	query := (&AuthCodeClient{config: uq.config}).Query()
+// WithConsents tells the query-builder to eager-load the nodes that are connected to
+// the "consents" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithConsents(opts ...func(*ConsentQuery)) *UserQuery {
+	query := (&ConsentClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withAuthCodes = query
+	uq.withConsents = query
 	return uq
 }
 
@@ -408,7 +408,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
 		loadedTypes = [2]bool{
-			uq.withAuthCodes != nil,
+			uq.withConsents != nil,
 			uq.withRedirectUris != nil,
 		}
 	)
@@ -430,10 +430,10 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := uq.withAuthCodes; query != nil {
-		if err := uq.loadAuthCodes(ctx, query, nodes,
-			func(n *User) { n.Edges.AuthCodes = []*AuthCode{} },
-			func(n *User, e *AuthCode) { n.Edges.AuthCodes = append(n.Edges.AuthCodes, e) }); err != nil {
+	if query := uq.withConsents; query != nil {
+		if err := uq.loadConsents(ctx, query, nodes,
+			func(n *User) { n.Edges.Consents = []*Consent{} },
+			func(n *User, e *Consent) { n.Edges.Consents = append(n.Edges.Consents, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -447,7 +447,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	return nodes, nil
 }
 
-func (uq *UserQuery) loadAuthCodes(ctx context.Context, query *AuthCodeQuery, nodes []*User, init func(*User), assign func(*User, *AuthCode)) error {
+func (uq *UserQuery) loadConsents(ctx context.Context, query *ConsentQuery, nodes []*User, init func(*User), assign func(*User, *Consent)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[typedef.UserID]*User)
 	for i := range nodes {
@@ -458,8 +458,8 @@ func (uq *UserQuery) loadAuthCodes(ctx context.Context, query *AuthCodeQuery, no
 		}
 	}
 	query.withFKs = true
-	query.Where(predicate.AuthCode(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.AuthCodesColumn), fks...))
+	query.Where(predicate.Consent(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ConsentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

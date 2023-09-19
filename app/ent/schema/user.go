@@ -64,7 +64,7 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("auth_codes", AuthCode.Type).
+		edge.To("consents", Consent.Type).
 			StorageKey(edge.Column("user_id")).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("redirect_uris", RedirectURI.Type).

@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
-
 	"entgo.io/ent/schema/index"
 	"github.com/42milez/go-oidc-server/app/config"
 
@@ -41,12 +39,6 @@ func (AuthCode) Fields() []ent.Field {
 			Immutable(),
 		field.Time("used_at").
 			Default(time.Now()).
-			Immutable(),
-		field.String("client_id").
-			GoType(typedef.ClientId("")).
-			Immutable(),
-		field.Uint64("user_id").
-			GoType(typedef.UserID(0)).
 			Immutable(),
 	}
 }

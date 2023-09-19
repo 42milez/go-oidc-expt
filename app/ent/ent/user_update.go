@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
@@ -68,19 +68,19 @@ func (uu *UserUpdate) SetModifiedAt(t time.Time) *UserUpdate {
 	return uu
 }
 
-// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
-func (uu *UserUpdate) AddAuthCodeIDs(ids ...int) *UserUpdate {
-	uu.mutation.AddAuthCodeIDs(ids...)
+// AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
+func (uu *UserUpdate) AddConsentIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddConsentIDs(ids...)
 	return uu
 }
 
-// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
-func (uu *UserUpdate) AddAuthCodes(a ...*AuthCode) *UserUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddConsents adds the "consents" edges to the Consent entity.
+func (uu *UserUpdate) AddConsents(c ...*Consent) *UserUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return uu.AddAuthCodeIDs(ids...)
+	return uu.AddConsentIDs(ids...)
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
@@ -103,25 +103,25 @@ func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
 }
 
-// ClearAuthCodes clears all "auth_codes" edges to the AuthCode entity.
-func (uu *UserUpdate) ClearAuthCodes() *UserUpdate {
-	uu.mutation.ClearAuthCodes()
+// ClearConsents clears all "consents" edges to the Consent entity.
+func (uu *UserUpdate) ClearConsents() *UserUpdate {
+	uu.mutation.ClearConsents()
 	return uu
 }
 
-// RemoveAuthCodeIDs removes the "auth_codes" edge to AuthCode entities by IDs.
-func (uu *UserUpdate) RemoveAuthCodeIDs(ids ...int) *UserUpdate {
-	uu.mutation.RemoveAuthCodeIDs(ids...)
+// RemoveConsentIDs removes the "consents" edge to Consent entities by IDs.
+func (uu *UserUpdate) RemoveConsentIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveConsentIDs(ids...)
 	return uu
 }
 
-// RemoveAuthCodes removes "auth_codes" edges to AuthCode entities.
-func (uu *UserUpdate) RemoveAuthCodes(a ...*AuthCode) *UserUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// RemoveConsents removes "consents" edges to Consent entities.
+func (uu *UserUpdate) RemoveConsents(c ...*Consent) *UserUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return uu.RemoveAuthCodeIDs(ids...)
+	return uu.RemoveConsentIDs(ids...)
 }
 
 // ClearRedirectUris clears all "redirect_uris" edges to the RedirectURI entity.
@@ -234,28 +234,28 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.ModifiedAt(); ok {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)
 	}
-	if uu.mutation.AuthCodesCleared() {
+	if uu.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.AuthCodesTable,
-			Columns: []string{user.AuthCodesColumn},
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.RemovedAuthCodesIDs(); len(nodes) > 0 && !uu.mutation.AuthCodesCleared() {
+	if nodes := uu.mutation.RemovedConsentsIDs(); len(nodes) > 0 && !uu.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.AuthCodesTable,
-			Columns: []string{user.AuthCodesColumn},
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -263,15 +263,15 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.AuthCodesIDs(); len(nodes) > 0 {
+	if nodes := uu.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.AuthCodesTable,
-			Columns: []string{user.AuthCodesColumn},
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -382,19 +382,19 @@ func (uuo *UserUpdateOne) SetModifiedAt(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
-// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
-func (uuo *UserUpdateOne) AddAuthCodeIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.AddAuthCodeIDs(ids...)
+// AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
+func (uuo *UserUpdateOne) AddConsentIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddConsentIDs(ids...)
 	return uuo
 }
 
-// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
-func (uuo *UserUpdateOne) AddAuthCodes(a ...*AuthCode) *UserUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddConsents adds the "consents" edges to the Consent entity.
+func (uuo *UserUpdateOne) AddConsents(c ...*Consent) *UserUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return uuo.AddAuthCodeIDs(ids...)
+	return uuo.AddConsentIDs(ids...)
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
@@ -417,25 +417,25 @@ func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
 }
 
-// ClearAuthCodes clears all "auth_codes" edges to the AuthCode entity.
-func (uuo *UserUpdateOne) ClearAuthCodes() *UserUpdateOne {
-	uuo.mutation.ClearAuthCodes()
+// ClearConsents clears all "consents" edges to the Consent entity.
+func (uuo *UserUpdateOne) ClearConsents() *UserUpdateOne {
+	uuo.mutation.ClearConsents()
 	return uuo
 }
 
-// RemoveAuthCodeIDs removes the "auth_codes" edge to AuthCode entities by IDs.
-func (uuo *UserUpdateOne) RemoveAuthCodeIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.RemoveAuthCodeIDs(ids...)
+// RemoveConsentIDs removes the "consents" edge to Consent entities by IDs.
+func (uuo *UserUpdateOne) RemoveConsentIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveConsentIDs(ids...)
 	return uuo
 }
 
-// RemoveAuthCodes removes "auth_codes" edges to AuthCode entities.
-func (uuo *UserUpdateOne) RemoveAuthCodes(a ...*AuthCode) *UserUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// RemoveConsents removes "consents" edges to Consent entities.
+func (uuo *UserUpdateOne) RemoveConsents(c ...*Consent) *UserUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return uuo.RemoveAuthCodeIDs(ids...)
+	return uuo.RemoveConsentIDs(ids...)
 }
 
 // ClearRedirectUris clears all "redirect_uris" edges to the RedirectURI entity.
@@ -578,28 +578,28 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.ModifiedAt(); ok {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)
 	}
-	if uuo.mutation.AuthCodesCleared() {
+	if uuo.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.AuthCodesTable,
-			Columns: []string{user.AuthCodesColumn},
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.RemovedAuthCodesIDs(); len(nodes) > 0 && !uuo.mutation.AuthCodesCleared() {
+	if nodes := uuo.mutation.RemovedConsentsIDs(); len(nodes) > 0 && !uuo.mutation.ConsentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.AuthCodesTable,
-			Columns: []string{user.AuthCodesColumn},
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -607,15 +607,15 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.AuthCodesIDs(); len(nodes) > 0 {
+	if nodes := uuo.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.AuthCodesTable,
-			Columns: []string{user.AuthCodesColumn},
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

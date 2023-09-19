@@ -21,10 +21,6 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUsedAt holds the string denoting the used_at field in the database.
 	FieldUsedAt = "used_at"
-	// FieldClientID holds the string denoting the client_id field in the database.
-	FieldClientID = "client_id"
-	// FieldUserID holds the string denoting the user_id field in the database.
-	FieldUserID = "user_id"
 	// Table holds the table name of the authcode in the database.
 	Table = "auth_codes"
 )
@@ -36,14 +32,12 @@ var Columns = []string{
 	FieldExpireAt,
 	FieldCreatedAt,
 	FieldUsedAt,
-	FieldClientID,
-	FieldUserID,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "auth_codes"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"user_id",
+	"client_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -98,14 +92,4 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUsedAt orders the results by the used_at field.
 func ByUsedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsedAt, opts...).ToFunc()
-}
-
-// ByClientID orders the results by the client_id field.
-func ByClientID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldClientID, opts...).ToFunc()
-}
-
-// ByUserID orders the results by the user_id field.
-func ByUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }

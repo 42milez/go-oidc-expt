@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 )
@@ -17,10 +19,11 @@ import (
 // RelyingPartyQuery is the builder for querying RelyingParty entities.
 type RelyingPartyQuery struct {
 	config
-	ctx        *QueryContext
-	order      []relyingparty.OrderOption
-	inters     []Interceptor
-	predicates []predicate.RelyingParty
+	ctx           *QueryContext
+	order         []relyingparty.OrderOption
+	inters        []Interceptor
+	predicates    []predicate.RelyingParty
+	withAuthCodes *AuthCodeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +58,28 @@ func (rpq *RelyingPartyQuery) Unique(unique bool) *RelyingPartyQuery {
 func (rpq *RelyingPartyQuery) Order(o ...relyingparty.OrderOption) *RelyingPartyQuery {
 	rpq.order = append(rpq.order, o...)
 	return rpq
+}
+
+// QueryAuthCodes chains the current query on the "auth_codes" edge.
+func (rpq *RelyingPartyQuery) QueryAuthCodes() *AuthCodeQuery {
+	query := (&AuthCodeClient{config: rpq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rpq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rpq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(relyingparty.Table, relyingparty.FieldID, selector),
+			sqlgraph.To(authcode.Table, authcode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, relyingparty.AuthCodesTable, relyingparty.AuthCodesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rpq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first RelyingParty entity from the query.
@@ -244,15 +269,27 @@ func (rpq *RelyingPartyQuery) Clone() *RelyingPartyQuery {
 		return nil
 	}
 	return &RelyingPartyQuery{
-		config:     rpq.config,
-		ctx:        rpq.ctx.Clone(),
-		order:      append([]relyingparty.OrderOption{}, rpq.order...),
-		inters:     append([]Interceptor{}, rpq.inters...),
-		predicates: append([]predicate.RelyingParty{}, rpq.predicates...),
+		config:        rpq.config,
+		ctx:           rpq.ctx.Clone(),
+		order:         append([]relyingparty.OrderOption{}, rpq.order...),
+		inters:        append([]Interceptor{}, rpq.inters...),
+		predicates:    append([]predicate.RelyingParty{}, rpq.predicates...),
+		withAuthCodes: rpq.withAuthCodes.Clone(),
 		// clone intermediate query.
 		sql:  rpq.sql.Clone(),
 		path: rpq.path,
 	}
+}
+
+// WithAuthCodes tells the query-builder to eager-load the nodes that are connected to
+// the "auth_codes" edge. The optional arguments are used to configure the query builder of the edge.
+func (rpq *RelyingPartyQuery) WithAuthCodes(opts ...func(*AuthCodeQuery)) *RelyingPartyQuery {
+	query := (&AuthCodeClient{config: rpq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rpq.withAuthCodes = query
+	return rpq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -331,8 +368,11 @@ func (rpq *RelyingPartyQuery) prepareQuery(ctx context.Context) error {
 
 func (rpq *RelyingPartyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*RelyingParty, error) {
 	var (
-		nodes = []*RelyingParty{}
-		_spec = rpq.querySpec()
+		nodes       = []*RelyingParty{}
+		_spec       = rpq.querySpec()
+		loadedTypes = [1]bool{
+			rpq.withAuthCodes != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*RelyingParty).scanValues(nil, columns)
@@ -340,6 +380,7 @@ func (rpq *RelyingPartyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &RelyingParty{config: rpq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +392,46 @@ func (rpq *RelyingPartyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := rpq.withAuthCodes; query != nil {
+		if err := rpq.loadAuthCodes(ctx, query, nodes,
+			func(n *RelyingParty) { n.Edges.AuthCodes = []*AuthCode{} },
+			func(n *RelyingParty, e *AuthCode) { n.Edges.AuthCodes = append(n.Edges.AuthCodes, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (rpq *RelyingPartyQuery) loadAuthCodes(ctx context.Context, query *AuthCodeQuery, nodes []*RelyingParty, init func(*RelyingParty), assign func(*RelyingParty, *AuthCode)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*RelyingParty)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.AuthCode(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(relyingparty.AuthCodesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.client_id
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "client_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "client_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (rpq *RelyingPartyQuery) sqlCount(ctx context.Context) (int, error) {

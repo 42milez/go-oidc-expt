@@ -16,8 +16,7 @@ var (
 		{Name: "expire_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "used_at", Type: field.TypeTime},
-		{Name: "client_id", Type: field.TypeString},
-		{Name: "user_id", Type: field.TypeUint64},
+		{Name: "client_id", Type: field.TypeInt, Nullable: true},
 	}
 	// AuthCodesTable holds the schema information for the "auth_codes" table.
 	AuthCodesTable = &schema.Table{
@@ -26,9 +25,9 @@ var (
 		PrimaryKey: []*schema.Column{AuthCodesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "auth_codes_users_auth_codes",
-				Columns:    []*schema.Column{AuthCodesColumns[6]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
+				Symbol:     "auth_codes_relying_parties_auth_codes",
+				Columns:    []*schema.Column{AuthCodesColumns[5]},
+				RefColumns: []*schema.Column{RelyingPartiesColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -52,6 +51,21 @@ var (
 		Name:       "consents",
 		Columns:    ConsentsColumns,
 		PrimaryKey: []*schema.Column{ConsentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "consents_users_consents",
+				Columns:    []*schema.Column{ConsentsColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "consent_user_id_client_id",
+				Unique:  false,
+				Columns: []*schema.Column{ConsentsColumns[1], ConsentsColumns[2]},
+			},
+		},
 	}
 	// RedirectUrisColumns holds the columns for the "redirect_uris" table.
 	RedirectUrisColumns = []*schema.Column{
@@ -122,7 +136,8 @@ var (
 )
 
 func init() {
-	AuthCodesTable.ForeignKeys[0].RefTable = UsersTable
+	AuthCodesTable.ForeignKeys[0].RefTable = RelyingPartiesTable
+	ConsentsTable.ForeignKeys[0].RefTable = UsersTable
 	RedirectUrisTable.ForeignKeys[0].RefTable = UsersTable
 	RedirectUrisTable.Annotation = &entsql.Annotation{
 		Table: "redirect_uris",

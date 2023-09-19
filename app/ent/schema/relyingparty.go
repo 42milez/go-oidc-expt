@@ -2,6 +2,8 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/typedef"
 	"time"
@@ -32,5 +34,9 @@ func (RelyingParty) Fields() []ent.Field {
 
 // Edges of the RelyingParty.
 func (RelyingParty) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("auth_codes", AuthCode.Type).
+			StorageKey(edge.Column("client_id")).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+	}
 }

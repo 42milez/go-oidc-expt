@@ -21,6 +21,7 @@ type ConsentQuery struct {
 	order      []consent.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Consent
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -331,9 +332,13 @@ func (cq *ConsentQuery) prepareQuery(ctx context.Context) error {
 
 func (cq *ConsentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Consent, error) {
 	var (
-		nodes = []*Consent{}
-		_spec = cq.querySpec()
+		nodes   = []*Consent{}
+		withFKs = cq.withFKs
+		_spec   = cq.querySpec()
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, consent.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Consent).scanValues(nil, columns)
 	}

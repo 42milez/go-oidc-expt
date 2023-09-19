@@ -3,6 +3,7 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/42milez/go-oidc-server/app/typedef"
 	"time"
 )
@@ -28,7 +29,9 @@ func (Consent) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Consent.
-func (Consent) Edges() []ent.Edge {
-	return nil
+// Indexes of the Consent
+func (Consent) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("user_id", "client_id"),
+	}
 }

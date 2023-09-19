@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -83,19 +83,19 @@ func (uc *UserCreate) SetID(ti typedef.UserID) *UserCreate {
 	return uc
 }
 
-// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
-func (uc *UserCreate) AddAuthCodeIDs(ids ...int) *UserCreate {
-	uc.mutation.AddAuthCodeIDs(ids...)
+// AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
+func (uc *UserCreate) AddConsentIDs(ids ...int) *UserCreate {
+	uc.mutation.AddConsentIDs(ids...)
 	return uc
 }
 
-// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
-func (uc *UserCreate) AddAuthCodes(a ...*AuthCode) *UserCreate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddConsents adds the "consents" edges to the Consent entity.
+func (uc *UserCreate) AddConsents(c ...*Consent) *UserCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return uc.AddAuthCodeIDs(ids...)
+	return uc.AddConsentIDs(ids...)
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
@@ -248,15 +248,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)
 		_node.ModifiedAt = value
 	}
-	if nodes := uc.mutation.AuthCodesIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.AuthCodesTable,
-			Columns: []string{user.AuthCodesColumn},
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

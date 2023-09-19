@@ -24,6 +24,7 @@ type Consent struct {
 	ClientID typedef.ClientId `json:"client_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt    time.Time `json:"created_at,omitempty"`
+	user_id      *typedef.UserID
 	selectValues sql.SelectValues
 }
 
@@ -38,6 +39,8 @@ func (*Consent) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case consent.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case consent.ForeignKeys[0]: // user_id
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -76,6 +79,13 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				c.CreatedAt = value.Time
+			}
+		case consent.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				c.user_id = new(typedef.UserID)
+				*c.user_id = typedef.UserID(value.Int64)
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])

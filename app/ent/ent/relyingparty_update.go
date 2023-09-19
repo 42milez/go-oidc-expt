@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -49,9 +50,45 @@ func (rpu *RelyingPartyUpdate) SetNillableModifiedAt(t *time.Time) *RelyingParty
 	return rpu
 }
 
+// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
+func (rpu *RelyingPartyUpdate) AddAuthCodeIDs(ids ...int) *RelyingPartyUpdate {
+	rpu.mutation.AddAuthCodeIDs(ids...)
+	return rpu
+}
+
+// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
+func (rpu *RelyingPartyUpdate) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return rpu.AddAuthCodeIDs(ids...)
+}
+
 // Mutation returns the RelyingPartyMutation object of the builder.
 func (rpu *RelyingPartyUpdate) Mutation() *RelyingPartyMutation {
 	return rpu.mutation
+}
+
+// ClearAuthCodes clears all "auth_codes" edges to the AuthCode entity.
+func (rpu *RelyingPartyUpdate) ClearAuthCodes() *RelyingPartyUpdate {
+	rpu.mutation.ClearAuthCodes()
+	return rpu
+}
+
+// RemoveAuthCodeIDs removes the "auth_codes" edge to AuthCode entities by IDs.
+func (rpu *RelyingPartyUpdate) RemoveAuthCodeIDs(ids ...int) *RelyingPartyUpdate {
+	rpu.mutation.RemoveAuthCodeIDs(ids...)
+	return rpu
+}
+
+// RemoveAuthCodes removes "auth_codes" edges to AuthCode entities.
+func (rpu *RelyingPartyUpdate) RemoveAuthCodes(a ...*AuthCode) *RelyingPartyUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return rpu.RemoveAuthCodeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -109,6 +146,51 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := rpu.mutation.ModifiedAt(); ok {
 		_spec.SetField(relyingparty.FieldModifiedAt, field.TypeTime, value)
 	}
+	if rpu.mutation.AuthCodesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.AuthCodesTable,
+			Columns: []string{relyingparty.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := rpu.mutation.RemovedAuthCodesIDs(); len(nodes) > 0 && !rpu.mutation.AuthCodesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.AuthCodesTable,
+			Columns: []string{relyingparty.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := rpu.mutation.AuthCodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.AuthCodesTable,
+			Columns: []string{relyingparty.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, rpu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{relyingparty.Label}
@@ -149,9 +231,45 @@ func (rpuo *RelyingPartyUpdateOne) SetNillableModifiedAt(t *time.Time) *RelyingP
 	return rpuo
 }
 
+// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
+func (rpuo *RelyingPartyUpdateOne) AddAuthCodeIDs(ids ...int) *RelyingPartyUpdateOne {
+	rpuo.mutation.AddAuthCodeIDs(ids...)
+	return rpuo
+}
+
+// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
+func (rpuo *RelyingPartyUpdateOne) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return rpuo.AddAuthCodeIDs(ids...)
+}
+
 // Mutation returns the RelyingPartyMutation object of the builder.
 func (rpuo *RelyingPartyUpdateOne) Mutation() *RelyingPartyMutation {
 	return rpuo.mutation
+}
+
+// ClearAuthCodes clears all "auth_codes" edges to the AuthCode entity.
+func (rpuo *RelyingPartyUpdateOne) ClearAuthCodes() *RelyingPartyUpdateOne {
+	rpuo.mutation.ClearAuthCodes()
+	return rpuo
+}
+
+// RemoveAuthCodeIDs removes the "auth_codes" edge to AuthCode entities by IDs.
+func (rpuo *RelyingPartyUpdateOne) RemoveAuthCodeIDs(ids ...int) *RelyingPartyUpdateOne {
+	rpuo.mutation.RemoveAuthCodeIDs(ids...)
+	return rpuo
+}
+
+// RemoveAuthCodes removes "auth_codes" edges to AuthCode entities.
+func (rpuo *RelyingPartyUpdateOne) RemoveAuthCodes(a ...*AuthCode) *RelyingPartyUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return rpuo.RemoveAuthCodeIDs(ids...)
 }
 
 // Where appends a list predicates to the RelyingPartyUpdate builder.
@@ -238,6 +356,51 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 	}
 	if value, ok := rpuo.mutation.ModifiedAt(); ok {
 		_spec.SetField(relyingparty.FieldModifiedAt, field.TypeTime, value)
+	}
+	if rpuo.mutation.AuthCodesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.AuthCodesTable,
+			Columns: []string{relyingparty.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := rpuo.mutation.RemovedAuthCodesIDs(); len(nodes) > 0 && !rpuo.mutation.AuthCodesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.AuthCodesTable,
+			Columns: []string{relyingparty.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := rpuo.mutation.AuthCodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.AuthCodesTable,
+			Columns: []string{relyingparty.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &RelyingParty{config: rpuo.config}
 	_spec.Assign = _node.assignValues

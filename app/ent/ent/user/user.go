@@ -25,19 +25,19 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldModifiedAt holds the string denoting the modified_at field in the database.
 	FieldModifiedAt = "modified_at"
-	// EdgeAuthCodes holds the string denoting the auth_codes edge name in mutations.
-	EdgeAuthCodes = "auth_codes"
+	// EdgeConsents holds the string denoting the consents edge name in mutations.
+	EdgeConsents = "consents"
 	// EdgeRedirectUris holds the string denoting the redirect_uris edge name in mutations.
 	EdgeRedirectUris = "redirect_uris"
 	// Table holds the table name of the user in the database.
 	Table = "users"
-	// AuthCodesTable is the table that holds the auth_codes relation/edge.
-	AuthCodesTable = "auth_codes"
-	// AuthCodesInverseTable is the table name for the AuthCode entity.
-	// It exists in this package in order to avoid circular dependency with the "authcode" package.
-	AuthCodesInverseTable = "auth_codes"
-	// AuthCodesColumn is the table column denoting the auth_codes relation/edge.
-	AuthCodesColumn = "user_id"
+	// ConsentsTable is the table that holds the consents relation/edge.
+	ConsentsTable = "consents"
+	// ConsentsInverseTable is the table name for the Consent entity.
+	// It exists in this package in order to avoid circular dependency with the "consent" package.
+	ConsentsInverseTable = "consents"
+	// ConsentsColumn is the table column denoting the consents relation/edge.
+	ConsentsColumn = "user_id"
 	// RedirectUrisTable is the table that holds the redirect_uris relation/edge.
 	RedirectUrisTable = "redirect_uris"
 	// RedirectUrisInverseTable is the table name for the RedirectURI entity.
@@ -121,17 +121,17 @@ func ByModifiedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldModifiedAt, opts...).ToFunc()
 }
 
-// ByAuthCodesCount orders the results by auth_codes count.
-func ByAuthCodesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByConsentsCount orders the results by consents count.
+func ByConsentsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newAuthCodesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newConsentsStep(), opts...)
 	}
 }
 
-// ByAuthCodes orders the results by auth_codes terms.
-func ByAuthCodes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByConsents orders the results by consents terms.
+func ByConsents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAuthCodesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newConsentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -148,11 +148,11 @@ func ByRedirectUris(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRedirectUrisStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newAuthCodesStep() *sqlgraph.Step {
+func newConsentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AuthCodesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, AuthCodesTable, AuthCodesColumn),
+		sqlgraph.To(ConsentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
 	)
 }
 func newRedirectUrisStep() *sqlgraph.Step {

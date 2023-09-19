@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
-	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // AuthCodeCreate is the builder for creating a AuthCode entity.
@@ -66,18 +65,6 @@ func (acc *AuthCodeCreate) SetNillableUsedAt(t *time.Time) *AuthCodeCreate {
 	if t != nil {
 		acc.SetUsedAt(*t)
 	}
-	return acc
-}
-
-// SetClientID sets the "client_id" field.
-func (acc *AuthCodeCreate) SetClientID(ti typedef.ClientId) *AuthCodeCreate {
-	acc.mutation.SetClientID(ti)
-	return acc
-}
-
-// SetUserID sets the "user_id" field.
-func (acc *AuthCodeCreate) SetUserID(ti typedef.UserID) *AuthCodeCreate {
-	acc.mutation.SetUserID(ti)
 	return acc
 }
 
@@ -149,12 +136,6 @@ func (acc *AuthCodeCreate) check() error {
 	if _, ok := acc.mutation.UsedAt(); !ok {
 		return &ValidationError{Name: "used_at", err: errors.New(`ent: missing required field "AuthCode.used_at"`)}
 	}
-	if _, ok := acc.mutation.ClientID(); !ok {
-		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "AuthCode.client_id"`)}
-	}
-	if _, ok := acc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthCode.user_id"`)}
-	}
 	return nil
 }
 
@@ -196,14 +177,6 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 	if value, ok := acc.mutation.UsedAt(); ok {
 		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
 		_node.UsedAt = value
-	}
-	if value, ok := acc.mutation.ClientID(); ok {
-		_spec.SetField(authcode.FieldClientID, field.TypeString, value)
-		_node.ClientID = value
-	}
-	if value, ok := acc.mutation.UserID(); ok {
-		_spec.SetField(authcode.FieldUserID, field.TypeUint64, value)
-		_node.UserID = value
 	}
 	return _node, _spec
 }

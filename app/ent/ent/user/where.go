@@ -366,21 +366,21 @@ func ModifiedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldModifiedAt, v))
 }
 
-// HasAuthCodes applies the HasEdge predicate on the "auth_codes" edge.
-func HasAuthCodes() predicate.User {
+// HasConsents applies the HasEdge predicate on the "consents" edge.
+func HasConsents() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AuthCodesTable, AuthCodesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAuthCodesWith applies the HasEdge predicate on the "auth_codes" edge with a given conditions (other predicates).
-func HasAuthCodesWith(preds ...predicate.AuthCode) predicate.User {
+// HasConsentsWith applies the HasEdge predicate on the "consents" edge with a given conditions (other predicates).
+func HasConsentsWith(preds ...predicate.Consent) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newAuthCodesStep()
+		step := newConsentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

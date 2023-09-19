@@ -46,9 +46,6 @@ type AuthCodeMutation struct {
 	expire_at     *time.Time
 	created_at    *time.Time
 	used_at       *time.Time
-	client_id     *typedef.ClientId
-	user_id       *typedef.UserID
-	adduser_id    *typedef.UserID
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*AuthCode, error)
@@ -297,98 +294,6 @@ func (m *AuthCodeMutation) ResetUsedAt() {
 	m.used_at = nil
 }
 
-// SetClientID sets the "client_id" field.
-func (m *AuthCodeMutation) SetClientID(ti typedef.ClientId) {
-	m.client_id = &ti
-}
-
-// ClientID returns the value of the "client_id" field in the mutation.
-func (m *AuthCodeMutation) ClientID() (r typedef.ClientId, exists bool) {
-	v := m.client_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldClientID returns the old "client_id" field's value of the AuthCode entity.
-// If the AuthCode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AuthCodeMutation) OldClientID(ctx context.Context) (v typedef.ClientId, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldClientID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldClientID: %w", err)
-	}
-	return oldValue.ClientID, nil
-}
-
-// ResetClientID resets all changes to the "client_id" field.
-func (m *AuthCodeMutation) ResetClientID() {
-	m.client_id = nil
-}
-
-// SetUserID sets the "user_id" field.
-func (m *AuthCodeMutation) SetUserID(ti typedef.UserID) {
-	m.user_id = &ti
-	m.adduser_id = nil
-}
-
-// UserID returns the value of the "user_id" field in the mutation.
-func (m *AuthCodeMutation) UserID() (r typedef.UserID, exists bool) {
-	v := m.user_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUserID returns the old "user_id" field's value of the AuthCode entity.
-// If the AuthCode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AuthCodeMutation) OldUserID(ctx context.Context) (v typedef.UserID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
-	}
-	return oldValue.UserID, nil
-}
-
-// AddUserID adds ti to the "user_id" field.
-func (m *AuthCodeMutation) AddUserID(ti typedef.UserID) {
-	if m.adduser_id != nil {
-		*m.adduser_id += ti
-	} else {
-		m.adduser_id = &ti
-	}
-}
-
-// AddedUserID returns the value that was added to the "user_id" field in this mutation.
-func (m *AuthCodeMutation) AddedUserID() (r typedef.UserID, exists bool) {
-	v := m.adduser_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetUserID resets all changes to the "user_id" field.
-func (m *AuthCodeMutation) ResetUserID() {
-	m.user_id = nil
-	m.adduser_id = nil
-}
-
 // Where appends a list predicates to the AuthCodeMutation builder.
 func (m *AuthCodeMutation) Where(ps ...predicate.AuthCode) {
 	m.predicates = append(m.predicates, ps...)
@@ -423,7 +328,7 @@ func (m *AuthCodeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AuthCodeMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 4)
 	if m.code != nil {
 		fields = append(fields, authcode.FieldCode)
 	}
@@ -435,12 +340,6 @@ func (m *AuthCodeMutation) Fields() []string {
 	}
 	if m.used_at != nil {
 		fields = append(fields, authcode.FieldUsedAt)
-	}
-	if m.client_id != nil {
-		fields = append(fields, authcode.FieldClientID)
-	}
-	if m.user_id != nil {
-		fields = append(fields, authcode.FieldUserID)
 	}
 	return fields
 }
@@ -458,10 +357,6 @@ func (m *AuthCodeMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case authcode.FieldUsedAt:
 		return m.UsedAt()
-	case authcode.FieldClientID:
-		return m.ClientID()
-	case authcode.FieldUserID:
-		return m.UserID()
 	}
 	return nil, false
 }
@@ -479,10 +374,6 @@ func (m *AuthCodeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCreatedAt(ctx)
 	case authcode.FieldUsedAt:
 		return m.OldUsedAt(ctx)
-	case authcode.FieldClientID:
-		return m.OldClientID(ctx)
-	case authcode.FieldUserID:
-		return m.OldUserID(ctx)
 	}
 	return nil, fmt.Errorf("unknown AuthCode field %s", name)
 }
@@ -520,20 +411,6 @@ func (m *AuthCodeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUsedAt(v)
 		return nil
-	case authcode.FieldClientID:
-		v, ok := value.(typedef.ClientId)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetClientID(v)
-		return nil
-	case authcode.FieldUserID:
-		v, ok := value.(typedef.UserID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown AuthCode field %s", name)
 }
@@ -541,21 +418,13 @@ func (m *AuthCodeMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *AuthCodeMutation) AddedFields() []string {
-	var fields []string
-	if m.adduser_id != nil {
-		fields = append(fields, authcode.FieldUserID)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *AuthCodeMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case authcode.FieldUserID:
-		return m.AddedUserID()
-	}
 	return nil, false
 }
 
@@ -564,13 +433,6 @@ func (m *AuthCodeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *AuthCodeMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case authcode.FieldUserID:
-		v, ok := value.(typedef.UserID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddUserID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown AuthCode numeric field %s", name)
 }
@@ -609,12 +471,6 @@ func (m *AuthCodeMutation) ResetField(name string) error {
 		return nil
 	case authcode.FieldUsedAt:
 		m.ResetUsedAt()
-		return nil
-	case authcode.FieldClientID:
-		m.ResetClientID()
-		return nil
-	case authcode.FieldUserID:
-		m.ResetUserID()
 		return nil
 	}
 	return fmt.Errorf("unknown AuthCode field %s", name)
@@ -1665,17 +1521,20 @@ func (m *RedirectURIMutation) ResetEdge(name string) error {
 // RelyingPartyMutation represents an operation that mutates the RelyingParty nodes in the graph.
 type RelyingPartyMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	client_id     *typedef.ClientId
-	client_secret *typedef.ClientSecret
-	created_at    *time.Time
-	modified_at   *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*RelyingParty, error)
-	predicates    []predicate.RelyingParty
+	op                Op
+	typ               string
+	id                *int
+	client_id         *typedef.ClientId
+	client_secret     *typedef.ClientSecret
+	created_at        *time.Time
+	modified_at       *time.Time
+	clearedFields     map[string]struct{}
+	auth_codes        map[int]struct{}
+	removedauth_codes map[int]struct{}
+	clearedauth_codes bool
+	done              bool
+	oldValue          func(context.Context) (*RelyingParty, error)
+	predicates        []predicate.RelyingParty
 }
 
 var _ ent.Mutation = (*RelyingPartyMutation)(nil)
@@ -1920,6 +1779,60 @@ func (m *RelyingPartyMutation) ResetModifiedAt() {
 	m.modified_at = nil
 }
 
+// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by ids.
+func (m *RelyingPartyMutation) AddAuthCodeIDs(ids ...int) {
+	if m.auth_codes == nil {
+		m.auth_codes = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.auth_codes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAuthCodes clears the "auth_codes" edge to the AuthCode entity.
+func (m *RelyingPartyMutation) ClearAuthCodes() {
+	m.clearedauth_codes = true
+}
+
+// AuthCodesCleared reports if the "auth_codes" edge to the AuthCode entity was cleared.
+func (m *RelyingPartyMutation) AuthCodesCleared() bool {
+	return m.clearedauth_codes
+}
+
+// RemoveAuthCodeIDs removes the "auth_codes" edge to the AuthCode entity by IDs.
+func (m *RelyingPartyMutation) RemoveAuthCodeIDs(ids ...int) {
+	if m.removedauth_codes == nil {
+		m.removedauth_codes = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.auth_codes, ids[i])
+		m.removedauth_codes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAuthCodes returns the removed IDs of the "auth_codes" edge to the AuthCode entity.
+func (m *RelyingPartyMutation) RemovedAuthCodesIDs() (ids []int) {
+	for id := range m.removedauth_codes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AuthCodesIDs returns the "auth_codes" edge IDs in the mutation.
+func (m *RelyingPartyMutation) AuthCodesIDs() (ids []int) {
+	for id := range m.auth_codes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAuthCodes resets all changes to the "auth_codes" edge.
+func (m *RelyingPartyMutation) ResetAuthCodes() {
+	m.auth_codes = nil
+	m.clearedauth_codes = false
+	m.removedauth_codes = nil
+}
+
 // Where appends a list predicates to the RelyingPartyMutation builder.
 func (m *RelyingPartyMutation) Where(ps ...predicate.RelyingParty) {
 	m.predicates = append(m.predicates, ps...)
@@ -2104,49 +2017,85 @@ func (m *RelyingPartyMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RelyingPartyMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.auth_codes != nil {
+		edges = append(edges, relyingparty.EdgeAuthCodes)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *RelyingPartyMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case relyingparty.EdgeAuthCodes:
+		ids := make([]ent.Value, 0, len(m.auth_codes))
+		for id := range m.auth_codes {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RelyingPartyMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedauth_codes != nil {
+		edges = append(edges, relyingparty.EdgeAuthCodes)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *RelyingPartyMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case relyingparty.EdgeAuthCodes:
+		ids := make([]ent.Value, 0, len(m.removedauth_codes))
+		for id := range m.removedauth_codes {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RelyingPartyMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedauth_codes {
+		edges = append(edges, relyingparty.EdgeAuthCodes)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *RelyingPartyMutation) EdgeCleared(name string) bool {
+	switch name {
+	case relyingparty.EdgeAuthCodes:
+		return m.clearedauth_codes
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *RelyingPartyMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown RelyingParty unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *RelyingPartyMutation) ResetEdge(name string) error {
+	switch name {
+	case relyingparty.EdgeAuthCodes:
+		m.ResetAuthCodes()
+		return nil
+	}
 	return fmt.Errorf("unknown RelyingParty edge %s", name)
 }
 
@@ -2162,9 +2111,9 @@ type UserMutation struct {
 	created_at           *time.Time
 	modified_at          *time.Time
 	clearedFields        map[string]struct{}
-	auth_codes           map[int]struct{}
-	removedauth_codes    map[int]struct{}
-	clearedauth_codes    bool
+	consents             map[int]struct{}
+	removedconsents      map[int]struct{}
+	clearedconsents      bool
 	redirect_uris        map[int]struct{}
 	removedredirect_uris map[int]struct{}
 	clearedredirect_uris bool
@@ -2470,58 +2419,58 @@ func (m *UserMutation) ResetModifiedAt() {
 	m.modified_at = nil
 }
 
-// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by ids.
-func (m *UserMutation) AddAuthCodeIDs(ids ...int) {
-	if m.auth_codes == nil {
-		m.auth_codes = make(map[int]struct{})
+// AddConsentIDs adds the "consents" edge to the Consent entity by ids.
+func (m *UserMutation) AddConsentIDs(ids ...int) {
+	if m.consents == nil {
+		m.consents = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.auth_codes[ids[i]] = struct{}{}
+		m.consents[ids[i]] = struct{}{}
 	}
 }
 
-// ClearAuthCodes clears the "auth_codes" edge to the AuthCode entity.
-func (m *UserMutation) ClearAuthCodes() {
-	m.clearedauth_codes = true
+// ClearConsents clears the "consents" edge to the Consent entity.
+func (m *UserMutation) ClearConsents() {
+	m.clearedconsents = true
 }
 
-// AuthCodesCleared reports if the "auth_codes" edge to the AuthCode entity was cleared.
-func (m *UserMutation) AuthCodesCleared() bool {
-	return m.clearedauth_codes
+// ConsentsCleared reports if the "consents" edge to the Consent entity was cleared.
+func (m *UserMutation) ConsentsCleared() bool {
+	return m.clearedconsents
 }
 
-// RemoveAuthCodeIDs removes the "auth_codes" edge to the AuthCode entity by IDs.
-func (m *UserMutation) RemoveAuthCodeIDs(ids ...int) {
-	if m.removedauth_codes == nil {
-		m.removedauth_codes = make(map[int]struct{})
+// RemoveConsentIDs removes the "consents" edge to the Consent entity by IDs.
+func (m *UserMutation) RemoveConsentIDs(ids ...int) {
+	if m.removedconsents == nil {
+		m.removedconsents = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.auth_codes, ids[i])
-		m.removedauth_codes[ids[i]] = struct{}{}
+		delete(m.consents, ids[i])
+		m.removedconsents[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedAuthCodes returns the removed IDs of the "auth_codes" edge to the AuthCode entity.
-func (m *UserMutation) RemovedAuthCodesIDs() (ids []int) {
-	for id := range m.removedauth_codes {
+// RemovedConsents returns the removed IDs of the "consents" edge to the Consent entity.
+func (m *UserMutation) RemovedConsentsIDs() (ids []int) {
+	for id := range m.removedconsents {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// AuthCodesIDs returns the "auth_codes" edge IDs in the mutation.
-func (m *UserMutation) AuthCodesIDs() (ids []int) {
-	for id := range m.auth_codes {
+// ConsentsIDs returns the "consents" edge IDs in the mutation.
+func (m *UserMutation) ConsentsIDs() (ids []int) {
+	for id := range m.consents {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetAuthCodes resets all changes to the "auth_codes" edge.
-func (m *UserMutation) ResetAuthCodes() {
-	m.auth_codes = nil
-	m.clearedauth_codes = false
-	m.removedauth_codes = nil
+// ResetConsents resets all changes to the "consents" edge.
+func (m *UserMutation) ResetConsents() {
+	m.consents = nil
+	m.clearedconsents = false
+	m.removedconsents = nil
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by ids.
@@ -2789,8 +2738,8 @@ func (m *UserMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.auth_codes != nil {
-		edges = append(edges, user.EdgeAuthCodes)
+	if m.consents != nil {
+		edges = append(edges, user.EdgeConsents)
 	}
 	if m.redirect_uris != nil {
 		edges = append(edges, user.EdgeRedirectUris)
@@ -2802,9 +2751,9 @@ func (m *UserMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *UserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeAuthCodes:
-		ids := make([]ent.Value, 0, len(m.auth_codes))
-		for id := range m.auth_codes {
+	case user.EdgeConsents:
+		ids := make([]ent.Value, 0, len(m.consents))
+		for id := range m.consents {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2821,8 +2770,8 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedauth_codes != nil {
-		edges = append(edges, user.EdgeAuthCodes)
+	if m.removedconsents != nil {
+		edges = append(edges, user.EdgeConsents)
 	}
 	if m.removedredirect_uris != nil {
 		edges = append(edges, user.EdgeRedirectUris)
@@ -2834,9 +2783,9 @@ func (m *UserMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeAuthCodes:
-		ids := make([]ent.Value, 0, len(m.removedauth_codes))
-		for id := range m.removedauth_codes {
+	case user.EdgeConsents:
+		ids := make([]ent.Value, 0, len(m.removedconsents))
+		for id := range m.removedconsents {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2853,8 +2802,8 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedauth_codes {
-		edges = append(edges, user.EdgeAuthCodes)
+	if m.clearedconsents {
+		edges = append(edges, user.EdgeConsents)
 	}
 	if m.clearedredirect_uris {
 		edges = append(edges, user.EdgeRedirectUris)
@@ -2866,8 +2815,8 @@ func (m *UserMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
-	case user.EdgeAuthCodes:
-		return m.clearedauth_codes
+	case user.EdgeConsents:
+		return m.clearedconsents
 	case user.EdgeRedirectUris:
 		return m.clearedredirect_uris
 	}
@@ -2886,8 +2835,8 @@ func (m *UserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
-	case user.EdgeAuthCodes:
-		m.ResetAuthCodes()
+	case user.EdgeConsents:
+		m.ResetConsents()
 		return nil
 	case user.EdgeRedirectUris:
 		m.ResetRedirectUris()

@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -59,6 +60,21 @@ func (rpc *RelyingPartyCreate) SetNillableModifiedAt(t *time.Time) *RelyingParty
 		rpc.SetModifiedAt(*t)
 	}
 	return rpc
+}
+
+// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
+func (rpc *RelyingPartyCreate) AddAuthCodeIDs(ids ...int) *RelyingPartyCreate {
+	rpc.mutation.AddAuthCodeIDs(ids...)
+	return rpc
+}
+
+// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
+func (rpc *RelyingPartyCreate) AddAuthCodes(a ...*AuthCode) *RelyingPartyCreate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return rpc.AddAuthCodeIDs(ids...)
 }
 
 // Mutation returns the RelyingPartyMutation object of the builder.
@@ -166,6 +182,22 @@ func (rpc *RelyingPartyCreate) createSpec() (*RelyingParty, *sqlgraph.CreateSpec
 	if value, ok := rpc.mutation.ModifiedAt(); ok {
 		_spec.SetField(relyingparty.FieldModifiedAt, field.TypeTime, value)
 		_node.ModifiedAt = value
+	}
+	if nodes := rpc.mutation.AuthCodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.AuthCodesTable,
+			Columns: []string{relyingparty.AuthCodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

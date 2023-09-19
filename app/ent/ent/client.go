@@ -676,6 +676,22 @@ func (c *RelyingPartyClient) GetX(ctx context.Context, id int) *RelyingParty {
 	return obj
 }
 
+// QueryAuthCodes queries the auth_codes edge of a RelyingParty.
+func (c *RelyingPartyClient) QueryAuthCodes(rp *RelyingParty) *AuthCodeQuery {
+	query := (&AuthCodeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(relyingparty.Table, relyingparty.FieldID, id),
+			sqlgraph.To(authcode.Table, authcode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, relyingparty.AuthCodesTable, relyingparty.AuthCodesColumn),
+		)
+		fromV = sqlgraph.Neighbors(rp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RelyingPartyClient) Hooks() []Hook {
 	return c.hooks.RelyingParty
@@ -794,15 +810,15 @@ func (c *UserClient) GetX(ctx context.Context, id typedef.UserID) *User {
 	return obj
 }
 
-// QueryAuthCodes queries the auth_codes edge of a User.
-func (c *UserClient) QueryAuthCodes(u *User) *AuthCodeQuery {
-	query := (&AuthCodeClient{config: c.config}).Query()
+// QueryConsents queries the consents edge of a User.
+func (c *UserClient) QueryConsents(u *User) *ConsentQuery {
+	query := (&ConsentClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(authcode.Table, authcode.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.AuthCodesTable, user.AuthCodesColumn),
+			sqlgraph.To(consent.Table, consent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

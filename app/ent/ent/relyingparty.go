@@ -25,8 +25,29 @@ type RelyingParty struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
-	ModifiedAt   time.Time `json:"modified_at,omitempty"`
+	ModifiedAt time.Time `json:"modified_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the RelyingPartyQuery when eager-loading is set.
+	Edges        RelyingPartyEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// RelyingPartyEdges holds the relations/edges for other nodes in the graph.
+type RelyingPartyEdges struct {
+	// AuthCodes holds the value of the auth_codes edge.
+	AuthCodes []*AuthCode `json:"auth_codes,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// AuthCodesOrErr returns the AuthCodes value or an error if the edge
+// was not loaded in eager-loading.
+func (e RelyingPartyEdges) AuthCodesOrErr() ([]*AuthCode, error) {
+	if e.loadedTypes[0] {
+		return e.AuthCodes, nil
+	}
+	return nil, &NotLoadedError{edge: "auth_codes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -96,6 +117,11 @@ func (rp *RelyingParty) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (rp *RelyingParty) Value(name string) (ent.Value, error) {
 	return rp.selectValues.Get(name)
+}
+
+// QueryAuthCodes queries the "auth_codes" edge of the RelyingParty entity.
+func (rp *RelyingParty) QueryAuthCodes() *AuthCodeQuery {
+	return NewRelyingPartyClient(rp.config).QueryAuthCodes(rp)
 }
 
 // Update returns a builder for updating this RelyingParty.

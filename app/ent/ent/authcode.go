@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
-	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // AuthCode is the model entity for the AuthCode schema.
@@ -25,12 +24,8 @@ type AuthCode struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UsedAt holds the value of the "used_at" field.
-	UsedAt time.Time `json:"used_at,omitempty"`
-	// ClientID holds the value of the "client_id" field.
-	ClientID typedef.ClientId `json:"client_id,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID       typedef.UserID `json:"user_id,omitempty"`
-	user_id      *typedef.UserID
+	UsedAt       time.Time `json:"used_at,omitempty"`
+	client_id    *int
 	selectValues sql.SelectValues
 }
 
@@ -39,13 +34,13 @@ func (*AuthCode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case authcode.FieldID, authcode.FieldUserID:
+		case authcode.FieldID:
 			values[i] = new(sql.NullInt64)
-		case authcode.FieldCode, authcode.FieldClientID:
+		case authcode.FieldCode:
 			values[i] = new(sql.NullString)
 		case authcode.FieldExpireAt, authcode.FieldCreatedAt, authcode.FieldUsedAt:
 			values[i] = new(sql.NullTime)
-		case authcode.ForeignKeys[0]: // user_id
+		case authcode.ForeignKeys[0]: // client_id
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -92,24 +87,12 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ac.UsedAt = value.Time
 			}
-		case authcode.FieldClientID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field client_id", values[i])
-			} else if value.Valid {
-				ac.ClientID = typedef.ClientId(value.String)
-			}
-		case authcode.FieldUserID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				ac.UserID = typedef.UserID(value.Int64)
-			}
 		case authcode.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+				return fmt.Errorf("unexpected type %T for edge-field client_id", value)
 			} else if value.Valid {
-				ac.user_id = new(typedef.UserID)
-				*ac.user_id = typedef.UserID(value.Int64)
+				ac.client_id = new(int)
+				*ac.client_id = int(value.Int64)
 			}
 		default:
 			ac.selectValues.Set(columns[i], values[i])
@@ -158,12 +141,6 @@ func (ac *AuthCode) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("used_at=")
 	builder.WriteString(ac.UsedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("client_id=")
-	builder.WriteString(fmt.Sprintf("%v", ac.ClientID))
-	builder.WriteString(", ")
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", ac.UserID))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -36,8 +36,8 @@ type User struct {
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
-	// AuthCodes holds the value of the auth_codes edge.
-	AuthCodes []*AuthCode `json:"auth_codes,omitempty"`
+	// Consents holds the value of the consents edge.
+	Consents []*Consent `json:"consents,omitempty"`
 	// RedirectUris holds the value of the redirect_uris edge.
 	RedirectUris []*RedirectURI `json:"redirect_uris,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -45,13 +45,13 @@ type UserEdges struct {
 	loadedTypes [2]bool
 }
 
-// AuthCodesOrErr returns the AuthCodes value or an error if the edge
+// ConsentsOrErr returns the Consents value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) AuthCodesOrErr() ([]*AuthCode, error) {
+func (e UserEdges) ConsentsOrErr() ([]*Consent, error) {
 	if e.loadedTypes[0] {
-		return e.AuthCodes, nil
+		return e.Consents, nil
 	}
-	return nil, &NotLoadedError{edge: "auth_codes"}
+	return nil, &NotLoadedError{edge: "consents"}
 }
 
 // RedirectUrisOrErr returns the RedirectUris value or an error if the edge
@@ -138,9 +138,9 @@ func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
 }
 
-// QueryAuthCodes queries the "auth_codes" edge of the User entity.
-func (u *User) QueryAuthCodes() *AuthCodeQuery {
-	return NewUserClient(u.config).QueryAuthCodes(u)
+// QueryConsents queries the "consents" edge of the User entity.
+func (u *User) QueryConsents() *ConsentQuery {
+	return NewUserClient(u.config).QueryConsents(u)
 }
 
 // QueryRedirectUris queries the "redirect_uris" edge of the User entity.
