@@ -95,7 +95,7 @@ e.g. The following command generates `AuthCode` schema.
 go run -mod=mod entgo.io/ent/cmd/ent new --target app/ent/schema AuthCode
 ```
 
-### Generating versioned migration files
+### Generating versioned a migration file
 
 ```
 make migrate-diff MIGRATION_NAME=<MIGRATION_NAME>
