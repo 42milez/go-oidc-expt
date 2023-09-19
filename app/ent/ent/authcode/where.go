@@ -74,6 +74,11 @@ func UsedAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldUsedAt, v))
 }
 
+// RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
+func RelyingPartyID(v int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, v))
+}
+
 // CodeEQ applies the EQ predicate on the "code" field.
 func CodeEQ(v string) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldCode, v))
@@ -257,6 +262,46 @@ func UsedAtLT(v time.Time) predicate.AuthCode {
 // UsedAtLTE applies the LTE predicate on the "used_at" field.
 func UsedAtLTE(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLTE(FieldUsedAt, v))
+}
+
+// RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
+func RelyingPartyIDEQ(v int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, v))
+}
+
+// RelyingPartyIDNEQ applies the NEQ predicate on the "relying_party_id" field.
+func RelyingPartyIDNEQ(v int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNEQ(FieldRelyingPartyID, v))
+}
+
+// RelyingPartyIDIn applies the In predicate on the "relying_party_id" field.
+func RelyingPartyIDIn(vs ...int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldIn(FieldRelyingPartyID, vs...))
+}
+
+// RelyingPartyIDNotIn applies the NotIn predicate on the "relying_party_id" field.
+func RelyingPartyIDNotIn(vs ...int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNotIn(FieldRelyingPartyID, vs...))
+}
+
+// RelyingPartyIDGT applies the GT predicate on the "relying_party_id" field.
+func RelyingPartyIDGT(v int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGT(FieldRelyingPartyID, v))
+}
+
+// RelyingPartyIDGTE applies the GTE predicate on the "relying_party_id" field.
+func RelyingPartyIDGTE(v int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGTE(FieldRelyingPartyID, v))
+}
+
+// RelyingPartyIDLT applies the LT predicate on the "relying_party_id" field.
+func RelyingPartyIDLT(v int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLT(FieldRelyingPartyID, v))
+}
+
+// RelyingPartyIDLTE applies the LTE predicate on the "relying_party_id" field.
+func RelyingPartyIDLTE(v int) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLTE(FieldRelyingPartyID, v))
 }
 
 // And groups predicates with the AND operator between them.

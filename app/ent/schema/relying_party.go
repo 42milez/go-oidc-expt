@@ -36,7 +36,10 @@ func (RelyingParty) Fields() []ent.Field {
 func (RelyingParty) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_codes", AuthCode.Type).
-			StorageKey(edge.Column("client_id")).
+			StorageKey(edge.Column("relying_party_id")).
+			Annotations(entsql.OnDelete(entsql.Cascade)),
+		edge.To("redirect_uris", RedirectURI.Type).
+			StorageKey(edge.Column("relying_party_id")).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

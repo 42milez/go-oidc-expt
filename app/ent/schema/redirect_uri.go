@@ -3,8 +3,6 @@ package schema
 import (
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
@@ -37,8 +35,7 @@ func (RedirectURI) Fields() []ent.Field {
 		field.Time("modified_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
-		field.Uint64("user_id").
-			GoType(typedef.UserID(0)).
+		field.Int("relying_party_id").
 			Immutable(),
 	}
 }
@@ -46,7 +43,7 @@ func (RedirectURI) Fields() []ent.Field {
 // Indexes of the RedirectURI.
 func (RedirectURI) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("user_id", "uri").
+		index.Fields("relying_party_id", "uri").
 			Unique(),
 	}
 }

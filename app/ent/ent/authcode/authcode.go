@@ -21,6 +21,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUsedAt holds the string denoting the used_at field in the database.
 	FieldUsedAt = "used_at"
+	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
+	FieldRelyingPartyID = "relying_party_id"
 	// Table holds the table name of the authcode in the database.
 	Table = "auth_codes"
 )
@@ -32,12 +34,13 @@ var Columns = []string{
 	FieldExpireAt,
 	FieldCreatedAt,
 	FieldUsedAt,
+	FieldRelyingPartyID,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "auth_codes"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"client_id",
+	"relying_party_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -92,4 +95,9 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUsedAt orders the results by the used_at field.
 func ByUsedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsedAt, opts...).ToFunc()
+}
+
+// ByRelyingPartyID orders the results by the relying_party_id field.
+func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
 }

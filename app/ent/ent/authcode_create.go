@@ -68,6 +68,12 @@ func (acc *AuthCodeCreate) SetNillableUsedAt(t *time.Time) *AuthCodeCreate {
 	return acc
 }
 
+// SetRelyingPartyID sets the "relying_party_id" field.
+func (acc *AuthCodeCreate) SetRelyingPartyID(i int) *AuthCodeCreate {
+	acc.mutation.SetRelyingPartyID(i)
+	return acc
+}
+
 // Mutation returns the AuthCodeMutation object of the builder.
 func (acc *AuthCodeCreate) Mutation() *AuthCodeMutation {
 	return acc.mutation
@@ -136,6 +142,9 @@ func (acc *AuthCodeCreate) check() error {
 	if _, ok := acc.mutation.UsedAt(); !ok {
 		return &ValidationError{Name: "used_at", err: errors.New(`ent: missing required field "AuthCode.used_at"`)}
 	}
+	if _, ok := acc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "AuthCode.relying_party_id"`)}
+	}
 	return nil
 }
 
@@ -177,6 +186,10 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 	if value, ok := acc.mutation.UsedAt(); ok {
 		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
 		_node.UsedAt = value
+	}
+	if value, ok := acc.mutation.RelyingPartyID(); ok {
+		_spec.SetField(authcode.FieldRelyingPartyID, field.TypeInt, value)
+		_node.RelyingPartyID = value
 	}
 	return _node, _spec
 }

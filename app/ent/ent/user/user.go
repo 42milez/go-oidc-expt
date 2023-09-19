@@ -27,8 +27,6 @@ const (
 	FieldModifiedAt = "modified_at"
 	// EdgeConsents holds the string denoting the consents edge name in mutations.
 	EdgeConsents = "consents"
-	// EdgeRedirectUris holds the string denoting the redirect_uris edge name in mutations.
-	EdgeRedirectUris = "redirect_uris"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// ConsentsTable is the table that holds the consents relation/edge.
@@ -38,13 +36,6 @@ const (
 	ConsentsInverseTable = "consents"
 	// ConsentsColumn is the table column denoting the consents relation/edge.
 	ConsentsColumn = "user_id"
-	// RedirectUrisTable is the table that holds the redirect_uris relation/edge.
-	RedirectUrisTable = "redirect_uris"
-	// RedirectUrisInverseTable is the table name for the RedirectURI entity.
-	// It exists in this package in order to avoid circular dependency with the "redirecturi" package.
-	RedirectUrisInverseTable = "redirect_uris"
-	// RedirectUrisColumn is the table column denoting the redirect_uris relation/edge.
-	RedirectUrisColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -134,31 +125,10 @@ func ByConsents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newConsentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-
-// ByRedirectUrisCount orders the results by redirect_uris count.
-func ByRedirectUrisCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newRedirectUrisStep(), opts...)
-	}
-}
-
-// ByRedirectUris orders the results by redirect_uris terms.
-func ByRedirectUris(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRedirectUrisStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
 func newConsentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ConsentsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
-	)
-}
-func newRedirectUrisStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(RedirectUrisInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, RedirectUrisTable, RedirectUrisColumn),
 	)
 }

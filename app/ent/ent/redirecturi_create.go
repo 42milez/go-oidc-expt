@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
-	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RedirectURICreate is the builder for creating a RedirectURI entity.
@@ -55,9 +54,9 @@ func (ruc *RedirectURICreate) SetNillableModifiedAt(t *time.Time) *RedirectURICr
 	return ruc
 }
 
-// SetUserID sets the "user_id" field.
-func (ruc *RedirectURICreate) SetUserID(ti typedef.UserID) *RedirectURICreate {
-	ruc.mutation.SetUserID(ti)
+// SetRelyingPartyID sets the "relying_party_id" field.
+func (ruc *RedirectURICreate) SetRelyingPartyID(i int) *RedirectURICreate {
+	ruc.mutation.SetRelyingPartyID(i)
 	return ruc
 }
 
@@ -122,8 +121,8 @@ func (ruc *RedirectURICreate) check() error {
 	if _, ok := ruc.mutation.ModifiedAt(); !ok {
 		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "RedirectURI.modified_at"`)}
 	}
-	if _, ok := ruc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "RedirectURI.user_id"`)}
+	if _, ok := ruc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "RedirectURI.relying_party_id"`)}
 	}
 	return nil
 }
@@ -163,9 +162,9 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
 		_node.ModifiedAt = value
 	}
-	if value, ok := ruc.mutation.UserID(); ok {
-		_spec.SetField(redirecturi.FieldUserID, field.TypeUint64, value)
-		_node.UserID = value
+	if value, ok := ruc.mutation.RelyingPartyID(); ok {
+		_spec.SetField(redirecturi.FieldRelyingPartyID, field.TypeInt, value)
+		_node.RelyingPartyID = value
 	}
 	return _node, _spec
 }

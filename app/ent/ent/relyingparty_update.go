@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -65,6 +66,21 @@ func (rpu *RelyingPartyUpdate) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpdate 
 	return rpu.AddAuthCodeIDs(ids...)
 }
 
+// AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
+func (rpu *RelyingPartyUpdate) AddRedirectURIIDs(ids ...int) *RelyingPartyUpdate {
+	rpu.mutation.AddRedirectURIIDs(ids...)
+	return rpu
+}
+
+// AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
+func (rpu *RelyingPartyUpdate) AddRedirectUris(r ...*RedirectURI) *RelyingPartyUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return rpu.AddRedirectURIIDs(ids...)
+}
+
 // Mutation returns the RelyingPartyMutation object of the builder.
 func (rpu *RelyingPartyUpdate) Mutation() *RelyingPartyMutation {
 	return rpu.mutation
@@ -89,6 +105,27 @@ func (rpu *RelyingPartyUpdate) RemoveAuthCodes(a ...*AuthCode) *RelyingPartyUpda
 		ids[i] = a[i].ID
 	}
 	return rpu.RemoveAuthCodeIDs(ids...)
+}
+
+// ClearRedirectUris clears all "redirect_uris" edges to the RedirectURI entity.
+func (rpu *RelyingPartyUpdate) ClearRedirectUris() *RelyingPartyUpdate {
+	rpu.mutation.ClearRedirectUris()
+	return rpu
+}
+
+// RemoveRedirectURIIDs removes the "redirect_uris" edge to RedirectURI entities by IDs.
+func (rpu *RelyingPartyUpdate) RemoveRedirectURIIDs(ids ...int) *RelyingPartyUpdate {
+	rpu.mutation.RemoveRedirectURIIDs(ids...)
+	return rpu
+}
+
+// RemoveRedirectUris removes "redirect_uris" edges to RedirectURI entities.
+func (rpu *RelyingPartyUpdate) RemoveRedirectUris(r ...*RedirectURI) *RelyingPartyUpdate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return rpu.RemoveRedirectURIIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -191,6 +228,51 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if rpu.mutation.RedirectUrisCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.RedirectUrisTable,
+			Columns: []string{relyingparty.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := rpu.mutation.RemovedRedirectUrisIDs(); len(nodes) > 0 && !rpu.mutation.RedirectUrisCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.RedirectUrisTable,
+			Columns: []string{relyingparty.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := rpu.mutation.RedirectUrisIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.RedirectUrisTable,
+			Columns: []string{relyingparty.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, rpu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{relyingparty.Label}
@@ -246,6 +328,21 @@ func (rpuo *RelyingPartyUpdateOne) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpd
 	return rpuo.AddAuthCodeIDs(ids...)
 }
 
+// AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
+func (rpuo *RelyingPartyUpdateOne) AddRedirectURIIDs(ids ...int) *RelyingPartyUpdateOne {
+	rpuo.mutation.AddRedirectURIIDs(ids...)
+	return rpuo
+}
+
+// AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
+func (rpuo *RelyingPartyUpdateOne) AddRedirectUris(r ...*RedirectURI) *RelyingPartyUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return rpuo.AddRedirectURIIDs(ids...)
+}
+
 // Mutation returns the RelyingPartyMutation object of the builder.
 func (rpuo *RelyingPartyUpdateOne) Mutation() *RelyingPartyMutation {
 	return rpuo.mutation
@@ -270,6 +367,27 @@ func (rpuo *RelyingPartyUpdateOne) RemoveAuthCodes(a ...*AuthCode) *RelyingParty
 		ids[i] = a[i].ID
 	}
 	return rpuo.RemoveAuthCodeIDs(ids...)
+}
+
+// ClearRedirectUris clears all "redirect_uris" edges to the RedirectURI entity.
+func (rpuo *RelyingPartyUpdateOne) ClearRedirectUris() *RelyingPartyUpdateOne {
+	rpuo.mutation.ClearRedirectUris()
+	return rpuo
+}
+
+// RemoveRedirectURIIDs removes the "redirect_uris" edge to RedirectURI entities by IDs.
+func (rpuo *RelyingPartyUpdateOne) RemoveRedirectURIIDs(ids ...int) *RelyingPartyUpdateOne {
+	rpuo.mutation.RemoveRedirectURIIDs(ids...)
+	return rpuo
+}
+
+// RemoveRedirectUris removes "redirect_uris" edges to RedirectURI entities.
+func (rpuo *RelyingPartyUpdateOne) RemoveRedirectUris(r ...*RedirectURI) *RelyingPartyUpdateOne {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return rpuo.RemoveRedirectURIIDs(ids...)
 }
 
 // Where appends a list predicates to the RelyingPartyUpdate builder.
@@ -395,6 +513,51 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if rpuo.mutation.RedirectUrisCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.RedirectUrisTable,
+			Columns: []string{relyingparty.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := rpuo.mutation.RemovedRedirectUrisIDs(); len(nodes) > 0 && !rpuo.mutation.RedirectUrisCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.RedirectUrisTable,
+			Columns: []string{relyingparty.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := rpuo.mutation.RedirectUrisIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.RedirectUrisTable,
+			Columns: []string{relyingparty.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

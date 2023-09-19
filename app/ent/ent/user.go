@@ -38,11 +38,9 @@ type User struct {
 type UserEdges struct {
 	// Consents holds the value of the consents edge.
 	Consents []*Consent `json:"consents,omitempty"`
-	// RedirectUris holds the value of the redirect_uris edge.
-	RedirectUris []*RedirectURI `json:"redirect_uris,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [1]bool
 }
 
 // ConsentsOrErr returns the Consents value or an error if the edge
@@ -52,15 +50,6 @@ func (e UserEdges) ConsentsOrErr() ([]*Consent, error) {
 		return e.Consents, nil
 	}
 	return nil, &NotLoadedError{edge: "consents"}
-}
-
-// RedirectUrisOrErr returns the RedirectUris value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) RedirectUrisOrErr() ([]*RedirectURI, error) {
-	if e.loadedTypes[1] {
-		return e.RedirectUris, nil
-	}
-	return nil, &NotLoadedError{edge: "redirect_uris"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -141,11 +130,6 @@ func (u *User) Value(name string) (ent.Value, error) {
 // QueryConsents queries the "consents" edge of the User entity.
 func (u *User) QueryConsents() *ConsentQuery {
 	return NewUserClient(u.config).QueryConsents(u)
-}
-
-// QueryRedirectUris queries the "redirect_uris" edge of the User entity.
-func (u *User) QueryRedirectUris() *RedirectURIQuery {
-	return NewUserClient(u.config).QueryRedirectUris(u)
 }
 
 // Update returns a builder for updating this User.

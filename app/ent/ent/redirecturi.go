@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
-	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RedirectURI is the model entity for the RedirectURI schema.
@@ -24,10 +23,10 @@ type RedirectURI struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
 	ModifiedAt time.Time `json:"modified_at,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID       typedef.UserID `json:"user_id,omitempty"`
-	user_id      *typedef.UserID
-	selectValues sql.SelectValues
+	// RelyingPartyID holds the value of the "relying_party_id" field.
+	RelyingPartyID   int `json:"relying_party_id,omitempty"`
+	relying_party_id *int
+	selectValues     sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,13 +34,13 @@ func (*RedirectURI) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case redirecturi.FieldID, redirecturi.FieldUserID:
+		case redirecturi.FieldID, redirecturi.FieldRelyingPartyID:
 			values[i] = new(sql.NullInt64)
 		case redirecturi.FieldURI:
 			values[i] = new(sql.NullString)
 		case redirecturi.FieldCreatedAt, redirecturi.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
-		case redirecturi.ForeignKeys[0]: // user_id
+		case redirecturi.ForeignKeys[0]: // relying_party_id
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -82,18 +81,18 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ru.ModifiedAt = value.Time
 			}
-		case redirecturi.FieldUserID:
+		case redirecturi.FieldRelyingPartyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
 			} else if value.Valid {
-				ru.UserID = typedef.UserID(value.Int64)
+				ru.RelyingPartyID = int(value.Int64)
 			}
 		case redirecturi.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+				return fmt.Errorf("unexpected type %T for edge-field relying_party_id", value)
 			} else if value.Valid {
-				ru.user_id = new(typedef.UserID)
-				*ru.user_id = typedef.UserID(value.Int64)
+				ru.relying_party_id = new(int)
+				*ru.relying_party_id = int(value.Int64)
 			}
 		default:
 			ru.selectValues.Set(columns[i], values[i])
@@ -140,8 +139,8 @@ func (ru *RedirectURI) String() string {
 	builder.WriteString("modified_at=")
 	builder.WriteString(ru.ModifiedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", ru.UserID))
+	builder.WriteString("relying_party_id=")
+	builder.WriteString(fmt.Sprintf("%v", ru.RelyingPartyID))
 	builder.WriteByte(')')
 	return builder.String()
 }

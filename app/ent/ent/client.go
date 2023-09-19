@@ -692,6 +692,22 @@ func (c *RelyingPartyClient) QueryAuthCodes(rp *RelyingParty) *AuthCodeQuery {
 	return query
 }
 
+// QueryRedirectUris queries the redirect_uris edge of a RelyingParty.
+func (c *RelyingPartyClient) QueryRedirectUris(rp *RelyingParty) *RedirectURIQuery {
+	query := (&RedirectURIClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(relyingparty.Table, relyingparty.FieldID, id),
+			sqlgraph.To(redirecturi.Table, redirecturi.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, relyingparty.RedirectUrisTable, relyingparty.RedirectUrisColumn),
+		)
+		fromV = sqlgraph.Neighbors(rp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RelyingPartyClient) Hooks() []Hook {
 	return c.hooks.RelyingParty
@@ -819,22 +835,6 @@ func (c *UserClient) QueryConsents(u *User) *ConsentQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(consent.Table, consent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryRedirectUris queries the redirect_uris edge of a User.
-func (c *UserClient) QueryRedirectUris(u *User) *RedirectURIQuery {
-	query := (&RedirectURIClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(redirecturi.Table, redirecturi.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.RedirectUrisTable, user.RedirectUrisColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

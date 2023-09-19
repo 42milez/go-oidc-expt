@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -21,12 +20,11 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx              *QueryContext
-	order            []user.OrderOption
-	inters           []Interceptor
-	predicates       []predicate.User
-	withConsents     *ConsentQuery
-	withRedirectUris *RedirectURIQuery
+	ctx          *QueryContext
+	order        []user.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.User
+	withConsents *ConsentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -78,28 +76,6 @@ func (uq *UserQuery) QueryConsents() *ConsentQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(consent.Table, consent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryRedirectUris chains the current query on the "redirect_uris" edge.
-func (uq *UserQuery) QueryRedirectUris() *RedirectURIQuery {
-	query := (&RedirectURIClient{config: uq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := uq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := uq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(redirecturi.Table, redirecturi.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.RedirectUrisTable, user.RedirectUrisColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,13 +270,12 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:           uq.config,
-		ctx:              uq.ctx.Clone(),
-		order:            append([]user.OrderOption{}, uq.order...),
-		inters:           append([]Interceptor{}, uq.inters...),
-		predicates:       append([]predicate.User{}, uq.predicates...),
-		withConsents:     uq.withConsents.Clone(),
-		withRedirectUris: uq.withRedirectUris.Clone(),
+		config:       uq.config,
+		ctx:          uq.ctx.Clone(),
+		order:        append([]user.OrderOption{}, uq.order...),
+		inters:       append([]Interceptor{}, uq.inters...),
+		predicates:   append([]predicate.User{}, uq.predicates...),
+		withConsents: uq.withConsents.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -315,17 +290,6 @@ func (uq *UserQuery) WithConsents(opts ...func(*ConsentQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withConsents = query
-	return uq
-}
-
-// WithRedirectUris tells the query-builder to eager-load the nodes that are connected to
-// the "redirect_uris" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithRedirectUris(opts ...func(*RedirectURIQuery)) *UserQuery {
-	query := (&RedirectURIClient{config: uq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	uq.withRedirectUris = query
 	return uq
 }
 
@@ -407,9 +371,8 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [1]bool{
 			uq.withConsents != nil,
-			uq.withRedirectUris != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -437,13 +400,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			return nil, err
 		}
 	}
-	if query := uq.withRedirectUris; query != nil {
-		if err := uq.loadRedirectUris(ctx, query, nodes,
-			func(n *User) { n.Edges.RedirectUris = []*RedirectURI{} },
-			func(n *User, e *RedirectURI) { n.Edges.RedirectUris = append(n.Edges.RedirectUris, e) }); err != nil {
-			return nil, err
-		}
-	}
 	return nodes, nil
 }
 
@@ -460,37 +416,6 @@ func (uq *UserQuery) loadConsents(ctx context.Context, query *ConsentQuery, node
 	query.withFKs = true
 	query.Where(predicate.Consent(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.ConsentsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.user_id
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (uq *UserQuery) loadRedirectUris(ctx context.Context, query *RedirectURIQuery, nodes []*User, init func(*User), assign func(*User, *RedirectURI)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[typedef.UserID]*User)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.RedirectURI(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.RedirectUrisColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

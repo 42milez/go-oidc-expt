@@ -19,8 +19,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldModifiedAt holds the string denoting the modified_at field in the database.
 	FieldModifiedAt = "modified_at"
-	// FieldUserID holds the string denoting the user_id field in the database.
-	FieldUserID = "user_id"
+	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
+	FieldRelyingPartyID = "relying_party_id"
 	// Table holds the table name of the redirecturi in the database.
 	Table = "redirect_uris"
 )
@@ -31,13 +31,13 @@ var Columns = []string{
 	FieldURI,
 	FieldCreatedAt,
 	FieldModifiedAt,
-	FieldUserID,
+	FieldRelyingPartyID,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "redirect_uris"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"user_id",
+	"relying_party_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -89,7 +89,7 @@ func ByModifiedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldModifiedAt, opts...).ToFunc()
 }
 
-// ByUserID orders the results by the user_id field.
-func ByUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserID, opts...).ToFunc()
+// ByRelyingPartyID orders the results by the relying_party_id field.
+func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
 }

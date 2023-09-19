@@ -1,6 +1,2 @@
-h1:wqL3gqXm0f9bKp/cGguWHWG1yeS3uwhjNkPpuVoCPyo=
-20230828112924_initial.sql h1:5wvXZrlTL/ID9KiMiVLzyPRjW581wAIIO/NX1R7mvkg=
-20230828131109_change_password_size.sql h1:Ssi6+M29rtRVrEKojYeGLSxOffPdAE9pboqnabQSxHA=
-20230919061308_authcode.sql h1:1IBmd3Hn5YoFxFaLTM1wS1rrBaHUNywKWpoInhTXp1A=
-20230919063918_add_used_column_to_authcodes.sql h1:kXYilUt33XZ8sRYzPw3tkrp5HbmPhfp/SylToI5lJYA=
-20230919083354_add_consents_and_relying_parties.sql h1:XAzYS5l/p3YQudJhyD1kA/9MHQ2x8MFldx0IzcExHis=
+h1:GYpYy1TDQKqQQ756dRHptuV5RwIIH9gsgSRcbATDYT8=
+20230919093711_initial.sql h1:Si7biS4a3EueUoyy0alTLr8MDcbjXoCPOOQ/5DrMkBM=

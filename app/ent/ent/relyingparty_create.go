@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -75,6 +76,21 @@ func (rpc *RelyingPartyCreate) AddAuthCodes(a ...*AuthCode) *RelyingPartyCreate 
 		ids[i] = a[i].ID
 	}
 	return rpc.AddAuthCodeIDs(ids...)
+}
+
+// AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
+func (rpc *RelyingPartyCreate) AddRedirectURIIDs(ids ...int) *RelyingPartyCreate {
+	rpc.mutation.AddRedirectURIIDs(ids...)
+	return rpc
+}
+
+// AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
+func (rpc *RelyingPartyCreate) AddRedirectUris(r ...*RedirectURI) *RelyingPartyCreate {
+	ids := make([]int, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return rpc.AddRedirectURIIDs(ids...)
 }
 
 // Mutation returns the RelyingPartyMutation object of the builder.
@@ -192,6 +208,22 @@ func (rpc *RelyingPartyCreate) createSpec() (*RelyingParty, *sqlgraph.CreateSpec
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rpc.mutation.RedirectUrisIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   relyingparty.RedirectUrisTable,
+			Columns: []string{relyingparty.RedirectUrisColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

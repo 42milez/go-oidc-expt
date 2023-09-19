@@ -16,7 +16,7 @@ var (
 		{Name: "expire_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "used_at", Type: field.TypeTime},
-		{Name: "client_id", Type: field.TypeInt, Nullable: true},
+		{Name: "relying_party_id", Type: field.TypeInt},
 	}
 	// AuthCodesTable holds the schema information for the "auth_codes" table.
 	AuthCodesTable = &schema.Table{
@@ -33,9 +33,9 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "authcode_code",
+				Name:    "authcode_relying_party_id_code",
 				Unique:  true,
-				Columns: []*schema.Column{AuthCodesColumns[1]},
+				Columns: []*schema.Column{AuthCodesColumns[5], AuthCodesColumns[1]},
 			},
 		},
 	}
@@ -73,7 +73,7 @@ var (
 		{Name: "uri", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},
-		{Name: "user_id", Type: field.TypeUint64},
+		{Name: "relying_party_id", Type: field.TypeInt},
 	}
 	// RedirectUrisTable holds the schema information for the "redirect_uris" table.
 	RedirectUrisTable = &schema.Table{
@@ -82,15 +82,15 @@ var (
 		PrimaryKey: []*schema.Column{RedirectUrisColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "redirect_uris_users_redirect_uris",
+				Symbol:     "redirect_uris_relying_parties_redirect_uris",
 				Columns:    []*schema.Column{RedirectUrisColumns[4]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
+				RefColumns: []*schema.Column{RelyingPartiesColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "redirecturi_user_id_uri",
+				Name:    "redirecturi_relying_party_id_uri",
 				Unique:  true,
 				Columns: []*schema.Column{RedirectUrisColumns[4], RedirectUrisColumns[1]},
 			},
@@ -138,7 +138,7 @@ var (
 func init() {
 	AuthCodesTable.ForeignKeys[0].RefTable = RelyingPartiesTable
 	ConsentsTable.ForeignKeys[0].RefTable = UsersTable
-	RedirectUrisTable.ForeignKeys[0].RefTable = UsersTable
+	RedirectUrisTable.ForeignKeys[0].RefTable = RelyingPartiesTable
 	RedirectUrisTable.Annotation = &entsql.Annotation{
 		Table: "redirect_uris",
 	}

@@ -349,6 +349,29 @@ func HasAuthCodesWith(preds ...predicate.AuthCode) predicate.RelyingParty {
 	})
 }
 
+// HasRedirectUris applies the HasEdge predicate on the "redirect_uris" edge.
+func HasRedirectUris() predicate.RelyingParty {
+	return predicate.RelyingParty(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RedirectUrisTable, RedirectUrisColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRedirectUrisWith applies the HasEdge predicate on the "redirect_uris" edge with a given conditions (other predicates).
+func HasRedirectUrisWith(preds ...predicate.RedirectURI) predicate.RelyingParty {
+	return predicate.RelyingParty(func(s *sql.Selector) {
+		step := newRedirectUrisStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.RelyingParty) predicate.RelyingParty {
 	return predicate.RelyingParty(func(s *sql.Selector) {

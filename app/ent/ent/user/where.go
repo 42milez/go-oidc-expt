@@ -389,29 +389,6 @@ func HasConsentsWith(preds ...predicate.Consent) predicate.User {
 	})
 }
 
-// HasRedirectUris applies the HasEdge predicate on the "redirect_uris" edge.
-func HasRedirectUris() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RedirectUrisTable, RedirectUrisColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasRedirectUrisWith applies the HasEdge predicate on the "redirect_uris" edge with a given conditions (other predicates).
-func HasRedirectUrisWith(preds ...predicate.RedirectURI) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := newRedirectUrisStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

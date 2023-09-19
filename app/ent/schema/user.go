@@ -67,9 +67,6 @@ func (User) Edges() []ent.Edge {
 		edge.To("consents", Consent.Type).
 			StorageKey(edge.Column("user_id")).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
-		edge.To("redirect_uris", RedirectURI.Type).
-			StorageKey(edge.Column("user_id")).
-			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }
 

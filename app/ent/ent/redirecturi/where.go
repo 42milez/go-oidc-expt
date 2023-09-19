@@ -7,7 +7,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // ID filters vertices based on their ID field.
@@ -70,10 +69,9 @@ func ModifiedAt(v time.Time) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldEQ(FieldModifiedAt, v))
 }
 
-// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v typedef.UserID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldEQ(FieldUserID, vc))
+// RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
+func RelyingPartyID(v int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyID, v))
 }
 
 // URIEQ applies the EQ predicate on the "uri" field.
@@ -221,58 +219,44 @@ func ModifiedAtLTE(v time.Time) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldLTE(FieldModifiedAt, v))
 }
 
-// UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v typedef.UserID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldEQ(FieldUserID, vc))
+// RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
+func RelyingPartyIDEQ(v int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyID, v))
 }
 
-// UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v typedef.UserID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldNEQ(FieldUserID, vc))
+// RelyingPartyIDNEQ applies the NEQ predicate on the "relying_party_id" field.
+func RelyingPartyIDNEQ(v int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldNEQ(FieldRelyingPartyID, v))
 }
 
-// UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...typedef.UserID) predicate.RedirectURI {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = uint64(vs[i])
-	}
-	return predicate.RedirectURI(sql.FieldIn(FieldUserID, v...))
+// RelyingPartyIDIn applies the In predicate on the "relying_party_id" field.
+func RelyingPartyIDIn(vs ...int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldIn(FieldRelyingPartyID, vs...))
 }
 
-// UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...typedef.UserID) predicate.RedirectURI {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = uint64(vs[i])
-	}
-	return predicate.RedirectURI(sql.FieldNotIn(FieldUserID, v...))
+// RelyingPartyIDNotIn applies the NotIn predicate on the "relying_party_id" field.
+func RelyingPartyIDNotIn(vs ...int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldNotIn(FieldRelyingPartyID, vs...))
 }
 
-// UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v typedef.UserID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldGT(FieldUserID, vc))
+// RelyingPartyIDGT applies the GT predicate on the "relying_party_id" field.
+func RelyingPartyIDGT(v int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldGT(FieldRelyingPartyID, v))
 }
 
-// UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v typedef.UserID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldGTE(FieldUserID, vc))
+// RelyingPartyIDGTE applies the GTE predicate on the "relying_party_id" field.
+func RelyingPartyIDGTE(v int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldGTE(FieldRelyingPartyID, v))
 }
 
-// UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v typedef.UserID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldLT(FieldUserID, vc))
+// RelyingPartyIDLT applies the LT predicate on the "relying_party_id" field.
+func RelyingPartyIDLT(v int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldLT(FieldRelyingPartyID, v))
 }
 
-// UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v typedef.UserID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldLTE(FieldUserID, vc))
+// RelyingPartyIDLTE applies the LTE predicate on the "relying_party_id" field.
+func RelyingPartyIDLTE(v int) predicate.RedirectURI {
+	return predicate.RedirectURI(sql.FieldLTE(FieldRelyingPartyID, v))
 }
 
 // And groups predicates with the AND operator between them.

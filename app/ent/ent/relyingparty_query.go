@@ -13,17 +13,19 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 )
 
 // RelyingPartyQuery is the builder for querying RelyingParty entities.
 type RelyingPartyQuery struct {
 	config
-	ctx           *QueryContext
-	order         []relyingparty.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.RelyingParty
-	withAuthCodes *AuthCodeQuery
+	ctx              *QueryContext
+	order            []relyingparty.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.RelyingParty
+	withAuthCodes    *AuthCodeQuery
+	withRedirectUris *RedirectURIQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -75,6 +77,28 @@ func (rpq *RelyingPartyQuery) QueryAuthCodes() *AuthCodeQuery {
 			sqlgraph.From(relyingparty.Table, relyingparty.FieldID, selector),
 			sqlgraph.To(authcode.Table, authcode.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, relyingparty.AuthCodesTable, relyingparty.AuthCodesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rpq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRedirectUris chains the current query on the "redirect_uris" edge.
+func (rpq *RelyingPartyQuery) QueryRedirectUris() *RedirectURIQuery {
+	query := (&RedirectURIClient{config: rpq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rpq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rpq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(relyingparty.Table, relyingparty.FieldID, selector),
+			sqlgraph.To(redirecturi.Table, redirecturi.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, relyingparty.RedirectUrisTable, relyingparty.RedirectUrisColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rpq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,12 +293,13 @@ func (rpq *RelyingPartyQuery) Clone() *RelyingPartyQuery {
 		return nil
 	}
 	return &RelyingPartyQuery{
-		config:        rpq.config,
-		ctx:           rpq.ctx.Clone(),
-		order:         append([]relyingparty.OrderOption{}, rpq.order...),
-		inters:        append([]Interceptor{}, rpq.inters...),
-		predicates:    append([]predicate.RelyingParty{}, rpq.predicates...),
-		withAuthCodes: rpq.withAuthCodes.Clone(),
+		config:           rpq.config,
+		ctx:              rpq.ctx.Clone(),
+		order:            append([]relyingparty.OrderOption{}, rpq.order...),
+		inters:           append([]Interceptor{}, rpq.inters...),
+		predicates:       append([]predicate.RelyingParty{}, rpq.predicates...),
+		withAuthCodes:    rpq.withAuthCodes.Clone(),
+		withRedirectUris: rpq.withRedirectUris.Clone(),
 		// clone intermediate query.
 		sql:  rpq.sql.Clone(),
 		path: rpq.path,
@@ -289,6 +314,17 @@ func (rpq *RelyingPartyQuery) WithAuthCodes(opts ...func(*AuthCodeQuery)) *Relyi
 		opt(query)
 	}
 	rpq.withAuthCodes = query
+	return rpq
+}
+
+// WithRedirectUris tells the query-builder to eager-load the nodes that are connected to
+// the "redirect_uris" edge. The optional arguments are used to configure the query builder of the edge.
+func (rpq *RelyingPartyQuery) WithRedirectUris(opts ...func(*RedirectURIQuery)) *RelyingPartyQuery {
+	query := (&RedirectURIClient{config: rpq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rpq.withRedirectUris = query
 	return rpq
 }
 
@@ -370,8 +406,9 @@ func (rpq *RelyingPartyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	var (
 		nodes       = []*RelyingParty{}
 		_spec       = rpq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			rpq.withAuthCodes != nil,
+			rpq.withRedirectUris != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -399,6 +436,13 @@ func (rpq *RelyingPartyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 			return nil, err
 		}
 	}
+	if query := rpq.withRedirectUris; query != nil {
+		if err := rpq.loadRedirectUris(ctx, query, nodes,
+			func(n *RelyingParty) { n.Edges.RedirectUris = []*RedirectURI{} },
+			func(n *RelyingParty, e *RedirectURI) { n.Edges.RedirectUris = append(n.Edges.RedirectUris, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -421,13 +465,44 @@ func (rpq *RelyingPartyQuery) loadAuthCodes(ctx context.Context, query *AuthCode
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.client_id
+		fk := n.relying_party_id
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "client_id" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "relying_party_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "client_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (rpq *RelyingPartyQuery) loadRedirectUris(ctx context.Context, query *RedirectURIQuery, nodes []*RelyingParty, init func(*RelyingParty), assign func(*RelyingParty, *RedirectURI)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*RelyingParty)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.RedirectURI(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(relyingparty.RedirectUrisColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.relying_party_id
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "relying_party_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

@@ -40,13 +40,15 @@ func (AuthCode) Fields() []ent.Field {
 		field.Time("used_at").
 			Default(time.Now()).
 			Immutable(),
+		field.Int("relying_party_id").
+			Immutable(),
 	}
 }
 
 // Indexes of the AuthCode.
 func (AuthCode) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("code").
+		index.Fields("relying_party_id", "code").
 			Unique(),
 	}
 }
