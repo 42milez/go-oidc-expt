@@ -48,7 +48,7 @@ func (AuthCode) Fields() []ent.Field {
 // Indexes of the AuthCode.
 func (AuthCode) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("user_id", "code").
+		index.Fields("code").
 			Unique(),
 	}
 }

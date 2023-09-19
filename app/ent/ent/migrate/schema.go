@@ -32,9 +32,9 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "authcode_user_id_code",
+				Name:    "authcode_code",
 				Unique:  true,
-				Columns: []*schema.Column{AuthCodesColumns[4], AuthCodesColumns[1]},
+				Columns: []*schema.Column{AuthCodesColumns[1]},
 			},
 		},
 	}
