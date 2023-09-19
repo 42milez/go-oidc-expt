@@ -18,13 +18,12 @@ func insertRedirectURIs(ctx context.Context, db *datastore.Database, relyingPart
 		return nil, fmt.Errorf("the number of redirect uris must be greater than or equal to %d", nRedirectUriMin)
 	}
 
-	type param struct {
+	nRelyingParty := len(relyingParties)
+
+	params := make([]struct {
 		URI            string
 		RelyingPartyID int
-	}
-
-	nRelyingParty := len(relyingParties)
-	params := make([]param, nRelyingParty*nRedirectURI)
+	}, nRedirectURI*nRelyingParty)
 
 	for i := range params {
 		params[i].URI = fmt.Sprintf("https://example.com/cb%d", i)

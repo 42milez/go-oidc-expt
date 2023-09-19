@@ -19,13 +19,13 @@ func insertConsents(ctx context.Context, db *datastore.Database, users []*ent.Us
 		return nil, fmt.Errorf("the number of consents must be greater than or equal to %d", nConsentMin)
 	}
 
+	nUser := len(users)
+	nRelyingParty := len(relyingParties)
+
 	params := make([]struct {
 		UserID         typedef.UserID
 		RelyingPartyID int
-	}, nConsent)
-
-	nUser := len(users)
-	nRelyingParty := len(relyingParties)
+	}, nConsent*nUser)
 
 	for i := range params {
 		params[i].UserID = users[i%nUser].ID

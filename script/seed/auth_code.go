@@ -21,14 +21,13 @@ func insertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties
 		return nil, fmt.Errorf("the number of auth codes must be greater than or equal to %d", nAuthCodeMin)
 	}
 
-	type param struct {
+	nRelyingParty := len(relyingParties)
+
+	params := make([]struct {
 		code           string
 		usedAt         *time.Time
 		relyingPartyId int
-	}
-
-	nRelyingParty := len(relyingParties)
-	params := make([]param, nRelyingParty*nAuthCode)
+	}, nAuthCode*nRelyingParty)
 
 	for i := range params {
 		code, err := xrandom.MakeCryptoRandomString(config.AuthCodeLength)
