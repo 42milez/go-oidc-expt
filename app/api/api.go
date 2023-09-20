@@ -18,6 +18,7 @@ var authorizeGetHdlr *AuthorizeGetHdlr
 var checkHealthHdlr *CheckHealthHdlr
 var consentHdlr *ConsentHdlr
 var registerUserHdlr *RegisterHdlr
+var tokenHdlr *TokenHdlr
 
 type HandlerImpl struct{}
 
@@ -39,4 +40,8 @@ func (_ *HandlerImpl) Consent(w http.ResponseWriter, r *http.Request) {
 
 func (_ *HandlerImpl) Register(w http.ResponseWriter, r *http.Request) {
 	registerUserHdlr.ServeHTTP(w, r)
+}
+
+func (_ *HandlerImpl) Token(w http.ResponseWriter, r *http.Request) {
+	tokenHdlr.ServeHTTP(w, r)
 }

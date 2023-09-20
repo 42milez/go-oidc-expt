@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
+	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -19,12 +20,6 @@ type ConsentCreate struct {
 	config
 	mutation *ConsentMutation
 	hooks    []Hook
-}
-
-// SetUserID sets the "user_id" field.
-func (cc *ConsentCreate) SetUserID(ti typedef.UserID) *ConsentCreate {
-	cc.mutation.SetUserID(ti)
-	return cc
 }
 
 // SetRelyingPartyID sets the "relying_party_id" field.
@@ -47,10 +42,35 @@ func (cc *ConsentCreate) SetNillableCreatedAt(t *time.Time) *ConsentCreate {
 	return cc
 }
 
+// SetUserConsents sets the "user_consents" field.
+func (cc *ConsentCreate) SetUserConsents(ti typedef.UserID) *ConsentCreate {
+	cc.mutation.SetUserConsents(ti)
+	return cc
+}
+
 // SetID sets the "id" field.
 func (cc *ConsentCreate) SetID(ti typedef.ConsentID) *ConsentCreate {
 	cc.mutation.SetID(ti)
 	return cc
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (cc *ConsentCreate) SetUserID(id typedef.UserID) *ConsentCreate {
+	cc.mutation.SetUserID(id)
+	return cc
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (cc *ConsentCreate) SetNillableUserID(id *typedef.UserID) *ConsentCreate {
+	if id != nil {
+		cc = cc.SetUserID(*id)
+	}
+	return cc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (cc *ConsentCreate) SetUser(u *User) *ConsentCreate {
+	return cc.SetUserID(u.ID)
 }
 
 // Mutation returns the ConsentMutation object of the builder.
@@ -96,14 +116,14 @@ func (cc *ConsentCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (cc *ConsentCreate) check() error {
-	if _, ok := cc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Consent.user_id"`)}
-	}
 	if _, ok := cc.mutation.RelyingPartyID(); !ok {
 		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "Consent.relying_party_id"`)}
 	}
 	if _, ok := cc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Consent.created_at"`)}
+	}
+	if _, ok := cc.mutation.UserConsents(); !ok {
+		return &ValidationError{Name: "user_consents", err: errors.New(`ent: missing required field "Consent.user_consents"`)}
 	}
 	return nil
 }
@@ -137,10 +157,6 @@ func (cc *ConsentCreate) createSpec() (*Consent, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := cc.mutation.UserID(); ok {
-		_spec.SetField(consent.FieldUserID, field.TypeUint64, value)
-		_node.UserID = value
-	}
 	if value, ok := cc.mutation.RelyingPartyID(); ok {
 		_spec.SetField(consent.FieldRelyingPartyID, field.TypeUint64, value)
 		_node.RelyingPartyID = value
@@ -148,6 +164,27 @@ func (cc *ConsentCreate) createSpec() (*Consent, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.SetField(consent.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := cc.mutation.UserConsents(); ok {
+		_spec.SetField(consent.FieldUserConsents, field.TypeUint64, value)
+		_node.UserConsents = value
+	}
+	if nodes := cc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   consent.UserTable,
+			Columns: []string{consent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_consents = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

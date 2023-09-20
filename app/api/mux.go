@@ -83,6 +83,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	checkHealthHdlr = NewCheckHealthHdlr(option)
 	consentHdlr = NewConsentHdlr(option)
 	registerUserHdlr = NewRegisterHdlr(option)
+	tokenHdlr = NewTokenHdlr(option)
 
 	if authorizeGetHdlr, err = NewAuthorizeGetHdlr(option); err != nil {
 		return nil, nil, err
@@ -109,7 +110,7 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	mw = NewMiddlewareFuncMap()
 
 	rs := RestoreSession(option)
-	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs)
+	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs).SetTokenMW(rs)
 
 	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,
@@ -137,7 +138,7 @@ func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
 		return nil, err
 	}
 	return &AuthorizeGetHdlr{
-		service:   service.NewAuthorize(repository.NewUser(option.db, option.idGenerator)),
+		service:   service.NewAuthorize(repository.NewRelyingParty(option.db)),
 		validator: v,
 	}, nil
 }
@@ -150,7 +151,7 @@ func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {
 
 func NewConsentHdlr(option *HandlerOption) *ConsentHdlr {
 	return &ConsentHdlr{
-		session: option.sessionUpdater,
+		service: service.NewConsent(repository.NewUser(option.db, option.idGenerator)),
 	}
 }
 
@@ -160,4 +161,8 @@ func NewRegisterHdlr(option *HandlerOption) *RegisterHdlr {
 		session:   option.sessionRestorer,
 		validator: option.validationUtil,
 	}
+}
+
+func NewTokenHdlr(option *HandlerOption) *TokenHdlr {
+	return &TokenHdlr{}
 }

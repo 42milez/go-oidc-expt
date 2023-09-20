@@ -32,8 +32,8 @@ func (rpu *RelyingPartyUpdate) Where(ps ...predicate.RelyingParty) *RelyingParty
 }
 
 // SetClientSecret sets the "client_secret" field.
-func (rpu *RelyingPartyUpdate) SetClientSecret(ts typedef.ClientSecret) *RelyingPartyUpdate {
-	rpu.mutation.SetClientSecret(ts)
+func (rpu *RelyingPartyUpdate) SetClientSecret(s string) *RelyingPartyUpdate {
+	rpu.mutation.SetClientSecret(s)
 	return rpu
 }
 
@@ -158,7 +158,7 @@ func (rpu *RelyingPartyUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (rpu *RelyingPartyUpdate) check() error {
 	if v, ok := rpu.mutation.ClientSecret(); ok {
-		if err := relyingparty.ClientSecretValidator(string(v)); err != nil {
+		if err := relyingparty.ClientSecretValidator(v); err != nil {
 			return &ValidationError{Name: "client_secret", err: fmt.Errorf(`ent: validator failed for field "RelyingParty.client_secret": %w`, err)}
 		}
 	}
@@ -294,8 +294,8 @@ type RelyingPartyUpdateOne struct {
 }
 
 // SetClientSecret sets the "client_secret" field.
-func (rpuo *RelyingPartyUpdateOne) SetClientSecret(ts typedef.ClientSecret) *RelyingPartyUpdateOne {
-	rpuo.mutation.SetClientSecret(ts)
+func (rpuo *RelyingPartyUpdateOne) SetClientSecret(s string) *RelyingPartyUpdateOne {
+	rpuo.mutation.SetClientSecret(s)
 	return rpuo
 }
 
@@ -433,7 +433,7 @@ func (rpuo *RelyingPartyUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (rpuo *RelyingPartyUpdateOne) check() error {
 	if v, ok := rpuo.mutation.ClientSecret(); ok {
-		if err := relyingparty.ClientSecretValidator(string(v)); err != nil {
+		if err := relyingparty.ClientSecretValidator(v); err != nil {
 			return &ValidationError{Name: "client_secret", err: fmt.Errorf(`ent: validator failed for field "RelyingParty.client_secret": %w`, err)}
 		}
 	}

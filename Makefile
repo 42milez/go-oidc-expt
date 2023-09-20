@@ -60,7 +60,7 @@ gen:
 ## lint: Run linters
 lint:
 	@golangci-lint run --fix
-	@vacuum lint -d app/api/spec/spec.yml
+	@vacuum lint -r vacuum-ruleset.yml -d app/api/spec/spec.yml
 
 ## migrate-apply: Apply migrations
 migrate-apply:

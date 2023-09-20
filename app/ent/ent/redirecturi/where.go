@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -70,10 +71,10 @@ func ModifiedAt(v time.Time) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldEQ(FieldModifiedAt, v))
 }
 
-// RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
-func RelyingPartyID(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUris applies equality check predicate on the "relying_party_redirect_uris" field. It's identical to RelyingPartyRedirectUrisEQ.
+func RelyingPartyRedirectUris(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyID, vc))
+	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyRedirectUris, vc))
 }
 
 // URIEQ applies the EQ predicate on the "uri" field.
@@ -221,58 +222,81 @@ func ModifiedAtLTE(v time.Time) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldLTE(FieldModifiedAt, v))
 }
 
-// RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
-func RelyingPartyIDEQ(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUrisEQ applies the EQ predicate on the "relying_party_redirect_uris" field.
+func RelyingPartyRedirectUrisEQ(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyID, vc))
+	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyRedirectUris, vc))
 }
 
-// RelyingPartyIDNEQ applies the NEQ predicate on the "relying_party_id" field.
-func RelyingPartyIDNEQ(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUrisNEQ applies the NEQ predicate on the "relying_party_redirect_uris" field.
+func RelyingPartyRedirectUrisNEQ(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldNEQ(FieldRelyingPartyID, vc))
+	return predicate.RedirectURI(sql.FieldNEQ(FieldRelyingPartyRedirectUris, vc))
 }
 
-// RelyingPartyIDIn applies the In predicate on the "relying_party_id" field.
-func RelyingPartyIDIn(vs ...typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUrisIn applies the In predicate on the "relying_party_redirect_uris" field.
+func RelyingPartyRedirectUrisIn(vs ...typedef.RelyingPartyID) predicate.RedirectURI {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.RedirectURI(sql.FieldIn(FieldRelyingPartyID, v...))
+	return predicate.RedirectURI(sql.FieldIn(FieldRelyingPartyRedirectUris, v...))
 }
 
-// RelyingPartyIDNotIn applies the NotIn predicate on the "relying_party_id" field.
-func RelyingPartyIDNotIn(vs ...typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUrisNotIn applies the NotIn predicate on the "relying_party_redirect_uris" field.
+func RelyingPartyRedirectUrisNotIn(vs ...typedef.RelyingPartyID) predicate.RedirectURI {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.RedirectURI(sql.FieldNotIn(FieldRelyingPartyID, v...))
+	return predicate.RedirectURI(sql.FieldNotIn(FieldRelyingPartyRedirectUris, v...))
 }
 
-// RelyingPartyIDGT applies the GT predicate on the "relying_party_id" field.
-func RelyingPartyIDGT(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUrisGT applies the GT predicate on the "relying_party_redirect_uris" field.
+func RelyingPartyRedirectUrisGT(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldGT(FieldRelyingPartyID, vc))
+	return predicate.RedirectURI(sql.FieldGT(FieldRelyingPartyRedirectUris, vc))
 }
 
-// RelyingPartyIDGTE applies the GTE predicate on the "relying_party_id" field.
-func RelyingPartyIDGTE(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUrisGTE applies the GTE predicate on the "relying_party_redirect_uris" field.
+func RelyingPartyRedirectUrisGTE(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldGTE(FieldRelyingPartyID, vc))
+	return predicate.RedirectURI(sql.FieldGTE(FieldRelyingPartyRedirectUris, vc))
 }
 
-// RelyingPartyIDLT applies the LT predicate on the "relying_party_id" field.
-func RelyingPartyIDLT(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUrisLT applies the LT predicate on the "relying_party_redirect_uris" field.
+func RelyingPartyRedirectUrisLT(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldLT(FieldRelyingPartyID, vc))
+	return predicate.RedirectURI(sql.FieldLT(FieldRelyingPartyRedirectUris, vc))
 }
 
-// RelyingPartyIDLTE applies the LTE predicate on the "relying_party_id" field.
-func RelyingPartyIDLTE(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyRedirectUrisLTE applies the LTE predicate on the "relying_party_redirect_uris" field.
+func RelyingPartyRedirectUrisLTE(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldLTE(FieldRelyingPartyID, vc))
+	return predicate.RedirectURI(sql.FieldLTE(FieldRelyingPartyRedirectUris, vc))
+}
+
+// HasRelyingParty applies the HasEdge predicate on the "relying_party" edge.
+func HasRelyingParty() predicate.RedirectURI {
+	return predicate.RedirectURI(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RelyingPartyTable, RelyingPartyColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRelyingPartyWith applies the HasEdge predicate on the "relying_party" edge with a given conditions (other predicates).
+func HasRelyingPartyWith(preds ...predicate.RelyingParty) predicate.RedirectURI {
+	return predicate.RedirectURI(func(s *sql.Selector) {
+		step := newRelyingPartyStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

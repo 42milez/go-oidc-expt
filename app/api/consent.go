@@ -3,47 +3,52 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/entity"
-	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-
-	"github.com/42milez/go-oidc-server/app/service"
-
 	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/service"
+	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/schema"
 )
 
 type ConsentHdlr struct {
-	session SessionUpdater
+	service   ConsentAcceptor
+	validator *validator.Validate
 }
 
 func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var sessId typedef.SessionID
-	var sess *entity.Session
-	var ok bool
+	decoder := schema.NewDecoder()
+	q := &AuthorizeParams{}
 
-	if sessId, ok = service.GetSessionID(ctx); !ok {
-		RespondJSON(w, http.StatusUnauthorized, &ErrorResponse{
-			Detail: xerr.UnauthorizedRequest.Error(),
-			Status: http.StatusUnauthorized,
+	if err := decoder.Decode(q, r.URL.Query()); err != nil {
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
 		})
 		return
 	}
 
-	if sess, ok = service.GetSession(ctx); !ok {
+	sess, ok := service.GetSession(ctx)
+
+	if !ok {
 		RespondJSON(w, http.StatusUnauthorized, &ErrorResponse{
-			Detail: xerr.UnauthorizedRequest.Error(),
-			Status: http.StatusUnauthorized,
+			Status:  http.StatusUnauthorized,
+			Summary: xerr.UnauthorizedRequest,
 		})
 		return
 	}
 
-	sess.Consent = true
+	if err := ch.validator.Struct(q); err != nil {
+		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
+			Error: xerr.InvalidRequest,
+		})
+		return
+	}
 
-	if err := ch.session.Update(ctx, sessId, sess); err != nil {
-		RespondJson500(w, xerr.UnexpectedErrorOccurred)
+	if err := ch.service.AcceptConsent(ctx, sess.UserID, q.ClientId); err != nil {
+		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+			Error: xerr.UnexpectedErrorOccurred,
+		})
 		return
 	}
 

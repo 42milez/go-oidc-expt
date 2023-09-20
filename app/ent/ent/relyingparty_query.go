@@ -335,7 +335,7 @@ func (rpq *RelyingPartyQuery) WithRedirectUris(opts ...func(*RedirectURIQuery)) 
 // Example:
 //
 //	var v []struct {
-//		ClientID typedef.ClientID `json:"client_id,omitempty"`
+//		ClientID string `json:"client_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -358,7 +358,7 @@ func (rpq *RelyingPartyQuery) GroupBy(field string, fields ...string) *RelyingPa
 // Example:
 //
 //	var v []struct {
-//		ClientID typedef.ClientID `json:"client_id,omitempty"`
+//		ClientID string `json:"client_id,omitempty"`
 //	}
 //
 //	client.RelyingParty.Query().
@@ -466,13 +466,13 @@ func (rpq *RelyingPartyQuery) loadAuthCodes(ctx context.Context, query *AuthCode
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.relying_party_id
+		fk := n.relying_party_auth_codes
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "relying_party_id" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "relying_party_auth_codes" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_auth_codes" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -497,13 +497,13 @@ func (rpq *RelyingPartyQuery) loadRedirectUris(ctx context.Context, query *Redir
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.relying_party_id
+		fk := n.relying_party_redirect_uris
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "relying_party_id" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "relying_party_redirect_uris" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_redirect_uris" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

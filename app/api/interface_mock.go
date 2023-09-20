@@ -12,7 +12,6 @@ import (
 
 	ent "github.com/42milez/go-oidc-server/app/ent/ent"
 	entity "github.com/42milez/go-oidc-server/app/entity"
-	service "github.com/42milez/go-oidc-server/app/service"
 	typedef "github.com/42milez/go-oidc-server/app/typedef"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -180,6 +179,81 @@ func (mr *MockAuthenticatorMockRecorder) Authenticate(ctx, name, pw interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authenticate", reflect.TypeOf((*MockAuthenticator)(nil).Authenticate), ctx, name, pw)
 }
 
+// MockCookieReader is a mock of CookieReader interface.
+type MockCookieReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockCookieReaderMockRecorder
+}
+
+// MockCookieReaderMockRecorder is the mock recorder for MockCookieReader.
+type MockCookieReaderMockRecorder struct {
+	mock *MockCookieReader
+}
+
+// NewMockCookieReader creates a new mock instance.
+func NewMockCookieReader(ctrl *gomock.Controller) *MockCookieReader {
+	mock := &MockCookieReader{ctrl: ctrl}
+	mock.recorder = &MockCookieReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCookieReader) EXPECT() *MockCookieReaderMockRecorder {
+	return m.recorder
+}
+
+// Read mocks base method.
+func (m *MockCookieReader) Read(r *http.Request, name string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Read", r, name)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Read indicates an expected call of Read.
+func (mr *MockCookieReaderMockRecorder) Read(r, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockCookieReader)(nil).Read), r, name)
+}
+
+// MockCookieWriter is a mock of CookieWriter interface.
+type MockCookieWriter struct {
+	ctrl     *gomock.Controller
+	recorder *MockCookieWriterMockRecorder
+}
+
+// MockCookieWriterMockRecorder is the mock recorder for MockCookieWriter.
+type MockCookieWriterMockRecorder struct {
+	mock *MockCookieWriter
+}
+
+// NewMockCookieWriter creates a new mock instance.
+func NewMockCookieWriter(ctrl *gomock.Controller) *MockCookieWriter {
+	mock := &MockCookieWriter{ctrl: ctrl}
+	mock.recorder = &MockCookieWriterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCookieWriter) EXPECT() *MockCookieWriterMockRecorder {
+	return m.recorder
+}
+
+// Write mocks base method.
+func (m *MockCookieWriter) Write(w http.ResponseWriter, name, val string, ttl time.Duration) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Write", w, name, val, ttl)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Write indicates an expected call of Write.
+func (mr *MockCookieWriterMockRecorder) Write(w, name, val, ttl interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockCookieWriter)(nil).Write), w, name, val, ttl)
+}
+
 // MockAuthorizer is a mock of Authorizer interface.
 type MockAuthorizer struct {
 	ctrl     *gomock.Controller
@@ -204,94 +278,55 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // Authorize mocks base method.
-func (m *MockAuthorizer) Authorize(ctx context.Context, userID typedef.UserID, param *service.AuthorizeParams) (string, error) {
+func (m *MockAuthorizer) Authorize(ctx context.Context, clientID, redirectURI, state string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Authorize", ctx, userID, param)
+	ret := m.ctrl.Call(m, "Authorize", ctx, clientID, redirectURI, state)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Authorize indicates an expected call of Authorize.
-func (mr *MockAuthorizerMockRecorder) Authorize(ctx, userID, param interface{}) *gomock.Call {
+func (mr *MockAuthorizerMockRecorder) Authorize(ctx, clientID, redirectURI, state interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAuthorizer)(nil).Authorize), ctx, userID, param)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAuthorizer)(nil).Authorize), ctx, clientID, redirectURI, state)
 }
 
-// MockUserCreator is a mock of UserCreator interface.
-type MockUserCreator struct {
+// MockConsentAcceptor is a mock of ConsentAcceptor interface.
+type MockConsentAcceptor struct {
 	ctrl     *gomock.Controller
-	recorder *MockUserCreatorMockRecorder
+	recorder *MockConsentAcceptorMockRecorder
 }
 
-// MockUserCreatorMockRecorder is the mock recorder for MockUserCreator.
-type MockUserCreatorMockRecorder struct {
-	mock *MockUserCreator
+// MockConsentAcceptorMockRecorder is the mock recorder for MockConsentAcceptor.
+type MockConsentAcceptorMockRecorder struct {
+	mock *MockConsentAcceptor
 }
 
-// NewMockUserCreator creates a new mock instance.
-func NewMockUserCreator(ctrl *gomock.Controller) *MockUserCreator {
-	mock := &MockUserCreator{ctrl: ctrl}
-	mock.recorder = &MockUserCreatorMockRecorder{mock}
+// NewMockConsentAcceptor creates a new mock instance.
+func NewMockConsentAcceptor(ctrl *gomock.Controller) *MockConsentAcceptor {
+	mock := &MockConsentAcceptor{ctrl: ctrl}
+	mock.recorder = &MockConsentAcceptorMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUserCreator) EXPECT() *MockUserCreatorMockRecorder {
+func (m *MockConsentAcceptor) EXPECT() *MockConsentAcceptorMockRecorder {
 	return m.recorder
 }
 
-// CreateUser mocks base method.
-func (m *MockUserCreator) CreateUser(ctx context.Context, name, pw string) (*ent.User, error) {
+// AcceptConsent mocks base method.
+func (m *MockConsentAcceptor) AcceptConsent(ctx context.Context, userID typedef.UserID, clientID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUser", ctx, name, pw)
-	ret0, _ := ret[0].(*ent.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "AcceptConsent", ctx, userID, clientID)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// CreateUser indicates an expected call of CreateUser.
-func (mr *MockUserCreatorMockRecorder) CreateUser(ctx, name, pw interface{}) *gomock.Call {
+// AcceptConsent indicates an expected call of AcceptConsent.
+func (mr *MockConsentAcceptorMockRecorder) AcceptConsent(ctx, userID, clientID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserCreator)(nil).CreateUser), ctx, name, pw)
-}
-
-// MockUserReader is a mock of UserReader interface.
-type MockUserReader struct {
-	ctrl     *gomock.Controller
-	recorder *MockUserReaderMockRecorder
-}
-
-// MockUserReaderMockRecorder is the mock recorder for MockUserReader.
-type MockUserReaderMockRecorder struct {
-	mock *MockUserReader
-}
-
-// NewMockUserReader creates a new mock instance.
-func NewMockUserReader(ctrl *gomock.Controller) *MockUserReader {
-	mock := &MockUserReader{ctrl: ctrl}
-	mock.recorder = &MockUserReaderMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUserReader) EXPECT() *MockUserReaderMockRecorder {
-	return m.recorder
-}
-
-// SelectUser mocks base method.
-func (m *MockUserReader) SelectUser(ctx context.Context) (*ent.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SelectUser", ctx)
-	ret0, _ := ret[0].(*ent.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// SelectUser indicates an expected call of SelectUser.
-func (mr *MockUserReaderMockRecorder) SelectUser(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectUser", reflect.TypeOf((*MockUserReader)(nil).SelectUser), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AcceptConsent", reflect.TypeOf((*MockConsentAcceptor)(nil).AcceptConsent), ctx, userID, clientID)
 }
 
 // MockSessionCreator is a mock of SessionCreator interface.
@@ -407,77 +442,78 @@ func (mr *MockSessionUpdaterMockRecorder) Update(ctx, sid, sess interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockSessionUpdater)(nil).Update), ctx, sid, sess)
 }
 
-// MockCookieReader is a mock of CookieReader interface.
-type MockCookieReader struct {
+// MockUserCreator is a mock of UserCreator interface.
+type MockUserCreator struct {
 	ctrl     *gomock.Controller
-	recorder *MockCookieReaderMockRecorder
+	recorder *MockUserCreatorMockRecorder
 }
 
-// MockCookieReaderMockRecorder is the mock recorder for MockCookieReader.
-type MockCookieReaderMockRecorder struct {
-	mock *MockCookieReader
+// MockUserCreatorMockRecorder is the mock recorder for MockUserCreator.
+type MockUserCreatorMockRecorder struct {
+	mock *MockUserCreator
 }
 
-// NewMockCookieReader creates a new mock instance.
-func NewMockCookieReader(ctrl *gomock.Controller) *MockCookieReader {
-	mock := &MockCookieReader{ctrl: ctrl}
-	mock.recorder = &MockCookieReaderMockRecorder{mock}
+// NewMockUserCreator creates a new mock instance.
+func NewMockUserCreator(ctrl *gomock.Controller) *MockUserCreator {
+	mock := &MockUserCreator{ctrl: ctrl}
+	mock.recorder = &MockUserCreatorMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockCookieReader) EXPECT() *MockCookieReaderMockRecorder {
+func (m *MockUserCreator) EXPECT() *MockUserCreatorMockRecorder {
 	return m.recorder
 }
 
-// Read mocks base method.
-func (m *MockCookieReader) Read(r *http.Request, name string) (string, error) {
+// CreateUser mocks base method.
+func (m *MockUserCreator) CreateUser(ctx context.Context, name, pw string) (*ent.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", r, name)
-	ret0, _ := ret[0].(string)
+	ret := m.ctrl.Call(m, "CreateUser", ctx, name, pw)
+	ret0, _ := ret[0].(*ent.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Read indicates an expected call of Read.
-func (mr *MockCookieReaderMockRecorder) Read(r, name interface{}) *gomock.Call {
+// CreateUser indicates an expected call of CreateUser.
+func (mr *MockUserCreatorMockRecorder) CreateUser(ctx, name, pw interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockCookieReader)(nil).Read), r, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserCreator)(nil).CreateUser), ctx, name, pw)
 }
 
-// MockCookieWriter is a mock of CookieWriter interface.
-type MockCookieWriter struct {
+// MockUserReader is a mock of UserReader interface.
+type MockUserReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockCookieWriterMockRecorder
+	recorder *MockUserReaderMockRecorder
 }
 
-// MockCookieWriterMockRecorder is the mock recorder for MockCookieWriter.
-type MockCookieWriterMockRecorder struct {
-	mock *MockCookieWriter
+// MockUserReaderMockRecorder is the mock recorder for MockUserReader.
+type MockUserReaderMockRecorder struct {
+	mock *MockUserReader
 }
 
-// NewMockCookieWriter creates a new mock instance.
-func NewMockCookieWriter(ctrl *gomock.Controller) *MockCookieWriter {
-	mock := &MockCookieWriter{ctrl: ctrl}
-	mock.recorder = &MockCookieWriterMockRecorder{mock}
+// NewMockUserReader creates a new mock instance.
+func NewMockUserReader(ctrl *gomock.Controller) *MockUserReader {
+	mock := &MockUserReader{ctrl: ctrl}
+	mock.recorder = &MockUserReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockCookieWriter) EXPECT() *MockCookieWriterMockRecorder {
+func (m *MockUserReader) EXPECT() *MockUserReaderMockRecorder {
 	return m.recorder
 }
 
-// Write mocks base method.
-func (m *MockCookieWriter) Write(w http.ResponseWriter, name, val string, ttl time.Duration) error {
+// SelectUser mocks base method.
+func (m *MockUserReader) SelectUser(ctx context.Context) (*ent.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Write", w, name, val, ttl)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "SelectUser", ctx)
+	ret0, _ := ret[0].(*ent.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// Write indicates an expected call of Write.
-func (mr *MockCookieWriterMockRecorder) Write(w, name, val, ttl interface{}) *gomock.Call {
+// SelectUser indicates an expected call of SelectUser.
+func (mr *MockUserReaderMockRecorder) SelectUser(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockCookieWriter)(nil).Write), w, name, val, ttl)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectUser", reflect.TypeOf((*MockUserReader)(nil).SelectUser), ctx)
 }

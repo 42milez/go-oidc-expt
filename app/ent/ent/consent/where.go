@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -55,12 +56,6 @@ func IDLTE(id typedef.ConsentID) predicate.Consent {
 	return predicate.Consent(sql.FieldLTE(FieldID, id))
 }
 
-// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldEQ(FieldUserID, vc))
-}
-
 // RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
 func RelyingPartyID(v typedef.RelyingPartyID) predicate.Consent {
 	vc := uint64(v)
@@ -72,58 +67,10 @@ func CreatedAt(v time.Time) predicate.Consent {
 	return predicate.Consent(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v typedef.UserID) predicate.Consent {
+// UserConsents applies equality check predicate on the "user_consents" field. It's identical to UserConsentsEQ.
+func UserConsents(v typedef.UserID) predicate.Consent {
 	vc := uint64(v)
-	return predicate.Consent(sql.FieldEQ(FieldUserID, vc))
-}
-
-// UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldNEQ(FieldUserID, vc))
-}
-
-// UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...typedef.UserID) predicate.Consent {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = uint64(vs[i])
-	}
-	return predicate.Consent(sql.FieldIn(FieldUserID, v...))
-}
-
-// UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...typedef.UserID) predicate.Consent {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = uint64(vs[i])
-	}
-	return predicate.Consent(sql.FieldNotIn(FieldUserID, v...))
-}
-
-// UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldGT(FieldUserID, vc))
-}
-
-// UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldGTE(FieldUserID, vc))
-}
-
-// UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldLT(FieldUserID, vc))
-}
-
-// UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldLTE(FieldUserID, vc))
+	return predicate.Consent(sql.FieldEQ(FieldUserConsents, vc))
 }
 
 // RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
@@ -218,6 +165,83 @@ func CreatedAtLT(v time.Time) predicate.Consent {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.Consent {
 	return predicate.Consent(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// UserConsentsEQ applies the EQ predicate on the "user_consents" field.
+func UserConsentsEQ(v typedef.UserID) predicate.Consent {
+	vc := uint64(v)
+	return predicate.Consent(sql.FieldEQ(FieldUserConsents, vc))
+}
+
+// UserConsentsNEQ applies the NEQ predicate on the "user_consents" field.
+func UserConsentsNEQ(v typedef.UserID) predicate.Consent {
+	vc := uint64(v)
+	return predicate.Consent(sql.FieldNEQ(FieldUserConsents, vc))
+}
+
+// UserConsentsIn applies the In predicate on the "user_consents" field.
+func UserConsentsIn(vs ...typedef.UserID) predicate.Consent {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = uint64(vs[i])
+	}
+	return predicate.Consent(sql.FieldIn(FieldUserConsents, v...))
+}
+
+// UserConsentsNotIn applies the NotIn predicate on the "user_consents" field.
+func UserConsentsNotIn(vs ...typedef.UserID) predicate.Consent {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = uint64(vs[i])
+	}
+	return predicate.Consent(sql.FieldNotIn(FieldUserConsents, v...))
+}
+
+// UserConsentsGT applies the GT predicate on the "user_consents" field.
+func UserConsentsGT(v typedef.UserID) predicate.Consent {
+	vc := uint64(v)
+	return predicate.Consent(sql.FieldGT(FieldUserConsents, vc))
+}
+
+// UserConsentsGTE applies the GTE predicate on the "user_consents" field.
+func UserConsentsGTE(v typedef.UserID) predicate.Consent {
+	vc := uint64(v)
+	return predicate.Consent(sql.FieldGTE(FieldUserConsents, vc))
+}
+
+// UserConsentsLT applies the LT predicate on the "user_consents" field.
+func UserConsentsLT(v typedef.UserID) predicate.Consent {
+	vc := uint64(v)
+	return predicate.Consent(sql.FieldLT(FieldUserConsents, vc))
+}
+
+// UserConsentsLTE applies the LTE predicate on the "user_consents" field.
+func UserConsentsLTE(v typedef.UserID) predicate.Consent {
+	vc := uint64(v)
+	return predicate.Consent(sql.FieldLTE(FieldUserConsents, vc))
+}
+
+// HasUser applies the HasEdge predicate on the "user" edge.
+func HasUser() predicate.Consent {
+	return predicate.Consent(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
+func HasUserWith(preds ...predicate.User) predicate.Consent {
+	return predicate.Consent(func(s *sql.Selector) {
+		step := newUserStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

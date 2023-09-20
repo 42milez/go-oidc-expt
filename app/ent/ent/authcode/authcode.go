@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -21,10 +22,19 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUsedAt holds the string denoting the used_at field in the database.
 	FieldUsedAt = "used_at"
-	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
-	FieldRelyingPartyID = "relying_party_id"
+	// FieldRelyingPartyAuthCodes holds the string denoting the relying_party_auth_codes field in the database.
+	FieldRelyingPartyAuthCodes = "relying_party_auth_codes"
+	// EdgeRelyingParty holds the string denoting the relying_party edge name in mutations.
+	EdgeRelyingParty = "relying_party"
 	// Table holds the table name of the authcode in the database.
 	Table = "auth_codes"
+	// RelyingPartyTable is the table that holds the relying_party relation/edge.
+	RelyingPartyTable = "auth_codes"
+	// RelyingPartyInverseTable is the table name for the RelyingParty entity.
+	// It exists in this package in order to avoid circular dependency with the "relyingparty" package.
+	RelyingPartyInverseTable = "relying_parties"
+	// RelyingPartyColumn is the table column denoting the relying_party relation/edge.
+	RelyingPartyColumn = "relying_party_auth_codes"
 )
 
 // Columns holds all SQL columns for authcode fields.
@@ -34,13 +44,13 @@ var Columns = []string{
 	FieldExpireAt,
 	FieldCreatedAt,
 	FieldUsedAt,
-	FieldRelyingPartyID,
+	FieldRelyingPartyAuthCodes,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "auth_codes"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"relying_party_id",
+	"relying_party_auth_codes",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -95,7 +105,21 @@ func ByUsedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsedAt, opts...).ToFunc()
 }
 
-// ByRelyingPartyID orders the results by the relying_party_id field.
-func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
+// ByRelyingPartyAuthCodes orders the results by the relying_party_auth_codes field.
+func ByRelyingPartyAuthCodes(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelyingPartyAuthCodes, opts...).ToFunc()
+}
+
+// ByRelyingPartyField orders the results by relying_party field.
+func ByRelyingPartyField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRelyingPartyStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newRelyingPartyStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RelyingPartyInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RelyingPartyTable, RelyingPartyColumn),
+	)
 }

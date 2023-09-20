@@ -75,4 +75,5 @@ var (
 	ResponseBodyNotMatched       InternalErr = "response body not matched"
 	SessionIDAlreadyExists       InternalErr = "session id already exists"
 	UserNotFound                 InternalErr = "user not found"
+	SessionNotFound              InternalErr = "session not found"
 )

@@ -19,9 +19,9 @@ type RelyingParty struct {
 	// ID of the ent.
 	ID typedef.RelyingPartyID `json:"id,omitempty"`
 	// ClientID holds the value of the "client_id" field.
-	ClientID typedef.ClientID `json:"client_id,omitempty"`
+	ClientID string `json:"client_id,omitempty"`
 	// ClientSecret holds the value of the "client_secret" field.
-	ClientSecret typedef.ClientSecret `json:"client_secret,omitempty"`
+	ClientSecret string `json:"client_secret,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
@@ -97,13 +97,13 @@ func (rp *RelyingParty) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
-				rp.ClientID = typedef.ClientID(value.String)
+				rp.ClientID = value.String
 			}
 		case relyingparty.FieldClientSecret:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_secret", values[i])
 			} else if value.Valid {
-				rp.ClientSecret = typedef.ClientSecret(value.String)
+				rp.ClientSecret = value.String
 			}
 		case relyingparty.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -164,10 +164,10 @@ func (rp *RelyingParty) String() string {
 	builder.WriteString("RelyingParty(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", rp.ID))
 	builder.WriteString("client_id=")
-	builder.WriteString(fmt.Sprintf("%v", rp.ClientID))
+	builder.WriteString(rp.ClientID)
 	builder.WriteString(", ")
 	builder.WriteString("client_secret=")
-	builder.WriteString(fmt.Sprintf("%v", rp.ClientSecret))
+	builder.WriteString(rp.ClientSecret)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(rp.CreatedAt.Format(time.ANSIC))

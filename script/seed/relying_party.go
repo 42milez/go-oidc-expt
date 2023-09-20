@@ -8,7 +8,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
-	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 const nRelyingPartyMin = 1
@@ -23,8 +22,8 @@ func insertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingP
 	}
 
 	params := make([]struct {
-		clientID     typedef.ClientID
-		clientSecret typedef.ClientSecret
+		clientID     string
+		clientSecret string
 	}, nRelyingParty)
 
 	for i := 0; i < nRelyingParty; i++ {
@@ -32,12 +31,12 @@ func insertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingP
 		if err != nil {
 			return nil, err
 		}
-		params[i].clientID = typedef.ClientID(v)
+		params[i].clientID = string(v)
 		v, err = xrandom.MakeCryptoRandomString(config.ClientSecretLength)
 		if err != nil {
 			return nil, err
 		}
-		params[i].clientSecret = typedef.ClientSecret(v)
+		params[i].clientSecret = string(v)
 	}
 
 	printSeeds(params)

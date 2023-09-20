@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -13,28 +14,37 @@ const (
 	Label = "consent"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldUserID holds the string denoting the user_id field in the database.
-	FieldUserID = "user_id"
 	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
 	FieldRelyingPartyID = "relying_party_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldUserConsents holds the string denoting the user_consents field in the database.
+	FieldUserConsents = "user_consents"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
 	// Table holds the table name of the consent in the database.
 	Table = "consents"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "consents"
+	// UserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_consents"
 )
 
 // Columns holds all SQL columns for consent fields.
 var Columns = []string{
 	FieldID,
-	FieldUserID,
 	FieldRelyingPartyID,
 	FieldCreatedAt,
+	FieldUserConsents,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "consents"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"user_id",
+	"user_consents",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -65,11 +75,6 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByUserID orders the results by the user_id field.
-func ByUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserID, opts...).ToFunc()
-}
-
 // ByRelyingPartyID orders the results by the relying_party_id field.
 func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
@@ -78,4 +83,23 @@ func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUserConsents orders the results by the user_consents field.
+func ByUserConsents(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserConsents, opts...).ToFunc()
+}
+
+// ByUserField orders the results by user field.
+func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newUserStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UserInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+	)
 }

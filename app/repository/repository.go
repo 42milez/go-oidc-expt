@@ -11,6 +11,12 @@ func NewCheckHealth(db *datastore.Database, cache *datastore.Cache) *CheckHealth
 	}
 }
 
+func NewRelyingParty(db *datastore.Database) *RelyingParty {
+	return &RelyingParty{
+		db: db,
+	}
+}
+
 func NewSession(cache *datastore.Cache) *Session {
 	return &Session{
 		cache: cache,

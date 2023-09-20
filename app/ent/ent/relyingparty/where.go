@@ -57,15 +57,13 @@ func IDLTE(id typedef.RelyingPartyID) predicate.RelyingParty {
 }
 
 // ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
-func ClientID(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldEQ(FieldClientID, vc))
+func ClientID(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldEQ(FieldClientID, v))
 }
 
 // ClientSecret applies equality check predicate on the "client_secret" field. It's identical to ClientSecretEQ.
-func ClientSecret(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldEQ(FieldClientSecret, vc))
+func ClientSecret(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldEQ(FieldClientSecret, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -79,171 +77,133 @@ func ModifiedAt(v time.Time) predicate.RelyingParty {
 }
 
 // ClientIDEQ applies the EQ predicate on the "client_id" field.
-func ClientIDEQ(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldEQ(FieldClientID, vc))
+func ClientIDEQ(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldEQ(FieldClientID, v))
 }
 
 // ClientIDNEQ applies the NEQ predicate on the "client_id" field.
-func ClientIDNEQ(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldNEQ(FieldClientID, vc))
+func ClientIDNEQ(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldNEQ(FieldClientID, v))
 }
 
 // ClientIDIn applies the In predicate on the "client_id" field.
-func ClientIDIn(vs ...typedef.ClientID) predicate.RelyingParty {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = string(vs[i])
-	}
-	return predicate.RelyingParty(sql.FieldIn(FieldClientID, v...))
+func ClientIDIn(vs ...string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldIn(FieldClientID, vs...))
 }
 
 // ClientIDNotIn applies the NotIn predicate on the "client_id" field.
-func ClientIDNotIn(vs ...typedef.ClientID) predicate.RelyingParty {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = string(vs[i])
-	}
-	return predicate.RelyingParty(sql.FieldNotIn(FieldClientID, v...))
+func ClientIDNotIn(vs ...string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldNotIn(FieldClientID, vs...))
 }
 
 // ClientIDGT applies the GT predicate on the "client_id" field.
-func ClientIDGT(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldGT(FieldClientID, vc))
+func ClientIDGT(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldGT(FieldClientID, v))
 }
 
 // ClientIDGTE applies the GTE predicate on the "client_id" field.
-func ClientIDGTE(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldGTE(FieldClientID, vc))
+func ClientIDGTE(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldGTE(FieldClientID, v))
 }
 
 // ClientIDLT applies the LT predicate on the "client_id" field.
-func ClientIDLT(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldLT(FieldClientID, vc))
+func ClientIDLT(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldLT(FieldClientID, v))
 }
 
 // ClientIDLTE applies the LTE predicate on the "client_id" field.
-func ClientIDLTE(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldLTE(FieldClientID, vc))
+func ClientIDLTE(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldLTE(FieldClientID, v))
 }
 
 // ClientIDContains applies the Contains predicate on the "client_id" field.
-func ClientIDContains(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldContains(FieldClientID, vc))
+func ClientIDContains(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldContains(FieldClientID, v))
 }
 
 // ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
-func ClientIDHasPrefix(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldHasPrefix(FieldClientID, vc))
+func ClientIDHasPrefix(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldHasPrefix(FieldClientID, v))
 }
 
 // ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
-func ClientIDHasSuffix(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldHasSuffix(FieldClientID, vc))
+func ClientIDHasSuffix(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldHasSuffix(FieldClientID, v))
 }
 
 // ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
-func ClientIDEqualFold(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldEqualFold(FieldClientID, vc))
+func ClientIDEqualFold(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldEqualFold(FieldClientID, v))
 }
 
 // ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
-func ClientIDContainsFold(v typedef.ClientID) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldContainsFold(FieldClientID, vc))
+func ClientIDContainsFold(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldContainsFold(FieldClientID, v))
 }
 
 // ClientSecretEQ applies the EQ predicate on the "client_secret" field.
-func ClientSecretEQ(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldEQ(FieldClientSecret, vc))
+func ClientSecretEQ(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldEQ(FieldClientSecret, v))
 }
 
 // ClientSecretNEQ applies the NEQ predicate on the "client_secret" field.
-func ClientSecretNEQ(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldNEQ(FieldClientSecret, vc))
+func ClientSecretNEQ(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldNEQ(FieldClientSecret, v))
 }
 
 // ClientSecretIn applies the In predicate on the "client_secret" field.
-func ClientSecretIn(vs ...typedef.ClientSecret) predicate.RelyingParty {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = string(vs[i])
-	}
-	return predicate.RelyingParty(sql.FieldIn(FieldClientSecret, v...))
+func ClientSecretIn(vs ...string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldIn(FieldClientSecret, vs...))
 }
 
 // ClientSecretNotIn applies the NotIn predicate on the "client_secret" field.
-func ClientSecretNotIn(vs ...typedef.ClientSecret) predicate.RelyingParty {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = string(vs[i])
-	}
-	return predicate.RelyingParty(sql.FieldNotIn(FieldClientSecret, v...))
+func ClientSecretNotIn(vs ...string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldNotIn(FieldClientSecret, vs...))
 }
 
 // ClientSecretGT applies the GT predicate on the "client_secret" field.
-func ClientSecretGT(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldGT(FieldClientSecret, vc))
+func ClientSecretGT(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldGT(FieldClientSecret, v))
 }
 
 // ClientSecretGTE applies the GTE predicate on the "client_secret" field.
-func ClientSecretGTE(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldGTE(FieldClientSecret, vc))
+func ClientSecretGTE(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldGTE(FieldClientSecret, v))
 }
 
 // ClientSecretLT applies the LT predicate on the "client_secret" field.
-func ClientSecretLT(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldLT(FieldClientSecret, vc))
+func ClientSecretLT(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldLT(FieldClientSecret, v))
 }
 
 // ClientSecretLTE applies the LTE predicate on the "client_secret" field.
-func ClientSecretLTE(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldLTE(FieldClientSecret, vc))
+func ClientSecretLTE(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldLTE(FieldClientSecret, v))
 }
 
 // ClientSecretContains applies the Contains predicate on the "client_secret" field.
-func ClientSecretContains(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldContains(FieldClientSecret, vc))
+func ClientSecretContains(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldContains(FieldClientSecret, v))
 }
 
 // ClientSecretHasPrefix applies the HasPrefix predicate on the "client_secret" field.
-func ClientSecretHasPrefix(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldHasPrefix(FieldClientSecret, vc))
+func ClientSecretHasPrefix(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldHasPrefix(FieldClientSecret, v))
 }
 
 // ClientSecretHasSuffix applies the HasSuffix predicate on the "client_secret" field.
-func ClientSecretHasSuffix(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldHasSuffix(FieldClientSecret, vc))
+func ClientSecretHasSuffix(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldHasSuffix(FieldClientSecret, v))
 }
 
 // ClientSecretEqualFold applies the EqualFold predicate on the "client_secret" field.
-func ClientSecretEqualFold(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldEqualFold(FieldClientSecret, vc))
+func ClientSecretEqualFold(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldEqualFold(FieldClientSecret, v))
 }
 
 // ClientSecretContainsFold applies the ContainsFold predicate on the "client_secret" field.
-func ClientSecretContainsFold(v typedef.ClientSecret) predicate.RelyingParty {
-	vc := string(v)
-	return predicate.RelyingParty(sql.FieldContainsFold(FieldClientSecret, vc))
+func ClientSecretContainsFold(v string) predicate.RelyingParty {
+	return predicate.RelyingParty(sql.FieldContainsFold(FieldClientSecret, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // AuthCodeUpdate is the builder for updating AuthCode entities.
@@ -48,9 +50,34 @@ func (acu *AuthCodeUpdate) ClearUsedAt() *AuthCodeUpdate {
 	return acu
 }
 
+// SetRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID.
+func (acu *AuthCodeUpdate) SetRelyingPartyID(id typedef.RelyingPartyID) *AuthCodeUpdate {
+	acu.mutation.SetRelyingPartyID(id)
+	return acu
+}
+
+// SetNillableRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID if the given value is not nil.
+func (acu *AuthCodeUpdate) SetNillableRelyingPartyID(id *typedef.RelyingPartyID) *AuthCodeUpdate {
+	if id != nil {
+		acu = acu.SetRelyingPartyID(*id)
+	}
+	return acu
+}
+
+// SetRelyingParty sets the "relying_party" edge to the RelyingParty entity.
+func (acu *AuthCodeUpdate) SetRelyingParty(r *RelyingParty) *AuthCodeUpdate {
+	return acu.SetRelyingPartyID(r.ID)
+}
+
 // Mutation returns the AuthCodeMutation object of the builder.
 func (acu *AuthCodeUpdate) Mutation() *AuthCodeMutation {
 	return acu.mutation
+}
+
+// ClearRelyingParty clears the "relying_party" edge to the RelyingParty entity.
+func (acu *AuthCodeUpdate) ClearRelyingParty() *AuthCodeUpdate {
+	acu.mutation.ClearRelyingParty()
+	return acu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -95,6 +122,35 @@ func (acu *AuthCodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if acu.mutation.UsedAtCleared() {
 		_spec.ClearField(authcode.FieldUsedAt, field.TypeTime)
 	}
+	if acu.mutation.RelyingPartyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   authcode.RelyingPartyTable,
+			Columns: []string{authcode.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acu.mutation.RelyingPartyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   authcode.RelyingPartyTable,
+			Columns: []string{authcode.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, acu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{authcode.Label}
@@ -135,9 +191,34 @@ func (acuo *AuthCodeUpdateOne) ClearUsedAt() *AuthCodeUpdateOne {
 	return acuo
 }
 
+// SetRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID.
+func (acuo *AuthCodeUpdateOne) SetRelyingPartyID(id typedef.RelyingPartyID) *AuthCodeUpdateOne {
+	acuo.mutation.SetRelyingPartyID(id)
+	return acuo
+}
+
+// SetNillableRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID if the given value is not nil.
+func (acuo *AuthCodeUpdateOne) SetNillableRelyingPartyID(id *typedef.RelyingPartyID) *AuthCodeUpdateOne {
+	if id != nil {
+		acuo = acuo.SetRelyingPartyID(*id)
+	}
+	return acuo
+}
+
+// SetRelyingParty sets the "relying_party" edge to the RelyingParty entity.
+func (acuo *AuthCodeUpdateOne) SetRelyingParty(r *RelyingParty) *AuthCodeUpdateOne {
+	return acuo.SetRelyingPartyID(r.ID)
+}
+
 // Mutation returns the AuthCodeMutation object of the builder.
 func (acuo *AuthCodeUpdateOne) Mutation() *AuthCodeMutation {
 	return acuo.mutation
+}
+
+// ClearRelyingParty clears the "relying_party" edge to the RelyingParty entity.
+func (acuo *AuthCodeUpdateOne) ClearRelyingParty() *AuthCodeUpdateOne {
+	acuo.mutation.ClearRelyingParty()
+	return acuo
 }
 
 // Where appends a list predicates to the AuthCodeUpdate builder.
@@ -211,6 +292,35 @@ func (acuo *AuthCodeUpdateOne) sqlSave(ctx context.Context) (_node *AuthCode, er
 	}
 	if acuo.mutation.UsedAtCleared() {
 		_spec.ClearField(authcode.FieldUsedAt, field.TypeTime)
+	}
+	if acuo.mutation.RelyingPartyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   authcode.RelyingPartyTable,
+			Columns: []string{authcode.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := acuo.mutation.RelyingPartyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   authcode.RelyingPartyTable,
+			Columns: []string{authcode.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &AuthCode{config: acuo.config}
 	_spec.Assign = _node.assignValues

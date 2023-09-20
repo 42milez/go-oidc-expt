@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -22,6 +23,7 @@ type ConsentQuery struct {
 	order      []consent.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Consent
+	withUser   *UserQuery
 	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -57,6 +59,28 @@ func (cq *ConsentQuery) Unique(unique bool) *ConsentQuery {
 func (cq *ConsentQuery) Order(o ...consent.OrderOption) *ConsentQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (cq *ConsentQuery) QueryUser() *UserQuery {
+	query := (&UserClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(consent.Table, consent.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, consent.UserTable, consent.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Consent entity from the query.
@@ -251,10 +275,22 @@ func (cq *ConsentQuery) Clone() *ConsentQuery {
 		order:      append([]consent.OrderOption{}, cq.order...),
 		inters:     append([]Interceptor{}, cq.inters...),
 		predicates: append([]predicate.Consent{}, cq.predicates...),
+		withUser:   cq.withUser.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ConsentQuery) WithUser(opts ...func(*UserQuery)) *ConsentQuery {
+	query := (&UserClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withUser = query
+	return cq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -263,12 +299,12 @@ func (cq *ConsentQuery) Clone() *ConsentQuery {
 // Example:
 //
 //	var v []struct {
-//		UserID typedef.UserID `json:"user_id,omitempty"`
+//		RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Consent.Query().
-//		GroupBy(consent.FieldUserID).
+//		GroupBy(consent.FieldRelyingPartyID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cq *ConsentQuery) GroupBy(field string, fields ...string) *ConsentGroupBy {
@@ -286,11 +322,11 @@ func (cq *ConsentQuery) GroupBy(field string, fields ...string) *ConsentGroupBy 
 // Example:
 //
 //	var v []struct {
-//		UserID typedef.UserID `json:"user_id,omitempty"`
+//		RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
 //	}
 //
 //	client.Consent.Query().
-//		Select(consent.FieldUserID).
+//		Select(consent.FieldRelyingPartyID).
 //		Scan(ctx, &v)
 func (cq *ConsentQuery) Select(fields ...string) *ConsentSelect {
 	cq.ctx.Fields = append(cq.ctx.Fields, fields...)
@@ -333,10 +369,16 @@ func (cq *ConsentQuery) prepareQuery(ctx context.Context) error {
 
 func (cq *ConsentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Consent, error) {
 	var (
-		nodes   = []*Consent{}
-		withFKs = cq.withFKs
-		_spec   = cq.querySpec()
+		nodes       = []*Consent{}
+		withFKs     = cq.withFKs
+		_spec       = cq.querySpec()
+		loadedTypes = [1]bool{
+			cq.withUser != nil,
+		}
 	)
+	if cq.withUser != nil {
+		withFKs = true
+	}
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, consent.ForeignKeys...)
 	}
@@ -346,6 +388,7 @@ func (cq *ConsentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cons
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Consent{config: cq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -357,7 +400,46 @@ func (cq *ConsentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cons
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := cq.withUser; query != nil {
+		if err := cq.loadUser(ctx, query, nodes, nil,
+			func(n *Consent, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (cq *ConsentQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Consent, init func(*Consent), assign func(*Consent, *User)) error {
+	ids := make([]typedef.UserID, 0, len(nodes))
+	nodeids := make(map[typedef.UserID][]*Consent)
+	for i := range nodes {
+		if nodes[i].user_consents == nil {
+			continue
+		}
+		fk := *nodes[i].user_consents
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_consents" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (cq *ConsentQuery) sqlCount(ctx context.Context) (int, error) {

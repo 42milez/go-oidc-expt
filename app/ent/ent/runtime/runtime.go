@@ -48,7 +48,7 @@ func init() {
 	consentFields := schema.Consent{}.Fields()
 	_ = consentFields
 	// consentDescCreatedAt is the schema descriptor for created_at field.
-	consentDescCreatedAt := consentFields[3].Descriptor()
+	consentDescCreatedAt := consentFields[2].Descriptor()
 	// consent.DefaultCreatedAt holds the default value on creation for the created_at field.
 	consent.DefaultCreatedAt = consentDescCreatedAt.Default.(func() time.Time)
 	redirecturiFields := schema.RedirectURI{}.Fields()

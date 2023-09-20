@@ -34,14 +34,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "authcode" package.
 	AuthCodesInverseTable = "auth_codes"
 	// AuthCodesColumn is the table column denoting the auth_codes relation/edge.
-	AuthCodesColumn = "relying_party_id"
+	AuthCodesColumn = "relying_party_auth_codes"
 	// RedirectUrisTable is the table that holds the redirect_uris relation/edge.
 	RedirectUrisTable = "redirect_uris"
 	// RedirectUrisInverseTable is the table name for the RedirectURI entity.
 	// It exists in this package in order to avoid circular dependency with the "redirecturi" package.
 	RedirectUrisInverseTable = "redirect_uris"
 	// RedirectUrisColumn is the table column denoting the redirect_uris relation/edge.
-	RedirectUrisColumn = "relying_party_id"
+	RedirectUrisColumn = "relying_party_redirect_uris"
 )
 
 // Columns holds all SQL columns for relyingparty fields.

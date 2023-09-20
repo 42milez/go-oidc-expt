@@ -201,56 +201,56 @@ func (m *MockAuthCodeCreator) EXPECT() *MockAuthCodeCreatorMockRecorder {
 }
 
 // CreateAuthCode mocks base method.
-func (m *MockAuthCodeCreator) CreateAuthCode(ctx context.Context, userId typedef.UserID, code string) (*ent.AuthCode, error) {
+func (m *MockAuthCodeCreator) CreateAuthCode(ctx context.Context, code, clientID string, userID typedef.UserID) (*ent.AuthCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateAuthCode", ctx, userId, code)
+	ret := m.ctrl.Call(m, "CreateAuthCode", ctx, code, clientID, userID)
 	ret0, _ := ret[0].(*ent.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateAuthCode indicates an expected call of CreateAuthCode.
-func (mr *MockAuthCodeCreatorMockRecorder) CreateAuthCode(ctx, userId, code interface{}) *gomock.Call {
+func (mr *MockAuthCodeCreatorMockRecorder) CreateAuthCode(ctx, code, clientID, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAuthCode", reflect.TypeOf((*MockAuthCodeCreator)(nil).CreateAuthCode), ctx, userId, code)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAuthCode", reflect.TypeOf((*MockAuthCodeCreator)(nil).CreateAuthCode), ctx, code, clientID, userID)
 }
 
-// MockRedirectUriByUserIdReader is a mock of RedirectUriByUserIdReader interface.
-type MockRedirectUriByUserIdReader struct {
+// MockRedirectUriByRelyingPartyIDReader is a mock of RedirectUriByRelyingPartyIDReader interface.
+type MockRedirectUriByRelyingPartyIDReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockRedirectUriByUserIdReaderMockRecorder
+	recorder *MockRedirectUriByRelyingPartyIDReaderMockRecorder
 }
 
-// MockRedirectUriByUserIdReaderMockRecorder is the mock recorder for MockRedirectUriByUserIdReader.
-type MockRedirectUriByUserIdReaderMockRecorder struct {
-	mock *MockRedirectUriByUserIdReader
+// MockRedirectUriByRelyingPartyIDReaderMockRecorder is the mock recorder for MockRedirectUriByRelyingPartyIDReader.
+type MockRedirectUriByRelyingPartyIDReaderMockRecorder struct {
+	mock *MockRedirectUriByRelyingPartyIDReader
 }
 
-// NewMockRedirectUriByUserIdReader creates a new mock instance.
-func NewMockRedirectUriByUserIdReader(ctrl *gomock.Controller) *MockRedirectUriByUserIdReader {
-	mock := &MockRedirectUriByUserIdReader{ctrl: ctrl}
-	mock.recorder = &MockRedirectUriByUserIdReaderMockRecorder{mock}
+// NewMockRedirectUriByRelyingPartyIDReader creates a new mock instance.
+func NewMockRedirectUriByRelyingPartyIDReader(ctrl *gomock.Controller) *MockRedirectUriByRelyingPartyIDReader {
+	mock := &MockRedirectUriByRelyingPartyIDReader{ctrl: ctrl}
+	mock.recorder = &MockRedirectUriByRelyingPartyIDReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRedirectUriByUserIdReader) EXPECT() *MockRedirectUriByUserIdReaderMockRecorder {
+func (m *MockRedirectUriByRelyingPartyIDReader) EXPECT() *MockRedirectUriByRelyingPartyIDReaderMockRecorder {
 	return m.recorder
 }
 
-// ReadRedirectUriByUserID mocks base method.
-func (m *MockRedirectUriByUserIdReader) ReadRedirectUriByUserID(ctx context.Context, userID typedef.UserID) ([]*ent.RedirectURI, error) {
+// ReadRedirectUriByClientID mocks base method.
+func (m *MockRedirectUriByRelyingPartyIDReader) ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*ent.RedirectURI, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRedirectUriByUserID", ctx, userID)
+	ret := m.ctrl.Call(m, "ReadRedirectUriByClientID", ctx, clientID)
 	ret0, _ := ret[0].([]*ent.RedirectURI)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadRedirectUriByUserID indicates an expected call of ReadRedirectUriByUserID.
-func (mr *MockRedirectUriByUserIdReaderMockRecorder) ReadRedirectUriByUserID(ctx, userID interface{}) *gomock.Call {
+// ReadRedirectUriByClientID indicates an expected call of ReadRedirectUriByClientID.
+func (mr *MockRedirectUriByRelyingPartyIDReaderMockRecorder) ReadRedirectUriByClientID(ctx, clientID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUriByUserID", reflect.TypeOf((*MockRedirectUriByUserIdReader)(nil).ReadRedirectUriByUserID), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUriByClientID", reflect.TypeOf((*MockRedirectUriByRelyingPartyIDReader)(nil).ReadRedirectUriByClientID), ctx, clientID)
 }
 
 // MockAuthorizer is a mock of Authorizer interface.
@@ -277,33 +277,71 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // CreateAuthCode mocks base method.
-func (m *MockAuthorizer) CreateAuthCode(ctx context.Context, userId typedef.UserID, code string) (*ent.AuthCode, error) {
+func (m *MockAuthorizer) CreateAuthCode(ctx context.Context, code, clientID string, userID typedef.UserID) (*ent.AuthCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateAuthCode", ctx, userId, code)
+	ret := m.ctrl.Call(m, "CreateAuthCode", ctx, code, clientID, userID)
 	ret0, _ := ret[0].(*ent.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateAuthCode indicates an expected call of CreateAuthCode.
-func (mr *MockAuthorizerMockRecorder) CreateAuthCode(ctx, userId, code interface{}) *gomock.Call {
+func (mr *MockAuthorizerMockRecorder) CreateAuthCode(ctx, code, clientID, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAuthCode", reflect.TypeOf((*MockAuthorizer)(nil).CreateAuthCode), ctx, userId, code)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAuthCode", reflect.TypeOf((*MockAuthorizer)(nil).CreateAuthCode), ctx, code, clientID, userID)
 }
 
-// ReadRedirectUriByUserID mocks base method.
-func (m *MockAuthorizer) ReadRedirectUriByUserID(ctx context.Context, userID typedef.UserID) ([]*ent.RedirectURI, error) {
+// ReadRedirectUriByClientID mocks base method.
+func (m *MockAuthorizer) ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*ent.RedirectURI, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRedirectUriByUserID", ctx, userID)
+	ret := m.ctrl.Call(m, "ReadRedirectUriByClientID", ctx, clientID)
 	ret0, _ := ret[0].([]*ent.RedirectURI)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadRedirectUriByUserID indicates an expected call of ReadRedirectUriByUserID.
-func (mr *MockAuthorizerMockRecorder) ReadRedirectUriByUserID(ctx, userID interface{}) *gomock.Call {
+// ReadRedirectUriByClientID indicates an expected call of ReadRedirectUriByClientID.
+func (mr *MockAuthorizerMockRecorder) ReadRedirectUriByClientID(ctx, clientID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUriByUserID", reflect.TypeOf((*MockAuthorizer)(nil).ReadRedirectUriByUserID), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUriByClientID", reflect.TypeOf((*MockAuthorizer)(nil).ReadRedirectUriByClientID), ctx, clientID)
+}
+
+// MockConsentCreator is a mock of ConsentCreator interface.
+type MockConsentCreator struct {
+	ctrl     *gomock.Controller
+	recorder *MockConsentCreatorMockRecorder
+}
+
+// MockConsentCreatorMockRecorder is the mock recorder for MockConsentCreator.
+type MockConsentCreatorMockRecorder struct {
+	mock *MockConsentCreator
+}
+
+// NewMockConsentCreator creates a new mock instance.
+func NewMockConsentCreator(ctrl *gomock.Controller) *MockConsentCreator {
+	mock := &MockConsentCreator{ctrl: ctrl}
+	mock.recorder = &MockConsentCreatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockConsentCreator) EXPECT() *MockConsentCreatorMockRecorder {
+	return m.recorder
+}
+
+// CreateConsent mocks base method.
+func (m *MockConsentCreator) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateConsent", ctx, userID, clientID)
+	ret0, _ := ret[0].(*ent.Consent)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateConsent indicates an expected call of CreateConsent.
+func (mr *MockConsentCreatorMockRecorder) CreateConsent(ctx, userID, clientID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateConsent", reflect.TypeOf((*MockConsentCreator)(nil).CreateConsent), ctx, userID, clientID)
 }
 
 // MockSessionCreator is a mock of SessionCreator interface.

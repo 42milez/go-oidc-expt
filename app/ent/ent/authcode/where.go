@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -75,10 +76,10 @@ func UsedAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldUsedAt, v))
 }
 
-// RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
-func RelyingPartyID(v typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodes applies equality check predicate on the "relying_party_auth_codes" field. It's identical to RelyingPartyAuthCodesEQ.
+func RelyingPartyAuthCodes(v typedef.RelyingPartyID) predicate.AuthCode {
 	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, vc))
+	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyAuthCodes, vc))
 }
 
 // CodeEQ applies the EQ predicate on the "code" field.
@@ -276,58 +277,81 @@ func UsedAtNotNil() predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldNotNull(FieldUsedAt))
 }
 
-// RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
-func RelyingPartyIDEQ(v typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodesEQ applies the EQ predicate on the "relying_party_auth_codes" field.
+func RelyingPartyAuthCodesEQ(v typedef.RelyingPartyID) predicate.AuthCode {
 	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, vc))
+	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyAuthCodes, vc))
 }
 
-// RelyingPartyIDNEQ applies the NEQ predicate on the "relying_party_id" field.
-func RelyingPartyIDNEQ(v typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodesNEQ applies the NEQ predicate on the "relying_party_auth_codes" field.
+func RelyingPartyAuthCodesNEQ(v typedef.RelyingPartyID) predicate.AuthCode {
 	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldNEQ(FieldRelyingPartyID, vc))
+	return predicate.AuthCode(sql.FieldNEQ(FieldRelyingPartyAuthCodes, vc))
 }
 
-// RelyingPartyIDIn applies the In predicate on the "relying_party_id" field.
-func RelyingPartyIDIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodesIn applies the In predicate on the "relying_party_auth_codes" field.
+func RelyingPartyAuthCodesIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.AuthCode(sql.FieldIn(FieldRelyingPartyID, v...))
+	return predicate.AuthCode(sql.FieldIn(FieldRelyingPartyAuthCodes, v...))
 }
 
-// RelyingPartyIDNotIn applies the NotIn predicate on the "relying_party_id" field.
-func RelyingPartyIDNotIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodesNotIn applies the NotIn predicate on the "relying_party_auth_codes" field.
+func RelyingPartyAuthCodesNotIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.AuthCode(sql.FieldNotIn(FieldRelyingPartyID, v...))
+	return predicate.AuthCode(sql.FieldNotIn(FieldRelyingPartyAuthCodes, v...))
 }
 
-// RelyingPartyIDGT applies the GT predicate on the "relying_party_id" field.
-func RelyingPartyIDGT(v typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodesGT applies the GT predicate on the "relying_party_auth_codes" field.
+func RelyingPartyAuthCodesGT(v typedef.RelyingPartyID) predicate.AuthCode {
 	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldGT(FieldRelyingPartyID, vc))
+	return predicate.AuthCode(sql.FieldGT(FieldRelyingPartyAuthCodes, vc))
 }
 
-// RelyingPartyIDGTE applies the GTE predicate on the "relying_party_id" field.
-func RelyingPartyIDGTE(v typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodesGTE applies the GTE predicate on the "relying_party_auth_codes" field.
+func RelyingPartyAuthCodesGTE(v typedef.RelyingPartyID) predicate.AuthCode {
 	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldGTE(FieldRelyingPartyID, vc))
+	return predicate.AuthCode(sql.FieldGTE(FieldRelyingPartyAuthCodes, vc))
 }
 
-// RelyingPartyIDLT applies the LT predicate on the "relying_party_id" field.
-func RelyingPartyIDLT(v typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodesLT applies the LT predicate on the "relying_party_auth_codes" field.
+func RelyingPartyAuthCodesLT(v typedef.RelyingPartyID) predicate.AuthCode {
 	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldLT(FieldRelyingPartyID, vc))
+	return predicate.AuthCode(sql.FieldLT(FieldRelyingPartyAuthCodes, vc))
 }
 
-// RelyingPartyIDLTE applies the LTE predicate on the "relying_party_id" field.
-func RelyingPartyIDLTE(v typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyAuthCodesLTE applies the LTE predicate on the "relying_party_auth_codes" field.
+func RelyingPartyAuthCodesLTE(v typedef.RelyingPartyID) predicate.AuthCode {
 	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldLTE(FieldRelyingPartyID, vc))
+	return predicate.AuthCode(sql.FieldLTE(FieldRelyingPartyAuthCodes, vc))
+}
+
+// HasRelyingParty applies the HasEdge predicate on the "relying_party" edge.
+func HasRelyingParty() predicate.AuthCode {
+	return predicate.AuthCode(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RelyingPartyTable, RelyingPartyColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRelyingPartyWith applies the HasEdge predicate on the "relying_party" edge with a given conditions (other predicates).
+func HasRelyingPartyWith(preds ...predicate.RelyingParty) predicate.AuthCode {
+	return predicate.AuthCode(func(s *sql.Selector) {
+		step := newRelyingPartyStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

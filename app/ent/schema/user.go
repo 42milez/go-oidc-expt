@@ -65,7 +65,6 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("consents", Consent.Type).
-			StorageKey(edge.Column("user_id")).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

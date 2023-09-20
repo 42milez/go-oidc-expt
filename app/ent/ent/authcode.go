@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -26,10 +27,35 @@ type AuthCode struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UsedAt holds the value of the "used_at" field.
 	UsedAt *time.Time `json:"used_at,omitempty"`
-	// RelyingPartyID holds the value of the "relying_party_id" field.
-	RelyingPartyID   typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
-	relying_party_id *typedef.RelyingPartyID
-	selectValues     sql.SelectValues
+	// RelyingPartyAuthCodes holds the value of the "relying_party_auth_codes" field.
+	RelyingPartyAuthCodes typedef.RelyingPartyID `json:"relying_party_auth_codes,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the AuthCodeQuery when eager-loading is set.
+	Edges                    AuthCodeEdges `json:"edges"`
+	relying_party_auth_codes *typedef.RelyingPartyID
+	selectValues             sql.SelectValues
+}
+
+// AuthCodeEdges holds the relations/edges for other nodes in the graph.
+type AuthCodeEdges struct {
+	// RelyingParty holds the value of the relying_party edge.
+	RelyingParty *RelyingParty `json:"relying_party,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// RelyingPartyOrErr returns the RelyingParty value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AuthCodeEdges) RelyingPartyOrErr() (*RelyingParty, error) {
+	if e.loadedTypes[0] {
+		if e.RelyingParty == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: relyingparty.Label}
+		}
+		return e.RelyingParty, nil
+	}
+	return nil, &NotLoadedError{edge: "relying_party"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -37,13 +63,13 @@ func (*AuthCode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case authcode.FieldID, authcode.FieldRelyingPartyID:
+		case authcode.FieldID, authcode.FieldRelyingPartyAuthCodes:
 			values[i] = new(sql.NullInt64)
 		case authcode.FieldCode:
 			values[i] = new(sql.NullString)
 		case authcode.FieldExpireAt, authcode.FieldCreatedAt, authcode.FieldUsedAt:
 			values[i] = new(sql.NullTime)
-		case authcode.ForeignKeys[0]: // relying_party_id
+		case authcode.ForeignKeys[0]: // relying_party_auth_codes
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -91,18 +117,18 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 				ac.UsedAt = new(time.Time)
 				*ac.UsedAt = value.Time
 			}
-		case authcode.FieldRelyingPartyID:
+		case authcode.FieldRelyingPartyAuthCodes:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
+				return fmt.Errorf("unexpected type %T for field relying_party_auth_codes", values[i])
 			} else if value.Valid {
-				ac.RelyingPartyID = typedef.RelyingPartyID(value.Int64)
+				ac.RelyingPartyAuthCodes = typedef.RelyingPartyID(value.Int64)
 			}
 		case authcode.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
+				return fmt.Errorf("unexpected type %T for field relying_party_auth_codes", values[i])
 			} else if value.Valid {
-				ac.relying_party_id = new(typedef.RelyingPartyID)
-				*ac.relying_party_id = typedef.RelyingPartyID(value.Int64)
+				ac.relying_party_auth_codes = new(typedef.RelyingPartyID)
+				*ac.relying_party_auth_codes = typedef.RelyingPartyID(value.Int64)
 			}
 		default:
 			ac.selectValues.Set(columns[i], values[i])
@@ -115,6 +141,11 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (ac *AuthCode) Value(name string) (ent.Value, error) {
 	return ac.selectValues.Get(name)
+}
+
+// QueryRelyingParty queries the "relying_party" edge of the AuthCode entity.
+func (ac *AuthCode) QueryRelyingParty() *RelyingPartyQuery {
+	return NewAuthCodeClient(ac.config).QueryRelyingParty(ac)
 }
 
 // Update returns a builder for updating this AuthCode.
@@ -154,8 +185,8 @@ func (ac *AuthCode) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("relying_party_id=")
-	builder.WriteString(fmt.Sprintf("%v", ac.RelyingPartyID))
+	builder.WriteString("relying_party_auth_codes=")
+	builder.WriteString(fmt.Sprintf("%v", ac.RelyingPartyAuthCodes))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -5,9 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
-
-	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
@@ -18,28 +17,34 @@ type Authorize struct {
 	repo Authorizer
 }
 
-func (a *Authorize) Authorize(ctx context.Context, userID typedef.UserID, param *AuthorizeParams) (string, error) {
+func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state string) (string, error) {
 	code, err := xrandom.MakeCryptoRandomString(config.AuthCodeLength)
 
 	if err != nil {
 		return "", err
 	}
 
-	if _, err = a.repo.CreateAuthCode(ctx, userID, code); err != nil {
+	sess, ok := GetSession(ctx)
+
+	if !ok {
+		return "", xerr.SessionNotFound
+	}
+
+	if _, err = a.repo.CreateAuthCode(ctx, code, clientID, sess.UserID); err != nil {
 		return "", err
 	}
 
-	ru, err := a.repo.ReadRedirectUriByUserID(ctx, userID)
+	ru, err := a.repo.ReadRedirectUriByClientID(ctx, clientID)
 
 	if err != nil {
 		return "", err
 	}
 
-	if !a.validateRedirectURI(ru, param.RedirectUri) {
+	if !a.validateRedirectURI(ru, redirectURI) {
 		return "", errors.New("invalid redirect uri")
 	}
 
-	return fmt.Sprintf("%s?code=%s&state=%s", param.RedirectUri, code, param.State), nil
+	return fmt.Sprintf("%s?code=%s&state=%s", redirectURI, code, state), nil
 }
 
 func (a *Authorize) validateRedirectURI(s []*ent.RedirectURI, v string) bool {

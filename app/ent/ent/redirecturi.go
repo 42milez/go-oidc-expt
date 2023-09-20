@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -24,10 +25,35 @@ type RedirectURI struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
 	ModifiedAt time.Time `json:"modified_at,omitempty"`
-	// RelyingPartyID holds the value of the "relying_party_id" field.
-	RelyingPartyID   typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
-	relying_party_id *typedef.RelyingPartyID
-	selectValues     sql.SelectValues
+	// RelyingPartyRedirectUris holds the value of the "relying_party_redirect_uris" field.
+	RelyingPartyRedirectUris typedef.RelyingPartyID `json:"relying_party_redirect_uris,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the RedirectURIQuery when eager-loading is set.
+	Edges                       RedirectURIEdges `json:"edges"`
+	relying_party_redirect_uris *typedef.RelyingPartyID
+	selectValues                sql.SelectValues
+}
+
+// RedirectURIEdges holds the relations/edges for other nodes in the graph.
+type RedirectURIEdges struct {
+	// RelyingParty holds the value of the relying_party edge.
+	RelyingParty *RelyingParty `json:"relying_party,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// RelyingPartyOrErr returns the RelyingParty value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RedirectURIEdges) RelyingPartyOrErr() (*RelyingParty, error) {
+	if e.loadedTypes[0] {
+		if e.RelyingParty == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: relyingparty.Label}
+		}
+		return e.RelyingParty, nil
+	}
+	return nil, &NotLoadedError{edge: "relying_party"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,13 +61,13 @@ func (*RedirectURI) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case redirecturi.FieldID, redirecturi.FieldRelyingPartyID:
+		case redirecturi.FieldID, redirecturi.FieldRelyingPartyRedirectUris:
 			values[i] = new(sql.NullInt64)
 		case redirecturi.FieldURI:
 			values[i] = new(sql.NullString)
 		case redirecturi.FieldCreatedAt, redirecturi.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
-		case redirecturi.ForeignKeys[0]: // relying_party_id
+		case redirecturi.ForeignKeys[0]: // relying_party_redirect_uris
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -82,18 +108,18 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ru.ModifiedAt = value.Time
 			}
-		case redirecturi.FieldRelyingPartyID:
+		case redirecturi.FieldRelyingPartyRedirectUris:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
+				return fmt.Errorf("unexpected type %T for field relying_party_redirect_uris", values[i])
 			} else if value.Valid {
-				ru.RelyingPartyID = typedef.RelyingPartyID(value.Int64)
+				ru.RelyingPartyRedirectUris = typedef.RelyingPartyID(value.Int64)
 			}
 		case redirecturi.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
+				return fmt.Errorf("unexpected type %T for field relying_party_redirect_uris", values[i])
 			} else if value.Valid {
-				ru.relying_party_id = new(typedef.RelyingPartyID)
-				*ru.relying_party_id = typedef.RelyingPartyID(value.Int64)
+				ru.relying_party_redirect_uris = new(typedef.RelyingPartyID)
+				*ru.relying_party_redirect_uris = typedef.RelyingPartyID(value.Int64)
 			}
 		default:
 			ru.selectValues.Set(columns[i], values[i])
@@ -106,6 +132,11 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (ru *RedirectURI) Value(name string) (ent.Value, error) {
 	return ru.selectValues.Get(name)
+}
+
+// QueryRelyingParty queries the "relying_party" edge of the RedirectURI entity.
+func (ru *RedirectURI) QueryRelyingParty() *RelyingPartyQuery {
+	return NewRedirectURIClient(ru.config).QueryRelyingParty(ru)
 }
 
 // Update returns a builder for updating this RedirectURI.
@@ -140,8 +171,8 @@ func (ru *RedirectURI) String() string {
 	builder.WriteString("modified_at=")
 	builder.WriteString(ru.ModifiedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("relying_party_id=")
-	builder.WriteString(fmt.Sprintf("%v", ru.RelyingPartyID))
+	builder.WriteString("relying_party_redirect_uris=")
+	builder.WriteString(fmt.Sprintf("%v", ru.RelyingPartyRedirectUris))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -35,7 +35,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "consent" package.
 	ConsentsInverseTable = "consents"
 	// ConsentsColumn is the table column denoting the consents relation/edge.
-	ConsentsColumn = "user_id"
+	ConsentsColumn = "user_consents"
 )
 
 // Columns holds all SQL columns for user fields.

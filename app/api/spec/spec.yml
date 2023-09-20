@@ -23,6 +23,7 @@ tags:
   - name: Authorization
   - name: HealthCheck
   - name: Registration
+  - name: Token
 paths:
   /health:
     get:
@@ -72,8 +73,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
+                details:
+                  - 'error1'
+                  - 'error2'
+                  - 'error3'
                 status: 400
-                detail: invalid request
+                summary: invalid request
         '500':
           $ref: '#/components/responses/InternalServerError'
   /authenticate:
@@ -85,7 +90,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/SessionId'
       requestBody:
-        description: User to authenticate
+        description: User credential
         required: true
         content:
           application/json:
@@ -107,8 +112,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
+                details:
+                  - 'error1'
+                  - 'error2'
+                  - 'error3'
                 status: 400
-                detail: invalid request
+                summary: invalid request
         '401':
           description: Authentication failed due to invalid username or password.
           content:
@@ -116,8 +125,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
+                details:
+                  - 'error1'
+                  - 'error2'
+                  - 'error3'
                 status: 401
-                detail: invalid username or password
+                summary: invalid username or password
         '500':
           $ref: '#/components/responses/InternalServerError'
   /consent:
@@ -135,7 +148,7 @@ paths:
           $ref: '#/components/responses/InternalServerError'
   /authorize:
     get:
-      description: Authorize a user, and the user receive authorization code after successfully authorized.
+      description: Determines authentication and authorization status of user, redirects user to the appropriate page and returns an authorization code.
       operationId: authorize
       tags:
         - Authorization
@@ -160,6 +173,28 @@ paths:
           description: User not authenticated.
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /token:
+    post:
+      description: Returns a new Access Token, Refresh Token, and ID Token using the authorization code obtained from the authorization endpoint. The Refresh Token is used to reissue the access token.
+      operationId: token
+      tags:
+        - Token
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        description: Issues a new access token if grant_type is authorization_code, and reissues access token if grant_type is refresh_token.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: string
+            examples:
+              new:
+                summary: Issue Access Token
+                value: grant_type=authorization_code&client_id=s6BhdRkqt3&client_secret=some_secret12345&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+              refresh:
+                summary: Reissue Access Token
+                value: grant_type=refresh_token&client_id=s6BhdRkqt3&client_secret=some_secret12345&refresh_token=8xLOxBtZp8
 components:
   parameters:
     SessionId:
@@ -289,8 +324,9 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
           example:
+            details: '["error1", "error2", "error3"]'
             status: 500
-            detail: unexpected error occurred
+            summary: unexpected error occurred
   schemas:
     Health:
       description: represents the status of service.
@@ -342,13 +378,16 @@ components:
       type: object
       required:
         - status
-        - detail
+        - details
       properties:
-        detail:
+        details:
           type: array
           items:
             type: string
-          example: '["error1", "error2", "error3"]'
+          example:
+            - ''
+            - ''
+            - ''
         status:
           type: integer
           format: uint64
@@ -356,3 +395,5 @@ components:
         summary:
           type: string
           x-go-type: xerr.PublicErr
+          x-go-type-skip-optional-pointer: true
+          example: ''

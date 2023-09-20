@@ -37,20 +37,24 @@ type TokenGenerator interface {
 }
 
 // --------------------------------------------------
-//  OPENID CONNECT
+//  OIDC: Authorization
 // --------------------------------------------------
 
 type AuthCodeCreator interface {
-	CreateAuthCode(ctx context.Context, userId typedef.UserID, code string) (*ent.AuthCode, error)
+	CreateAuthCode(ctx context.Context, code string, clientID string, userID typedef.UserID) (*ent.AuthCode, error)
 }
 
-type RedirectUriByUserIdReader interface {
-	ReadRedirectUriByUserID(ctx context.Context, userID typedef.UserID) ([]*ent.RedirectURI, error)
+type RedirectUriByRelyingPartyIDReader interface {
+	ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*ent.RedirectURI, error)
 }
 
 type Authorizer interface {
 	AuthCodeCreator
-	RedirectUriByUserIdReader
+	RedirectUriByRelyingPartyIDReader
+}
+
+type ConsentCreator interface {
+	CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error)
 }
 
 // --------------------------------------------------

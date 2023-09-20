@@ -12,17 +12,19 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // AuthCodeQuery is the builder for querying AuthCode entities.
 type AuthCodeQuery struct {
 	config
-	ctx        *QueryContext
-	order      []authcode.OrderOption
-	inters     []Interceptor
-	predicates []predicate.AuthCode
-	withFKs    bool
+	ctx              *QueryContext
+	order            []authcode.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.AuthCode
+	withRelyingParty *RelyingPartyQuery
+	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +59,28 @@ func (acq *AuthCodeQuery) Unique(unique bool) *AuthCodeQuery {
 func (acq *AuthCodeQuery) Order(o ...authcode.OrderOption) *AuthCodeQuery {
 	acq.order = append(acq.order, o...)
 	return acq
+}
+
+// QueryRelyingParty chains the current query on the "relying_party" edge.
+func (acq *AuthCodeQuery) QueryRelyingParty() *RelyingPartyQuery {
+	query := (&RelyingPartyClient{config: acq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authcode.Table, authcode.FieldID, selector),
+			sqlgraph.To(relyingparty.Table, relyingparty.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, authcode.RelyingPartyTable, authcode.RelyingPartyColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first AuthCode entity from the query.
@@ -246,15 +270,27 @@ func (acq *AuthCodeQuery) Clone() *AuthCodeQuery {
 		return nil
 	}
 	return &AuthCodeQuery{
-		config:     acq.config,
-		ctx:        acq.ctx.Clone(),
-		order:      append([]authcode.OrderOption{}, acq.order...),
-		inters:     append([]Interceptor{}, acq.inters...),
-		predicates: append([]predicate.AuthCode{}, acq.predicates...),
+		config:           acq.config,
+		ctx:              acq.ctx.Clone(),
+		order:            append([]authcode.OrderOption{}, acq.order...),
+		inters:           append([]Interceptor{}, acq.inters...),
+		predicates:       append([]predicate.AuthCode{}, acq.predicates...),
+		withRelyingParty: acq.withRelyingParty.Clone(),
 		// clone intermediate query.
 		sql:  acq.sql.Clone(),
 		path: acq.path,
 	}
+}
+
+// WithRelyingParty tells the query-builder to eager-load the nodes that are connected to
+// the "relying_party" edge. The optional arguments are used to configure the query builder of the edge.
+func (acq *AuthCodeQuery) WithRelyingParty(opts ...func(*RelyingPartyQuery)) *AuthCodeQuery {
+	query := (&RelyingPartyClient{config: acq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acq.withRelyingParty = query
+	return acq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -333,10 +369,16 @@ func (acq *AuthCodeQuery) prepareQuery(ctx context.Context) error {
 
 func (acq *AuthCodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AuthCode, error) {
 	var (
-		nodes   = []*AuthCode{}
-		withFKs = acq.withFKs
-		_spec   = acq.querySpec()
+		nodes       = []*AuthCode{}
+		withFKs     = acq.withFKs
+		_spec       = acq.querySpec()
+		loadedTypes = [1]bool{
+			acq.withRelyingParty != nil,
+		}
 	)
+	if acq.withRelyingParty != nil {
+		withFKs = true
+	}
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, authcode.ForeignKeys...)
 	}
@@ -346,6 +388,7 @@ func (acq *AuthCodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &AuthCode{config: acq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -357,7 +400,46 @@ func (acq *AuthCodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := acq.withRelyingParty; query != nil {
+		if err := acq.loadRelyingParty(ctx, query, nodes, nil,
+			func(n *AuthCode, e *RelyingParty) { n.Edges.RelyingParty = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (acq *AuthCodeQuery) loadRelyingParty(ctx context.Context, query *RelyingPartyQuery, nodes []*AuthCode, init func(*AuthCode), assign func(*AuthCode, *RelyingParty)) error {
+	ids := make([]typedef.RelyingPartyID, 0, len(nodes))
+	nodeids := make(map[typedef.RelyingPartyID][]*AuthCode)
+	for i := range nodes {
+		if nodes[i].relying_party_auth_codes == nil {
+			continue
+		}
+		fk := *nodes[i].relying_party_auth_codes
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(relyingparty.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "relying_party_auth_codes" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (acq *AuthCodeQuery) sqlCount(ctx context.Context) (int, error) {

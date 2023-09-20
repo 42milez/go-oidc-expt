@@ -12,17 +12,19 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RedirectURIQuery is the builder for querying RedirectURI entities.
 type RedirectURIQuery struct {
 	config
-	ctx        *QueryContext
-	order      []redirecturi.OrderOption
-	inters     []Interceptor
-	predicates []predicate.RedirectURI
-	withFKs    bool
+	ctx              *QueryContext
+	order            []redirecturi.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.RedirectURI
+	withRelyingParty *RelyingPartyQuery
+	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +59,28 @@ func (ruq *RedirectURIQuery) Unique(unique bool) *RedirectURIQuery {
 func (ruq *RedirectURIQuery) Order(o ...redirecturi.OrderOption) *RedirectURIQuery {
 	ruq.order = append(ruq.order, o...)
 	return ruq
+}
+
+// QueryRelyingParty chains the current query on the "relying_party" edge.
+func (ruq *RedirectURIQuery) QueryRelyingParty() *RelyingPartyQuery {
+	query := (&RelyingPartyClient{config: ruq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ruq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ruq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(redirecturi.Table, redirecturi.FieldID, selector),
+			sqlgraph.To(relyingparty.Table, relyingparty.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, redirecturi.RelyingPartyTable, redirecturi.RelyingPartyColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ruq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first RedirectURI entity from the query.
@@ -246,15 +270,27 @@ func (ruq *RedirectURIQuery) Clone() *RedirectURIQuery {
 		return nil
 	}
 	return &RedirectURIQuery{
-		config:     ruq.config,
-		ctx:        ruq.ctx.Clone(),
-		order:      append([]redirecturi.OrderOption{}, ruq.order...),
-		inters:     append([]Interceptor{}, ruq.inters...),
-		predicates: append([]predicate.RedirectURI{}, ruq.predicates...),
+		config:           ruq.config,
+		ctx:              ruq.ctx.Clone(),
+		order:            append([]redirecturi.OrderOption{}, ruq.order...),
+		inters:           append([]Interceptor{}, ruq.inters...),
+		predicates:       append([]predicate.RedirectURI{}, ruq.predicates...),
+		withRelyingParty: ruq.withRelyingParty.Clone(),
 		// clone intermediate query.
 		sql:  ruq.sql.Clone(),
 		path: ruq.path,
 	}
+}
+
+// WithRelyingParty tells the query-builder to eager-load the nodes that are connected to
+// the "relying_party" edge. The optional arguments are used to configure the query builder of the edge.
+func (ruq *RedirectURIQuery) WithRelyingParty(opts ...func(*RelyingPartyQuery)) *RedirectURIQuery {
+	query := (&RelyingPartyClient{config: ruq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ruq.withRelyingParty = query
+	return ruq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -333,10 +369,16 @@ func (ruq *RedirectURIQuery) prepareQuery(ctx context.Context) error {
 
 func (ruq *RedirectURIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*RedirectURI, error) {
 	var (
-		nodes   = []*RedirectURI{}
-		withFKs = ruq.withFKs
-		_spec   = ruq.querySpec()
+		nodes       = []*RedirectURI{}
+		withFKs     = ruq.withFKs
+		_spec       = ruq.querySpec()
+		loadedTypes = [1]bool{
+			ruq.withRelyingParty != nil,
+		}
 	)
+	if ruq.withRelyingParty != nil {
+		withFKs = true
+	}
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, redirecturi.ForeignKeys...)
 	}
@@ -346,6 +388,7 @@ func (ruq *RedirectURIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &RedirectURI{config: ruq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -357,7 +400,46 @@ func (ruq *RedirectURIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := ruq.withRelyingParty; query != nil {
+		if err := ruq.loadRelyingParty(ctx, query, nodes, nil,
+			func(n *RedirectURI, e *RelyingParty) { n.Edges.RelyingParty = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (ruq *RedirectURIQuery) loadRelyingParty(ctx context.Context, query *RelyingPartyQuery, nodes []*RedirectURI, init func(*RedirectURI), assign func(*RedirectURI, *RelyingParty)) error {
+	ids := make([]typedef.RelyingPartyID, 0, len(nodes))
+	nodeids := make(map[typedef.RelyingPartyID][]*RedirectURI)
+	for i := range nodes {
+		if nodes[i].relying_party_redirect_uris == nil {
+			continue
+		}
+		fk := *nodes[i].relying_party_redirect_uris
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(relyingparty.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "relying_party_redirect_uris" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (ruq *RedirectURIQuery) sqlCount(ctx context.Context) (int, error) {

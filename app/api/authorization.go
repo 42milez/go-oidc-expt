@@ -3,8 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/service"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/go-playground/validator/v10"
@@ -40,20 +38,7 @@ func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	sess, ok := service.GetSession(r.Context())
-
-	if !ok {
-		RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
-			Error: xerr.UnauthorizedRequest,
-		})
-		return
-	}
-
-	params := &service.AuthorizeParams{
-		RedirectUri: q.RedirectUri,
-		State:       q.State,
-	}
-	location, err := ag.service.Authorize(r.Context(), sess.UserID, params)
+	location, err := ag.service.Authorize(r.Context(), q.ClientId, q.RedirectUri, q.State)
 
 	if err != nil {
 		RespondJSON(w, http.StatusBadRequest, &ErrResponse{

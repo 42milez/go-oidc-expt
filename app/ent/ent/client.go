@@ -322,6 +322,22 @@ func (c *AuthCodeClient) GetX(ctx context.Context, id typedef.AuthCodeID) *AuthC
 	return obj
 }
 
+// QueryRelyingParty queries the relying_party edge of a AuthCode.
+func (c *AuthCodeClient) QueryRelyingParty(ac *AuthCode) *RelyingPartyQuery {
+	query := (&RelyingPartyClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ac.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authcode.Table, authcode.FieldID, id),
+			sqlgraph.To(relyingparty.Table, relyingparty.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, authcode.RelyingPartyTable, authcode.RelyingPartyColumn),
+		)
+		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AuthCodeClient) Hooks() []Hook {
 	return c.hooks.AuthCode
@@ -440,6 +456,22 @@ func (c *ConsentClient) GetX(ctx context.Context, id typedef.ConsentID) *Consent
 	return obj
 }
 
+// QueryUser queries the user edge of a Consent.
+func (c *ConsentClient) QueryUser(co *Consent) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(consent.Table, consent.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, consent.UserTable, consent.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ConsentClient) Hooks() []Hook {
 	return c.hooks.Consent
@@ -556,6 +588,22 @@ func (c *RedirectURIClient) GetX(ctx context.Context, id typedef.RedirectURIID) 
 		panic(err)
 	}
 	return obj
+}
+
+// QueryRelyingParty queries the relying_party edge of a RedirectURI.
+func (c *RedirectURIClient) QueryRelyingParty(ru *RedirectURI) *RelyingPartyQuery {
+	query := (&RelyingPartyClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ru.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(redirecturi.Table, redirecturi.FieldID, id),
+			sqlgraph.To(relyingparty.Table, relyingparty.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, redirecturi.RelyingPartyTable, redirecturi.RelyingPartyColumn),
+		)
+		fromV = sqlgraph.Neighbors(ru.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

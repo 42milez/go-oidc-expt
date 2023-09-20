@@ -75,7 +75,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.
 				EXPECT().
-				Authorize(r.Context(), gomock.Any(), gomock.Any()).
+				Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(tt.resp.location, nil).
 				AnyTimes()
 

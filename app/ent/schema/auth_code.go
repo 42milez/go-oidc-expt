@@ -2,11 +2,13 @@ package schema
 
 import (
 	"fmt"
-	"github.com/42milez/go-oidc-server/app/typedef"
 	"regexp"
 	"time"
 
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/index"
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"entgo.io/ent"
@@ -41,16 +43,25 @@ func (AuthCode) Fields() []ent.Field {
 		field.Time("used_at").
 			Optional().
 			Nillable(),
-		field.Uint64("relying_party_id").
+		field.Uint64("relying_party_auth_codes").
 			GoType(typedef.RelyingPartyID(0)).
 			Immutable(),
+	}
+}
+
+// Edges of the AuthCode.
+func (AuthCode) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("relying_party", RelyingParty.Type).
+			Ref("auth_codes").
+			Unique(),
 	}
 }
 
 // Indexes of the AuthCode.
 func (AuthCode) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("relying_party_id", "code").
+		index.Fields("relying_party_auth_codes", "code").
 			Unique(),
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -19,10 +20,19 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldModifiedAt holds the string denoting the modified_at field in the database.
 	FieldModifiedAt = "modified_at"
-	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
-	FieldRelyingPartyID = "relying_party_id"
+	// FieldRelyingPartyRedirectUris holds the string denoting the relying_party_redirect_uris field in the database.
+	FieldRelyingPartyRedirectUris = "relying_party_redirect_uris"
+	// EdgeRelyingParty holds the string denoting the relying_party edge name in mutations.
+	EdgeRelyingParty = "relying_party"
 	// Table holds the table name of the redirecturi in the database.
 	Table = "redirect_uris"
+	// RelyingPartyTable is the table that holds the relying_party relation/edge.
+	RelyingPartyTable = "redirect_uris"
+	// RelyingPartyInverseTable is the table name for the RelyingParty entity.
+	// It exists in this package in order to avoid circular dependency with the "relyingparty" package.
+	RelyingPartyInverseTable = "relying_parties"
+	// RelyingPartyColumn is the table column denoting the relying_party relation/edge.
+	RelyingPartyColumn = "relying_party_redirect_uris"
 )
 
 // Columns holds all SQL columns for redirecturi fields.
@@ -31,13 +41,13 @@ var Columns = []string{
 	FieldURI,
 	FieldCreatedAt,
 	FieldModifiedAt,
-	FieldRelyingPartyID,
+	FieldRelyingPartyRedirectUris,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "redirect_uris"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"relying_party_id",
+	"relying_party_redirect_uris",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -89,7 +99,21 @@ func ByModifiedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldModifiedAt, opts...).ToFunc()
 }
 
-// ByRelyingPartyID orders the results by the relying_party_id field.
-func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
+// ByRelyingPartyRedirectUris orders the results by the relying_party_redirect_uris field.
+func ByRelyingPartyRedirectUris(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelyingPartyRedirectUris, opts...).ToFunc()
+}
+
+// ByRelyingPartyField orders the results by relying_party field.
+func ByRelyingPartyField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRelyingPartyStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newRelyingPartyStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RelyingPartyInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RelyingPartyTable, RelyingPartyColumn),
+	)
 }

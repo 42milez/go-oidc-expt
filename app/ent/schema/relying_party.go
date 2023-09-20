@@ -21,11 +21,9 @@ func (RelyingParty) Fields() []ent.Field {
 		field.Uint64("id").
 			GoType(typedef.RelyingPartyID(0)),
 		field.String("client_id").
-			GoType(typedef.ClientID("")).
 			Unique().
 			Immutable(),
 		field.String("client_secret").
-			GoType(typedef.ClientSecret("")).
 			NotEmpty(),
 		field.Time("created_at").
 			Default(time.Now).
@@ -39,10 +37,8 @@ func (RelyingParty) Fields() []ent.Field {
 func (RelyingParty) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_codes", AuthCode.Type).
-			StorageKey(edge.Column("relying_party_id")).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("redirect_uris", RedirectURI.Type).
-			StorageKey(edge.Column("relying_party_id")).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

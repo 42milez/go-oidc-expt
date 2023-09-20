@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RedirectURIUpdate is the builder for updating RedirectURI entities.
@@ -40,9 +42,34 @@ func (ruu *RedirectURIUpdate) SetModifiedAt(t time.Time) *RedirectURIUpdate {
 	return ruu
 }
 
+// SetRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID.
+func (ruu *RedirectURIUpdate) SetRelyingPartyID(id typedef.RelyingPartyID) *RedirectURIUpdate {
+	ruu.mutation.SetRelyingPartyID(id)
+	return ruu
+}
+
+// SetNillableRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID if the given value is not nil.
+func (ruu *RedirectURIUpdate) SetNillableRelyingPartyID(id *typedef.RelyingPartyID) *RedirectURIUpdate {
+	if id != nil {
+		ruu = ruu.SetRelyingPartyID(*id)
+	}
+	return ruu
+}
+
+// SetRelyingParty sets the "relying_party" edge to the RelyingParty entity.
+func (ruu *RedirectURIUpdate) SetRelyingParty(r *RelyingParty) *RedirectURIUpdate {
+	return ruu.SetRelyingPartyID(r.ID)
+}
+
 // Mutation returns the RedirectURIMutation object of the builder.
 func (ruu *RedirectURIUpdate) Mutation() *RedirectURIMutation {
 	return ruu.mutation
+}
+
+// ClearRelyingParty clears the "relying_party" edge to the RelyingParty entity.
+func (ruu *RedirectURIUpdate) ClearRelyingParty() *RedirectURIUpdate {
+	ruu.mutation.ClearRelyingParty()
+	return ruu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -109,6 +136,35 @@ func (ruu *RedirectURIUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ruu.mutation.ModifiedAt(); ok {
 		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
 	}
+	if ruu.mutation.RelyingPartyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   redirecturi.RelyingPartyTable,
+			Columns: []string{redirecturi.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruu.mutation.RelyingPartyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   redirecturi.RelyingPartyTable,
+			Columns: []string{redirecturi.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ruu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{redirecturi.Label}
@@ -141,9 +197,34 @@ func (ruuo *RedirectURIUpdateOne) SetModifiedAt(t time.Time) *RedirectURIUpdateO
 	return ruuo
 }
 
+// SetRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID.
+func (ruuo *RedirectURIUpdateOne) SetRelyingPartyID(id typedef.RelyingPartyID) *RedirectURIUpdateOne {
+	ruuo.mutation.SetRelyingPartyID(id)
+	return ruuo
+}
+
+// SetNillableRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID if the given value is not nil.
+func (ruuo *RedirectURIUpdateOne) SetNillableRelyingPartyID(id *typedef.RelyingPartyID) *RedirectURIUpdateOne {
+	if id != nil {
+		ruuo = ruuo.SetRelyingPartyID(*id)
+	}
+	return ruuo
+}
+
+// SetRelyingParty sets the "relying_party" edge to the RelyingParty entity.
+func (ruuo *RedirectURIUpdateOne) SetRelyingParty(r *RelyingParty) *RedirectURIUpdateOne {
+	return ruuo.SetRelyingPartyID(r.ID)
+}
+
 // Mutation returns the RedirectURIMutation object of the builder.
 func (ruuo *RedirectURIUpdateOne) Mutation() *RedirectURIMutation {
 	return ruuo.mutation
+}
+
+// ClearRelyingParty clears the "relying_party" edge to the RelyingParty entity.
+func (ruuo *RedirectURIUpdateOne) ClearRelyingParty() *RedirectURIUpdateOne {
+	ruuo.mutation.ClearRelyingParty()
+	return ruuo
 }
 
 // Where appends a list predicates to the RedirectURIUpdate builder.
@@ -239,6 +320,35 @@ func (ruuo *RedirectURIUpdateOne) sqlSave(ctx context.Context) (_node *RedirectU
 	}
 	if value, ok := ruuo.mutation.ModifiedAt(); ok {
 		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
+	}
+	if ruuo.mutation.RelyingPartyCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   redirecturi.RelyingPartyTable,
+			Columns: []string{redirecturi.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruuo.mutation.RelyingPartyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   redirecturi.RelyingPartyTable,
+			Columns: []string{redirecturi.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &RedirectURI{config: ruuo.config}
 	_spec.Assign = _node.assignValues

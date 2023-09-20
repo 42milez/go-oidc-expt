@@ -24,14 +24,14 @@ type RelyingPartyCreate struct {
 }
 
 // SetClientID sets the "client_id" field.
-func (rpc *RelyingPartyCreate) SetClientID(ti typedef.ClientID) *RelyingPartyCreate {
-	rpc.mutation.SetClientID(ti)
+func (rpc *RelyingPartyCreate) SetClientID(s string) *RelyingPartyCreate {
+	rpc.mutation.SetClientID(s)
 	return rpc
 }
 
 // SetClientSecret sets the "client_secret" field.
-func (rpc *RelyingPartyCreate) SetClientSecret(ts typedef.ClientSecret) *RelyingPartyCreate {
-	rpc.mutation.SetClientSecret(ts)
+func (rpc *RelyingPartyCreate) SetClientSecret(s string) *RelyingPartyCreate {
+	rpc.mutation.SetClientSecret(s)
 	return rpc
 }
 
@@ -153,7 +153,7 @@ func (rpc *RelyingPartyCreate) check() error {
 		return &ValidationError{Name: "client_secret", err: errors.New(`ent: missing required field "RelyingParty.client_secret"`)}
 	}
 	if v, ok := rpc.mutation.ClientSecret(); ok {
-		if err := relyingparty.ClientSecretValidator(string(v)); err != nil {
+		if err := relyingparty.ClientSecretValidator(v); err != nil {
 			return &ValidationError{Name: "client_secret", err: fmt.Errorf(`ent: validator failed for field "RelyingParty.client_secret": %w`, err)}
 		}
 	}

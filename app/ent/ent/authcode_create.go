@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -69,9 +70,9 @@ func (acc *AuthCodeCreate) SetNillableUsedAt(t *time.Time) *AuthCodeCreate {
 	return acc
 }
 
-// SetRelyingPartyID sets the "relying_party_id" field.
-func (acc *AuthCodeCreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *AuthCodeCreate {
-	acc.mutation.SetRelyingPartyID(tpi)
+// SetRelyingPartyAuthCodes sets the "relying_party_auth_codes" field.
+func (acc *AuthCodeCreate) SetRelyingPartyAuthCodes(tpi typedef.RelyingPartyID) *AuthCodeCreate {
+	acc.mutation.SetRelyingPartyAuthCodes(tpi)
 	return acc
 }
 
@@ -79,6 +80,25 @@ func (acc *AuthCodeCreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *AuthCo
 func (acc *AuthCodeCreate) SetID(tci typedef.AuthCodeID) *AuthCodeCreate {
 	acc.mutation.SetID(tci)
 	return acc
+}
+
+// SetRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID.
+func (acc *AuthCodeCreate) SetRelyingPartyID(id typedef.RelyingPartyID) *AuthCodeCreate {
+	acc.mutation.SetRelyingPartyID(id)
+	return acc
+}
+
+// SetNillableRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID if the given value is not nil.
+func (acc *AuthCodeCreate) SetNillableRelyingPartyID(id *typedef.RelyingPartyID) *AuthCodeCreate {
+	if id != nil {
+		acc = acc.SetRelyingPartyID(*id)
+	}
+	return acc
+}
+
+// SetRelyingParty sets the "relying_party" edge to the RelyingParty entity.
+func (acc *AuthCodeCreate) SetRelyingParty(r *RelyingParty) *AuthCodeCreate {
+	return acc.SetRelyingPartyID(r.ID)
 }
 
 // Mutation returns the AuthCodeMutation object of the builder.
@@ -142,8 +162,8 @@ func (acc *AuthCodeCreate) check() error {
 	if _, ok := acc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AuthCode.created_at"`)}
 	}
-	if _, ok := acc.mutation.RelyingPartyID(); !ok {
-		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "AuthCode.relying_party_id"`)}
+	if _, ok := acc.mutation.RelyingPartyAuthCodes(); !ok {
+		return &ValidationError{Name: "relying_party_auth_codes", err: errors.New(`ent: missing required field "AuthCode.relying_party_auth_codes"`)}
 	}
 	return nil
 }
@@ -193,9 +213,26 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
 		_node.UsedAt = &value
 	}
-	if value, ok := acc.mutation.RelyingPartyID(); ok {
-		_spec.SetField(authcode.FieldRelyingPartyID, field.TypeUint64, value)
-		_node.RelyingPartyID = value
+	if value, ok := acc.mutation.RelyingPartyAuthCodes(); ok {
+		_spec.SetField(authcode.FieldRelyingPartyAuthCodes, field.TypeUint64, value)
+		_node.RelyingPartyAuthCodes = value
+	}
+	if nodes := acc.mutation.RelyingPartyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   authcode.RelyingPartyTable,
+			Columns: []string{authcode.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.relying_party_auth_codes = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

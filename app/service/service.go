@@ -17,11 +17,17 @@ func NewAuthenticate(repo UserByNameReader, tokenGen TokenGenerator) *Authentica
 }
 
 // --------------------------------------------------
-//  Authorization
+//  OIDC: Authorization
 // --------------------------------------------------
 
 func NewAuthorize(repo Authorizer) *Authorize {
 	return &Authorize{
+		repo: repo,
+	}
+}
+
+func NewConsent(repo ConsentCreator) *AcceptConsent {
+	return &AcceptConsent{
 		repo: repo,
 	}
 }

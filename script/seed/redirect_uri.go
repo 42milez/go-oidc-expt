@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/datastore"

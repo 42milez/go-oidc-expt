@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/ent/ent/user"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // ConsentUpdate is the builder for updating Consent entities.
@@ -27,9 +29,34 @@ func (cu *ConsentUpdate) Where(ps ...predicate.Consent) *ConsentUpdate {
 	return cu
 }
 
+// SetUserID sets the "user" edge to the User entity by ID.
+func (cu *ConsentUpdate) SetUserID(id typedef.UserID) *ConsentUpdate {
+	cu.mutation.SetUserID(id)
+	return cu
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (cu *ConsentUpdate) SetNillableUserID(id *typedef.UserID) *ConsentUpdate {
+	if id != nil {
+		cu = cu.SetUserID(*id)
+	}
+	return cu
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (cu *ConsentUpdate) SetUser(u *User) *ConsentUpdate {
+	return cu.SetUserID(u.ID)
+}
+
 // Mutation returns the ConsentMutation object of the builder.
 func (cu *ConsentUpdate) Mutation() *ConsentMutation {
 	return cu.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (cu *ConsentUpdate) ClearUser() *ConsentUpdate {
+	cu.mutation.ClearUser()
+	return cu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -68,6 +95,35 @@ func (cu *ConsentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if cu.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   consent.UserTable,
+			Columns: []string{consent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   consent.UserTable,
+			Columns: []string{consent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{consent.Label}
@@ -88,9 +144,34 @@ type ConsentUpdateOne struct {
 	mutation *ConsentMutation
 }
 
+// SetUserID sets the "user" edge to the User entity by ID.
+func (cuo *ConsentUpdateOne) SetUserID(id typedef.UserID) *ConsentUpdateOne {
+	cuo.mutation.SetUserID(id)
+	return cuo
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (cuo *ConsentUpdateOne) SetNillableUserID(id *typedef.UserID) *ConsentUpdateOne {
+	if id != nil {
+		cuo = cuo.SetUserID(*id)
+	}
+	return cuo
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (cuo *ConsentUpdateOne) SetUser(u *User) *ConsentUpdateOne {
+	return cuo.SetUserID(u.ID)
+}
+
 // Mutation returns the ConsentMutation object of the builder.
 func (cuo *ConsentUpdateOne) Mutation() *ConsentMutation {
 	return cuo.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (cuo *ConsentUpdateOne) ClearUser() *ConsentUpdateOne {
+	cuo.mutation.ClearUser()
+	return cuo
 }
 
 // Where appends a list predicates to the ConsentUpdate builder.
@@ -158,6 +239,35 @@ func (cuo *ConsentUpdateOne) sqlSave(ctx context.Context) (_node *Consent, err e
 				ps[i](selector)
 			}
 		}
+	}
+	if cuo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   consent.UserTable,
+			Columns: []string{consent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   consent.UserTable,
+			Columns: []string{consent.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Consent{config: cuo.config}
 	_spec.Assign = _node.assignValues

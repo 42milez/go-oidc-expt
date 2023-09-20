@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
+	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -18,14 +19,39 @@ type Consent struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID typedef.ConsentID `json:"id,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID typedef.UserID `json:"user_id,omitempty"`
 	// RelyingPartyID holds the value of the "relying_party_id" field.
 	RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt    time.Time `json:"created_at,omitempty"`
-	user_id      *typedef.UserID
-	selectValues sql.SelectValues
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UserConsents holds the value of the "user_consents" field.
+	UserConsents typedef.UserID `json:"user_consents,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ConsentQuery when eager-loading is set.
+	Edges         ConsentEdges `json:"edges"`
+	user_consents *typedef.UserID
+	selectValues  sql.SelectValues
+}
+
+// ConsentEdges holds the relations/edges for other nodes in the graph.
+type ConsentEdges struct {
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ConsentEdges) UserOrErr() (*User, error) {
+	if e.loadedTypes[0] {
+		if e.User == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.User, nil
+	}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -33,11 +59,11 @@ func (*Consent) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case consent.FieldID, consent.FieldUserID, consent.FieldRelyingPartyID:
+		case consent.FieldID, consent.FieldRelyingPartyID, consent.FieldUserConsents:
 			values[i] = new(sql.NullInt64)
 		case consent.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case consent.ForeignKeys[0]: // user_id
+		case consent.ForeignKeys[0]: // user_consents
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -60,12 +86,6 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.ID = typedef.ConsentID(value.Int64)
 			}
-		case consent.FieldUserID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				c.UserID = typedef.UserID(value.Int64)
-			}
 		case consent.FieldRelyingPartyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
@@ -78,12 +98,18 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.CreatedAt = value.Time
 			}
+		case consent.FieldUserConsents:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field user_consents", values[i])
+			} else if value.Valid {
+				c.UserConsents = typedef.UserID(value.Int64)
+			}
 		case consent.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+				return fmt.Errorf("unexpected type %T for field user_consents", values[i])
 			} else if value.Valid {
-				c.user_id = new(typedef.UserID)
-				*c.user_id = typedef.UserID(value.Int64)
+				c.user_consents = new(typedef.UserID)
+				*c.user_consents = typedef.UserID(value.Int64)
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
@@ -96,6 +122,11 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (c *Consent) Value(name string) (ent.Value, error) {
 	return c.selectValues.Get(name)
+}
+
+// QueryUser queries the "user" edge of the Consent entity.
+func (c *Consent) QueryUser() *UserQuery {
+	return NewConsentClient(c.config).QueryUser(c)
 }
 
 // Update returns a builder for updating this Consent.
@@ -121,14 +152,14 @@ func (c *Consent) String() string {
 	var builder strings.Builder
 	builder.WriteString("Consent(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.UserID))
-	builder.WriteString(", ")
 	builder.WriteString("relying_party_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.RelyingPartyID))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(c.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("user_consents=")
+	builder.WriteString(fmt.Sprintf("%v", c.UserConsents))
 	builder.WriteByte(')')
 	return builder.String()
 }
