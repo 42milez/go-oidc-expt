@@ -7,50 +7,51 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.AuthCode {
+func ID(id typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.AuthCode {
+func IDEQ(id typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.AuthCode {
+func IDNEQ(id typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.AuthCode {
+func IDIn(ids ...typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.AuthCode {
+func IDNotIn(ids ...typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.AuthCode {
+func IDGT(id typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.AuthCode {
+func IDGTE(id typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.AuthCode {
+func IDLT(id typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.AuthCode {
+func IDLTE(id typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLTE(FieldID, id))
 }
 
@@ -75,8 +76,9 @@ func UsedAt(v time.Time) predicate.AuthCode {
 }
 
 // RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
-func RelyingPartyID(v int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, v))
+func RelyingPartyID(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, vc))
 }
 
 // CodeEQ applies the EQ predicate on the "code" field.
@@ -275,43 +277,57 @@ func UsedAtNotNil() predicate.AuthCode {
 }
 
 // RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
-func RelyingPartyIDEQ(v int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, v))
+func RelyingPartyIDEQ(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, vc))
 }
 
 // RelyingPartyIDNEQ applies the NEQ predicate on the "relying_party_id" field.
-func RelyingPartyIDNEQ(v int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNEQ(FieldRelyingPartyID, v))
+func RelyingPartyIDNEQ(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldNEQ(FieldRelyingPartyID, vc))
 }
 
 // RelyingPartyIDIn applies the In predicate on the "relying_party_id" field.
-func RelyingPartyIDIn(vs ...int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldIn(FieldRelyingPartyID, vs...))
+func RelyingPartyIDIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = uint64(vs[i])
+	}
+	return predicate.AuthCode(sql.FieldIn(FieldRelyingPartyID, v...))
 }
 
 // RelyingPartyIDNotIn applies the NotIn predicate on the "relying_party_id" field.
-func RelyingPartyIDNotIn(vs ...int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNotIn(FieldRelyingPartyID, vs...))
+func RelyingPartyIDNotIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = uint64(vs[i])
+	}
+	return predicate.AuthCode(sql.FieldNotIn(FieldRelyingPartyID, v...))
 }
 
 // RelyingPartyIDGT applies the GT predicate on the "relying_party_id" field.
-func RelyingPartyIDGT(v int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGT(FieldRelyingPartyID, v))
+func RelyingPartyIDGT(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldGT(FieldRelyingPartyID, vc))
 }
 
 // RelyingPartyIDGTE applies the GTE predicate on the "relying_party_id" field.
-func RelyingPartyIDGTE(v int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGTE(FieldRelyingPartyID, v))
+func RelyingPartyIDGTE(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldGTE(FieldRelyingPartyID, vc))
 }
 
 // RelyingPartyIDLT applies the LT predicate on the "relying_party_id" field.
-func RelyingPartyIDLT(v int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLT(FieldRelyingPartyID, v))
+func RelyingPartyIDLT(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldLT(FieldRelyingPartyID, vc))
 }
 
 // RelyingPartyIDLTE applies the LTE predicate on the "relying_party_id" field.
-func RelyingPartyIDLTE(v int) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLTE(FieldRelyingPartyID, v))
+func RelyingPartyIDLTE(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldLTE(FieldRelyingPartyID, vc))
 }
 
 // And groups predicates with the AND operator between them.

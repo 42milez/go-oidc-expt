@@ -10,13 +10,14 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RedirectURI is the model entity for the RedirectURI schema.
 type RedirectURI struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID typedef.RedirectURIID `json:"id,omitempty"`
 	// URI holds the value of the "uri" field.
 	URI string `json:"uri,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -24,8 +25,8 @@ type RedirectURI struct {
 	// ModifiedAt holds the value of the "modified_at" field.
 	ModifiedAt time.Time `json:"modified_at,omitempty"`
 	// RelyingPartyID holds the value of the "relying_party_id" field.
-	RelyingPartyID   int `json:"relying_party_id,omitempty"`
-	relying_party_id *int
+	RelyingPartyID   typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
+	relying_party_id *typedef.RelyingPartyID
 	selectValues     sql.SelectValues
 }
 
@@ -58,11 +59,11 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case redirecturi.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				ru.ID = typedef.RedirectURIID(value.Int64)
 			}
-			ru.ID = int(value.Int64)
 		case redirecturi.FieldURI:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field uri", values[i])
@@ -85,14 +86,14 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
 			} else if value.Valid {
-				ru.RelyingPartyID = int(value.Int64)
+				ru.RelyingPartyID = typedef.RelyingPartyID(value.Int64)
 			}
 		case redirecturi.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field relying_party_id", value)
+				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
 			} else if value.Valid {
-				ru.relying_party_id = new(int)
-				*ru.relying_party_id = int(value.Int64)
+				ru.relying_party_id = new(typedef.RelyingPartyID)
+				*ru.relying_party_id = typedef.RelyingPartyID(value.Int64)
 			}
 		default:
 			ru.selectValues.Set(columns[i], values[i])

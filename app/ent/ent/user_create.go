@@ -83,14 +83,14 @@ func (uc *UserCreate) SetID(ti typedef.UserID) *UserCreate {
 }
 
 // AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
-func (uc *UserCreate) AddConsentIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddConsentIDs(ids ...typedef.ConsentID) *UserCreate {
 	uc.mutation.AddConsentIDs(ids...)
 	return uc
 }
 
 // AddConsents adds the "consents" edges to the Consent entity.
 func (uc *UserCreate) AddConsents(c ...*Consent) *UserCreate {
-	ids := make([]int, len(c))
+	ids := make([]typedef.ConsentID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -240,7 +240,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

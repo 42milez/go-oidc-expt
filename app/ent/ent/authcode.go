@@ -10,13 +10,14 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // AuthCode is the model entity for the AuthCode schema.
 type AuthCode struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID typedef.AuthCodeID `json:"id,omitempty"`
 	// Code holds the value of the "code" field.
 	Code string `json:"code,omitempty"`
 	// ExpireAt holds the value of the "expire_at" field.
@@ -26,8 +27,8 @@ type AuthCode struct {
 	// UsedAt holds the value of the "used_at" field.
 	UsedAt *time.Time `json:"used_at,omitempty"`
 	// RelyingPartyID holds the value of the "relying_party_id" field.
-	RelyingPartyID   int `json:"relying_party_id,omitempty"`
-	relying_party_id *int
+	RelyingPartyID   typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
+	relying_party_id *typedef.RelyingPartyID
 	selectValues     sql.SelectValues
 }
 
@@ -60,11 +61,11 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case authcode.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				ac.ID = typedef.AuthCodeID(value.Int64)
 			}
-			ac.ID = int(value.Int64)
 		case authcode.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
@@ -94,14 +95,14 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
 			} else if value.Valid {
-				ac.RelyingPartyID = int(value.Int64)
+				ac.RelyingPartyID = typedef.RelyingPartyID(value.Int64)
 			}
 		case authcode.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field relying_party_id", value)
+				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
 			} else if value.Valid {
-				ac.relying_party_id = new(int)
-				*ac.relying_party_id = int(value.Int64)
+				ac.relying_party_id = new(typedef.RelyingPartyID)
+				*ac.relying_party_id = typedef.RelyingPartyID(value.Int64)
 			}
 		default:
 			ac.selectValues.Set(columns[i], values[i])

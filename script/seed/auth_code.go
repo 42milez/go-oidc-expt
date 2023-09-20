@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/42milez/go-oidc-server/app/typedef"
+	"time"
+
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
-	"time"
 )
 
 const nAuthCodeMin = 1
@@ -26,7 +28,7 @@ func insertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties
 	params := make([]struct {
 		code           string
 		usedAt         *time.Time
-		relyingPartyId int
+		relyingPartyId typedef.RelyingPartyID
 	}, nAuthCode*nRelyingParty)
 
 	for i := range params {

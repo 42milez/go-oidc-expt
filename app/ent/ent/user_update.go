@@ -14,6 +14,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -68,14 +69,14 @@ func (uu *UserUpdate) SetModifiedAt(t time.Time) *UserUpdate {
 }
 
 // AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
-func (uu *UserUpdate) AddConsentIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) AddConsentIDs(ids ...typedef.ConsentID) *UserUpdate {
 	uu.mutation.AddConsentIDs(ids...)
 	return uu
 }
 
 // AddConsents adds the "consents" edges to the Consent entity.
 func (uu *UserUpdate) AddConsents(c ...*Consent) *UserUpdate {
-	ids := make([]int, len(c))
+	ids := make([]typedef.ConsentID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -94,14 +95,14 @@ func (uu *UserUpdate) ClearConsents() *UserUpdate {
 }
 
 // RemoveConsentIDs removes the "consents" edge to Consent entities by IDs.
-func (uu *UserUpdate) RemoveConsentIDs(ids ...int) *UserUpdate {
+func (uu *UserUpdate) RemoveConsentIDs(ids ...typedef.ConsentID) *UserUpdate {
 	uu.mutation.RemoveConsentIDs(ids...)
 	return uu
 }
 
 // RemoveConsents removes "consents" edges to Consent entities.
 func (uu *UserUpdate) RemoveConsents(c ...*Consent) *UserUpdate {
-	ids := make([]int, len(c))
+	ids := make([]typedef.ConsentID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -205,7 +206,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -218,7 +219,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -234,7 +235,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -301,14 +302,14 @@ func (uuo *UserUpdateOne) SetModifiedAt(t time.Time) *UserUpdateOne {
 }
 
 // AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
-func (uuo *UserUpdateOne) AddConsentIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) AddConsentIDs(ids ...typedef.ConsentID) *UserUpdateOne {
 	uuo.mutation.AddConsentIDs(ids...)
 	return uuo
 }
 
 // AddConsents adds the "consents" edges to the Consent entity.
 func (uuo *UserUpdateOne) AddConsents(c ...*Consent) *UserUpdateOne {
-	ids := make([]int, len(c))
+	ids := make([]typedef.ConsentID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -327,14 +328,14 @@ func (uuo *UserUpdateOne) ClearConsents() *UserUpdateOne {
 }
 
 // RemoveConsentIDs removes the "consents" edge to Consent entities by IDs.
-func (uuo *UserUpdateOne) RemoveConsentIDs(ids ...int) *UserUpdateOne {
+func (uuo *UserUpdateOne) RemoveConsentIDs(ids ...typedef.ConsentID) *UserUpdateOne {
 	uuo.mutation.RemoveConsentIDs(ids...)
 	return uuo
 }
 
 // RemoveConsents removes "consents" edges to Consent entities.
 func (uuo *UserUpdateOne) RemoveConsents(c ...*Consent) *UserUpdateOne {
-	ids := make([]int, len(c))
+	ids := make([]typedef.ConsentID, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -468,7 +469,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -481,7 +482,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -497,7 +498,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

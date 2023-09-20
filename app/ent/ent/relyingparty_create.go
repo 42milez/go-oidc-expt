@@ -24,7 +24,7 @@ type RelyingPartyCreate struct {
 }
 
 // SetClientID sets the "client_id" field.
-func (rpc *RelyingPartyCreate) SetClientID(ti typedef.ClientId) *RelyingPartyCreate {
+func (rpc *RelyingPartyCreate) SetClientID(ti typedef.ClientID) *RelyingPartyCreate {
 	rpc.mutation.SetClientID(ti)
 	return rpc
 }
@@ -63,15 +63,21 @@ func (rpc *RelyingPartyCreate) SetNillableModifiedAt(t *time.Time) *RelyingParty
 	return rpc
 }
 
+// SetID sets the "id" field.
+func (rpc *RelyingPartyCreate) SetID(tpi typedef.RelyingPartyID) *RelyingPartyCreate {
+	rpc.mutation.SetID(tpi)
+	return rpc
+}
+
 // AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
-func (rpc *RelyingPartyCreate) AddAuthCodeIDs(ids ...int) *RelyingPartyCreate {
+func (rpc *RelyingPartyCreate) AddAuthCodeIDs(ids ...typedef.AuthCodeID) *RelyingPartyCreate {
 	rpc.mutation.AddAuthCodeIDs(ids...)
 	return rpc
 }
 
 // AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
 func (rpc *RelyingPartyCreate) AddAuthCodes(a ...*AuthCode) *RelyingPartyCreate {
-	ids := make([]int, len(a))
+	ids := make([]typedef.AuthCodeID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -79,14 +85,14 @@ func (rpc *RelyingPartyCreate) AddAuthCodes(a ...*AuthCode) *RelyingPartyCreate 
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
-func (rpc *RelyingPartyCreate) AddRedirectURIIDs(ids ...int) *RelyingPartyCreate {
+func (rpc *RelyingPartyCreate) AddRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyCreate {
 	rpc.mutation.AddRedirectURIIDs(ids...)
 	return rpc
 }
 
 // AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
 func (rpc *RelyingPartyCreate) AddRedirectUris(r ...*RedirectURI) *RelyingPartyCreate {
-	ids := make([]int, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -171,8 +177,10 @@ func (rpc *RelyingPartyCreate) sqlSave(ctx context.Context) (*RelyingParty, erro
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = typedef.RelyingPartyID(id)
+	}
 	rpc.mutation.id = &_node.ID
 	rpc.mutation.done = true
 	return _node, nil
@@ -181,8 +189,12 @@ func (rpc *RelyingPartyCreate) sqlSave(ctx context.Context) (*RelyingParty, erro
 func (rpc *RelyingPartyCreate) createSpec() (*RelyingParty, *sqlgraph.CreateSpec) {
 	var (
 		_node = &RelyingParty{config: rpc.config}
-		_spec = sqlgraph.NewCreateSpec(relyingparty.Table, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(relyingparty.Table, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64))
 	)
+	if id, ok := rpc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := rpc.mutation.ClientID(); ok {
 		_spec.SetField(relyingparty.FieldClientID, field.TypeString, value)
 		_node.ClientID = value
@@ -207,7 +219,7 @@ func (rpc *RelyingPartyCreate) createSpec() (*RelyingParty, *sqlgraph.CreateSpec
 			Columns: []string{relyingparty.AuthCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -223,7 +235,7 @@ func (rpc *RelyingPartyCreate) createSpec() (*RelyingParty, *sqlgraph.CreateSpec
 			Columns: []string{relyingparty.RedirectUrisColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -275,9 +287,9 @@ func (rpcb *RelyingPartyCreateBulk) Save(ctx context.Context) ([]*RelyingParty, 
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = typedef.RelyingPartyID(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

@@ -1,12 +1,13 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/typedef"
-	"time"
 )
 
 // RelyingParty holds the schema definition for the RelyingParty entity.
@@ -17,8 +18,10 @@ type RelyingParty struct {
 // Fields of the RelyingParty.
 func (RelyingParty) Fields() []ent.Field {
 	return []ent.Field{
+		field.Uint64("id").
+			GoType(typedef.RelyingPartyID(0)),
 		field.String("client_id").
-			GoType(typedef.ClientId("")).
+			GoType(typedef.ClientID("")).
 			Unique().
 			Immutable(),
 		field.String("client_secret").

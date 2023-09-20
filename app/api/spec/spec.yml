@@ -344,10 +344,15 @@ components:
         - status
         - detail
       properties:
+        detail:
+          type: array
+          items:
+            type: string
+          example: '["error1", "error2", "error3"]'
         status:
           type: integer
           format: uint64
           example: 0
-        detail:
+        summary:
           type: string
-          example: ''
+          x-go-type: xerr.PublicErr

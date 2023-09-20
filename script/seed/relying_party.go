@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
@@ -22,7 +23,7 @@ func insertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingP
 	}
 
 	params := make([]struct {
-		clientID     typedef.ClientId
+		clientID     typedef.ClientID
 		clientSecret typedef.ClientSecret
 	}, nRelyingParty)
 
@@ -31,7 +32,7 @@ func insertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingP
 		if err != nil {
 			return nil, err
 		}
-		params[i].clientID = typedef.ClientId(v)
+		params[i].clientID = typedef.ClientID(v)
 		v, err = xrandom.MakeCryptoRandomString(config.ClientSecretLength)
 		if err != nil {
 			return nil, err

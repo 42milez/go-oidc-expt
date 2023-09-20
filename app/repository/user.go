@@ -2,10 +2,9 @@ package repository
 
 import (
 	"context"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
-
-	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
@@ -18,8 +17,8 @@ type User struct {
 	idGen IDGenerator
 }
 
-func (u *User) CreateAuthCode(ctx context.Context, userID typedef.UserID, code string) (*ent.AuthCode, error) {
-	return u.db.Client.AuthCode.Create().SetUserID(userID).SetCode(code).Save(ctx)
+func (u *User) CreateAuthCode(ctx context.Context, id typedef.RelyingPartyID, code string) (*ent.AuthCode, error) {
+	return u.db.Client.AuthCode.Create().SetRelyingPartyID(id).SetCode(code).Save(ctx)
 }
 
 func (u *User) CreateUser(ctx context.Context, name string, pw string) (*ent.User, error) {
@@ -30,6 +29,6 @@ func (u *User) ReadUserByName(ctx context.Context, name string) (*ent.User, erro
 	return u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
 }
 
-func (u *User) ReadRedirectUriByUserID(ctx context.Context, userID typedef.UserID) ([]*ent.RedirectURI, error) {
-	return u.db.Client.RedirectURI.Query().Where(redirecturi.UserIDEQ(userID)).All(ctx)
+func (u *User) ReadRedirectUriByUserID(ctx context.Context, id typedef.RelyingPartyID) ([]*ent.RedirectURI, error) {
+	return u.db.Client.RedirectURI.Query().Where(redirecturi.RelyingPartyIDEQ(id)).All(ctx)
 }

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RedirectURIQuery is the builder for querying RedirectURI entities.
@@ -82,8 +83,8 @@ func (ruq *RedirectURIQuery) FirstX(ctx context.Context) *RedirectURI {
 
 // FirstID returns the first RedirectURI ID from the query.
 // Returns a *NotFoundError when no RedirectURI ID was found.
-func (ruq *RedirectURIQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ruq *RedirectURIQuery) FirstID(ctx context.Context) (id typedef.RedirectURIID, err error) {
+	var ids []typedef.RedirectURIID
 	if ids, err = ruq.Limit(1).IDs(setContextOp(ctx, ruq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -95,7 +96,7 @@ func (ruq *RedirectURIQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ruq *RedirectURIQuery) FirstIDX(ctx context.Context) int {
+func (ruq *RedirectURIQuery) FirstIDX(ctx context.Context) typedef.RedirectURIID {
 	id, err := ruq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +134,8 @@ func (ruq *RedirectURIQuery) OnlyX(ctx context.Context) *RedirectURI {
 // OnlyID is like Only, but returns the only RedirectURI ID in the query.
 // Returns a *NotSingularError when more than one RedirectURI ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ruq *RedirectURIQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ruq *RedirectURIQuery) OnlyID(ctx context.Context) (id typedef.RedirectURIID, err error) {
+	var ids []typedef.RedirectURIID
 	if ids, err = ruq.Limit(2).IDs(setContextOp(ctx, ruq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -150,7 +151,7 @@ func (ruq *RedirectURIQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ruq *RedirectURIQuery) OnlyIDX(ctx context.Context) int {
+func (ruq *RedirectURIQuery) OnlyIDX(ctx context.Context) typedef.RedirectURIID {
 	id, err := ruq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,7 +179,7 @@ func (ruq *RedirectURIQuery) AllX(ctx context.Context) []*RedirectURI {
 }
 
 // IDs executes the query and returns a list of RedirectURI IDs.
-func (ruq *RedirectURIQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (ruq *RedirectURIQuery) IDs(ctx context.Context) (ids []typedef.RedirectURIID, err error) {
 	if ruq.ctx.Unique == nil && ruq.path != nil {
 		ruq.Unique(true)
 	}
@@ -190,7 +191,7 @@ func (ruq *RedirectURIQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ruq *RedirectURIQuery) IDsX(ctx context.Context) []int {
+func (ruq *RedirectURIQuery) IDsX(ctx context.Context) []typedef.RedirectURIID {
 	ids, err := ruq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -369,7 +370,7 @@ func (ruq *RedirectURIQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ruq *RedirectURIQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	_spec.From = ruq.sql
 	if unique := ruq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

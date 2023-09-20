@@ -60,7 +60,7 @@ func (cu *ConsentUpdate) ExecX(ctx context.Context) {
 }
 
 func (cu *ConsentUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(consent.Table, consent.Columns, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(consent.Table, consent.Columns, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64))
 	if ps := cu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -134,7 +134,7 @@ func (cuo *ConsentUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (cuo *ConsentUpdateOne) sqlSave(ctx context.Context) (_node *Consent, err error) {
-	_spec := sqlgraph.NewUpdateSpec(consent.Table, consent.Columns, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(consent.Table, consent.Columns, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64))
 	id, ok := cuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Consent.id" for update`)}

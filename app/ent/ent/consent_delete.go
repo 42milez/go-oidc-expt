@@ -40,7 +40,7 @@ func (cd *ConsentDelete) ExecX(ctx context.Context) int {
 }
 
 func (cd *ConsentDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(consent.Table, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(consent.Table, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64))
 	if ps := cd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

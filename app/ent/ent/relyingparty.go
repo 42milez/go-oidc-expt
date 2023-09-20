@@ -17,9 +17,9 @@ import (
 type RelyingParty struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID typedef.RelyingPartyID `json:"id,omitempty"`
 	// ClientID holds the value of the "client_id" field.
-	ClientID typedef.ClientId `json:"client_id,omitempty"`
+	ClientID typedef.ClientID `json:"client_id,omitempty"`
 	// ClientSecret holds the value of the "client_secret" field.
 	ClientSecret typedef.ClientSecret `json:"client_secret,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -88,16 +88,16 @@ func (rp *RelyingParty) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case relyingparty.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				rp.ID = typedef.RelyingPartyID(value.Int64)
 			}
-			rp.ID = int(value.Int64)
 		case relyingparty.FieldClientID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
-				rp.ClientID = typedef.ClientId(value.String)
+				rp.ClientID = typedef.ClientID(value.String)
 			}
 		case relyingparty.FieldClientSecret:
 			if value, ok := values[i].(*sql.NullString); !ok {

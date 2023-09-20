@@ -28,8 +28,8 @@ func (cc *ConsentCreate) SetUserID(ti typedef.UserID) *ConsentCreate {
 }
 
 // SetRelyingPartyID sets the "relying_party_id" field.
-func (cc *ConsentCreate) SetRelyingPartyID(i int) *ConsentCreate {
-	cc.mutation.SetRelyingPartyID(i)
+func (cc *ConsentCreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *ConsentCreate {
+	cc.mutation.SetRelyingPartyID(tpi)
 	return cc
 }
 
@@ -44,6 +44,12 @@ func (cc *ConsentCreate) SetNillableCreatedAt(t *time.Time) *ConsentCreate {
 	if t != nil {
 		cc.SetCreatedAt(*t)
 	}
+	return cc
+}
+
+// SetID sets the "id" field.
+func (cc *ConsentCreate) SetID(ti typedef.ConsentID) *ConsentCreate {
+	cc.mutation.SetID(ti)
 	return cc
 }
 
@@ -113,8 +119,10 @@ func (cc *ConsentCreate) sqlSave(ctx context.Context) (*Consent, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = typedef.ConsentID(id)
+	}
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -123,14 +131,18 @@ func (cc *ConsentCreate) sqlSave(ctx context.Context) (*Consent, error) {
 func (cc *ConsentCreate) createSpec() (*Consent, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Consent{config: cc.config}
-		_spec = sqlgraph.NewCreateSpec(consent.Table, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(consent.Table, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64))
 	)
+	if id, ok := cc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := cc.mutation.UserID(); ok {
 		_spec.SetField(consent.FieldUserID, field.TypeUint64, value)
 		_node.UserID = value
 	}
 	if value, ok := cc.mutation.RelyingPartyID(); ok {
-		_spec.SetField(consent.FieldRelyingPartyID, field.TypeInt, value)
+		_spec.SetField(consent.FieldRelyingPartyID, field.TypeUint64, value)
 		_node.RelyingPartyID = value
 	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
@@ -181,9 +193,9 @@ func (ccb *ConsentCreateBulk) Save(ctx context.Context) ([]*Consent, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = typedef.ConsentID(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // AuthCodeQuery is the builder for querying AuthCode entities.
@@ -82,8 +83,8 @@ func (acq *AuthCodeQuery) FirstX(ctx context.Context) *AuthCode {
 
 // FirstID returns the first AuthCode ID from the query.
 // Returns a *NotFoundError when no AuthCode ID was found.
-func (acq *AuthCodeQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (acq *AuthCodeQuery) FirstID(ctx context.Context) (id typedef.AuthCodeID, err error) {
+	var ids []typedef.AuthCodeID
 	if ids, err = acq.Limit(1).IDs(setContextOp(ctx, acq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -95,7 +96,7 @@ func (acq *AuthCodeQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (acq *AuthCodeQuery) FirstIDX(ctx context.Context) int {
+func (acq *AuthCodeQuery) FirstIDX(ctx context.Context) typedef.AuthCodeID {
 	id, err := acq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +134,8 @@ func (acq *AuthCodeQuery) OnlyX(ctx context.Context) *AuthCode {
 // OnlyID is like Only, but returns the only AuthCode ID in the query.
 // Returns a *NotSingularError when more than one AuthCode ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (acq *AuthCodeQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (acq *AuthCodeQuery) OnlyID(ctx context.Context) (id typedef.AuthCodeID, err error) {
+	var ids []typedef.AuthCodeID
 	if ids, err = acq.Limit(2).IDs(setContextOp(ctx, acq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -150,7 +151,7 @@ func (acq *AuthCodeQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (acq *AuthCodeQuery) OnlyIDX(ctx context.Context) int {
+func (acq *AuthCodeQuery) OnlyIDX(ctx context.Context) typedef.AuthCodeID {
 	id, err := acq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,7 +179,7 @@ func (acq *AuthCodeQuery) AllX(ctx context.Context) []*AuthCode {
 }
 
 // IDs executes the query and returns a list of AuthCode IDs.
-func (acq *AuthCodeQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (acq *AuthCodeQuery) IDs(ctx context.Context) (ids []typedef.AuthCodeID, err error) {
 	if acq.ctx.Unique == nil && acq.path != nil {
 		acq.Unique(true)
 	}
@@ -190,7 +191,7 @@ func (acq *AuthCodeQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (acq *AuthCodeQuery) IDsX(ctx context.Context) []int {
+func (acq *AuthCodeQuery) IDsX(ctx context.Context) []typedef.AuthCodeID {
 	ids, err := acq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -369,7 +370,7 @@ func (acq *AuthCodeQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (acq *AuthCodeQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64))
 	_spec.From = acq.sql
 	if unique := acq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

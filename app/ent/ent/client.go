@@ -275,7 +275,7 @@ func (c *AuthCodeClient) UpdateOne(ac *AuthCode) *AuthCodeUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *AuthCodeClient) UpdateOneID(id int) *AuthCodeUpdateOne {
+func (c *AuthCodeClient) UpdateOneID(id typedef.AuthCodeID) *AuthCodeUpdateOne {
 	mutation := newAuthCodeMutation(c.config, OpUpdateOne, withAuthCodeID(id))
 	return &AuthCodeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -292,7 +292,7 @@ func (c *AuthCodeClient) DeleteOne(ac *AuthCode) *AuthCodeDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AuthCodeClient) DeleteOneID(id int) *AuthCodeDeleteOne {
+func (c *AuthCodeClient) DeleteOneID(id typedef.AuthCodeID) *AuthCodeDeleteOne {
 	builder := c.Delete().Where(authcode.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -309,12 +309,12 @@ func (c *AuthCodeClient) Query() *AuthCodeQuery {
 }
 
 // Get returns a AuthCode entity by its id.
-func (c *AuthCodeClient) Get(ctx context.Context, id int) (*AuthCode, error) {
+func (c *AuthCodeClient) Get(ctx context.Context, id typedef.AuthCodeID) (*AuthCode, error) {
 	return c.Query().Where(authcode.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *AuthCodeClient) GetX(ctx context.Context, id int) *AuthCode {
+func (c *AuthCodeClient) GetX(ctx context.Context, id typedef.AuthCodeID) *AuthCode {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -393,7 +393,7 @@ func (c *ConsentClient) UpdateOne(co *Consent) *ConsentUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ConsentClient) UpdateOneID(id int) *ConsentUpdateOne {
+func (c *ConsentClient) UpdateOneID(id typedef.ConsentID) *ConsentUpdateOne {
 	mutation := newConsentMutation(c.config, OpUpdateOne, withConsentID(id))
 	return &ConsentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -410,7 +410,7 @@ func (c *ConsentClient) DeleteOne(co *Consent) *ConsentDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ConsentClient) DeleteOneID(id int) *ConsentDeleteOne {
+func (c *ConsentClient) DeleteOneID(id typedef.ConsentID) *ConsentDeleteOne {
 	builder := c.Delete().Where(consent.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -427,12 +427,12 @@ func (c *ConsentClient) Query() *ConsentQuery {
 }
 
 // Get returns a Consent entity by its id.
-func (c *ConsentClient) Get(ctx context.Context, id int) (*Consent, error) {
+func (c *ConsentClient) Get(ctx context.Context, id typedef.ConsentID) (*Consent, error) {
 	return c.Query().Where(consent.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ConsentClient) GetX(ctx context.Context, id int) *Consent {
+func (c *ConsentClient) GetX(ctx context.Context, id typedef.ConsentID) *Consent {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -511,7 +511,7 @@ func (c *RedirectURIClient) UpdateOne(ru *RedirectURI) *RedirectURIUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RedirectURIClient) UpdateOneID(id int) *RedirectURIUpdateOne {
+func (c *RedirectURIClient) UpdateOneID(id typedef.RedirectURIID) *RedirectURIUpdateOne {
 	mutation := newRedirectURIMutation(c.config, OpUpdateOne, withRedirectURIID(id))
 	return &RedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -528,7 +528,7 @@ func (c *RedirectURIClient) DeleteOne(ru *RedirectURI) *RedirectURIDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RedirectURIClient) DeleteOneID(id int) *RedirectURIDeleteOne {
+func (c *RedirectURIClient) DeleteOneID(id typedef.RedirectURIID) *RedirectURIDeleteOne {
 	builder := c.Delete().Where(redirecturi.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -545,12 +545,12 @@ func (c *RedirectURIClient) Query() *RedirectURIQuery {
 }
 
 // Get returns a RedirectURI entity by its id.
-func (c *RedirectURIClient) Get(ctx context.Context, id int) (*RedirectURI, error) {
+func (c *RedirectURIClient) Get(ctx context.Context, id typedef.RedirectURIID) (*RedirectURI, error) {
 	return c.Query().Where(redirecturi.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RedirectURIClient) GetX(ctx context.Context, id int) *RedirectURI {
+func (c *RedirectURIClient) GetX(ctx context.Context, id typedef.RedirectURIID) *RedirectURI {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -629,7 +629,7 @@ func (c *RelyingPartyClient) UpdateOne(rp *RelyingParty) *RelyingPartyUpdateOne 
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RelyingPartyClient) UpdateOneID(id int) *RelyingPartyUpdateOne {
+func (c *RelyingPartyClient) UpdateOneID(id typedef.RelyingPartyID) *RelyingPartyUpdateOne {
 	mutation := newRelyingPartyMutation(c.config, OpUpdateOne, withRelyingPartyID(id))
 	return &RelyingPartyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -646,7 +646,7 @@ func (c *RelyingPartyClient) DeleteOne(rp *RelyingParty) *RelyingPartyDeleteOne 
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RelyingPartyClient) DeleteOneID(id int) *RelyingPartyDeleteOne {
+func (c *RelyingPartyClient) DeleteOneID(id typedef.RelyingPartyID) *RelyingPartyDeleteOne {
 	builder := c.Delete().Where(relyingparty.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -663,12 +663,12 @@ func (c *RelyingPartyClient) Query() *RelyingPartyQuery {
 }
 
 // Get returns a RelyingParty entity by its id.
-func (c *RelyingPartyClient) Get(ctx context.Context, id int) (*RelyingParty, error) {
+func (c *RelyingPartyClient) Get(ctx context.Context, id typedef.RelyingPartyID) (*RelyingParty, error) {
 	return c.Query().Where(relyingparty.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RelyingPartyClient) GetX(ctx context.Context, id int) *RelyingParty {
+func (c *RelyingPartyClient) GetX(ctx context.Context, id typedef.RelyingPartyID) *RelyingParty {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

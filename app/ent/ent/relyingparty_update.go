@@ -52,14 +52,14 @@ func (rpu *RelyingPartyUpdate) SetNillableModifiedAt(t *time.Time) *RelyingParty
 }
 
 // AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
-func (rpu *RelyingPartyUpdate) AddAuthCodeIDs(ids ...int) *RelyingPartyUpdate {
+func (rpu *RelyingPartyUpdate) AddAuthCodeIDs(ids ...typedef.AuthCodeID) *RelyingPartyUpdate {
 	rpu.mutation.AddAuthCodeIDs(ids...)
 	return rpu
 }
 
 // AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
 func (rpu *RelyingPartyUpdate) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpdate {
-	ids := make([]int, len(a))
+	ids := make([]typedef.AuthCodeID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -67,14 +67,14 @@ func (rpu *RelyingPartyUpdate) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpdate 
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
-func (rpu *RelyingPartyUpdate) AddRedirectURIIDs(ids ...int) *RelyingPartyUpdate {
+func (rpu *RelyingPartyUpdate) AddRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyUpdate {
 	rpu.mutation.AddRedirectURIIDs(ids...)
 	return rpu
 }
 
 // AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
 func (rpu *RelyingPartyUpdate) AddRedirectUris(r ...*RedirectURI) *RelyingPartyUpdate {
-	ids := make([]int, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -93,14 +93,14 @@ func (rpu *RelyingPartyUpdate) ClearAuthCodes() *RelyingPartyUpdate {
 }
 
 // RemoveAuthCodeIDs removes the "auth_codes" edge to AuthCode entities by IDs.
-func (rpu *RelyingPartyUpdate) RemoveAuthCodeIDs(ids ...int) *RelyingPartyUpdate {
+func (rpu *RelyingPartyUpdate) RemoveAuthCodeIDs(ids ...typedef.AuthCodeID) *RelyingPartyUpdate {
 	rpu.mutation.RemoveAuthCodeIDs(ids...)
 	return rpu
 }
 
 // RemoveAuthCodes removes "auth_codes" edges to AuthCode entities.
 func (rpu *RelyingPartyUpdate) RemoveAuthCodes(a ...*AuthCode) *RelyingPartyUpdate {
-	ids := make([]int, len(a))
+	ids := make([]typedef.AuthCodeID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -114,14 +114,14 @@ func (rpu *RelyingPartyUpdate) ClearRedirectUris() *RelyingPartyUpdate {
 }
 
 // RemoveRedirectURIIDs removes the "redirect_uris" edge to RedirectURI entities by IDs.
-func (rpu *RelyingPartyUpdate) RemoveRedirectURIIDs(ids ...int) *RelyingPartyUpdate {
+func (rpu *RelyingPartyUpdate) RemoveRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyUpdate {
 	rpu.mutation.RemoveRedirectURIIDs(ids...)
 	return rpu
 }
 
 // RemoveRedirectUris removes "redirect_uris" edges to RedirectURI entities.
 func (rpu *RelyingPartyUpdate) RemoveRedirectUris(r ...*RedirectURI) *RelyingPartyUpdate {
-	ids := make([]int, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -169,7 +169,7 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := rpu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(relyingparty.Table, relyingparty.Columns, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(relyingparty.Table, relyingparty.Columns, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64))
 	if ps := rpu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -191,7 +191,7 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{relyingparty.AuthCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -204,7 +204,7 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{relyingparty.AuthCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -220,7 +220,7 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{relyingparty.AuthCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -236,7 +236,7 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{relyingparty.RedirectUrisColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -249,7 +249,7 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{relyingparty.RedirectUrisColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -265,7 +265,7 @@ func (rpu *RelyingPartyUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{relyingparty.RedirectUrisColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -314,14 +314,14 @@ func (rpuo *RelyingPartyUpdateOne) SetNillableModifiedAt(t *time.Time) *RelyingP
 }
 
 // AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
-func (rpuo *RelyingPartyUpdateOne) AddAuthCodeIDs(ids ...int) *RelyingPartyUpdateOne {
+func (rpuo *RelyingPartyUpdateOne) AddAuthCodeIDs(ids ...typedef.AuthCodeID) *RelyingPartyUpdateOne {
 	rpuo.mutation.AddAuthCodeIDs(ids...)
 	return rpuo
 }
 
 // AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
 func (rpuo *RelyingPartyUpdateOne) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpdateOne {
-	ids := make([]int, len(a))
+	ids := make([]typedef.AuthCodeID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -329,14 +329,14 @@ func (rpuo *RelyingPartyUpdateOne) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpd
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
-func (rpuo *RelyingPartyUpdateOne) AddRedirectURIIDs(ids ...int) *RelyingPartyUpdateOne {
+func (rpuo *RelyingPartyUpdateOne) AddRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyUpdateOne {
 	rpuo.mutation.AddRedirectURIIDs(ids...)
 	return rpuo
 }
 
 // AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
 func (rpuo *RelyingPartyUpdateOne) AddRedirectUris(r ...*RedirectURI) *RelyingPartyUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -355,14 +355,14 @@ func (rpuo *RelyingPartyUpdateOne) ClearAuthCodes() *RelyingPartyUpdateOne {
 }
 
 // RemoveAuthCodeIDs removes the "auth_codes" edge to AuthCode entities by IDs.
-func (rpuo *RelyingPartyUpdateOne) RemoveAuthCodeIDs(ids ...int) *RelyingPartyUpdateOne {
+func (rpuo *RelyingPartyUpdateOne) RemoveAuthCodeIDs(ids ...typedef.AuthCodeID) *RelyingPartyUpdateOne {
 	rpuo.mutation.RemoveAuthCodeIDs(ids...)
 	return rpuo
 }
 
 // RemoveAuthCodes removes "auth_codes" edges to AuthCode entities.
 func (rpuo *RelyingPartyUpdateOne) RemoveAuthCodes(a ...*AuthCode) *RelyingPartyUpdateOne {
-	ids := make([]int, len(a))
+	ids := make([]typedef.AuthCodeID, len(a))
 	for i := range a {
 		ids[i] = a[i].ID
 	}
@@ -376,14 +376,14 @@ func (rpuo *RelyingPartyUpdateOne) ClearRedirectUris() *RelyingPartyUpdateOne {
 }
 
 // RemoveRedirectURIIDs removes the "redirect_uris" edge to RedirectURI entities by IDs.
-func (rpuo *RelyingPartyUpdateOne) RemoveRedirectURIIDs(ids ...int) *RelyingPartyUpdateOne {
+func (rpuo *RelyingPartyUpdateOne) RemoveRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyUpdateOne {
 	rpuo.mutation.RemoveRedirectURIIDs(ids...)
 	return rpuo
 }
 
 // RemoveRedirectUris removes "redirect_uris" edges to RedirectURI entities.
 func (rpuo *RelyingPartyUpdateOne) RemoveRedirectUris(r ...*RedirectURI) *RelyingPartyUpdateOne {
-	ids := make([]int, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -444,7 +444,7 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 	if err := rpuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(relyingparty.Table, relyingparty.Columns, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(relyingparty.Table, relyingparty.Columns, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64))
 	id, ok := rpuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RelyingParty.id" for update`)}
@@ -483,7 +483,7 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 			Columns: []string{relyingparty.AuthCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -496,7 +496,7 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 			Columns: []string{relyingparty.AuthCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -512,7 +512,7 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 			Columns: []string{relyingparty.AuthCodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -528,7 +528,7 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 			Columns: []string{relyingparty.RedirectUrisColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -541,7 +541,7 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 			Columns: []string{relyingparty.RedirectUrisColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -557,7 +557,7 @@ func (rpuo *RelyingPartyUpdateOne) sqlSave(ctx context.Context) (_node *RelyingP
 			Columns: []string{relyingparty.RedirectUrisColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

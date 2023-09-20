@@ -40,7 +40,7 @@ func (rpd *RelyingPartyDelete) ExecX(ctx context.Context) int {
 }
 
 func (rpd *RelyingPartyDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(relyingparty.Table, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(relyingparty.Table, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64))
 	if ps := rpd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

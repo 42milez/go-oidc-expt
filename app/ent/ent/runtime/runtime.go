@@ -20,7 +20,7 @@ func init() {
 	authcodeFields := schema.AuthCode{}.Fields()
 	_ = authcodeFields
 	// authcodeDescCode is the schema descriptor for code field.
-	authcodeDescCode := authcodeFields[0].Descriptor()
+	authcodeDescCode := authcodeFields[1].Descriptor()
 	// authcode.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	authcode.CodeValidator = func() func(string) error {
 		validators := authcodeDescCode.Validators
@@ -38,31 +38,31 @@ func init() {
 		}
 	}()
 	// authcodeDescExpireAt is the schema descriptor for expire_at field.
-	authcodeDescExpireAt := authcodeFields[1].Descriptor()
+	authcodeDescExpireAt := authcodeFields[2].Descriptor()
 	// authcode.DefaultExpireAt holds the default value on creation for the expire_at field.
 	authcode.DefaultExpireAt = authcodeDescExpireAt.Default.(func() time.Time)
 	// authcodeDescCreatedAt is the schema descriptor for created_at field.
-	authcodeDescCreatedAt := authcodeFields[2].Descriptor()
+	authcodeDescCreatedAt := authcodeFields[3].Descriptor()
 	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.
 	authcode.DefaultCreatedAt = authcodeDescCreatedAt.Default.(func() time.Time)
 	consentFields := schema.Consent{}.Fields()
 	_ = consentFields
 	// consentDescCreatedAt is the schema descriptor for created_at field.
-	consentDescCreatedAt := consentFields[2].Descriptor()
+	consentDescCreatedAt := consentFields[3].Descriptor()
 	// consent.DefaultCreatedAt holds the default value on creation for the created_at field.
 	consent.DefaultCreatedAt = consentDescCreatedAt.Default.(func() time.Time)
 	redirecturiFields := schema.RedirectURI{}.Fields()
 	_ = redirecturiFields
 	// redirecturiDescURI is the schema descriptor for uri field.
-	redirecturiDescURI := redirecturiFields[0].Descriptor()
+	redirecturiDescURI := redirecturiFields[1].Descriptor()
 	// redirecturi.URIValidator is a validator for the "uri" field. It is called by the builders before save.
 	redirecturi.URIValidator = redirecturiDescURI.Validators[0].(func(string) error)
 	// redirecturiDescCreatedAt is the schema descriptor for created_at field.
-	redirecturiDescCreatedAt := redirecturiFields[1].Descriptor()
+	redirecturiDescCreatedAt := redirecturiFields[2].Descriptor()
 	// redirecturi.DefaultCreatedAt holds the default value on creation for the created_at field.
 	redirecturi.DefaultCreatedAt = redirecturiDescCreatedAt.Default.(func() time.Time)
 	// redirecturiDescModifiedAt is the schema descriptor for modified_at field.
-	redirecturiDescModifiedAt := redirecturiFields[2].Descriptor()
+	redirecturiDescModifiedAt := redirecturiFields[3].Descriptor()
 	// redirecturi.DefaultModifiedAt holds the default value on creation for the modified_at field.
 	redirecturi.DefaultModifiedAt = redirecturiDescModifiedAt.Default.(func() time.Time)
 	// redirecturi.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
@@ -70,15 +70,15 @@ func init() {
 	relyingpartyFields := schema.RelyingParty{}.Fields()
 	_ = relyingpartyFields
 	// relyingpartyDescClientSecret is the schema descriptor for client_secret field.
-	relyingpartyDescClientSecret := relyingpartyFields[1].Descriptor()
+	relyingpartyDescClientSecret := relyingpartyFields[2].Descriptor()
 	// relyingparty.ClientSecretValidator is a validator for the "client_secret" field. It is called by the builders before save.
 	relyingparty.ClientSecretValidator = relyingpartyDescClientSecret.Validators[0].(func(string) error)
 	// relyingpartyDescCreatedAt is the schema descriptor for created_at field.
-	relyingpartyDescCreatedAt := relyingpartyFields[2].Descriptor()
+	relyingpartyDescCreatedAt := relyingpartyFields[3].Descriptor()
 	// relyingparty.DefaultCreatedAt holds the default value on creation for the created_at field.
 	relyingparty.DefaultCreatedAt = relyingpartyDescCreatedAt.Default.(func() time.Time)
 	// relyingpartyDescModifiedAt is the schema descriptor for modified_at field.
-	relyingpartyDescModifiedAt := relyingpartyFields[3].Descriptor()
+	relyingpartyDescModifiedAt := relyingpartyFields[4].Descriptor()
 	// relyingparty.DefaultModifiedAt holds the default value on creation for the modified_at field.
 	relyingparty.DefaultModifiedAt = relyingpartyDescModifiedAt.Default.(func() time.Time)
 	userMixin := schema.User{}.Mixin()

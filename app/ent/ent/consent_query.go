@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // ConsentQuery is the builder for querying Consent entities.
@@ -82,8 +83,8 @@ func (cq *ConsentQuery) FirstX(ctx context.Context) *Consent {
 
 // FirstID returns the first Consent ID from the query.
 // Returns a *NotFoundError when no Consent ID was found.
-func (cq *ConsentQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *ConsentQuery) FirstID(ctx context.Context) (id typedef.ConsentID, err error) {
+	var ids []typedef.ConsentID
 	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -95,7 +96,7 @@ func (cq *ConsentQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *ConsentQuery) FirstIDX(ctx context.Context) int {
+func (cq *ConsentQuery) FirstIDX(ctx context.Context) typedef.ConsentID {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +134,8 @@ func (cq *ConsentQuery) OnlyX(ctx context.Context) *Consent {
 // OnlyID is like Only, but returns the only Consent ID in the query.
 // Returns a *NotSingularError when more than one Consent ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *ConsentQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *ConsentQuery) OnlyID(ctx context.Context) (id typedef.ConsentID, err error) {
+	var ids []typedef.ConsentID
 	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -150,7 +151,7 @@ func (cq *ConsentQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *ConsentQuery) OnlyIDX(ctx context.Context) int {
+func (cq *ConsentQuery) OnlyIDX(ctx context.Context) typedef.ConsentID {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,7 +179,7 @@ func (cq *ConsentQuery) AllX(ctx context.Context) []*Consent {
 }
 
 // IDs executes the query and returns a list of Consent IDs.
-func (cq *ConsentQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (cq *ConsentQuery) IDs(ctx context.Context) (ids []typedef.ConsentID, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
@@ -190,7 +191,7 @@ func (cq *ConsentQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *ConsentQuery) IDsX(ctx context.Context) []int {
+func (cq *ConsentQuery) IDsX(ctx context.Context) []typedef.ConsentID {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -369,7 +370,7 @@ func (cq *ConsentQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *ConsentQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(consent.Table, consent.Columns, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(consent.Table, consent.Columns, sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64))
 	_spec.From = cq.sql
 	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

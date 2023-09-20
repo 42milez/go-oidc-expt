@@ -41,13 +41,13 @@ type AuthCodeMutation struct {
 	config
 	op                  Op
 	typ                 string
-	id                  *int
+	id                  *typedef.AuthCodeID
 	code                *string
 	expire_at           *time.Time
 	created_at          *time.Time
 	used_at             *time.Time
-	relying_party_id    *int
-	addrelying_party_id *int
+	relying_party_id    *typedef.RelyingPartyID
+	addrelying_party_id *typedef.RelyingPartyID
 	clearedFields       map[string]struct{}
 	done                bool
 	oldValue            func(context.Context) (*AuthCode, error)
@@ -74,7 +74,7 @@ func newAuthCodeMutation(c config, op Op, opts ...authcodeOption) *AuthCodeMutat
 }
 
 // withAuthCodeID sets the ID field of the mutation.
-func withAuthCodeID(id int) authcodeOption {
+func withAuthCodeID(id typedef.AuthCodeID) authcodeOption {
 	return func(m *AuthCodeMutation) {
 		var (
 			err   error
@@ -124,9 +124,15 @@ func (m AuthCodeMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AuthCode entities.
+func (m *AuthCodeMutation) SetID(id typedef.AuthCodeID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *AuthCodeMutation) ID() (id int, exists bool) {
+func (m *AuthCodeMutation) ID() (id typedef.AuthCodeID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -137,12 +143,12 @@ func (m *AuthCodeMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *AuthCodeMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *AuthCodeMutation) IDs(ctx context.Context) ([]typedef.AuthCodeID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []typedef.AuthCodeID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -310,13 +316,13 @@ func (m *AuthCodeMutation) ResetUsedAt() {
 }
 
 // SetRelyingPartyID sets the "relying_party_id" field.
-func (m *AuthCodeMutation) SetRelyingPartyID(i int) {
-	m.relying_party_id = &i
+func (m *AuthCodeMutation) SetRelyingPartyID(tpi typedef.RelyingPartyID) {
+	m.relying_party_id = &tpi
 	m.addrelying_party_id = nil
 }
 
 // RelyingPartyID returns the value of the "relying_party_id" field in the mutation.
-func (m *AuthCodeMutation) RelyingPartyID() (r int, exists bool) {
+func (m *AuthCodeMutation) RelyingPartyID() (r typedef.RelyingPartyID, exists bool) {
 	v := m.relying_party_id
 	if v == nil {
 		return
@@ -327,7 +333,7 @@ func (m *AuthCodeMutation) RelyingPartyID() (r int, exists bool) {
 // OldRelyingPartyID returns the old "relying_party_id" field's value of the AuthCode entity.
 // If the AuthCode object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AuthCodeMutation) OldRelyingPartyID(ctx context.Context) (v int, err error) {
+func (m *AuthCodeMutation) OldRelyingPartyID(ctx context.Context) (v typedef.RelyingPartyID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRelyingPartyID is only allowed on UpdateOne operations")
 	}
@@ -341,17 +347,17 @@ func (m *AuthCodeMutation) OldRelyingPartyID(ctx context.Context) (v int, err er
 	return oldValue.RelyingPartyID, nil
 }
 
-// AddRelyingPartyID adds i to the "relying_party_id" field.
-func (m *AuthCodeMutation) AddRelyingPartyID(i int) {
+// AddRelyingPartyID adds tpi to the "relying_party_id" field.
+func (m *AuthCodeMutation) AddRelyingPartyID(tpi typedef.RelyingPartyID) {
 	if m.addrelying_party_id != nil {
-		*m.addrelying_party_id += i
+		*m.addrelying_party_id += tpi
 	} else {
-		m.addrelying_party_id = &i
+		m.addrelying_party_id = &tpi
 	}
 }
 
 // AddedRelyingPartyID returns the value that was added to the "relying_party_id" field in this mutation.
-func (m *AuthCodeMutation) AddedRelyingPartyID() (r int, exists bool) {
+func (m *AuthCodeMutation) AddedRelyingPartyID() (r typedef.RelyingPartyID, exists bool) {
 	v := m.addrelying_party_id
 	if v == nil {
 		return
@@ -490,7 +496,7 @@ func (m *AuthCodeMutation) SetField(name string, value ent.Value) error {
 		m.SetUsedAt(v)
 		return nil
 	case authcode.FieldRelyingPartyID:
-		v, ok := value.(int)
+		v, ok := value.(typedef.RelyingPartyID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -527,7 +533,7 @@ func (m *AuthCodeMutation) AddedField(name string) (ent.Value, bool) {
 func (m *AuthCodeMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case authcode.FieldRelyingPartyID:
-		v, ok := value.(int)
+		v, ok := value.(typedef.RelyingPartyID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -641,11 +647,11 @@ type ConsentMutation struct {
 	config
 	op                  Op
 	typ                 string
-	id                  *int
+	id                  *typedef.ConsentID
 	user_id             *typedef.UserID
 	adduser_id          *typedef.UserID
-	relying_party_id    *int
-	addrelying_party_id *int
+	relying_party_id    *typedef.RelyingPartyID
+	addrelying_party_id *typedef.RelyingPartyID
 	created_at          *time.Time
 	clearedFields       map[string]struct{}
 	done                bool
@@ -673,7 +679,7 @@ func newConsentMutation(c config, op Op, opts ...consentOption) *ConsentMutation
 }
 
 // withConsentID sets the ID field of the mutation.
-func withConsentID(id int) consentOption {
+func withConsentID(id typedef.ConsentID) consentOption {
 	return func(m *ConsentMutation) {
 		var (
 			err   error
@@ -723,9 +729,15 @@ func (m ConsentMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Consent entities.
+func (m *ConsentMutation) SetID(id typedef.ConsentID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ConsentMutation) ID() (id int, exists bool) {
+func (m *ConsentMutation) ID() (id typedef.ConsentID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -736,12 +748,12 @@ func (m *ConsentMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ConsentMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *ConsentMutation) IDs(ctx context.Context) ([]typedef.ConsentID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []typedef.ConsentID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -808,13 +820,13 @@ func (m *ConsentMutation) ResetUserID() {
 }
 
 // SetRelyingPartyID sets the "relying_party_id" field.
-func (m *ConsentMutation) SetRelyingPartyID(i int) {
-	m.relying_party_id = &i
+func (m *ConsentMutation) SetRelyingPartyID(tpi typedef.RelyingPartyID) {
+	m.relying_party_id = &tpi
 	m.addrelying_party_id = nil
 }
 
 // RelyingPartyID returns the value of the "relying_party_id" field in the mutation.
-func (m *ConsentMutation) RelyingPartyID() (r int, exists bool) {
+func (m *ConsentMutation) RelyingPartyID() (r typedef.RelyingPartyID, exists bool) {
 	v := m.relying_party_id
 	if v == nil {
 		return
@@ -825,7 +837,7 @@ func (m *ConsentMutation) RelyingPartyID() (r int, exists bool) {
 // OldRelyingPartyID returns the old "relying_party_id" field's value of the Consent entity.
 // If the Consent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ConsentMutation) OldRelyingPartyID(ctx context.Context) (v int, err error) {
+func (m *ConsentMutation) OldRelyingPartyID(ctx context.Context) (v typedef.RelyingPartyID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRelyingPartyID is only allowed on UpdateOne operations")
 	}
@@ -839,17 +851,17 @@ func (m *ConsentMutation) OldRelyingPartyID(ctx context.Context) (v int, err err
 	return oldValue.RelyingPartyID, nil
 }
 
-// AddRelyingPartyID adds i to the "relying_party_id" field.
-func (m *ConsentMutation) AddRelyingPartyID(i int) {
+// AddRelyingPartyID adds tpi to the "relying_party_id" field.
+func (m *ConsentMutation) AddRelyingPartyID(tpi typedef.RelyingPartyID) {
 	if m.addrelying_party_id != nil {
-		*m.addrelying_party_id += i
+		*m.addrelying_party_id += tpi
 	} else {
-		m.addrelying_party_id = &i
+		m.addrelying_party_id = &tpi
 	}
 }
 
 // AddedRelyingPartyID returns the value that was added to the "relying_party_id" field in this mutation.
-func (m *ConsentMutation) AddedRelyingPartyID() (r int, exists bool) {
+func (m *ConsentMutation) AddedRelyingPartyID() (r typedef.RelyingPartyID, exists bool) {
 	v := m.addrelying_party_id
 	if v == nil {
 		return
@@ -989,7 +1001,7 @@ func (m *ConsentMutation) SetField(name string, value ent.Value) error {
 		m.SetUserID(v)
 		return nil
 	case consent.FieldRelyingPartyID:
-		v, ok := value.(int)
+		v, ok := value.(typedef.RelyingPartyID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1045,7 +1057,7 @@ func (m *ConsentMutation) AddField(name string, value ent.Value) error {
 		m.AddUserID(v)
 		return nil
 	case consent.FieldRelyingPartyID:
-		v, ok := value.(int)
+		v, ok := value.(typedef.RelyingPartyID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1144,12 +1156,12 @@ type RedirectURIMutation struct {
 	config
 	op                  Op
 	typ                 string
-	id                  *int
+	id                  *typedef.RedirectURIID
 	uri                 *string
 	created_at          *time.Time
 	modified_at         *time.Time
-	relying_party_id    *int
-	addrelying_party_id *int
+	relying_party_id    *typedef.RelyingPartyID
+	addrelying_party_id *typedef.RelyingPartyID
 	clearedFields       map[string]struct{}
 	done                bool
 	oldValue            func(context.Context) (*RedirectURI, error)
@@ -1176,7 +1188,7 @@ func newRedirectURIMutation(c config, op Op, opts ...redirecturiOption) *Redirec
 }
 
 // withRedirectURIID sets the ID field of the mutation.
-func withRedirectURIID(id int) redirecturiOption {
+func withRedirectURIID(id typedef.RedirectURIID) redirecturiOption {
 	return func(m *RedirectURIMutation) {
 		var (
 			err   error
@@ -1226,9 +1238,15 @@ func (m RedirectURIMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of RedirectURI entities.
+func (m *RedirectURIMutation) SetID(id typedef.RedirectURIID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *RedirectURIMutation) ID() (id int, exists bool) {
+func (m *RedirectURIMutation) ID() (id typedef.RedirectURIID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1239,12 +1257,12 @@ func (m *RedirectURIMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *RedirectURIMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *RedirectURIMutation) IDs(ctx context.Context) ([]typedef.RedirectURIID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []typedef.RedirectURIID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1363,13 +1381,13 @@ func (m *RedirectURIMutation) ResetModifiedAt() {
 }
 
 // SetRelyingPartyID sets the "relying_party_id" field.
-func (m *RedirectURIMutation) SetRelyingPartyID(i int) {
-	m.relying_party_id = &i
+func (m *RedirectURIMutation) SetRelyingPartyID(tpi typedef.RelyingPartyID) {
+	m.relying_party_id = &tpi
 	m.addrelying_party_id = nil
 }
 
 // RelyingPartyID returns the value of the "relying_party_id" field in the mutation.
-func (m *RedirectURIMutation) RelyingPartyID() (r int, exists bool) {
+func (m *RedirectURIMutation) RelyingPartyID() (r typedef.RelyingPartyID, exists bool) {
 	v := m.relying_party_id
 	if v == nil {
 		return
@@ -1380,7 +1398,7 @@ func (m *RedirectURIMutation) RelyingPartyID() (r int, exists bool) {
 // OldRelyingPartyID returns the old "relying_party_id" field's value of the RedirectURI entity.
 // If the RedirectURI object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RedirectURIMutation) OldRelyingPartyID(ctx context.Context) (v int, err error) {
+func (m *RedirectURIMutation) OldRelyingPartyID(ctx context.Context) (v typedef.RelyingPartyID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRelyingPartyID is only allowed on UpdateOne operations")
 	}
@@ -1394,17 +1412,17 @@ func (m *RedirectURIMutation) OldRelyingPartyID(ctx context.Context) (v int, err
 	return oldValue.RelyingPartyID, nil
 }
 
-// AddRelyingPartyID adds i to the "relying_party_id" field.
-func (m *RedirectURIMutation) AddRelyingPartyID(i int) {
+// AddRelyingPartyID adds tpi to the "relying_party_id" field.
+func (m *RedirectURIMutation) AddRelyingPartyID(tpi typedef.RelyingPartyID) {
 	if m.addrelying_party_id != nil {
-		*m.addrelying_party_id += i
+		*m.addrelying_party_id += tpi
 	} else {
-		m.addrelying_party_id = &i
+		m.addrelying_party_id = &tpi
 	}
 }
 
 // AddedRelyingPartyID returns the value that was added to the "relying_party_id" field in this mutation.
-func (m *RedirectURIMutation) AddedRelyingPartyID() (r int, exists bool) {
+func (m *RedirectURIMutation) AddedRelyingPartyID() (r typedef.RelyingPartyID, exists bool) {
 	v := m.addrelying_party_id
 	if v == nil {
 		return
@@ -1529,7 +1547,7 @@ func (m *RedirectURIMutation) SetField(name string, value ent.Value) error {
 		m.SetModifiedAt(v)
 		return nil
 	case redirecturi.FieldRelyingPartyID:
-		v, ok := value.(int)
+		v, ok := value.(typedef.RelyingPartyID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1566,7 +1584,7 @@ func (m *RedirectURIMutation) AddedField(name string) (ent.Value, bool) {
 func (m *RedirectURIMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case redirecturi.FieldRelyingPartyID:
-		v, ok := value.(int)
+		v, ok := value.(typedef.RelyingPartyID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1668,17 +1686,17 @@ type RelyingPartyMutation struct {
 	config
 	op                   Op
 	typ                  string
-	id                   *int
-	client_id            *typedef.ClientId
+	id                   *typedef.RelyingPartyID
+	client_id            *typedef.ClientID
 	client_secret        *typedef.ClientSecret
 	created_at           *time.Time
 	modified_at          *time.Time
 	clearedFields        map[string]struct{}
-	auth_codes           map[int]struct{}
-	removedauth_codes    map[int]struct{}
+	auth_codes           map[typedef.AuthCodeID]struct{}
+	removedauth_codes    map[typedef.AuthCodeID]struct{}
 	clearedauth_codes    bool
-	redirect_uris        map[int]struct{}
-	removedredirect_uris map[int]struct{}
+	redirect_uris        map[typedef.RedirectURIID]struct{}
+	removedredirect_uris map[typedef.RedirectURIID]struct{}
 	clearedredirect_uris bool
 	done                 bool
 	oldValue             func(context.Context) (*RelyingParty, error)
@@ -1705,7 +1723,7 @@ func newRelyingPartyMutation(c config, op Op, opts ...relyingpartyOption) *Relyi
 }
 
 // withRelyingPartyID sets the ID field of the mutation.
-func withRelyingPartyID(id int) relyingpartyOption {
+func withRelyingPartyID(id typedef.RelyingPartyID) relyingpartyOption {
 	return func(m *RelyingPartyMutation) {
 		var (
 			err   error
@@ -1755,9 +1773,15 @@ func (m RelyingPartyMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of RelyingParty entities.
+func (m *RelyingPartyMutation) SetID(id typedef.RelyingPartyID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *RelyingPartyMutation) ID() (id int, exists bool) {
+func (m *RelyingPartyMutation) ID() (id typedef.RelyingPartyID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1768,12 +1792,12 @@ func (m *RelyingPartyMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *RelyingPartyMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *RelyingPartyMutation) IDs(ctx context.Context) ([]typedef.RelyingPartyID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []typedef.RelyingPartyID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1784,12 +1808,12 @@ func (m *RelyingPartyMutation) IDs(ctx context.Context) ([]int, error) {
 }
 
 // SetClientID sets the "client_id" field.
-func (m *RelyingPartyMutation) SetClientID(ti typedef.ClientId) {
+func (m *RelyingPartyMutation) SetClientID(ti typedef.ClientID) {
 	m.client_id = &ti
 }
 
 // ClientID returns the value of the "client_id" field in the mutation.
-func (m *RelyingPartyMutation) ClientID() (r typedef.ClientId, exists bool) {
+func (m *RelyingPartyMutation) ClientID() (r typedef.ClientID, exists bool) {
 	v := m.client_id
 	if v == nil {
 		return
@@ -1800,7 +1824,7 @@ func (m *RelyingPartyMutation) ClientID() (r typedef.ClientId, exists bool) {
 // OldClientID returns the old "client_id" field's value of the RelyingParty entity.
 // If the RelyingParty object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RelyingPartyMutation) OldClientID(ctx context.Context) (v typedef.ClientId, err error) {
+func (m *RelyingPartyMutation) OldClientID(ctx context.Context) (v typedef.ClientID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
 	}
@@ -1928,9 +1952,9 @@ func (m *RelyingPartyMutation) ResetModifiedAt() {
 }
 
 // AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by ids.
-func (m *RelyingPartyMutation) AddAuthCodeIDs(ids ...int) {
+func (m *RelyingPartyMutation) AddAuthCodeIDs(ids ...typedef.AuthCodeID) {
 	if m.auth_codes == nil {
-		m.auth_codes = make(map[int]struct{})
+		m.auth_codes = make(map[typedef.AuthCodeID]struct{})
 	}
 	for i := range ids {
 		m.auth_codes[ids[i]] = struct{}{}
@@ -1948,9 +1972,9 @@ func (m *RelyingPartyMutation) AuthCodesCleared() bool {
 }
 
 // RemoveAuthCodeIDs removes the "auth_codes" edge to the AuthCode entity by IDs.
-func (m *RelyingPartyMutation) RemoveAuthCodeIDs(ids ...int) {
+func (m *RelyingPartyMutation) RemoveAuthCodeIDs(ids ...typedef.AuthCodeID) {
 	if m.removedauth_codes == nil {
-		m.removedauth_codes = make(map[int]struct{})
+		m.removedauth_codes = make(map[typedef.AuthCodeID]struct{})
 	}
 	for i := range ids {
 		delete(m.auth_codes, ids[i])
@@ -1959,7 +1983,7 @@ func (m *RelyingPartyMutation) RemoveAuthCodeIDs(ids ...int) {
 }
 
 // RemovedAuthCodes returns the removed IDs of the "auth_codes" edge to the AuthCode entity.
-func (m *RelyingPartyMutation) RemovedAuthCodesIDs() (ids []int) {
+func (m *RelyingPartyMutation) RemovedAuthCodesIDs() (ids []typedef.AuthCodeID) {
 	for id := range m.removedauth_codes {
 		ids = append(ids, id)
 	}
@@ -1967,7 +1991,7 @@ func (m *RelyingPartyMutation) RemovedAuthCodesIDs() (ids []int) {
 }
 
 // AuthCodesIDs returns the "auth_codes" edge IDs in the mutation.
-func (m *RelyingPartyMutation) AuthCodesIDs() (ids []int) {
+func (m *RelyingPartyMutation) AuthCodesIDs() (ids []typedef.AuthCodeID) {
 	for id := range m.auth_codes {
 		ids = append(ids, id)
 	}
@@ -1982,9 +2006,9 @@ func (m *RelyingPartyMutation) ResetAuthCodes() {
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by ids.
-func (m *RelyingPartyMutation) AddRedirectURIIDs(ids ...int) {
+func (m *RelyingPartyMutation) AddRedirectURIIDs(ids ...typedef.RedirectURIID) {
 	if m.redirect_uris == nil {
-		m.redirect_uris = make(map[int]struct{})
+		m.redirect_uris = make(map[typedef.RedirectURIID]struct{})
 	}
 	for i := range ids {
 		m.redirect_uris[ids[i]] = struct{}{}
@@ -2002,9 +2026,9 @@ func (m *RelyingPartyMutation) RedirectUrisCleared() bool {
 }
 
 // RemoveRedirectURIIDs removes the "redirect_uris" edge to the RedirectURI entity by IDs.
-func (m *RelyingPartyMutation) RemoveRedirectURIIDs(ids ...int) {
+func (m *RelyingPartyMutation) RemoveRedirectURIIDs(ids ...typedef.RedirectURIID) {
 	if m.removedredirect_uris == nil {
-		m.removedredirect_uris = make(map[int]struct{})
+		m.removedredirect_uris = make(map[typedef.RedirectURIID]struct{})
 	}
 	for i := range ids {
 		delete(m.redirect_uris, ids[i])
@@ -2013,7 +2037,7 @@ func (m *RelyingPartyMutation) RemoveRedirectURIIDs(ids ...int) {
 }
 
 // RemovedRedirectUris returns the removed IDs of the "redirect_uris" edge to the RedirectURI entity.
-func (m *RelyingPartyMutation) RemovedRedirectUrisIDs() (ids []int) {
+func (m *RelyingPartyMutation) RemovedRedirectUrisIDs() (ids []typedef.RedirectURIID) {
 	for id := range m.removedredirect_uris {
 		ids = append(ids, id)
 	}
@@ -2021,7 +2045,7 @@ func (m *RelyingPartyMutation) RemovedRedirectUrisIDs() (ids []int) {
 }
 
 // RedirectUrisIDs returns the "redirect_uris" edge IDs in the mutation.
-func (m *RelyingPartyMutation) RedirectUrisIDs() (ids []int) {
+func (m *RelyingPartyMutation) RedirectUrisIDs() (ids []typedef.RedirectURIID) {
 	for id := range m.redirect_uris {
 		ids = append(ids, id)
 	}
@@ -2125,7 +2149,7 @@ func (m *RelyingPartyMutation) OldField(ctx context.Context, name string) (ent.V
 func (m *RelyingPartyMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case relyingparty.FieldClientID:
-		v, ok := value.(typedef.ClientId)
+		v, ok := value.(typedef.ClientID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2339,8 +2363,8 @@ type UserMutation struct {
 	created_at      *time.Time
 	modified_at     *time.Time
 	clearedFields   map[string]struct{}
-	consents        map[int]struct{}
-	removedconsents map[int]struct{}
+	consents        map[typedef.ConsentID]struct{}
+	removedconsents map[typedef.ConsentID]struct{}
 	clearedconsents bool
 	done            bool
 	oldValue        func(context.Context) (*User, error)
@@ -2645,9 +2669,9 @@ func (m *UserMutation) ResetModifiedAt() {
 }
 
 // AddConsentIDs adds the "consents" edge to the Consent entity by ids.
-func (m *UserMutation) AddConsentIDs(ids ...int) {
+func (m *UserMutation) AddConsentIDs(ids ...typedef.ConsentID) {
 	if m.consents == nil {
-		m.consents = make(map[int]struct{})
+		m.consents = make(map[typedef.ConsentID]struct{})
 	}
 	for i := range ids {
 		m.consents[ids[i]] = struct{}{}
@@ -2665,9 +2689,9 @@ func (m *UserMutation) ConsentsCleared() bool {
 }
 
 // RemoveConsentIDs removes the "consents" edge to the Consent entity by IDs.
-func (m *UserMutation) RemoveConsentIDs(ids ...int) {
+func (m *UserMutation) RemoveConsentIDs(ids ...typedef.ConsentID) {
 	if m.removedconsents == nil {
-		m.removedconsents = make(map[int]struct{})
+		m.removedconsents = make(map[typedef.ConsentID]struct{})
 	}
 	for i := range ids {
 		delete(m.consents, ids[i])
@@ -2676,7 +2700,7 @@ func (m *UserMutation) RemoveConsentIDs(ids ...int) {
 }
 
 // RemovedConsents returns the removed IDs of the "consents" edge to the Consent entity.
-func (m *UserMutation) RemovedConsentsIDs() (ids []int) {
+func (m *UserMutation) RemovedConsentsIDs() (ids []typedef.ConsentID) {
 	for id := range m.removedconsents {
 		ids = append(ids, id)
 	}
@@ -2684,7 +2708,7 @@ func (m *UserMutation) RemovedConsentsIDs() (ids []int) {
 }
 
 // ConsentsIDs returns the "consents" edge IDs in the mutation.
-func (m *UserMutation) ConsentsIDs() (ids []int) {
+func (m *UserMutation) ConsentsIDs() (ids []typedef.ConsentID) {
 	for id := range m.consents {
 		ids = append(ids, id)
 	}

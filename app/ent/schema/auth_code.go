@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+	"github.com/42milez/go-oidc-server/app/typedef"
 	"regexp"
 	"time"
 
@@ -21,7 +22,7 @@ type AuthCode struct {
 // Fields of the AuthCode.
 func (AuthCode) Fields() []ent.Field {
 	return []ent.Field{
-		// TODO: Set length
+		field.Uint64("id").GoType(typedef.AuthCodeID(0)),
 		field.String("code").
 			SchemaType(map[string]string{
 				dialect.MySQL: AuthCodeSchemaType(),
@@ -40,7 +41,8 @@ func (AuthCode) Fields() []ent.Field {
 		field.Time("used_at").
 			Optional().
 			Nillable(),
-		field.Int("relying_party_id").
+		field.Uint64("relying_party_id").
+			GoType(typedef.RelyingPartyID(0)).
 			Immutable(),
 	}
 }

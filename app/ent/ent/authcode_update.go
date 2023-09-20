@@ -81,7 +81,7 @@ func (acu *AuthCodeUpdate) ExecX(ctx context.Context) {
 }
 
 func (acu *AuthCodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64))
 	if ps := acu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -181,7 +181,7 @@ func (acuo *AuthCodeUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (acuo *AuthCodeUpdateOne) sqlSave(ctx context.Context) (_node *AuthCode, err error) {
-	_spec := sqlgraph.NewUpdateSpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64))
 	id, ok := acuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AuthCode.id" for update`)}

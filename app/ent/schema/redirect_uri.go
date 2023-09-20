@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"github.com/42milez/go-oidc-server/app/typedef"
 	"time"
 
 	"entgo.io/ent"
@@ -27,6 +28,8 @@ func (RedirectURI) Annotations() []schema.Annotation {
 // Fields of the RedirectURI.
 func (RedirectURI) Fields() []ent.Field {
 	return []ent.Field{
+		field.Uint64("id").
+			GoType(typedef.RedirectURIID(0)),
 		field.String("uri").
 			NotEmpty(),
 		field.Time("created_at").
@@ -35,7 +38,8 @@ func (RedirectURI) Fields() []ent.Field {
 		field.Time("modified_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
-		field.Int("relying_party_id").
+		field.Uint64("relying_party_id").
+			GoType(typedef.RelyingPartyID(0)).
 			Immutable(),
 	}
 }

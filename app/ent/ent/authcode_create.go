@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // AuthCodeCreate is the builder for creating a AuthCode entity.
@@ -69,8 +70,14 @@ func (acc *AuthCodeCreate) SetNillableUsedAt(t *time.Time) *AuthCodeCreate {
 }
 
 // SetRelyingPartyID sets the "relying_party_id" field.
-func (acc *AuthCodeCreate) SetRelyingPartyID(i int) *AuthCodeCreate {
-	acc.mutation.SetRelyingPartyID(i)
+func (acc *AuthCodeCreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *AuthCodeCreate {
+	acc.mutation.SetRelyingPartyID(tpi)
+	return acc
+}
+
+// SetID sets the "id" field.
+func (acc *AuthCodeCreate) SetID(tci typedef.AuthCodeID) *AuthCodeCreate {
+	acc.mutation.SetID(tci)
 	return acc
 }
 
@@ -152,8 +159,10 @@ func (acc *AuthCodeCreate) sqlSave(ctx context.Context) (*AuthCode, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = typedef.AuthCodeID(id)
+	}
 	acc.mutation.id = &_node.ID
 	acc.mutation.done = true
 	return _node, nil
@@ -162,8 +171,12 @@ func (acc *AuthCodeCreate) sqlSave(ctx context.Context) (*AuthCode, error) {
 func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 	var (
 		_node = &AuthCode{config: acc.config}
-		_spec = sqlgraph.NewCreateSpec(authcode.Table, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(authcode.Table, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64))
 	)
+	if id, ok := acc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := acc.mutation.Code(); ok {
 		_spec.SetField(authcode.FieldCode, field.TypeString, value)
 		_node.Code = value
@@ -181,7 +194,7 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 		_node.UsedAt = &value
 	}
 	if value, ok := acc.mutation.RelyingPartyID(); ok {
-		_spec.SetField(authcode.FieldRelyingPartyID, field.TypeInt, value)
+		_spec.SetField(authcode.FieldRelyingPartyID, field.TypeUint64, value)
 		_node.RelyingPartyID = value
 	}
 	return _node, _spec
@@ -228,9 +241,9 @@ func (accb *AuthCodeCreateBulk) Save(ctx context.Context) ([]*AuthCode, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = typedef.AuthCodeID(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

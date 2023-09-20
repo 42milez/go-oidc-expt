@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RedirectURICreate is the builder for creating a RedirectURI entity.
@@ -55,8 +56,14 @@ func (ruc *RedirectURICreate) SetNillableModifiedAt(t *time.Time) *RedirectURICr
 }
 
 // SetRelyingPartyID sets the "relying_party_id" field.
-func (ruc *RedirectURICreate) SetRelyingPartyID(i int) *RedirectURICreate {
-	ruc.mutation.SetRelyingPartyID(i)
+func (ruc *RedirectURICreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *RedirectURICreate {
+	ruc.mutation.SetRelyingPartyID(tpi)
+	return ruc
+}
+
+// SetID sets the "id" field.
+func (ruc *RedirectURICreate) SetID(tu typedef.RedirectURIID) *RedirectURICreate {
+	ruc.mutation.SetID(tu)
 	return ruc
 }
 
@@ -138,8 +145,10 @@ func (ruc *RedirectURICreate) sqlSave(ctx context.Context) (*RedirectURI, error)
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = typedef.RedirectURIID(id)
+	}
 	ruc.mutation.id = &_node.ID
 	ruc.mutation.done = true
 	return _node, nil
@@ -148,8 +157,12 @@ func (ruc *RedirectURICreate) sqlSave(ctx context.Context) (*RedirectURI, error)
 func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) {
 	var (
 		_node = &RedirectURI{config: ruc.config}
-		_spec = sqlgraph.NewCreateSpec(redirecturi.Table, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(redirecturi.Table, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	)
+	if id, ok := ruc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ruc.mutation.URI(); ok {
 		_spec.SetField(redirecturi.FieldURI, field.TypeString, value)
 		_node.URI = value
@@ -163,7 +176,7 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 		_node.ModifiedAt = value
 	}
 	if value, ok := ruc.mutation.RelyingPartyID(); ok {
-		_spec.SetField(redirecturi.FieldRelyingPartyID, field.TypeInt, value)
+		_spec.SetField(redirecturi.FieldRelyingPartyID, field.TypeUint64, value)
 		_node.RelyingPartyID = value
 	}
 	return _node, _spec
@@ -210,9 +223,9 @@ func (rucb *RedirectURICreateBulk) Save(ctx context.Context) ([]*RedirectURI, er
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = typedef.RedirectURIID(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

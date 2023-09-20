@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 )
@@ -22,7 +24,7 @@ func insertRedirectURIs(ctx context.Context, db *datastore.Database, relyingPart
 
 	params := make([]struct {
 		URI            string
-		RelyingPartyID int
+		RelyingPartyID typedef.RelyingPartyID
 	}, nRedirectURI*nRelyingParty)
 
 	for i := range params {

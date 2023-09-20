@@ -17,11 +17,11 @@ import (
 type Consent struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID typedef.ConsentID `json:"id,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID typedef.UserID `json:"user_id,omitempty"`
 	// RelyingPartyID holds the value of the "relying_party_id" field.
-	RelyingPartyID int `json:"relying_party_id,omitempty"`
+	RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt    time.Time `json:"created_at,omitempty"`
 	user_id      *typedef.UserID
@@ -55,11 +55,11 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case consent.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				c.ID = typedef.ConsentID(value.Int64)
 			}
-			c.ID = int(value.Int64)
 		case consent.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
@@ -70,7 +70,7 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
 			} else if value.Valid {
-				c.RelyingPartyID = int(value.Int64)
+				c.RelyingPartyID = typedef.RelyingPartyID(value.Int64)
 			}
 		case consent.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {

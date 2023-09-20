@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -24,7 +25,7 @@ func insertConsents(ctx context.Context, db *datastore.Database, users []*ent.Us
 
 	params := make([]struct {
 		UserID         typedef.UserID
-		RelyingPartyID int
+		RelyingPartyID typedef.RelyingPartyID
 	}, nConsent*nUser)
 
 	for i := range params {

@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/42milez/go-oidc-server/app/datastore"
-	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"log"
 	"reflect"
+
+	"github.com/42milez/go-oidc-server/app/datastore"
+	"github.com/42milez/go-oidc-server/app/ent/ent"
 
 	"github.com/42milez/go-oidc-server/app/config"
 	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"

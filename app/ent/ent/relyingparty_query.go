@@ -15,6 +15,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RelyingPartyQuery is the builder for querying RelyingParty entities.
@@ -130,8 +131,8 @@ func (rpq *RelyingPartyQuery) FirstX(ctx context.Context) *RelyingParty {
 
 // FirstID returns the first RelyingParty ID from the query.
 // Returns a *NotFoundError when no RelyingParty ID was found.
-func (rpq *RelyingPartyQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (rpq *RelyingPartyQuery) FirstID(ctx context.Context) (id typedef.RelyingPartyID, err error) {
+	var ids []typedef.RelyingPartyID
 	if ids, err = rpq.Limit(1).IDs(setContextOp(ctx, rpq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -143,7 +144,7 @@ func (rpq *RelyingPartyQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rpq *RelyingPartyQuery) FirstIDX(ctx context.Context) int {
+func (rpq *RelyingPartyQuery) FirstIDX(ctx context.Context) typedef.RelyingPartyID {
 	id, err := rpq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -181,8 +182,8 @@ func (rpq *RelyingPartyQuery) OnlyX(ctx context.Context) *RelyingParty {
 // OnlyID is like Only, but returns the only RelyingParty ID in the query.
 // Returns a *NotSingularError when more than one RelyingParty ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (rpq *RelyingPartyQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (rpq *RelyingPartyQuery) OnlyID(ctx context.Context) (id typedef.RelyingPartyID, err error) {
+	var ids []typedef.RelyingPartyID
 	if ids, err = rpq.Limit(2).IDs(setContextOp(ctx, rpq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -198,7 +199,7 @@ func (rpq *RelyingPartyQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rpq *RelyingPartyQuery) OnlyIDX(ctx context.Context) int {
+func (rpq *RelyingPartyQuery) OnlyIDX(ctx context.Context) typedef.RelyingPartyID {
 	id, err := rpq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -226,7 +227,7 @@ func (rpq *RelyingPartyQuery) AllX(ctx context.Context) []*RelyingParty {
 }
 
 // IDs executes the query and returns a list of RelyingParty IDs.
-func (rpq *RelyingPartyQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (rpq *RelyingPartyQuery) IDs(ctx context.Context) (ids []typedef.RelyingPartyID, err error) {
 	if rpq.ctx.Unique == nil && rpq.path != nil {
 		rpq.Unique(true)
 	}
@@ -238,7 +239,7 @@ func (rpq *RelyingPartyQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rpq *RelyingPartyQuery) IDsX(ctx context.Context) []int {
+func (rpq *RelyingPartyQuery) IDsX(ctx context.Context) []typedef.RelyingPartyID {
 	ids, err := rpq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -334,7 +335,7 @@ func (rpq *RelyingPartyQuery) WithRedirectUris(opts ...func(*RedirectURIQuery)) 
 // Example:
 //
 //	var v []struct {
-//		ClientID typedef.ClientId `json:"client_id,omitempty"`
+//		ClientID typedef.ClientID `json:"client_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -357,7 +358,7 @@ func (rpq *RelyingPartyQuery) GroupBy(field string, fields ...string) *RelyingPa
 // Example:
 //
 //	var v []struct {
-//		ClientID typedef.ClientId `json:"client_id,omitempty"`
+//		ClientID typedef.ClientID `json:"client_id,omitempty"`
 //	}
 //
 //	client.RelyingParty.Query().
@@ -448,7 +449,7 @@ func (rpq *RelyingPartyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 
 func (rpq *RelyingPartyQuery) loadAuthCodes(ctx context.Context, query *AuthCodeQuery, nodes []*RelyingParty, init func(*RelyingParty), assign func(*RelyingParty, *AuthCode)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*RelyingParty)
+	nodeids := make(map[typedef.RelyingPartyID]*RelyingParty)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -479,7 +480,7 @@ func (rpq *RelyingPartyQuery) loadAuthCodes(ctx context.Context, query *AuthCode
 }
 func (rpq *RelyingPartyQuery) loadRedirectUris(ctx context.Context, query *RedirectURIQuery, nodes []*RelyingParty, init func(*RelyingParty), assign func(*RelyingParty, *RedirectURI)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*RelyingParty)
+	nodeids := make(map[typedef.RelyingPartyID]*RelyingParty)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -519,7 +520,7 @@ func (rpq *RelyingPartyQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rpq *RelyingPartyQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(relyingparty.Table, relyingparty.Columns, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(relyingparty.Table, relyingparty.Columns, sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64))
 	_spec.From = rpq.sql
 	if unique := rpq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
