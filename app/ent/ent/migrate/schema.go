@@ -42,7 +42,7 @@ var (
 	// ConsentsColumns holds the columns for the "consents" table.
 	ConsentsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "relying_party_id", Type: field.TypeUint64},
+		{Name: "client_id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "user_consents", Type: field.TypeUint64},
 	}
@@ -61,7 +61,7 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "consent_user_consents_relying_party_id",
+				Name:    "consent_user_consents_client_id",
 				Unique:  false,
 				Columns: []*schema.Column{ConsentsColumns[3], ConsentsColumns[1]},
 			},

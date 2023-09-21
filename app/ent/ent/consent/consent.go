@@ -14,8 +14,8 @@ const (
 	Label = "consent"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
-	FieldRelyingPartyID = "relying_party_id"
+	// FieldClientID holds the string denoting the client_id field in the database.
+	FieldClientID = "client_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUserConsents holds the string denoting the user_consents field in the database.
@@ -36,7 +36,7 @@ const (
 // Columns holds all SQL columns for consent fields.
 var Columns = []string{
 	FieldID,
-	FieldRelyingPartyID,
+	FieldClientID,
 	FieldCreatedAt,
 	FieldUserConsents,
 }
@@ -75,9 +75,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByRelyingPartyID orders the results by the relying_party_id field.
-func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
+// ByClientID orders the results by the client_id field.
+func ByClientID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldClientID, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

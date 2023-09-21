@@ -19,8 +19,8 @@ type Consent struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID typedef.ConsentID `json:"id,omitempty"`
-	// RelyingPartyID holds the value of the "relying_party_id" field.
-	RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
+	// ClientID holds the value of the "client_id" field.
+	ClientID string `json:"client_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UserConsents holds the value of the "user_consents" field.
@@ -59,8 +59,10 @@ func (*Consent) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case consent.FieldID, consent.FieldRelyingPartyID, consent.FieldUserConsents:
+		case consent.FieldID, consent.FieldUserConsents:
 			values[i] = new(sql.NullInt64)
+		case consent.FieldClientID:
+			values[i] = new(sql.NullString)
 		case consent.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		case consent.ForeignKeys[0]: // user_consents
@@ -86,11 +88,11 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.ID = typedef.ConsentID(value.Int64)
 			}
-		case consent.FieldRelyingPartyID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
+		case consent.FieldClientID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
-				c.RelyingPartyID = typedef.RelyingPartyID(value.Int64)
+				c.ClientID = value.String
 			}
 		case consent.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -152,8 +154,8 @@ func (c *Consent) String() string {
 	var builder strings.Builder
 	builder.WriteString("Consent(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
-	builder.WriteString("relying_party_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.RelyingPartyID))
+	builder.WriteString("client_id=")
+	builder.WriteString(c.ClientID)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(c.CreatedAt.Format(time.ANSIC))

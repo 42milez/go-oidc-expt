@@ -299,12 +299,12 @@ func (cq *ConsentQuery) WithUser(opts ...func(*UserQuery)) *ConsentQuery {
 // Example:
 //
 //	var v []struct {
-//		RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
+//		ClientID string `json:"client_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Consent.Query().
-//		GroupBy(consent.FieldRelyingPartyID).
+//		GroupBy(consent.FieldClientID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cq *ConsentQuery) GroupBy(field string, fields ...string) *ConsentGroupBy {
@@ -322,11 +322,11 @@ func (cq *ConsentQuery) GroupBy(field string, fields ...string) *ConsentGroupBy 
 // Example:
 //
 //	var v []struct {
-//		RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
+//		ClientID string `json:"client_id,omitempty"`
 //	}
 //
 //	client.Consent.Query().
-//		Select(consent.FieldRelyingPartyID).
+//		Select(consent.FieldClientID).
 //		Scan(ctx, &v)
 func (cq *ConsentQuery) Select(fields ...string) *ConsentSelect {
 	cq.ctx.Fields = append(cq.ctx.Fields, fields...)

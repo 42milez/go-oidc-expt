@@ -56,10 +56,9 @@ func IDLTE(id typedef.ConsentID) predicate.Consent {
 	return predicate.Consent(sql.FieldLTE(FieldID, id))
 }
 
-// RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
-func RelyingPartyID(v typedef.RelyingPartyID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldEQ(FieldRelyingPartyID, vc))
+// ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
+func ClientID(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldEQ(FieldClientID, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -73,58 +72,69 @@ func UserConsents(v typedef.UserID) predicate.Consent {
 	return predicate.Consent(sql.FieldEQ(FieldUserConsents, vc))
 }
 
-// RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
-func RelyingPartyIDEQ(v typedef.RelyingPartyID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldEQ(FieldRelyingPartyID, vc))
+// ClientIDEQ applies the EQ predicate on the "client_id" field.
+func ClientIDEQ(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldEQ(FieldClientID, v))
 }
 
-// RelyingPartyIDNEQ applies the NEQ predicate on the "relying_party_id" field.
-func RelyingPartyIDNEQ(v typedef.RelyingPartyID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldNEQ(FieldRelyingPartyID, vc))
+// ClientIDNEQ applies the NEQ predicate on the "client_id" field.
+func ClientIDNEQ(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldNEQ(FieldClientID, v))
 }
 
-// RelyingPartyIDIn applies the In predicate on the "relying_party_id" field.
-func RelyingPartyIDIn(vs ...typedef.RelyingPartyID) predicate.Consent {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = uint64(vs[i])
-	}
-	return predicate.Consent(sql.FieldIn(FieldRelyingPartyID, v...))
+// ClientIDIn applies the In predicate on the "client_id" field.
+func ClientIDIn(vs ...string) predicate.Consent {
+	return predicate.Consent(sql.FieldIn(FieldClientID, vs...))
 }
 
-// RelyingPartyIDNotIn applies the NotIn predicate on the "relying_party_id" field.
-func RelyingPartyIDNotIn(vs ...typedef.RelyingPartyID) predicate.Consent {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = uint64(vs[i])
-	}
-	return predicate.Consent(sql.FieldNotIn(FieldRelyingPartyID, v...))
+// ClientIDNotIn applies the NotIn predicate on the "client_id" field.
+func ClientIDNotIn(vs ...string) predicate.Consent {
+	return predicate.Consent(sql.FieldNotIn(FieldClientID, vs...))
 }
 
-// RelyingPartyIDGT applies the GT predicate on the "relying_party_id" field.
-func RelyingPartyIDGT(v typedef.RelyingPartyID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldGT(FieldRelyingPartyID, vc))
+// ClientIDGT applies the GT predicate on the "client_id" field.
+func ClientIDGT(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldGT(FieldClientID, v))
 }
 
-// RelyingPartyIDGTE applies the GTE predicate on the "relying_party_id" field.
-func RelyingPartyIDGTE(v typedef.RelyingPartyID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldGTE(FieldRelyingPartyID, vc))
+// ClientIDGTE applies the GTE predicate on the "client_id" field.
+func ClientIDGTE(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldGTE(FieldClientID, v))
 }
 
-// RelyingPartyIDLT applies the LT predicate on the "relying_party_id" field.
-func RelyingPartyIDLT(v typedef.RelyingPartyID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldLT(FieldRelyingPartyID, vc))
+// ClientIDLT applies the LT predicate on the "client_id" field.
+func ClientIDLT(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldLT(FieldClientID, v))
 }
 
-// RelyingPartyIDLTE applies the LTE predicate on the "relying_party_id" field.
-func RelyingPartyIDLTE(v typedef.RelyingPartyID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldLTE(FieldRelyingPartyID, vc))
+// ClientIDLTE applies the LTE predicate on the "client_id" field.
+func ClientIDLTE(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldLTE(FieldClientID, v))
+}
+
+// ClientIDContains applies the Contains predicate on the "client_id" field.
+func ClientIDContains(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldContains(FieldClientID, v))
+}
+
+// ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
+func ClientIDHasPrefix(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldHasPrefix(FieldClientID, v))
+}
+
+// ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
+func ClientIDHasSuffix(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldHasSuffix(FieldClientID, v))
+}
+
+// ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
+func ClientIDEqualFold(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldEqualFold(FieldClientID, v))
+}
+
+// ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
+func ClientIDContainsFold(v string) predicate.Consent {
+	return predicate.Consent(sql.FieldContainsFold(FieldClientID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

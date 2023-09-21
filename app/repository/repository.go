@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/42milez/go-oidc-server/app/datastore"
+	"github.com/42milez/go-oidc-server/app/ent/ent"
 )
 
 func NewCheckHealth(db *datastore.Database, cache *datastore.Cache) *CheckHealth {
@@ -28,4 +30,11 @@ func NewUser(db *datastore.Database, idGen IDGenerator) *User {
 		db:    db,
 		idGen: idGen,
 	}
+}
+
+func rollback(tx *ent.Tx, err error) error {
+	if retErr := tx.Rollback(); retErr != nil {
+		return fmt.Errorf("%w: %v", err, retErr)
+	}
+	return err
 }

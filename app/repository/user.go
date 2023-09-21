@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
@@ -22,8 +21,29 @@ func (u *User) CreateUser(ctx context.Context, name string, pw string) (*ent.Use
 }
 
 func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
-	// NOT IMPLEMENTED
-	return nil, nil
+	tx, err := u.db.Client.Tx(ctx)
+
+	if err != nil {
+		return nil, rollback(tx, err)
+	}
+
+	targetUser, err := tx.User.Query().Where(user.ID(userID)).Only(ctx)
+
+	if err != nil {
+		return nil, rollback(tx, err)
+	}
+
+	consent, err := tx.Consent.Create().SetUser(targetUser).SetClientID(clientID).Save(ctx)
+
+	if err != nil {
+		return nil, rollback(tx, err)
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, rollback(tx, err)
+	}
+
+	return consent, nil
 }
 
 func (u *User) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {

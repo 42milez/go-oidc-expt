@@ -712,20 +712,19 @@ func (m *AuthCodeMutation) ResetEdge(name string) error {
 // ConsentMutation represents an operation that mutates the Consent nodes in the graph.
 type ConsentMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *typedef.ConsentID
-	relying_party_id    *typedef.RelyingPartyID
-	addrelying_party_id *typedef.RelyingPartyID
-	created_at          *time.Time
-	user_consents       *typedef.UserID
-	adduser_consents    *typedef.UserID
-	clearedFields       map[string]struct{}
-	user                *typedef.UserID
-	cleareduser         bool
-	done                bool
-	oldValue            func(context.Context) (*Consent, error)
-	predicates          []predicate.Consent
+	op               Op
+	typ              string
+	id               *typedef.ConsentID
+	client_id        *string
+	created_at       *time.Time
+	user_consents    *typedef.UserID
+	adduser_consents *typedef.UserID
+	clearedFields    map[string]struct{}
+	user             *typedef.UserID
+	cleareduser      bool
+	done             bool
+	oldValue         func(context.Context) (*Consent, error)
+	predicates       []predicate.Consent
 }
 
 var _ ent.Mutation = (*ConsentMutation)(nil)
@@ -832,60 +831,40 @@ func (m *ConsentMutation) IDs(ctx context.Context) ([]typedef.ConsentID, error) 
 	}
 }
 
-// SetRelyingPartyID sets the "relying_party_id" field.
-func (m *ConsentMutation) SetRelyingPartyID(tpi typedef.RelyingPartyID) {
-	m.relying_party_id = &tpi
-	m.addrelying_party_id = nil
+// SetClientID sets the "client_id" field.
+func (m *ConsentMutation) SetClientID(s string) {
+	m.client_id = &s
 }
 
-// RelyingPartyID returns the value of the "relying_party_id" field in the mutation.
-func (m *ConsentMutation) RelyingPartyID() (r typedef.RelyingPartyID, exists bool) {
-	v := m.relying_party_id
+// ClientID returns the value of the "client_id" field in the mutation.
+func (m *ConsentMutation) ClientID() (r string, exists bool) {
+	v := m.client_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldRelyingPartyID returns the old "relying_party_id" field's value of the Consent entity.
+// OldClientID returns the old "client_id" field's value of the Consent entity.
 // If the Consent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ConsentMutation) OldRelyingPartyID(ctx context.Context) (v typedef.RelyingPartyID, err error) {
+func (m *ConsentMutation) OldClientID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRelyingPartyID is only allowed on UpdateOne operations")
+		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRelyingPartyID requires an ID field in the mutation")
+		return v, errors.New("OldClientID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRelyingPartyID: %w", err)
+		return v, fmt.Errorf("querying old value for OldClientID: %w", err)
 	}
-	return oldValue.RelyingPartyID, nil
+	return oldValue.ClientID, nil
 }
 
-// AddRelyingPartyID adds tpi to the "relying_party_id" field.
-func (m *ConsentMutation) AddRelyingPartyID(tpi typedef.RelyingPartyID) {
-	if m.addrelying_party_id != nil {
-		*m.addrelying_party_id += tpi
-	} else {
-		m.addrelying_party_id = &tpi
-	}
-}
-
-// AddedRelyingPartyID returns the value that was added to the "relying_party_id" field in this mutation.
-func (m *ConsentMutation) AddedRelyingPartyID() (r typedef.RelyingPartyID, exists bool) {
-	v := m.addrelying_party_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetRelyingPartyID resets all changes to the "relying_party_id" field.
-func (m *ConsentMutation) ResetRelyingPartyID() {
-	m.relying_party_id = nil
-	m.addrelying_party_id = nil
+// ResetClientID resets all changes to the "client_id" field.
+func (m *ConsentMutation) ResetClientID() {
+	m.client_id = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1054,8 +1033,8 @@ func (m *ConsentMutation) Type() string {
 // AddedFields().
 func (m *ConsentMutation) Fields() []string {
 	fields := make([]string, 0, 3)
-	if m.relying_party_id != nil {
-		fields = append(fields, consent.FieldRelyingPartyID)
+	if m.client_id != nil {
+		fields = append(fields, consent.FieldClientID)
 	}
 	if m.created_at != nil {
 		fields = append(fields, consent.FieldCreatedAt)
@@ -1071,8 +1050,8 @@ func (m *ConsentMutation) Fields() []string {
 // schema.
 func (m *ConsentMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case consent.FieldRelyingPartyID:
-		return m.RelyingPartyID()
+	case consent.FieldClientID:
+		return m.ClientID()
 	case consent.FieldCreatedAt:
 		return m.CreatedAt()
 	case consent.FieldUserConsents:
@@ -1086,8 +1065,8 @@ func (m *ConsentMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ConsentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case consent.FieldRelyingPartyID:
-		return m.OldRelyingPartyID(ctx)
+	case consent.FieldClientID:
+		return m.OldClientID(ctx)
 	case consent.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case consent.FieldUserConsents:
@@ -1101,12 +1080,12 @@ func (m *ConsentMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *ConsentMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case consent.FieldRelyingPartyID:
-		v, ok := value.(typedef.RelyingPartyID)
+	case consent.FieldClientID:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetRelyingPartyID(v)
+		m.SetClientID(v)
 		return nil
 	case consent.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1130,9 +1109,6 @@ func (m *ConsentMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ConsentMutation) AddedFields() []string {
 	var fields []string
-	if m.addrelying_party_id != nil {
-		fields = append(fields, consent.FieldRelyingPartyID)
-	}
 	if m.adduser_consents != nil {
 		fields = append(fields, consent.FieldUserConsents)
 	}
@@ -1144,8 +1120,6 @@ func (m *ConsentMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ConsentMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case consent.FieldRelyingPartyID:
-		return m.AddedRelyingPartyID()
 	case consent.FieldUserConsents:
 		return m.AddedUserConsents()
 	}
@@ -1157,13 +1131,6 @@ func (m *ConsentMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ConsentMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case consent.FieldRelyingPartyID:
-		v, ok := value.(typedef.RelyingPartyID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddRelyingPartyID(v)
-		return nil
 	case consent.FieldUserConsents:
 		v, ok := value.(typedef.UserID)
 		if !ok {
@@ -1198,8 +1165,8 @@ func (m *ConsentMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ConsentMutation) ResetField(name string) error {
 	switch name {
-	case consent.FieldRelyingPartyID:
-		m.ResetRelyingPartyID()
+	case consent.FieldClientID:
+		m.ResetClientID()
 		return nil
 	case consent.FieldCreatedAt:
 		m.ResetCreatedAt()

@@ -11,6 +11,8 @@ type AcceptConsent struct {
 }
 
 func (ac *AcceptConsent) AcceptConsent(ctx context.Context, userID typedef.UserID, clientID string) error {
-	// NOT IMPLEMENTED
+	if _, err := ac.repo.CreateConsent(ctx, userID, clientID); err != nil {
+		return err
+	}
 	return nil
 }
