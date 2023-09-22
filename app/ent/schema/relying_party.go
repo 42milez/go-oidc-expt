@@ -19,7 +19,8 @@ type RelyingParty struct {
 func (RelyingParty) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("id").
-			GoType(typedef.RelyingPartyID(0)),
+			GoType(typedef.RelyingPartyID(0)).
+			Immutable(),
 		field.String("client_id").
 			Unique().
 			Immutable(),
@@ -29,7 +30,8 @@ func (RelyingParty) Fields() []ent.Field {
 			Default(time.Now).
 			Immutable(),
 		field.Time("modified_at").
-			Default(time.Now),
+			Default(time.Now).
+			UpdateDefault(time.Now),
 	}
 }
 

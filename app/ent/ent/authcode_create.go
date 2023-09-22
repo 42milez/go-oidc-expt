@@ -22,6 +22,12 @@ type AuthCodeCreate struct {
 	hooks    []Hook
 }
 
+// SetUserID sets the "user_id" field.
+func (acc *AuthCodeCreate) SetUserID(ti typedef.UserID) *AuthCodeCreate {
+	acc.mutation.SetUserID(ti)
+	return acc
+}
+
 // SetCode sets the "code" field.
 func (acc *AuthCodeCreate) SetCode(s string) *AuthCodeCreate {
 	acc.mutation.SetCode(s)
@@ -42,20 +48,6 @@ func (acc *AuthCodeCreate) SetNillableExpireAt(t *time.Time) *AuthCodeCreate {
 	return acc
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (acc *AuthCodeCreate) SetCreatedAt(t time.Time) *AuthCodeCreate {
-	acc.mutation.SetCreatedAt(t)
-	return acc
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (acc *AuthCodeCreate) SetNillableCreatedAt(t *time.Time) *AuthCodeCreate {
-	if t != nil {
-		acc.SetCreatedAt(*t)
-	}
-	return acc
-}
-
 // SetUsedAt sets the "used_at" field.
 func (acc *AuthCodeCreate) SetUsedAt(t time.Time) *AuthCodeCreate {
 	acc.mutation.SetUsedAt(t)
@@ -70,29 +62,43 @@ func (acc *AuthCodeCreate) SetNillableUsedAt(t *time.Time) *AuthCodeCreate {
 	return acc
 }
 
-// SetRelyingPartyAuthCodes sets the "relying_party_auth_codes" field.
-func (acc *AuthCodeCreate) SetRelyingPartyAuthCodes(tpi typedef.RelyingPartyID) *AuthCodeCreate {
-	acc.mutation.SetRelyingPartyAuthCodes(tpi)
+// SetCreatedAt sets the "created_at" field.
+func (acc *AuthCodeCreate) SetCreatedAt(t time.Time) *AuthCodeCreate {
+	acc.mutation.SetCreatedAt(t)
+	return acc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (acc *AuthCodeCreate) SetNillableCreatedAt(t *time.Time) *AuthCodeCreate {
+	if t != nil {
+		acc.SetCreatedAt(*t)
+	}
+	return acc
+}
+
+// SetModifiedAt sets the "modified_at" field.
+func (acc *AuthCodeCreate) SetModifiedAt(t time.Time) *AuthCodeCreate {
+	acc.mutation.SetModifiedAt(t)
+	return acc
+}
+
+// SetNillableModifiedAt sets the "modified_at" field if the given value is not nil.
+func (acc *AuthCodeCreate) SetNillableModifiedAt(t *time.Time) *AuthCodeCreate {
+	if t != nil {
+		acc.SetModifiedAt(*t)
+	}
+	return acc
+}
+
+// SetRelyingPartyID sets the "relying_party_id" field.
+func (acc *AuthCodeCreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *AuthCodeCreate {
+	acc.mutation.SetRelyingPartyID(tpi)
 	return acc
 }
 
 // SetID sets the "id" field.
 func (acc *AuthCodeCreate) SetID(tci typedef.AuthCodeID) *AuthCodeCreate {
 	acc.mutation.SetID(tci)
-	return acc
-}
-
-// SetRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID.
-func (acc *AuthCodeCreate) SetRelyingPartyID(id typedef.RelyingPartyID) *AuthCodeCreate {
-	acc.mutation.SetRelyingPartyID(id)
-	return acc
-}
-
-// SetNillableRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID if the given value is not nil.
-func (acc *AuthCodeCreate) SetNillableRelyingPartyID(id *typedef.RelyingPartyID) *AuthCodeCreate {
-	if id != nil {
-		acc = acc.SetRelyingPartyID(*id)
-	}
 	return acc
 }
 
@@ -144,10 +150,17 @@ func (acc *AuthCodeCreate) defaults() {
 		v := authcode.DefaultCreatedAt()
 		acc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := acc.mutation.ModifiedAt(); !ok {
+		v := authcode.DefaultModifiedAt()
+		acc.mutation.SetModifiedAt(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (acc *AuthCodeCreate) check() error {
+	if _, ok := acc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthCode.user_id"`)}
+	}
 	if _, ok := acc.mutation.Code(); !ok {
 		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "AuthCode.code"`)}
 	}
@@ -162,8 +175,14 @@ func (acc *AuthCodeCreate) check() error {
 	if _, ok := acc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "AuthCode.created_at"`)}
 	}
-	if _, ok := acc.mutation.RelyingPartyAuthCodes(); !ok {
-		return &ValidationError{Name: "relying_party_auth_codes", err: errors.New(`ent: missing required field "AuthCode.relying_party_auth_codes"`)}
+	if _, ok := acc.mutation.ModifiedAt(); !ok {
+		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "AuthCode.modified_at"`)}
+	}
+	if _, ok := acc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "AuthCode.relying_party_id"`)}
+	}
+	if _, ok := acc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party", err: errors.New(`ent: missing required edge "AuthCode.relying_party"`)}
 	}
 	return nil
 }
@@ -197,6 +216,10 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := acc.mutation.UserID(); ok {
+		_spec.SetField(authcode.FieldUserID, field.TypeUint64, value)
+		_node.UserID = value
+	}
 	if value, ok := acc.mutation.Code(); ok {
 		_spec.SetField(authcode.FieldCode, field.TypeString, value)
 		_node.Code = value
@@ -205,17 +228,17 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 		_spec.SetField(authcode.FieldExpireAt, field.TypeTime, value)
 		_node.ExpireAt = value
 	}
-	if value, ok := acc.mutation.CreatedAt(); ok {
-		_spec.SetField(authcode.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
 	if value, ok := acc.mutation.UsedAt(); ok {
 		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
 		_node.UsedAt = &value
 	}
-	if value, ok := acc.mutation.RelyingPartyAuthCodes(); ok {
-		_spec.SetField(authcode.FieldRelyingPartyAuthCodes, field.TypeUint64, value)
-		_node.RelyingPartyAuthCodes = value
+	if value, ok := acc.mutation.CreatedAt(); ok {
+		_spec.SetField(authcode.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := acc.mutation.ModifiedAt(); ok {
+		_spec.SetField(authcode.FieldModifiedAt, field.TypeTime, value)
+		_node.ModifiedAt = value
 	}
 	if nodes := acc.mutation.RelyingPartyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -231,7 +254,7 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.relying_party_auth_codes = &nodes[0]
+		_node.RelyingPartyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

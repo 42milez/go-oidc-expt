@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
+
 	"github.com/rs/zerolog/log"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -26,7 +28,7 @@ type AuthenticateHdlr struct {
 const sessionIDCookieName = config.SessionIDCookieName
 
 func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var reqBody AuthenticateJSONRequestBody
+	var reqBody oapigen.AuthenticateJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		log.Error().Err(err).Msg(errFailedToDecodeRequestBody)

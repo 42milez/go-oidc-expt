@@ -12,7 +12,12 @@ import (
 
 const nRelyingPartyMin = 1
 
-func insertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingParty int) ([]*ent.RelyingParty, error) {
+type RelyingParty struct {
+	ClientID     string
+	ClientSecret string
+}
+
+func InsertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingParty int) ([]*ent.RelyingParty, error) {
 	if db == nil {
 		return nil, fmt.Errorf("database client required")
 	}
@@ -21,30 +26,25 @@ func insertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingP
 		return nil, fmt.Errorf("the number of relying parties must be greater than or equal to %d", nRelyingPartyMin)
 	}
 
-	params := make([]struct {
-		clientID     string
-		clientSecret string
-	}, nRelyingParty)
+	params := make([]RelyingParty, nRelyingParty)
 
 	for i := 0; i < nRelyingParty; i++ {
 		v, err := xrandom.MakeCryptoRandomString(config.ClientIdLength)
 		if err != nil {
 			return nil, err
 		}
-		params[i].clientID = string(v)
+		params[i].ClientID = string(v)
 		v, err = xrandom.MakeCryptoRandomString(config.ClientSecretLength)
 		if err != nil {
 			return nil, err
 		}
-		params[i].clientSecret = string(v)
+		params[i].ClientSecret = string(v)
 	}
-
-	printSeeds(params)
 
 	builders := make([]*ent.RelyingPartyCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = db.Client.RelyingParty.Create().SetClientID(v.clientID).SetClientSecret(v.clientSecret)
+		builders[i] = db.Client.RelyingParty.Create().SetClientID(v.ClientID).SetClientSecret(v.ClientSecret)
 	}
 
 	return db.Client.RelyingParty.CreateBulk(builders...).Save(ctx)

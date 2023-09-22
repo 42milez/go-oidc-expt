@@ -7,8 +7,7 @@ import (
 )
 
 type Session struct {
-	UserID  typedef.UserID
-	Consent bool
+	UserID typedef.UserID
 }
 
 func (s *Session) MarshalBinary() ([]byte, error) {

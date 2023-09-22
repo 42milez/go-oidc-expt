@@ -24,7 +24,6 @@ type AuthCodeQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.AuthCode
 	withRelyingParty *RelyingPartyQuery
-	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -299,12 +298,12 @@ func (acq *AuthCodeQuery) WithRelyingParty(opts ...func(*RelyingPartyQuery)) *Au
 // Example:
 //
 //	var v []struct {
-//		Code string `json:"code,omitempty"`
+//		UserID typedef.UserID `json:"user_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.AuthCode.Query().
-//		GroupBy(authcode.FieldCode).
+//		GroupBy(authcode.FieldUserID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (acq *AuthCodeQuery) GroupBy(field string, fields ...string) *AuthCodeGroupBy {
@@ -322,11 +321,11 @@ func (acq *AuthCodeQuery) GroupBy(field string, fields ...string) *AuthCodeGroup
 // Example:
 //
 //	var v []struct {
-//		Code string `json:"code,omitempty"`
+//		UserID typedef.UserID `json:"user_id,omitempty"`
 //	}
 //
 //	client.AuthCode.Query().
-//		Select(authcode.FieldCode).
+//		Select(authcode.FieldUserID).
 //		Scan(ctx, &v)
 func (acq *AuthCodeQuery) Select(fields ...string) *AuthCodeSelect {
 	acq.ctx.Fields = append(acq.ctx.Fields, fields...)
@@ -370,18 +369,11 @@ func (acq *AuthCodeQuery) prepareQuery(ctx context.Context) error {
 func (acq *AuthCodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AuthCode, error) {
 	var (
 		nodes       = []*AuthCode{}
-		withFKs     = acq.withFKs
 		_spec       = acq.querySpec()
 		loadedTypes = [1]bool{
 			acq.withRelyingParty != nil,
 		}
 	)
-	if acq.withRelyingParty != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, authcode.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AuthCode).scanValues(nil, columns)
 	}
@@ -413,10 +405,7 @@ func (acq *AuthCodeQuery) loadRelyingParty(ctx context.Context, query *RelyingPa
 	ids := make([]typedef.RelyingPartyID, 0, len(nodes))
 	nodeids := make(map[typedef.RelyingPartyID][]*AuthCode)
 	for i := range nodes {
-		if nodes[i].relying_party_auth_codes == nil {
-			continue
-		}
-		fk := *nodes[i].relying_party_auth_codes
+		fk := nodes[i].RelyingPartyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -433,7 +422,7 @@ func (acq *AuthCodeQuery) loadRelyingParty(ctx context.Context, query *RelyingPa
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "relying_party_auth_codes" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "relying_party_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -466,6 +455,9 @@ func (acq *AuthCodeQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != authcode.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if acq.withRelyingParty != nil {
+			_spec.Node.AddColumnOnce(authcode.FieldRelyingPartyID)
 		}
 	}
 	if ps := acq.predicates; len(ps) > 0 {

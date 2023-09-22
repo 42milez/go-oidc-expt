@@ -1,4 +1,4 @@
-package validation
+package api
 
 import (
 	"strings"
@@ -9,7 +9,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func NewAuthorizeValidator() (*validator.Validate, error) {
+func NewAuthorizeParamValidator() (*validator.Validate, error) {
 	ret := validator.New()
 
 	if err := ret.RegisterValidation("scope-validator", validateScope); err != nil {

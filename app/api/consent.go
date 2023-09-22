@@ -3,9 +3,12 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/service"
+
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
+
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-	"github.com/42milez/go-oidc-server/app/service"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
@@ -19,7 +22,7 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	decoder := schema.NewDecoder()
-	q := &AuthorizeParams{}
+	q := &oapigen.AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
@@ -28,19 +31,19 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sess, ok := service.GetSession(ctx)
-
-	if !ok {
-		RespondJSON(w, http.StatusUnauthorized, &ErrorResponse{
-			Status:  http.StatusUnauthorized,
-			Summary: xerr.UnauthorizedRequest,
+	if err := ch.validator.Struct(q); err != nil {
+		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
+			Error: xerr.InvalidRequest,
 		})
 		return
 	}
 
-	if err := ch.validator.Struct(q); err != nil {
-		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.InvalidRequest,
+	sess, ok := service.GetSession(ctx)
+
+	if !ok {
+		RespondJSON(w, http.StatusUnauthorized, &oapigen.ErrorResponse{
+			Status:  http.StatusUnauthorized,
+			Summary: xerr.UnauthorizedRequest,
 		})
 		return
 	}

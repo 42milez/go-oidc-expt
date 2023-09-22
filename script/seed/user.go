@@ -11,7 +11,12 @@ import (
 
 const nUserMin = 1
 
-func insertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent.User, error) {
+type User struct {
+	Name     string
+	Password string
+}
+
+func InsertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent.User, error) {
 	if db == nil {
 		return nil, fmt.Errorf("database client required")
 	}
@@ -20,29 +25,24 @@ func insertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent
 		return nil, fmt.Errorf("the number of users must be greater than or equal to %d", nUserMin)
 	}
 
-	params := make([]struct {
-		name     string
-		password string
-	}, nUser)
+	params := make([]User, nUser)
 
 	for i := 0; i < nUser; i++ {
-		params[i].name = fmt.Sprintf("username%d", i)
+		params[i].Name = fmt.Sprintf("username%d", i)
 	}
 
 	for i, v := range params {
-		pwHash, err := xargon2.HashPassword(v.name)
+		pwHash, err := xargon2.HashPassword(v.Name)
 		if err != nil {
 			return nil, err
 		}
-		params[i].password = pwHash
+		params[i].Password = pwHash
 	}
-
-	printSeeds(params)
 
 	builders := make([]*ent.UserCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = db.Client.User.Create().SetName(v.name).SetPassword(v.password)
+		builders[i] = db.Client.User.Create().SetName(v.Name).SetPassword(v.Password)
 	}
 
 	return db.Client.User.CreateBulk(builders...).Save(ctx)

@@ -24,7 +24,6 @@ type ConsentQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Consent
 	withUser   *UserQuery
-	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -370,18 +369,11 @@ func (cq *ConsentQuery) prepareQuery(ctx context.Context) error {
 func (cq *ConsentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Consent, error) {
 	var (
 		nodes       = []*Consent{}
-		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
 		loadedTypes = [1]bool{
 			cq.withUser != nil,
 		}
 	)
-	if cq.withUser != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, consent.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Consent).scanValues(nil, columns)
 	}
@@ -413,10 +405,7 @@ func (cq *ConsentQuery) loadUser(ctx context.Context, query *UserQuery, nodes []
 	ids := make([]typedef.UserID, 0, len(nodes))
 	nodeids := make(map[typedef.UserID][]*Consent)
 	for i := range nodes {
-		if nodes[i].user_consents == nil {
-			continue
-		}
-		fk := *nodes[i].user_consents
+		fk := nodes[i].UserID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -433,7 +422,7 @@ func (cq *ConsentQuery) loadUser(ctx context.Context, query *UserQuery, nodes []
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_consents" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -466,6 +455,9 @@ func (cq *ConsentQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != consent.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withUser != nil {
+			_spec.Node.AddColumnOnce(consent.FieldUserID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

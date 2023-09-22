@@ -25,13 +25,12 @@ type RedirectURI struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
 	ModifiedAt time.Time `json:"modified_at,omitempty"`
-	// RelyingPartyRedirectUris holds the value of the "relying_party_redirect_uris" field.
-	RelyingPartyRedirectUris typedef.RelyingPartyID `json:"relying_party_redirect_uris,omitempty"`
+	// RelyingPartyID holds the value of the "relying_party_id" field.
+	RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RedirectURIQuery when eager-loading is set.
-	Edges                       RedirectURIEdges `json:"edges"`
-	relying_party_redirect_uris *typedef.RelyingPartyID
-	selectValues                sql.SelectValues
+	Edges        RedirectURIEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // RedirectURIEdges holds the relations/edges for other nodes in the graph.
@@ -61,14 +60,12 @@ func (*RedirectURI) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case redirecturi.FieldID, redirecturi.FieldRelyingPartyRedirectUris:
+		case redirecturi.FieldID, redirecturi.FieldRelyingPartyID:
 			values[i] = new(sql.NullInt64)
 		case redirecturi.FieldURI:
 			values[i] = new(sql.NullString)
 		case redirecturi.FieldCreatedAt, redirecturi.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
-		case redirecturi.ForeignKeys[0]: // relying_party_redirect_uris
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -108,18 +105,11 @@ func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ru.ModifiedAt = value.Time
 			}
-		case redirecturi.FieldRelyingPartyRedirectUris:
+		case redirecturi.FieldRelyingPartyID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_redirect_uris", values[i])
+				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
 			} else if value.Valid {
-				ru.RelyingPartyRedirectUris = typedef.RelyingPartyID(value.Int64)
-			}
-		case redirecturi.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_redirect_uris", values[i])
-			} else if value.Valid {
-				ru.relying_party_redirect_uris = new(typedef.RelyingPartyID)
-				*ru.relying_party_redirect_uris = typedef.RelyingPartyID(value.Int64)
+				ru.RelyingPartyID = typedef.RelyingPartyID(value.Int64)
 			}
 		default:
 			ru.selectValues.Set(columns[i], values[i])
@@ -171,8 +161,8 @@ func (ru *RedirectURI) String() string {
 	builder.WriteString("modified_at=")
 	builder.WriteString(ru.ModifiedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("relying_party_redirect_uris=")
-	builder.WriteString(fmt.Sprintf("%v", ru.RelyingPartyRedirectUris))
+	builder.WriteString("relying_party_id=")
+	builder.WriteString(fmt.Sprintf("%v", ru.RelyingPartyID))
 	builder.WriteByte(')')
 	return builder.String()
 }

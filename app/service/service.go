@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
-// --------------------------------------------------
 //  AUTHENTICATION
 // --------------------------------------------------
 
@@ -16,7 +15,6 @@ func NewAuthenticate(repo UserByNameReader, tokenGen TokenGenerator) *Authentica
 	}
 }
 
-// --------------------------------------------------
 //  OIDC: Authorization
 // --------------------------------------------------
 
@@ -32,7 +30,6 @@ func NewConsent(repo ConsentCreator) *AcceptConsent {
 	}
 }
 
-// --------------------------------------------------
 //  COOKIE
 // --------------------------------------------------
 
@@ -43,7 +40,6 @@ func NewCookie(hashKey, blockKey []byte, clock xtime.Clocker) *Cookie {
 	}
 }
 
-// --------------------------------------------------
 //  HEALTH CHECK
 // --------------------------------------------------
 
@@ -53,7 +49,6 @@ func NewCheckHealth(repo HealthChecker) *CheckHealth {
 	}
 }
 
-// --------------------------------------------------
 //  SESSION
 // --------------------------------------------------
 
@@ -75,7 +70,6 @@ func NewUpdateSession(repo SessionUpdater) *UpdateSession {
 	}
 }
 
-// --------------------------------------------------
 //  USER
 // --------------------------------------------------
 

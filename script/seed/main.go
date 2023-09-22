@@ -13,44 +13,67 @@ import (
 	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
 )
 
-func printSeeds(data any) {
+func PrintSeeds(data any) {
 	v := reflect.ValueOf(data)
 	for i := 0; i < v.Len(); i++ {
 		fmt.Printf("%+v\n", v.Index(i).Interface())
 	}
 }
 
-func run(ctx context.Context, db *datastore.Database) error {
-	nRelyingParty := 10
-	nAuthCodeByClient := 3
+func Run(ctx context.Context, db *datastore.Database) error {
+	nUser := 10
+	nConsentByUser := 3
+
+	nRelyingParty := nUser * nConsentByUser
+	nAuthCodeByRelyingParty := 3
 	nRedirectUriByRelyingParty := 3
 
-	nUser := 5
-	nConsentByUser := 3
+	var err error
+
+	// --------------------------------------------------
+	//  OWNER EDGES
+	// --------------------------------------------------
 
 	var relyingParties []*ent.RelyingParty
 	var users []*ent.User
-	var err error
 
-	if relyingParties, err = insertRelyingParties(ctx, db, nRelyingParty); err != nil {
+	if relyingParties, err = InsertRelyingParties(ctx, db, nRelyingParty); err != nil {
 		return err
 	}
 
-	if _, err = insertAuthCodes(ctx, db, relyingParties, nAuthCodeByClient); err != nil {
+	PrintSeeds(relyingParties)
+
+	if users, err = InsertUsers(ctx, db, nUser); err != nil {
 		return err
 	}
 
-	if _, err = insertRedirectURIs(ctx, db, relyingParties, nRedirectUriByRelyingParty); err != nil {
+	PrintSeeds(users)
+
+	// --------------------------------------------------
+	//  OTHER EDGES
+	// --------------------------------------------------
+
+	var authCodes []*ent.AuthCode
+	var redirectURIs []*ent.RedirectURI
+	var consents []*ent.Consent
+
+	if authCodes, err = InsertAuthCodes(ctx, db, relyingParties, users, nAuthCodeByRelyingParty); err != nil {
 		return err
 	}
 
-	if users, err = insertUsers(ctx, db, nUser); err != nil {
+	PrintSeeds(authCodes)
+
+	if redirectURIs, err = InsertRedirectURIs(ctx, db, relyingParties, nRedirectUriByRelyingParty); err != nil {
 		return err
 	}
 
-	if _, err = insertConsents(ctx, db, users, relyingParties, nConsentByUser); err != nil {
+	PrintSeeds(redirectURIs)
+
+	if consents, err = InsertConsents(ctx, db, users, relyingParties, nConsentByUser); err != nil {
 		return err
 	}
+
+	PrintSeeds(consents)
 
 	return nil
 }
@@ -72,7 +95,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err = run(ctx, db); err != nil {
+	if err = Run(ctx, db); err != nil {
 		log.Fatal(err)
 	}
 }

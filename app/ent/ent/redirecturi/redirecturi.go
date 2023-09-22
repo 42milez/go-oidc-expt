@@ -20,8 +20,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldModifiedAt holds the string denoting the modified_at field in the database.
 	FieldModifiedAt = "modified_at"
-	// FieldRelyingPartyRedirectUris holds the string denoting the relying_party_redirect_uris field in the database.
-	FieldRelyingPartyRedirectUris = "relying_party_redirect_uris"
+	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
+	FieldRelyingPartyID = "relying_party_id"
 	// EdgeRelyingParty holds the string denoting the relying_party edge name in mutations.
 	EdgeRelyingParty = "relying_party"
 	// Table holds the table name of the redirecturi in the database.
@@ -32,7 +32,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "relyingparty" package.
 	RelyingPartyInverseTable = "relying_parties"
 	// RelyingPartyColumn is the table column denoting the relying_party relation/edge.
-	RelyingPartyColumn = "relying_party_redirect_uris"
+	RelyingPartyColumn = "relying_party_id"
 )
 
 // Columns holds all SQL columns for redirecturi fields.
@@ -41,24 +41,13 @@ var Columns = []string{
 	FieldURI,
 	FieldCreatedAt,
 	FieldModifiedAt,
-	FieldRelyingPartyRedirectUris,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "redirect_uris"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"relying_party_redirect_uris",
+	FieldRelyingPartyID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -99,9 +88,9 @@ func ByModifiedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldModifiedAt, opts...).ToFunc()
 }
 
-// ByRelyingPartyRedirectUris orders the results by the relying_party_redirect_uris field.
-func ByRelyingPartyRedirectUris(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRelyingPartyRedirectUris, opts...).ToFunc()
+// ByRelyingPartyID orders the results by the relying_party_id field.
+func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
 }
 
 // ByRelyingPartyField orders the results by relying_party field.

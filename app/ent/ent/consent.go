@@ -23,13 +23,12 @@ type Consent struct {
 	ClientID string `json:"client_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UserConsents holds the value of the "user_consents" field.
-	UserConsents typedef.UserID `json:"user_consents,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID typedef.UserID `json:"user_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ConsentQuery when eager-loading is set.
-	Edges         ConsentEdges `json:"edges"`
-	user_consents *typedef.UserID
-	selectValues  sql.SelectValues
+	Edges        ConsentEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ConsentEdges holds the relations/edges for other nodes in the graph.
@@ -59,14 +58,12 @@ func (*Consent) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case consent.FieldID, consent.FieldUserConsents:
+		case consent.FieldID, consent.FieldUserID:
 			values[i] = new(sql.NullInt64)
 		case consent.FieldClientID:
 			values[i] = new(sql.NullString)
 		case consent.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case consent.ForeignKeys[0]: // user_consents
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -100,18 +97,11 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.CreatedAt = value.Time
 			}
-		case consent.FieldUserConsents:
+		case consent.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_consents", values[i])
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
-				c.UserConsents = typedef.UserID(value.Int64)
-			}
-		case consent.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_consents", values[i])
-			} else if value.Valid {
-				c.user_consents = new(typedef.UserID)
-				*c.user_consents = typedef.UserID(value.Int64)
+				c.UserID = typedef.UserID(value.Int64)
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
@@ -160,8 +150,8 @@ func (c *Consent) String() string {
 	builder.WriteString("created_at=")
 	builder.WriteString(c.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("user_consents=")
-	builder.WriteString(fmt.Sprintf("%v", c.UserConsents))
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.UserID))
 	builder.WriteByte(')')
 	return builder.String()
 }

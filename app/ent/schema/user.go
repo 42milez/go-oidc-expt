@@ -36,22 +36,22 @@ func (User) Mixin() []ent.Mixin {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
-			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-z_]{%d,%d}$", nameMinLength, nameMaxLength))).
+			NotEmpty().
 			Unique().
-			NotEmpty(),
+			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-z_]{%d,%d}$", nameMinLength, nameMaxLength))),
 		field.String("password").
 			SchemaType(map[string]string{
 				dialect.MySQL: PasswordSchemaType(),
 			}).
 			NotEmpty(),
+		// TOTP secret is encoded with base32 encoding.
+		// https://datatracker.ietf.org/doc/html/rfc4648#page-8
 		field.String("totp_secret").
 			SchemaType(map[string]string{
 				dialect.MySQL: TotpSecretSchemaType(),
 			}).
-			// TOTP secret is encoded with base32 encoding.
-			// https://datatracker.ietf.org/doc/html/rfc4648#page-8
-			Match(regexp.MustCompile(fmt.Sprintf("^[A-Z2-7=]{%d}$", totpSecretLength))).
-			Optional(),
+			Optional().
+			Match(regexp.MustCompile(fmt.Sprintf("^[A-Z2-7=]{%d}$", totpSecretLength))),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

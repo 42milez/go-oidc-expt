@@ -20,13 +20,14 @@ type Consent struct {
 func (Consent) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("id").
-			GoType(typedef.ConsentID(0)),
+			GoType(typedef.ConsentID(0)).
+			Immutable(),
 		field.String("client_id").
 			Immutable(),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),
-		field.Uint64("user_consents").
+		field.Uint64("user_id").
 			GoType(typedef.UserID(0)).
 			Immutable(),
 	}
@@ -36,13 +37,17 @@ func (Consent) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
 			Ref("consents").
-			Unique(),
+			Field("user_id").
+			Unique().
+			Required().
+			Immutable(),
 	}
 }
 
 // Indexes of the Consent
 func (Consent) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("user_consents", "client_id"),
+		index.Fields("user_id", "client_id").
+			Unique(),
 	}
 }

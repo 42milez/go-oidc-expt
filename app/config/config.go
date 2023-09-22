@@ -8,7 +8,6 @@ import (
 	"github.com/caarlos0/env/v8"
 )
 
-// --------------------------------------------------
 //  ENVIRONMENT VARIABLE
 // --------------------------------------------------
 
@@ -38,7 +37,6 @@ func New() (*Config, error) {
 	return cfg, nil
 }
 
-// --------------------------------------------------
 //  APPLICATION
 // --------------------------------------------------
 
@@ -46,15 +44,6 @@ const (
 	ConsentURL = "/consent"
 )
 
-// --------------------------------------------------
-//  SESSION
-// --------------------------------------------------
-
-const (
-	SessionTTL = 24 * time.Hour * 30 // 30 days
-)
-
-// --------------------------------------------------
 //  COOKIE
 // --------------------------------------------------
 
@@ -63,21 +52,23 @@ const (
 	SessionIDCookieTTL  = SessionTTL
 )
 
-// --------------------------------------------------
-//  OIDC: RELYING PARTY
+//  SESSION
 // --------------------------------------------------
 
 const (
-	ClientIdLength     = 30
-	ClientSecretLength = 30
+	SessionTTL = 24 * time.Hour * 30 // 30 days
 )
 
-// --------------------------------------------------
-//  OIDC: AUTHORIZATION
+//  OIDC
 // --------------------------------------------------
 
 const (
 	AuthCodeLength        = 30
 	AuthCodeLifetime      = 10 * time.Minute
 	AuthorizationEndpoint = "/authorize"
+)
+
+const (
+	ClientIdLength     = 30
+	ClientSecretLength = 30
 )

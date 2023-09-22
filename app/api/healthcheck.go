@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/rs/zerolog/log"
@@ -14,7 +16,7 @@ type CheckHealthHdlr struct {
 
 func (ch *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	errResp := func() {
-		RespondJSON(w, http.StatusServiceUnavailable, &Health{
+		RespondJSON(w, http.StatusServiceUnavailable, &oapigen.Health{
 			Status: http.StatusServiceUnavailable,
 		})
 	}
@@ -32,7 +34,7 @@ func (ch *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respBody := Health{
+	respBody := oapigen.Health{
 		Status: http.StatusOK,
 	}
 

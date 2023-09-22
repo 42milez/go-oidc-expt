@@ -1,11 +1,25 @@
 package api
 
 import (
+	"context"
 	_ "embed"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
+	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/datastore"
+	"github.com/42milez/go-oidc-server/app/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+	"github.com/42milez/go-oidc-server/app/pkg/xutil"
+	"github.com/42milez/go-oidc-server/app/repository"
+	"github.com/42milez/go-oidc-server/app/service"
+	chimw "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
+	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator/v10"
 )
 
-//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config codegen/config.yml -o api.gen.go spec/spec.yml
+//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config oapigen/config.yml -o oapigen/api.gen.go spec/spec.yml
 
 //go:embed secret/key/block.key
 var rawBlockKey []byte
@@ -44,4 +58,155 @@ func (_ *HandlerImpl) Register(w http.ResponseWriter, r *http.Request) {
 
 func (_ *HandlerImpl) Token(w http.ResponseWriter, r *http.Request) {
 	tokenHdlr.ServeHTTP(w, r)
+}
+
+type HandlerOption struct {
+	cache           *datastore.Cache
+	cookie          *service.Cookie
+	db              *datastore.Database
+	idGenerator     *xid.UniqueID
+	jwtUtil         *JWT
+	sessionCreator  *service.CreateSession
+	sessionRestorer *service.RestoreSession
+	sessionUpdater  *service.UpdateSession
+	validationUtil  *validator.Validate
+}
+
+func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
+	var err error
+
+	//  DATASTORE
+	// --------------------------------------------------
+
+	var db *datastore.Database
+	var cache *datastore.Cache
+
+	if db, err = datastore.NewDatabase(ctx, cfg); err != nil {
+		return nil, nil, err
+	}
+
+	if cache, err = datastore.NewCache(ctx, cfg); err != nil {
+		return nil, nil, err
+	}
+
+	//  HANDLER OPTION
+	// --------------------------------------------------
+
+	var idGen *xid.UniqueID
+
+	if idGen, err = xid.GetUniqueID(); err != nil {
+		return nil, nil, err
+	}
+
+	option := &HandlerOption{
+		cache:           cache,
+		cookie:          service.NewCookie(rawHashKey, rawBlockKey, xtime.RealClocker{}),
+		db:              db,
+		idGenerator:     idGen,
+		sessionCreator:  service.NewCreateSession(repository.NewSession(cache)),
+		sessionRestorer: service.NewRestoreSession(repository.NewSession(cache)),
+		sessionUpdater:  service.NewUpdateSession(repository.NewSession(cache)),
+		validationUtil:  validator.New(),
+	}
+
+	if option.jwtUtil, err = NewJWT(xtime.RealClocker{}); err != nil {
+		return nil, nil, err
+	}
+
+	//  HANDLER
+	// --------------------------------------------------
+
+	authenticateUserHdlr = NewAuthenticateHdlr(option)
+	checkHealthHdlr = NewCheckHealthHdlr(option)
+	registerUserHdlr = NewRegisterHdlr(option)
+	tokenHdlr = NewTokenHdlr(option)
+
+	if authorizeGetHdlr, err = NewAuthorizeGetHdlr(option); err != nil {
+		return nil, nil, err
+	}
+
+	if consentHdlr, err = NewConsentHdlr(option); err != nil {
+		return nil, nil, err
+	}
+
+	//  ROUTER
+	// --------------------------------------------------
+
+	var mux *chi.Mux
+	var mw *oapigen.MiddlewareFuncMap
+	var swag *openapi3.T
+
+	mux = chi.NewRouter()
+
+	if swag, err = oapigen.GetSwagger(); err != nil {
+		return nil, nil, err
+	}
+
+	swag.Servers = nil
+
+	mux.Use(chimw.OapiRequestValidator(swag))
+
+	mw = oapigen.NewMiddlewareFuncMap()
+
+	rs := RestoreSession(option)
+	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs).SetTokenMW(rs)
+
+	mux = oapigen.MuxWithOptions(&HandlerImpl{}, &oapigen.ChiServerOptions{
+		BaseRouter:  mux,
+		Middlewares: mw,
+	})
+
+	return mux, func() {
+		xutil.CloseConnection(db.Client)
+		xutil.CloseConnection(cache.Client)
+	}, nil
+}
+
+func NewAuthenticateHdlr(option *HandlerOption) *AuthenticateHdlr {
+	return &AuthenticateHdlr{
+		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.jwtUtil),
+		cookie:    option.cookie,
+		session:   option.sessionCreator,
+		validator: option.validationUtil,
+	}
+}
+
+func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return nil, err
+	}
+	return &AuthorizeGetHdlr{
+		service:   service.NewAuthorize(repository.NewRelyingParty(option.db)),
+		validator: v,
+	}, nil
+}
+
+func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {
+	return &CheckHealthHdlr{
+		service: service.NewCheckHealth(repository.NewCheckHealth(option.db, option.cache)),
+	}
+}
+
+func NewConsentHdlr(option *HandlerOption) (*ConsentHdlr, error) {
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return nil, err
+	}
+	return &ConsentHdlr{
+		service:   service.NewConsent(repository.NewUser(option.db, option.idGenerator)),
+		validator: v,
+	}, nil
+}
+
+func NewRegisterHdlr(option *HandlerOption) *RegisterHdlr {
+	return &RegisterHdlr{
+		service:   service.NewCreateUser(repository.NewUser(option.db, option.idGenerator)),
+		session:   option.sessionRestorer,
+		validator: option.validationUtil,
+	}
+}
+
+func NewTokenHdlr(option *HandlerOption) *TokenHdlr {
+	return &TokenHdlr{}
 }

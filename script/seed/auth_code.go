@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
-
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
@@ -15,7 +13,14 @@ import (
 
 const nAuthCodeMin = 1
 
-func insertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties []*ent.RelyingParty, nAuthCode int) ([]*ent.AuthCode, error) {
+type AuthCode struct {
+	Code         string
+	UsedAt       *time.Time
+	RelyingParty *ent.RelyingParty
+	User         *ent.User
+}
+
+func InsertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties []*ent.RelyingParty, users []*ent.User, nAuthCode int) ([]*ent.AuthCode, error) {
 	if db == nil {
 		return nil, fmt.Errorf("database client required")
 	}
@@ -25,28 +30,24 @@ func insertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties
 	}
 
 	nRelyingParty := len(relyingParties)
+	nUser := len(users)
 
-	params := make([]struct {
-		code           string
-		usedAt         *time.Time
-		relyingPartyId typedef.RelyingPartyID
-	}, nAuthCode*nRelyingParty)
+	params := make([]AuthCode, nAuthCode*nRelyingParty)
 
 	for i := range params {
 		code, err := xrandom.MakeCryptoRandomString(config.AuthCodeLength)
 		if err != nil {
 			return nil, err
 		}
-		params[i].code = code
-		params[i].relyingPartyId = relyingParties[i%nRelyingParty].ID
+		params[i].Code = code
+		params[i].RelyingParty = relyingParties[i%nRelyingParty]
+		params[i].User = users[i%nUser]
 	}
-
-	printSeeds(params)
 
 	builders := make([]*ent.AuthCodeCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = db.Client.AuthCode.Create().SetCode(v.code).SetRelyingPartyID(v.relyingPartyId)
+		builders[i] = db.Client.AuthCode.Create().SetCode(v.Code).SetRelyingParty(v.RelyingParty).SetUserID(v.User.ID)
 	}
 
 	return db.Client.AuthCode.CreateBulk(builders...).Save(ctx)

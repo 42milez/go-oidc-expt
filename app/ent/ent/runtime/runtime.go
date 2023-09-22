@@ -20,7 +20,7 @@ func init() {
 	authcodeFields := schema.AuthCode{}.Fields()
 	_ = authcodeFields
 	// authcodeDescCode is the schema descriptor for code field.
-	authcodeDescCode := authcodeFields[1].Descriptor()
+	authcodeDescCode := authcodeFields[2].Descriptor()
 	// authcode.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	authcode.CodeValidator = func() func(string) error {
 		validators := authcodeDescCode.Validators
@@ -38,13 +38,19 @@ func init() {
 		}
 	}()
 	// authcodeDescExpireAt is the schema descriptor for expire_at field.
-	authcodeDescExpireAt := authcodeFields[2].Descriptor()
+	authcodeDescExpireAt := authcodeFields[3].Descriptor()
 	// authcode.DefaultExpireAt holds the default value on creation for the expire_at field.
 	authcode.DefaultExpireAt = authcodeDescExpireAt.Default.(func() time.Time)
 	// authcodeDescCreatedAt is the schema descriptor for created_at field.
-	authcodeDescCreatedAt := authcodeFields[3].Descriptor()
+	authcodeDescCreatedAt := authcodeFields[5].Descriptor()
 	// authcode.DefaultCreatedAt holds the default value on creation for the created_at field.
 	authcode.DefaultCreatedAt = authcodeDescCreatedAt.Default.(func() time.Time)
+	// authcodeDescModifiedAt is the schema descriptor for modified_at field.
+	authcodeDescModifiedAt := authcodeFields[6].Descriptor()
+	// authcode.DefaultModifiedAt holds the default value on creation for the modified_at field.
+	authcode.DefaultModifiedAt = authcodeDescModifiedAt.Default.(func() time.Time)
+	// authcode.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
+	authcode.UpdateDefaultModifiedAt = authcodeDescModifiedAt.UpdateDefault.(func() time.Time)
 	consentFields := schema.Consent{}.Fields()
 	_ = consentFields
 	// consentDescCreatedAt is the schema descriptor for created_at field.
@@ -81,6 +87,8 @@ func init() {
 	relyingpartyDescModifiedAt := relyingpartyFields[4].Descriptor()
 	// relyingparty.DefaultModifiedAt holds the default value on creation for the modified_at field.
 	relyingparty.DefaultModifiedAt = relyingpartyDescModifiedAt.Default.(func() time.Time)
+	// relyingparty.UpdateDefaultModifiedAt holds the default value on update for the modified_at field.
+	relyingparty.UpdateDefaultModifiedAt = relyingpartyDescModifiedAt.UpdateDefault.(func() time.Time)
 	userMixin := schema.User{}.Mixin()
 	userMixinHooks0 := userMixin[0].Hooks()
 	user.Hooks[0] = userMixinHooks0[0]

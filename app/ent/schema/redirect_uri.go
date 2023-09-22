@@ -31,7 +31,8 @@ func (RedirectURI) Annotations() []schema.Annotation {
 func (RedirectURI) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("id").
-			GoType(typedef.RedirectURIID(0)),
+			GoType(typedef.RedirectURIID(0)).
+			Immutable(),
 		field.String("uri").
 			NotEmpty(),
 		field.Time("created_at").
@@ -40,7 +41,7 @@ func (RedirectURI) Fields() []ent.Field {
 		field.Time("modified_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
-		field.Uint64("relying_party_redirect_uris").
+		field.Uint64("relying_party_id").
 			GoType(typedef.RelyingPartyID(0)).
 			Immutable(),
 	}
@@ -51,14 +52,17 @@ func (RedirectURI) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("relying_party", RelyingParty.Type).
 			Ref("redirect_uris").
-			Unique(),
+			Field("relying_party_id").
+			Unique().
+			Required().
+			Immutable(),
 	}
 }
 
 // Indexes of the RedirectURI.
 func (RedirectURI) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("relying_party_redirect_uris", "uri").
+		index.Fields("relying_party_id", "uri").
 			Unique(),
 	}
 }

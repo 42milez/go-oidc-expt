@@ -110,8 +110,7 @@ func TestSession_Update(t *testing.T) {
 		ctx := context.Background()
 		sid := typedef.SessionID("TestSession_Update_OK")
 		sess := &entity.Session{
-			UserID:  typedef.UserID(475924035230777348),
-			Consent: false,
+			UserID: typedef.UserID(475924035230777348),
 		}
 
 		if err := repo.cache.Client.SetNX(ctx, string(sid), sess, config.SessionTTL).Err(); err != nil {
@@ -123,8 +122,7 @@ func TestSession_Update(t *testing.T) {
 		})
 
 		want := &entity.Session{
-			UserID:  typedef.UserID(475924035230777348),
-			Consent: true,
+			UserID: typedef.UserID(475924035230777348),
 		}
 
 		if _, err := repo.Update(ctx, sid, want); err != nil {

@@ -413,7 +413,9 @@ func (uq *UserQuery) loadConsents(ctx context.Context, query *ConsentQuery, node
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(consent.FieldUserID)
+	}
 	query.Where(predicate.Consent(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.ConsentsColumn), fks...))
 	}))
@@ -422,13 +424,10 @@ func (uq *UserQuery) loadConsents(ctx context.Context, query *ConsentQuery, node
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.user_consents
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_consents" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.UserID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_consents" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

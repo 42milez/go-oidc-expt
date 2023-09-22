@@ -66,10 +66,10 @@ func CreatedAt(v time.Time) predicate.Consent {
 	return predicate.Consent(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// UserConsents applies equality check predicate on the "user_consents" field. It's identical to UserConsentsEQ.
-func UserConsents(v typedef.UserID) predicate.Consent {
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v typedef.UserID) predicate.Consent {
 	vc := uint64(v)
-	return predicate.Consent(sql.FieldEQ(FieldUserConsents, vc))
+	return predicate.Consent(sql.FieldEQ(FieldUserID, vc))
 }
 
 // ClientIDEQ applies the EQ predicate on the "client_id" field.
@@ -177,58 +177,34 @@ func CreatedAtLTE(v time.Time) predicate.Consent {
 	return predicate.Consent(sql.FieldLTE(FieldCreatedAt, v))
 }
 
-// UserConsentsEQ applies the EQ predicate on the "user_consents" field.
-func UserConsentsEQ(v typedef.UserID) predicate.Consent {
+// UserIDEQ applies the EQ predicate on the "user_id" field.
+func UserIDEQ(v typedef.UserID) predicate.Consent {
 	vc := uint64(v)
-	return predicate.Consent(sql.FieldEQ(FieldUserConsents, vc))
+	return predicate.Consent(sql.FieldEQ(FieldUserID, vc))
 }
 
-// UserConsentsNEQ applies the NEQ predicate on the "user_consents" field.
-func UserConsentsNEQ(v typedef.UserID) predicate.Consent {
+// UserIDNEQ applies the NEQ predicate on the "user_id" field.
+func UserIDNEQ(v typedef.UserID) predicate.Consent {
 	vc := uint64(v)
-	return predicate.Consent(sql.FieldNEQ(FieldUserConsents, vc))
+	return predicate.Consent(sql.FieldNEQ(FieldUserID, vc))
 }
 
-// UserConsentsIn applies the In predicate on the "user_consents" field.
-func UserConsentsIn(vs ...typedef.UserID) predicate.Consent {
+// UserIDIn applies the In predicate on the "user_id" field.
+func UserIDIn(vs ...typedef.UserID) predicate.Consent {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.Consent(sql.FieldIn(FieldUserConsents, v...))
+	return predicate.Consent(sql.FieldIn(FieldUserID, v...))
 }
 
-// UserConsentsNotIn applies the NotIn predicate on the "user_consents" field.
-func UserConsentsNotIn(vs ...typedef.UserID) predicate.Consent {
+// UserIDNotIn applies the NotIn predicate on the "user_id" field.
+func UserIDNotIn(vs ...typedef.UserID) predicate.Consent {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.Consent(sql.FieldNotIn(FieldUserConsents, v...))
-}
-
-// UserConsentsGT applies the GT predicate on the "user_consents" field.
-func UserConsentsGT(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldGT(FieldUserConsents, vc))
-}
-
-// UserConsentsGTE applies the GTE predicate on the "user_consents" field.
-func UserConsentsGTE(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldGTE(FieldUserConsents, vc))
-}
-
-// UserConsentsLT applies the LT predicate on the "user_consents" field.
-func UserConsentsLT(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldLT(FieldUserConsents, vc))
-}
-
-// UserConsentsLTE applies the LTE predicate on the "user_consents" field.
-func UserConsentsLTE(v typedef.UserID) predicate.Consent {
-	vc := uint64(v)
-	return predicate.Consent(sql.FieldLTE(FieldUserConsents, vc))
+	return predicate.Consent(sql.FieldNotIn(FieldUserID, v...))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

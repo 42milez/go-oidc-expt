@@ -24,7 +24,6 @@ type RedirectURIQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.RedirectURI
 	withRelyingParty *RelyingPartyQuery
-	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -370,18 +369,11 @@ func (ruq *RedirectURIQuery) prepareQuery(ctx context.Context) error {
 func (ruq *RedirectURIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*RedirectURI, error) {
 	var (
 		nodes       = []*RedirectURI{}
-		withFKs     = ruq.withFKs
 		_spec       = ruq.querySpec()
 		loadedTypes = [1]bool{
 			ruq.withRelyingParty != nil,
 		}
 	)
-	if ruq.withRelyingParty != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, redirecturi.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*RedirectURI).scanValues(nil, columns)
 	}
@@ -413,10 +405,7 @@ func (ruq *RedirectURIQuery) loadRelyingParty(ctx context.Context, query *Relyin
 	ids := make([]typedef.RelyingPartyID, 0, len(nodes))
 	nodeids := make(map[typedef.RelyingPartyID][]*RedirectURI)
 	for i := range nodes {
-		if nodes[i].relying_party_redirect_uris == nil {
-			continue
-		}
-		fk := *nodes[i].relying_party_redirect_uris
+		fk := nodes[i].RelyingPartyID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -433,7 +422,7 @@ func (ruq *RedirectURIQuery) loadRelyingParty(ctx context.Context, query *Relyin
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "relying_party_redirect_uris" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "relying_party_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -466,6 +455,9 @@ func (ruq *RedirectURIQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != redirecturi.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if ruq.withRelyingParty != nil {
+			_spec.Node.AddColumnOnce(redirecturi.FieldRelyingPartyID)
 		}
 	}
 	if ps := ruq.predicates; len(ps) > 0 {

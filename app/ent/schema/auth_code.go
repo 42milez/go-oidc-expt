@@ -24,26 +24,34 @@ type AuthCode struct {
 // Fields of the AuthCode.
 func (AuthCode) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("id").GoType(typedef.AuthCodeID(0)),
+		field.Uint64("id").
+			GoType(typedef.AuthCodeID(0)).
+			Immutable(),
+		field.Uint64("user_id").
+			GoType(typedef.UserID(0)).
+			Immutable(),
 		field.String("code").
 			SchemaType(map[string]string{
 				dialect.MySQL: AuthCodeSchemaType(),
 			}).
-			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-zA-Z]{%d}$", config.AuthCodeLength))).
 			NotEmpty().
+			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-zA-Z]{%d}$", config.AuthCodeLength))).
 			Immutable(),
 		field.Time("expire_at").
 			Default(func() time.Time {
 				return time.Now().Add(config.AuthCodeLifetime)
 			}).
 			Immutable(),
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable(),
 		field.Time("used_at").
 			Optional().
 			Nillable(),
-		field.Uint64("relying_party_auth_codes").
+		field.Time("created_at").
+			Default(time.Now).
+			Immutable(),
+		field.Time("modified_at").
+			Default(time.Now).
+			UpdateDefault(time.Now),
+		field.Uint64("relying_party_id").
 			GoType(typedef.RelyingPartyID(0)).
 			Immutable(),
 	}
@@ -54,14 +62,17 @@ func (AuthCode) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("relying_party", RelyingParty.Type).
 			Ref("auth_codes").
-			Unique(),
+			Field("relying_party_id").
+			Unique().
+			Required().
+			Immutable(),
 	}
 }
 
 // Indexes of the AuthCode.
 func (AuthCode) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("relying_party_auth_codes", "code").
+		index.Fields("relying_party_id", "code").
 			Unique(),
 	}
 }

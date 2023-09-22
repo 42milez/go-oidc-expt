@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/rs/zerolog/log"
 
@@ -17,7 +19,7 @@ type RegisterHdlr struct {
 }
 
 func (rh *RegisterHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var req RegisterJSONRequestBody
+	var req oapigen.RegisterJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RespondJson500(w, xerr.UnexpectedErrorOccurred)

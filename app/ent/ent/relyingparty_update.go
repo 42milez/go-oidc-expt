@@ -43,14 +43,6 @@ func (rpu *RelyingPartyUpdate) SetModifiedAt(t time.Time) *RelyingPartyUpdate {
 	return rpu
 }
 
-// SetNillableModifiedAt sets the "modified_at" field if the given value is not nil.
-func (rpu *RelyingPartyUpdate) SetNillableModifiedAt(t *time.Time) *RelyingPartyUpdate {
-	if t != nil {
-		rpu.SetModifiedAt(*t)
-	}
-	return rpu
-}
-
 // AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
 func (rpu *RelyingPartyUpdate) AddAuthCodeIDs(ids ...typedef.AuthCodeID) *RelyingPartyUpdate {
 	rpu.mutation.AddAuthCodeIDs(ids...)
@@ -130,6 +122,7 @@ func (rpu *RelyingPartyUpdate) RemoveRedirectUris(r ...*RedirectURI) *RelyingPar
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (rpu *RelyingPartyUpdate) Save(ctx context.Context) (int, error) {
+	rpu.defaults()
 	return withHooks(ctx, rpu.sqlSave, rpu.mutation, rpu.hooks)
 }
 
@@ -152,6 +145,14 @@ func (rpu *RelyingPartyUpdate) Exec(ctx context.Context) error {
 func (rpu *RelyingPartyUpdate) ExecX(ctx context.Context) {
 	if err := rpu.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (rpu *RelyingPartyUpdate) defaults() {
+	if _, ok := rpu.mutation.ModifiedAt(); !ok {
+		v := relyingparty.UpdateDefaultModifiedAt()
+		rpu.mutation.SetModifiedAt(v)
 	}
 }
 
@@ -305,14 +306,6 @@ func (rpuo *RelyingPartyUpdateOne) SetModifiedAt(t time.Time) *RelyingPartyUpdat
 	return rpuo
 }
 
-// SetNillableModifiedAt sets the "modified_at" field if the given value is not nil.
-func (rpuo *RelyingPartyUpdateOne) SetNillableModifiedAt(t *time.Time) *RelyingPartyUpdateOne {
-	if t != nil {
-		rpuo.SetModifiedAt(*t)
-	}
-	return rpuo
-}
-
 // AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
 func (rpuo *RelyingPartyUpdateOne) AddAuthCodeIDs(ids ...typedef.AuthCodeID) *RelyingPartyUpdateOne {
 	rpuo.mutation.AddAuthCodeIDs(ids...)
@@ -405,6 +398,7 @@ func (rpuo *RelyingPartyUpdateOne) Select(field string, fields ...string) *Relyi
 
 // Save executes the query and returns the updated RelyingParty entity.
 func (rpuo *RelyingPartyUpdateOne) Save(ctx context.Context) (*RelyingParty, error) {
+	rpuo.defaults()
 	return withHooks(ctx, rpuo.sqlSave, rpuo.mutation, rpuo.hooks)
 }
 
@@ -427,6 +421,14 @@ func (rpuo *RelyingPartyUpdateOne) Exec(ctx context.Context) error {
 func (rpuo *RelyingPartyUpdateOne) ExecX(ctx context.Context) {
 	if err := rpuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (rpuo *RelyingPartyUpdateOne) defaults() {
+	if _, ok := rpuo.mutation.ModifiedAt(); !ok {
+		v := relyingparty.UpdateDefaultModifiedAt()
+		rpuo.mutation.SetModifiedAt(v)
 	}
 }
 

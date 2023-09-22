@@ -9,7 +9,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/entity"
 
-	"github.com/42milez/go-oidc-server/app/api/validation"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
@@ -79,7 +78,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				Return(tt.resp.location, nil).
 				AnyTimes()
 
-			v, err := validation.NewAuthorizeValidator()
+			v, err := NewAuthorizeParamValidator()
 
 			if err != nil {
 				t.Error(xerr.FailedToInitialize)

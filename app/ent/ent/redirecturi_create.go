@@ -56,29 +56,15 @@ func (ruc *RedirectURICreate) SetNillableModifiedAt(t *time.Time) *RedirectURICr
 	return ruc
 }
 
-// SetRelyingPartyRedirectUris sets the "relying_party_redirect_uris" field.
-func (ruc *RedirectURICreate) SetRelyingPartyRedirectUris(tpi typedef.RelyingPartyID) *RedirectURICreate {
-	ruc.mutation.SetRelyingPartyRedirectUris(tpi)
+// SetRelyingPartyID sets the "relying_party_id" field.
+func (ruc *RedirectURICreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *RedirectURICreate {
+	ruc.mutation.SetRelyingPartyID(tpi)
 	return ruc
 }
 
 // SetID sets the "id" field.
 func (ruc *RedirectURICreate) SetID(tu typedef.RedirectURIID) *RedirectURICreate {
 	ruc.mutation.SetID(tu)
-	return ruc
-}
-
-// SetRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID.
-func (ruc *RedirectURICreate) SetRelyingPartyID(id typedef.RelyingPartyID) *RedirectURICreate {
-	ruc.mutation.SetRelyingPartyID(id)
-	return ruc
-}
-
-// SetNillableRelyingPartyID sets the "relying_party" edge to the RelyingParty entity by ID if the given value is not nil.
-func (ruc *RedirectURICreate) SetNillableRelyingPartyID(id *typedef.RelyingPartyID) *RedirectURICreate {
-	if id != nil {
-		ruc = ruc.SetRelyingPartyID(*id)
-	}
 	return ruc
 }
 
@@ -148,8 +134,11 @@ func (ruc *RedirectURICreate) check() error {
 	if _, ok := ruc.mutation.ModifiedAt(); !ok {
 		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "RedirectURI.modified_at"`)}
 	}
-	if _, ok := ruc.mutation.RelyingPartyRedirectUris(); !ok {
-		return &ValidationError{Name: "relying_party_redirect_uris", err: errors.New(`ent: missing required field "RedirectURI.relying_party_redirect_uris"`)}
+	if _, ok := ruc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "RedirectURI.relying_party_id"`)}
+	}
+	if _, ok := ruc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party", err: errors.New(`ent: missing required edge "RedirectURI.relying_party"`)}
 	}
 	return nil
 }
@@ -195,10 +184,6 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
 		_node.ModifiedAt = value
 	}
-	if value, ok := ruc.mutation.RelyingPartyRedirectUris(); ok {
-		_spec.SetField(redirecturi.FieldRelyingPartyRedirectUris, field.TypeUint64, value)
-		_node.RelyingPartyRedirectUris = value
-	}
 	if nodes := ruc.mutation.RelyingPartyIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -213,7 +198,7 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.relying_party_redirect_uris = &nodes[0]
+		_node.RelyingPartyID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

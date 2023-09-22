@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/go-playground/validator/v10"
@@ -16,7 +18,7 @@ type AuthorizeGetHdlr struct {
 
 func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
-	q := &AuthorizeParams{}
+	q := &oapigen.AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
 		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{

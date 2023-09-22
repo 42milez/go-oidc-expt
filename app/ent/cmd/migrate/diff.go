@@ -53,7 +53,7 @@ func main() {
 	}
 
 	if len(os.Args) != 2 {
-		log.Fatal("migration name is required. Use: 'go run -mod=mod app/ent/cmd/migrate/main.go <MIGRATION_NAME>'")
+		log.Fatal("migration name is required. Use: 'go run -mod=mod app/ent/cmd/migrate/diff.go <MIGRATION_NAME>'")
 	}
 
 	ctx := context.Background()

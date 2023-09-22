@@ -12,11 +12,13 @@ var (
 	// AuthCodesColumns holds the columns for the "auth_codes" table.
 	AuthCodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "user_id", Type: field.TypeUint64},
 		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(30)"}},
 		{Name: "expire_at", Type: field.TypeTime},
-		{Name: "created_at", Type: field.TypeTime},
 		{Name: "used_at", Type: field.TypeTime, Nullable: true},
-		{Name: "relying_party_auth_codes", Type: field.TypeUint64},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "modified_at", Type: field.TypeTime},
+		{Name: "relying_party_id", Type: field.TypeUint64},
 	}
 	// AuthCodesTable holds the schema information for the "auth_codes" table.
 	AuthCodesTable = &schema.Table{
@@ -26,16 +28,16 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "auth_codes_relying_parties_auth_codes",
-				Columns:    []*schema.Column{AuthCodesColumns[5]},
+				Columns:    []*schema.Column{AuthCodesColumns[7]},
 				RefColumns: []*schema.Column{RelyingPartiesColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "authcode_relying_party_auth_codes_code",
+				Name:    "authcode_relying_party_id_code",
 				Unique:  true,
-				Columns: []*schema.Column{AuthCodesColumns[5], AuthCodesColumns[1]},
+				Columns: []*schema.Column{AuthCodesColumns[7], AuthCodesColumns[2]},
 			},
 		},
 	}
@@ -44,7 +46,7 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "client_id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "user_consents", Type: field.TypeUint64},
+		{Name: "user_id", Type: field.TypeUint64},
 	}
 	// ConsentsTable holds the schema information for the "consents" table.
 	ConsentsTable = &schema.Table{
@@ -61,8 +63,8 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "consent_user_consents_client_id",
-				Unique:  false,
+				Name:    "consent_user_id_client_id",
+				Unique:  true,
 				Columns: []*schema.Column{ConsentsColumns[3], ConsentsColumns[1]},
 			},
 		},
@@ -73,7 +75,7 @@ var (
 		{Name: "uri", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},
-		{Name: "relying_party_redirect_uris", Type: field.TypeUint64},
+		{Name: "relying_party_id", Type: field.TypeUint64},
 	}
 	// RedirectUrisTable holds the schema information for the "redirect_uris" table.
 	RedirectUrisTable = &schema.Table{
@@ -90,7 +92,7 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "redirecturi_relying_party_redirect_uris_uri",
+				Name:    "redirecturi_relying_party_id_uri",
 				Unique:  true,
 				Columns: []*schema.Column{RedirectUrisColumns[4], RedirectUrisColumns[1]},
 			},

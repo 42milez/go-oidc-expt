@@ -71,10 +71,10 @@ func ModifiedAt(v time.Time) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldEQ(FieldModifiedAt, v))
 }
 
-// RelyingPartyRedirectUris applies equality check predicate on the "relying_party_redirect_uris" field. It's identical to RelyingPartyRedirectUrisEQ.
-func RelyingPartyRedirectUris(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
+func RelyingPartyID(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyRedirectUris, vc))
+	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyID, vc))
 }
 
 // URIEQ applies the EQ predicate on the "uri" field.
@@ -222,58 +222,34 @@ func ModifiedAtLTE(v time.Time) predicate.RedirectURI {
 	return predicate.RedirectURI(sql.FieldLTE(FieldModifiedAt, v))
 }
 
-// RelyingPartyRedirectUrisEQ applies the EQ predicate on the "relying_party_redirect_uris" field.
-func RelyingPartyRedirectUrisEQ(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
+func RelyingPartyIDEQ(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyRedirectUris, vc))
+	return predicate.RedirectURI(sql.FieldEQ(FieldRelyingPartyID, vc))
 }
 
-// RelyingPartyRedirectUrisNEQ applies the NEQ predicate on the "relying_party_redirect_uris" field.
-func RelyingPartyRedirectUrisNEQ(v typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyIDNEQ applies the NEQ predicate on the "relying_party_id" field.
+func RelyingPartyIDNEQ(v typedef.RelyingPartyID) predicate.RedirectURI {
 	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldNEQ(FieldRelyingPartyRedirectUris, vc))
+	return predicate.RedirectURI(sql.FieldNEQ(FieldRelyingPartyID, vc))
 }
 
-// RelyingPartyRedirectUrisIn applies the In predicate on the "relying_party_redirect_uris" field.
-func RelyingPartyRedirectUrisIn(vs ...typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyIDIn applies the In predicate on the "relying_party_id" field.
+func RelyingPartyIDIn(vs ...typedef.RelyingPartyID) predicate.RedirectURI {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.RedirectURI(sql.FieldIn(FieldRelyingPartyRedirectUris, v...))
+	return predicate.RedirectURI(sql.FieldIn(FieldRelyingPartyID, v...))
 }
 
-// RelyingPartyRedirectUrisNotIn applies the NotIn predicate on the "relying_party_redirect_uris" field.
-func RelyingPartyRedirectUrisNotIn(vs ...typedef.RelyingPartyID) predicate.RedirectURI {
+// RelyingPartyIDNotIn applies the NotIn predicate on the "relying_party_id" field.
+func RelyingPartyIDNotIn(vs ...typedef.RelyingPartyID) predicate.RedirectURI {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.RedirectURI(sql.FieldNotIn(FieldRelyingPartyRedirectUris, v...))
-}
-
-// RelyingPartyRedirectUrisGT applies the GT predicate on the "relying_party_redirect_uris" field.
-func RelyingPartyRedirectUrisGT(v typedef.RelyingPartyID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldGT(FieldRelyingPartyRedirectUris, vc))
-}
-
-// RelyingPartyRedirectUrisGTE applies the GTE predicate on the "relying_party_redirect_uris" field.
-func RelyingPartyRedirectUrisGTE(v typedef.RelyingPartyID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldGTE(FieldRelyingPartyRedirectUris, vc))
-}
-
-// RelyingPartyRedirectUrisLT applies the LT predicate on the "relying_party_redirect_uris" field.
-func RelyingPartyRedirectUrisLT(v typedef.RelyingPartyID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldLT(FieldRelyingPartyRedirectUris, vc))
-}
-
-// RelyingPartyRedirectUrisLTE applies the LTE predicate on the "relying_party_redirect_uris" field.
-func RelyingPartyRedirectUrisLTE(v typedef.RelyingPartyID) predicate.RedirectURI {
-	vc := uint64(v)
-	return predicate.RedirectURI(sql.FieldLTE(FieldRelyingPartyRedirectUris, vc))
+	return predicate.RedirectURI(sql.FieldNotIn(FieldRelyingPartyID, v...))
 }
 
 // HasRelyingParty applies the HasEdge predicate on the "relying_party" edge.

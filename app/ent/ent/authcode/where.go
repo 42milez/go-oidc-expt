@@ -56,6 +56,12 @@ func IDLTE(id typedef.AuthCodeID) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLTE(FieldID, id))
 }
 
+// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
+func UserID(v typedef.UserID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldUserID, vc))
+}
+
 // Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
 func Code(v string) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldCode, v))
@@ -66,20 +72,79 @@ func ExpireAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldExpireAt, v))
 }
 
-// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
-func CreatedAt(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
-}
-
 // UsedAt applies equality check predicate on the "used_at" field. It's identical to UsedAtEQ.
 func UsedAt(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldUsedAt, v))
 }
 
-// RelyingPartyAuthCodes applies equality check predicate on the "relying_party_auth_codes" field. It's identical to RelyingPartyAuthCodesEQ.
-func RelyingPartyAuthCodes(v typedef.RelyingPartyID) predicate.AuthCode {
+// CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// ModifiedAt applies equality check predicate on the "modified_at" field. It's identical to ModifiedAtEQ.
+func ModifiedAt(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldModifiedAt, v))
+}
+
+// RelyingPartyID applies equality check predicate on the "relying_party_id" field. It's identical to RelyingPartyIDEQ.
+func RelyingPartyID(v typedef.RelyingPartyID) predicate.AuthCode {
 	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyAuthCodes, vc))
+	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, vc))
+}
+
+// UserIDEQ applies the EQ predicate on the "user_id" field.
+func UserIDEQ(v typedef.UserID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldUserID, vc))
+}
+
+// UserIDNEQ applies the NEQ predicate on the "user_id" field.
+func UserIDNEQ(v typedef.UserID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldNEQ(FieldUserID, vc))
+}
+
+// UserIDIn applies the In predicate on the "user_id" field.
+func UserIDIn(vs ...typedef.UserID) predicate.AuthCode {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = uint64(vs[i])
+	}
+	return predicate.AuthCode(sql.FieldIn(FieldUserID, v...))
+}
+
+// UserIDNotIn applies the NotIn predicate on the "user_id" field.
+func UserIDNotIn(vs ...typedef.UserID) predicate.AuthCode {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = uint64(vs[i])
+	}
+	return predicate.AuthCode(sql.FieldNotIn(FieldUserID, v...))
+}
+
+// UserIDGT applies the GT predicate on the "user_id" field.
+func UserIDGT(v typedef.UserID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldGT(FieldUserID, vc))
+}
+
+// UserIDGTE applies the GTE predicate on the "user_id" field.
+func UserIDGTE(v typedef.UserID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldGTE(FieldUserID, vc))
+}
+
+// UserIDLT applies the LT predicate on the "user_id" field.
+func UserIDLT(v typedef.UserID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldLT(FieldUserID, vc))
+}
+
+// UserIDLTE applies the LTE predicate on the "user_id" field.
+func UserIDLTE(v typedef.UserID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldLTE(FieldUserID, vc))
 }
 
 // CodeEQ applies the EQ predicate on the "code" field.
@@ -187,46 +252,6 @@ func ExpireAtLTE(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldLTE(FieldExpireAt, v))
 }
 
-// CreatedAtEQ applies the EQ predicate on the "created_at" field.
-func CreatedAtEQ(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
-func CreatedAtNEQ(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNEQ(FieldCreatedAt, v))
-}
-
-// CreatedAtIn applies the In predicate on the "created_at" field.
-func CreatedAtIn(vs ...time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
-func CreatedAtNotIn(vs ...time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldNotIn(FieldCreatedAt, vs...))
-}
-
-// CreatedAtGT applies the GT predicate on the "created_at" field.
-func CreatedAtGT(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGT(FieldCreatedAt, v))
-}
-
-// CreatedAtGTE applies the GTE predicate on the "created_at" field.
-func CreatedAtGTE(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldGTE(FieldCreatedAt, v))
-}
-
-// CreatedAtLT applies the LT predicate on the "created_at" field.
-func CreatedAtLT(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLT(FieldCreatedAt, v))
-}
-
-// CreatedAtLTE applies the LTE predicate on the "created_at" field.
-func CreatedAtLTE(v time.Time) predicate.AuthCode {
-	return predicate.AuthCode(sql.FieldLTE(FieldCreatedAt, v))
-}
-
 // UsedAtEQ applies the EQ predicate on the "used_at" field.
 func UsedAtEQ(v time.Time) predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldEQ(FieldUsedAt, v))
@@ -277,58 +302,114 @@ func UsedAtNotNil() predicate.AuthCode {
 	return predicate.AuthCode(sql.FieldNotNull(FieldUsedAt))
 }
 
-// RelyingPartyAuthCodesEQ applies the EQ predicate on the "relying_party_auth_codes" field.
-func RelyingPartyAuthCodesEQ(v typedef.RelyingPartyID) predicate.AuthCode {
-	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyAuthCodes, vc))
+// CreatedAtEQ applies the EQ predicate on the "created_at" field.
+func CreatedAtEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// RelyingPartyAuthCodesNEQ applies the NEQ predicate on the "relying_party_auth_codes" field.
-func RelyingPartyAuthCodesNEQ(v typedef.RelyingPartyID) predicate.AuthCode {
-	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldNEQ(FieldRelyingPartyAuthCodes, vc))
+// CreatedAtNEQ applies the NEQ predicate on the "created_at" field.
+func CreatedAtNEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
-// RelyingPartyAuthCodesIn applies the In predicate on the "relying_party_auth_codes" field.
-func RelyingPartyAuthCodesIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
+// CreatedAtIn applies the In predicate on the "created_at" field.
+func CreatedAtIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtNotIn applies the NotIn predicate on the "created_at" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNotIn(FieldCreatedAt, vs...))
+}
+
+// CreatedAtGT applies the GT predicate on the "created_at" field.
+func CreatedAtGT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGT(FieldCreatedAt, v))
+}
+
+// CreatedAtGTE applies the GTE predicate on the "created_at" field.
+func CreatedAtGTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGTE(FieldCreatedAt, v))
+}
+
+// CreatedAtLT applies the LT predicate on the "created_at" field.
+func CreatedAtLT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLT(FieldCreatedAt, v))
+}
+
+// CreatedAtLTE applies the LTE predicate on the "created_at" field.
+func CreatedAtLTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// ModifiedAtEQ applies the EQ predicate on the "modified_at" field.
+func ModifiedAtEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldEQ(FieldModifiedAt, v))
+}
+
+// ModifiedAtNEQ applies the NEQ predicate on the "modified_at" field.
+func ModifiedAtNEQ(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNEQ(FieldModifiedAt, v))
+}
+
+// ModifiedAtIn applies the In predicate on the "modified_at" field.
+func ModifiedAtIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldIn(FieldModifiedAt, vs...))
+}
+
+// ModifiedAtNotIn applies the NotIn predicate on the "modified_at" field.
+func ModifiedAtNotIn(vs ...time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldNotIn(FieldModifiedAt, vs...))
+}
+
+// ModifiedAtGT applies the GT predicate on the "modified_at" field.
+func ModifiedAtGT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGT(FieldModifiedAt, v))
+}
+
+// ModifiedAtGTE applies the GTE predicate on the "modified_at" field.
+func ModifiedAtGTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldGTE(FieldModifiedAt, v))
+}
+
+// ModifiedAtLT applies the LT predicate on the "modified_at" field.
+func ModifiedAtLT(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLT(FieldModifiedAt, v))
+}
+
+// ModifiedAtLTE applies the LTE predicate on the "modified_at" field.
+func ModifiedAtLTE(v time.Time) predicate.AuthCode {
+	return predicate.AuthCode(sql.FieldLTE(FieldModifiedAt, v))
+}
+
+// RelyingPartyIDEQ applies the EQ predicate on the "relying_party_id" field.
+func RelyingPartyIDEQ(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldEQ(FieldRelyingPartyID, vc))
+}
+
+// RelyingPartyIDNEQ applies the NEQ predicate on the "relying_party_id" field.
+func RelyingPartyIDNEQ(v typedef.RelyingPartyID) predicate.AuthCode {
+	vc := uint64(v)
+	return predicate.AuthCode(sql.FieldNEQ(FieldRelyingPartyID, vc))
+}
+
+// RelyingPartyIDIn applies the In predicate on the "relying_party_id" field.
+func RelyingPartyIDIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.AuthCode(sql.FieldIn(FieldRelyingPartyAuthCodes, v...))
+	return predicate.AuthCode(sql.FieldIn(FieldRelyingPartyID, v...))
 }
 
-// RelyingPartyAuthCodesNotIn applies the NotIn predicate on the "relying_party_auth_codes" field.
-func RelyingPartyAuthCodesNotIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
+// RelyingPartyIDNotIn applies the NotIn predicate on the "relying_party_id" field.
+func RelyingPartyIDNotIn(vs ...typedef.RelyingPartyID) predicate.AuthCode {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = uint64(vs[i])
 	}
-	return predicate.AuthCode(sql.FieldNotIn(FieldRelyingPartyAuthCodes, v...))
-}
-
-// RelyingPartyAuthCodesGT applies the GT predicate on the "relying_party_auth_codes" field.
-func RelyingPartyAuthCodesGT(v typedef.RelyingPartyID) predicate.AuthCode {
-	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldGT(FieldRelyingPartyAuthCodes, vc))
-}
-
-// RelyingPartyAuthCodesGTE applies the GTE predicate on the "relying_party_auth_codes" field.
-func RelyingPartyAuthCodesGTE(v typedef.RelyingPartyID) predicate.AuthCode {
-	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldGTE(FieldRelyingPartyAuthCodes, vc))
-}
-
-// RelyingPartyAuthCodesLT applies the LT predicate on the "relying_party_auth_codes" field.
-func RelyingPartyAuthCodesLT(v typedef.RelyingPartyID) predicate.AuthCode {
-	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldLT(FieldRelyingPartyAuthCodes, vc))
-}
-
-// RelyingPartyAuthCodesLTE applies the LTE predicate on the "relying_party_auth_codes" field.
-func RelyingPartyAuthCodesLTE(v typedef.RelyingPartyID) predicate.AuthCode {
-	vc := uint64(v)
-	return predicate.AuthCode(sql.FieldLTE(FieldRelyingPartyAuthCodes, vc))
+	return predicate.AuthCode(sql.FieldNotIn(FieldRelyingPartyID, v...))
 }
 
 // HasRelyingParty applies the HasEdge predicate on the "relying_party" edge.

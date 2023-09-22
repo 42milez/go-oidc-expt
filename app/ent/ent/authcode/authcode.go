@@ -14,16 +14,20 @@ const (
 	Label = "auth_code"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
 	// FieldExpireAt holds the string denoting the expire_at field in the database.
 	FieldExpireAt = "expire_at"
-	// FieldCreatedAt holds the string denoting the created_at field in the database.
-	FieldCreatedAt = "created_at"
 	// FieldUsedAt holds the string denoting the used_at field in the database.
 	FieldUsedAt = "used_at"
-	// FieldRelyingPartyAuthCodes holds the string denoting the relying_party_auth_codes field in the database.
-	FieldRelyingPartyAuthCodes = "relying_party_auth_codes"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldModifiedAt holds the string denoting the modified_at field in the database.
+	FieldModifiedAt = "modified_at"
+	// FieldRelyingPartyID holds the string denoting the relying_party_id field in the database.
+	FieldRelyingPartyID = "relying_party_id"
 	// EdgeRelyingParty holds the string denoting the relying_party edge name in mutations.
 	EdgeRelyingParty = "relying_party"
 	// Table holds the table name of the authcode in the database.
@@ -34,34 +38,25 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "relyingparty" package.
 	RelyingPartyInverseTable = "relying_parties"
 	// RelyingPartyColumn is the table column denoting the relying_party relation/edge.
-	RelyingPartyColumn = "relying_party_auth_codes"
+	RelyingPartyColumn = "relying_party_id"
 )
 
 // Columns holds all SQL columns for authcode fields.
 var Columns = []string{
 	FieldID,
+	FieldUserID,
 	FieldCode,
 	FieldExpireAt,
-	FieldCreatedAt,
 	FieldUsedAt,
-	FieldRelyingPartyAuthCodes,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "auth_codes"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"relying_party_auth_codes",
+	FieldCreatedAt,
+	FieldModifiedAt,
+	FieldRelyingPartyID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -75,6 +70,10 @@ var (
 	DefaultExpireAt func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultModifiedAt holds the default value on creation for the "modified_at" field.
+	DefaultModifiedAt func() time.Time
+	// UpdateDefaultModifiedAt holds the default value on update for the "modified_at" field.
+	UpdateDefaultModifiedAt func() time.Time
 )
 
 // OrderOption defines the ordering options for the AuthCode queries.
@@ -83,6 +82,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
 // ByCode orders the results by the code field.
@@ -95,19 +99,24 @@ func ByExpireAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldExpireAt, opts...).ToFunc()
 }
 
-// ByCreatedAt orders the results by the created_at field.
-func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
-}
-
 // ByUsedAt orders the results by the used_at field.
 func ByUsedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsedAt, opts...).ToFunc()
 }
 
-// ByRelyingPartyAuthCodes orders the results by the relying_party_auth_codes field.
-func ByRelyingPartyAuthCodes(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRelyingPartyAuthCodes, opts...).ToFunc()
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByModifiedAt orders the results by the modified_at field.
+func ByModifiedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldModifiedAt, opts...).ToFunc()
+}
+
+// ByRelyingPartyID orders the results by the relying_party_id field.
+func ByRelyingPartyID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelyingPartyID, opts...).ToFunc()
 }
 
 // ByRelyingPartyField orders the results by relying_party field.

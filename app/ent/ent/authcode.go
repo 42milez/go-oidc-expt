@@ -19,21 +19,24 @@ type AuthCode struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID typedef.AuthCodeID `json:"id,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID typedef.UserID `json:"user_id,omitempty"`
 	// Code holds the value of the "code" field.
 	Code string `json:"code,omitempty"`
 	// ExpireAt holds the value of the "expire_at" field.
 	ExpireAt time.Time `json:"expire_at,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UsedAt holds the value of the "used_at" field.
 	UsedAt *time.Time `json:"used_at,omitempty"`
-	// RelyingPartyAuthCodes holds the value of the "relying_party_auth_codes" field.
-	RelyingPartyAuthCodes typedef.RelyingPartyID `json:"relying_party_auth_codes,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// ModifiedAt holds the value of the "modified_at" field.
+	ModifiedAt time.Time `json:"modified_at,omitempty"`
+	// RelyingPartyID holds the value of the "relying_party_id" field.
+	RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AuthCodeQuery when eager-loading is set.
-	Edges                    AuthCodeEdges `json:"edges"`
-	relying_party_auth_codes *typedef.RelyingPartyID
-	selectValues             sql.SelectValues
+	Edges        AuthCodeEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // AuthCodeEdges holds the relations/edges for other nodes in the graph.
@@ -63,14 +66,12 @@ func (*AuthCode) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case authcode.FieldID, authcode.FieldRelyingPartyAuthCodes:
+		case authcode.FieldID, authcode.FieldUserID, authcode.FieldRelyingPartyID:
 			values[i] = new(sql.NullInt64)
 		case authcode.FieldCode:
 			values[i] = new(sql.NullString)
-		case authcode.FieldExpireAt, authcode.FieldCreatedAt, authcode.FieldUsedAt:
+		case authcode.FieldExpireAt, authcode.FieldUsedAt, authcode.FieldCreatedAt, authcode.FieldModifiedAt:
 			values[i] = new(sql.NullTime)
-		case authcode.ForeignKeys[0]: // relying_party_auth_codes
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -92,6 +93,12 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ac.ID = typedef.AuthCodeID(value.Int64)
 			}
+		case authcode.FieldUserID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				ac.UserID = typedef.UserID(value.Int64)
+			}
 		case authcode.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
@@ -104,12 +111,6 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ac.ExpireAt = value.Time
 			}
-		case authcode.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				ac.CreatedAt = value.Time
-			}
 		case authcode.FieldUsedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field used_at", values[i])
@@ -117,18 +118,23 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 				ac.UsedAt = new(time.Time)
 				*ac.UsedAt = value.Time
 			}
-		case authcode.FieldRelyingPartyAuthCodes:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_auth_codes", values[i])
+		case authcode.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				ac.RelyingPartyAuthCodes = typedef.RelyingPartyID(value.Int64)
+				ac.CreatedAt = value.Time
 			}
-		case authcode.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field relying_party_auth_codes", values[i])
+		case authcode.FieldModifiedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field modified_at", values[i])
 			} else if value.Valid {
-				ac.relying_party_auth_codes = new(typedef.RelyingPartyID)
-				*ac.relying_party_auth_codes = typedef.RelyingPartyID(value.Int64)
+				ac.ModifiedAt = value.Time
+			}
+		case authcode.FieldRelyingPartyID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field relying_party_id", values[i])
+			} else if value.Valid {
+				ac.RelyingPartyID = typedef.RelyingPartyID(value.Int64)
 			}
 		default:
 			ac.selectValues.Set(columns[i], values[i])
@@ -171,22 +177,28 @@ func (ac *AuthCode) String() string {
 	var builder strings.Builder
 	builder.WriteString("AuthCode(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", ac.ID))
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", ac.UserID))
+	builder.WriteString(", ")
 	builder.WriteString("code=")
 	builder.WriteString(ac.Code)
 	builder.WriteString(", ")
 	builder.WriteString("expire_at=")
 	builder.WriteString(ac.ExpireAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(ac.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
 	if v := ac.UsedAt; v != nil {
 		builder.WriteString("used_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("relying_party_auth_codes=")
-	builder.WriteString(fmt.Sprintf("%v", ac.RelyingPartyAuthCodes))
+	builder.WriteString("created_at=")
+	builder.WriteString(ac.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("modified_at=")
+	builder.WriteString(ac.ModifiedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("relying_party_id=")
+	builder.WriteString(fmt.Sprintf("%v", ac.RelyingPartyID))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -13,7 +13,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY idp ./
-RUN go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o app ./app
+RUN go build -trimpath -ldflags "-s -w -X main.Version=${VERSION}" -o app ./app
 
 #  deploy
 # --------------------------------------------------

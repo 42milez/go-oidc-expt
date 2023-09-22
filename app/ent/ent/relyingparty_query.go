@@ -457,7 +457,9 @@ func (rpq *RelyingPartyQuery) loadAuthCodes(ctx context.Context, query *AuthCode
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(authcode.FieldRelyingPartyID)
+	}
 	query.Where(predicate.AuthCode(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(relyingparty.AuthCodesColumn), fks...))
 	}))
@@ -466,13 +468,10 @@ func (rpq *RelyingPartyQuery) loadAuthCodes(ctx context.Context, query *AuthCode
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.relying_party_auth_codes
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "relying_party_auth_codes" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.RelyingPartyID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_auth_codes" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -488,7 +487,9 @@ func (rpq *RelyingPartyQuery) loadRedirectUris(ctx context.Context, query *Redir
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(redirecturi.FieldRelyingPartyID)
+	}
 	query.Where(predicate.RedirectURI(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(relyingparty.RedirectUrisColumn), fks...))
 	}))
@@ -497,13 +498,10 @@ func (rpq *RelyingPartyQuery) loadRedirectUris(ctx context.Context, query *Redir
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.relying_party_redirect_uris
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "relying_party_redirect_uris" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.RelyingPartyID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_redirect_uris" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "relying_party_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
