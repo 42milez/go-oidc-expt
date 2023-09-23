@@ -28,7 +28,7 @@ func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientI
 		return nil, rollback(tx, err)
 	}
 
-	targetUser, err := tx.User.Query().Where(user.ID(userID)).Only(ctx)
+	targetUser, err := tx.User.Query().Where(user.ID(userID)).ForShare().Only(ctx)
 
 	if err != nil {
 		return nil, rollback(tx, err)

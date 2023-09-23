@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -24,6 +25,7 @@ type RedirectURIQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.RedirectURI
 	withRelyingParty *RelyingPartyQuery
+	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -383,6 +385,9 @@ func (ruq *RedirectURIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(ruq.modifiers) > 0 {
+		_spec.Modifiers = ruq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -433,6 +438,9 @@ func (ruq *RedirectURIQuery) loadRelyingParty(ctx context.Context, query *Relyin
 
 func (ruq *RedirectURIQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ruq.querySpec()
+	if len(ruq.modifiers) > 0 {
+		_spec.Modifiers = ruq.modifiers
+	}
 	_spec.Node.Columns = ruq.ctx.Fields
 	if len(ruq.ctx.Fields) > 0 {
 		_spec.Unique = ruq.ctx.Unique != nil && *ruq.ctx.Unique
@@ -498,6 +506,9 @@ func (ruq *RedirectURIQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if ruq.ctx.Unique != nil && *ruq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range ruq.modifiers {
+		m(selector)
+	}
 	for _, p := range ruq.predicates {
 		p(selector)
 	}
@@ -513,6 +524,32 @@ func (ruq *RedirectURIQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (ruq *RedirectURIQuery) ForUpdate(opts ...sql.LockOption) *RedirectURIQuery {
+	if ruq.driver.Dialect() == dialect.Postgres {
+		ruq.Unique(false)
+	}
+	ruq.modifiers = append(ruq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return ruq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (ruq *RedirectURIQuery) ForShare(opts ...sql.LockOption) *RedirectURIQuery {
+	if ruq.driver.Dialect() == dialect.Postgres {
+		ruq.Unique(false)
+	}
+	ruq.modifiers = append(ruq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return ruq
 }
 
 // RedirectURIGroupBy is the group-by builder for RedirectURI entities.

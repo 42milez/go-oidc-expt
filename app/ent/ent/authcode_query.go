@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -24,6 +25,7 @@ type AuthCodeQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.AuthCode
 	withRelyingParty *RelyingPartyQuery
+	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -383,6 +385,9 @@ func (acq *AuthCodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(acq.modifiers) > 0 {
+		_spec.Modifiers = acq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -433,6 +438,9 @@ func (acq *AuthCodeQuery) loadRelyingParty(ctx context.Context, query *RelyingPa
 
 func (acq *AuthCodeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := acq.querySpec()
+	if len(acq.modifiers) > 0 {
+		_spec.Modifiers = acq.modifiers
+	}
 	_spec.Node.Columns = acq.ctx.Fields
 	if len(acq.ctx.Fields) > 0 {
 		_spec.Unique = acq.ctx.Unique != nil && *acq.ctx.Unique
@@ -498,6 +506,9 @@ func (acq *AuthCodeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if acq.ctx.Unique != nil && *acq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range acq.modifiers {
+		m(selector)
+	}
 	for _, p := range acq.predicates {
 		p(selector)
 	}
@@ -513,6 +524,32 @@ func (acq *AuthCodeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (acq *AuthCodeQuery) ForUpdate(opts ...sql.LockOption) *AuthCodeQuery {
+	if acq.driver.Dialect() == dialect.Postgres {
+		acq.Unique(false)
+	}
+	acq.modifiers = append(acq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return acq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (acq *AuthCodeQuery) ForShare(opts ...sql.LockOption) *AuthCodeQuery {
+	if acq.driver.Dialect() == dialect.Postgres {
+		acq.Unique(false)
+	}
+	acq.modifiers = append(acq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return acq
 }
 
 // AuthCodeGroupBy is the group-by builder for AuthCode entities.
