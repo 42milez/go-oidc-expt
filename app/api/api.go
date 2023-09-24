@@ -5,6 +5,10 @@ import (
 	_ "embed"
 	"net/http"
 
+	"github.com/rs/zerolog"
+
+	"github.com/go-chi/httplog"
+
 	"github.com/42milez/go-oidc-server/app/api/oapigen"
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/datastore"
@@ -26,6 +30,8 @@ var rawBlockKey []byte
 
 //go:embed secret/key/hash.key
 var rawHashKey []byte
+
+var appLogger zerolog.Logger
 
 var authenticateUserHdlr *AuthenticateHdlr
 var authorizeGetHdlr *AuthorizeGetHdlr
@@ -72,8 +78,10 @@ type HandlerOption struct {
 	validationUtil  *validator.Validate
 }
 
-func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
+func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (http.Handler, func(), error) {
 	var err error
+
+	appLogger = logger.With().Str(config.LoggerTagKey, config.AppLoggerTagValue).Logger()
 
 	//  DATASTORE
 	// --------------------------------------------------
@@ -138,6 +146,8 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 
 	mux = chi.NewRouter()
 
+	// Swagger
+
 	if swag, err = oapigen.GetSwagger(); err != nil {
 		return nil, nil, err
 	}
@@ -145,6 +155,14 @@ func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), erro
 	swag.Servers = nil
 
 	mux.Use(chimw.OapiRequestValidator(swag))
+
+	// Common Middleware Configuration
+
+	mwLogger := logger.With().Str(config.LoggerTagKey, config.MWLoggerTagValue).Logger()
+
+	mux.Use(httplog.RequestLogger(mwLogger))
+
+	// Middleware Configuration on Each Handler
 
 	mw = oapigen.NewMiddlewareFuncMap()
 

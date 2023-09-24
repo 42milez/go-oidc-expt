@@ -18,11 +18,15 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// ErrorResponse represents error
+const (
+	BasicAuthScopes = "basicAuth.Scopes"
+)
+
+// ErrorResponse represents error response
 type ErrorResponse struct {
-	Details []string       `json:"details"`
+	Details *[]string      `json:"details,omitempty"`
 	Status  uint64         `json:"status"`
-	Summary xerr.PublicErr `json:"summary,omitempty"`
+	Summary xerr.PublicErr `json:"summary"`
 }
 
 // Health represents the status of service.
@@ -49,11 +53,14 @@ type UserPassword struct {
 // ClientId defines model for ClientId.
 type ClientId = string
 
+// Code defines model for Code.
+type Code = string
+
 // Display defines model for Display.
 type Display = string
 
-// IdTokenHint defines model for IdTokenHint.
-type IdTokenHint = string
+// GrantType defines model for GrantType.
+type GrantType = string
 
 // MaxAge defines model for MaxAge.
 type MaxAge = uint64
@@ -79,8 +86,14 @@ type SessionId = string
 // State defines model for State.
 type State = string
 
-// InternalServerError represents error
+// InternalServerError represents error response
 type InternalServerError = ErrorResponse
+
+// InvalidRequest represents error response
+type InvalidRequest = ErrorResponse
+
+// UnauthorizedRequest represents error response
+type UnauthorizedRequest = ErrorResponse
 
 // AuthenticateJSONBody defines parameters for Authenticate.
 type AuthenticateJSONBody struct {
@@ -96,34 +109,31 @@ type AuthenticateParams struct {
 
 // AuthorizeParams defines parameters for Authorize.
 type AuthorizeParams struct {
-	// ClientId represents "client_id" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// ClientId represents "client_id" parameter
 	ClientId ClientId `form:"client_id" json:"client_id" schema:"client_id" validate:"required,alphanum"`
 
-	// Nonce represents "nonce" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// Nonce represents "nonce" parameter
 	Nonce Nonce `form:"nonce" json:"nonce" schema:"nonce" validate:"required,ascii"`
 
-	// RedirectUri represents "redirect_uri" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// RedirectUri represents "redirect_uri" parameter
 	RedirectUri RedirectUri `form:"redirect_uri" json:"redirect_uri" schema:"redirect_uri" validate:"required,printascii"`
 
-	// ResponseType represents "response_type" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// ResponseType represents "response_type" parameter
 	ResponseType ResponseType `form:"response_type" json:"response_type" schema:"response_type" validate:"required,response-type-validator"`
 
-	// Scope represents "scope" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// Scope represents "scope" parameter
 	Scope Scope `form:"scope" json:"scope" schema:"scope" validate:"required,scope-validator"`
 
-	// State represents "state" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// State represents "state" parameter
 	State State `form:"state" json:"state" schema:"state" validate:"required,alphanum"`
 
-	// Display represents "display" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// Display represents "display" parameter
 	Display Display `form:"display" json:"display" schema:"display" validate:"required"`
 
-	// IdTokenHint represents "id_token_hint" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
-	IdTokenHint IdTokenHint `form:"id_token_hint" json:"id_token_hint" schema:"id_token_hint" validate:"required,alpha"`
-
-	// MaxAge represents "max_age" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// MaxAge represents "max_age" parameter
 	MaxAge MaxAge `form:"max_age" json:"max_age" schema:"max_age" validate:"required"`
 
-	// Prompt represents "prompt" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+	// Prompt represents "prompt" parameter
 	Prompt Prompt `form:"prompt" json:"prompt" schema:"prompt" validate:"required"`
 
 	// Sid Session ID
@@ -136,12 +146,6 @@ type ConsentParams struct {
 	Sid *SessionId `form:"sid,omitempty" json:"-"`
 }
 
-// RegisterJSONBody defines parameters for Register.
-type RegisterJSONBody struct {
-	Name     string `json:"name" validate:"required"`
-	Password string `json:"password" validate:"required"`
-}
-
 // TokenFormdataBody defines parameters for Token.
 type TokenFormdataBody = struct {
 }
@@ -152,14 +156,20 @@ type TokenParams struct {
 	Sid *SessionId `form:"sid,omitempty" json:"-"`
 }
 
+// RegisterJSONBody defines parameters for Register.
+type RegisterJSONBody struct {
+	Name     string `json:"name" validate:"required"`
+	Password string `json:"password" validate:"required"`
+}
+
 // AuthenticateJSONRequestBody defines body for Authenticate for application/json ContentType.
 type AuthenticateJSONRequestBody AuthenticateJSONBody
 
-// RegisterJSONRequestBody defines body for Register for application/json ContentType.
-type RegisterJSONRequestBody RegisterJSONBody
-
 // TokenFormdataRequestBody defines body for Token for application/x-www-form-urlencoded ContentType.
 type TokenFormdataRequestBody = TokenFormdataBody
+
+// RegisterJSONRequestBody defines body for Register for application/json ContentType.
+type RegisterJSONRequestBody RegisterJSONBody
 
 //  INTERFACE
 // --------------------------------------------------
@@ -179,11 +189,11 @@ type HandlerInterface interface {
 	// GET: /health
 	CheckHealth(w http.ResponseWriter, r *http.Request)
 
-	// POST: /register
-	Register(w http.ResponseWriter, r *http.Request)
-
 	// POST: /token
 	Token(w http.ResponseWriter, r *http.Request)
+
+	// POST: /user/register
+	Register(w http.ResponseWriter, r *http.Request)
 }
 
 //  MIDDLEWARE
@@ -239,13 +249,13 @@ func (mfm *MiddlewareFuncMap) SetCheckHealthMW(mf ...MiddlewareFunc) *Middleware
 	return mfm
 }
 
-func (mfm *MiddlewareFuncMap) SetRegisterMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
-	mfm.append("Register", mf...)
+func (mfm *MiddlewareFuncMap) SetTokenMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+	mfm.append("Token", mf...)
 	return mfm
 }
 
-func (mfm *MiddlewareFuncMap) SetTokenMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
-	mfm.append("Token", mf...)
+func (mfm *MiddlewareFuncMap) SetRegisterMW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+	mfm.append("Register", mf...)
 	return mfm
 }
 
@@ -376,17 +386,17 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("Register"); mw != nil {
-			r.Use(mw...)
-		}
-		r.Post("/register", si.Register)
-	})
-
-	r.Group(func(r chi.Router) {
 		if mw := options.Middlewares.raw("Token"); mw != nil {
 			r.Use(mw...)
 		}
 		r.Post("/token", si.Token)
+	})
+
+	r.Group(func(r chi.Router) {
+		if mw := options.Middlewares.raw("Register"); mw != nil {
+			r.Use(mw...)
+		}
+		r.Post("/user/register", si.Register)
 	})
 
 	return r
@@ -395,44 +405,50 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"/3DZVPrYJwAA",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

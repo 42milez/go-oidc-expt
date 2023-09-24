@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/google/uuid"
@@ -36,11 +35,11 @@ func NewJWT(clock xtime.Clocker) (*JWT, error) {
 	}
 
 	if ret.privateKey, err = parseKey(rawPrivateKey); err != nil {
-		return nil, xerr.FailedToParsePrivateKey.Wrap(err)
+		return nil, err
 	}
 
 	if ret.publicKey, err = parseKey(rawPublicKey); err != nil {
-		return nil, xerr.FailedToParsePublicKey.Wrap(err)
+		return nil, err
 	}
 
 	return ret, nil
@@ -55,11 +54,11 @@ func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
 	ret, err := j.parseRequest(r)
 
 	if err != nil {
-		return nil, xerr.FailedToParseRequest.Wrap(err)
+		return nil, err
 	}
 
 	if err = j.validate(ret); err != nil {
-		return nil, xerr.InvalidToken.Wrap(err)
+		return nil, err
 	}
 
 	return ret, nil
@@ -76,13 +75,13 @@ func (j *JWT) MakeAccessToken(name string) ([]byte, error) {
 		Build()
 
 	if err != nil {
-		return nil, xerr.FailedToBuildToken.Wrap(err)
+		return nil, err
 	}
 
 	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
 
 	if err != nil {
-		return nil, xerr.FailedToSignToken.Wrap(err)
+		return nil, err
 	}
 
 	return ret, nil

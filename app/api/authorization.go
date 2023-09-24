@@ -21,16 +21,12 @@ func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := &oapigen.AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+		RespondJSON500(w, err)
 		return
 	}
 
 	if err := ag.validator.Struct(q); err != nil {
-		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.InvalidRequest,
-		})
+		RespondJSON400(w, xerr.InvalidRequest, nil, err)
 		return
 	}
 
@@ -43,9 +39,7 @@ func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	location, err := ag.service.Authorize(r.Context(), q.ClientId, q.RedirectUri, q.State)
 
 	if err != nil {
-		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.InvalidParameter,
-		})
+		RespondJSON400(w, xerr.InvalidRequest, nil, err)
 		return
 	}
 

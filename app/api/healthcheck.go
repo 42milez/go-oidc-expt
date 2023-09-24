@@ -2,12 +2,6 @@ package api
 
 import (
 	"net/http"
-
-	"github.com/42milez/go-oidc-server/app/api/oapigen"
-
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-
-	"github.com/rs/zerolog/log"
 )
 
 type CheckHealthHdlr struct {
@@ -15,28 +9,20 @@ type CheckHealthHdlr struct {
 }
 
 func (ch *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	errResp := func() {
-		RespondJSON(w, http.StatusServiceUnavailable, &oapigen.Health{
-			Status: http.StatusServiceUnavailable,
-		})
+	errResp := func(err error) {
+		RespondJSON503(w, err)
 	}
 	ctx := r.Context()
 
 	if err := ch.service.CheckCacheStatus(ctx); err != nil {
-		log.Error().Err(err).Msg(xerr.FailedToPingCache.Error())
-		errResp()
+		errResp(err)
 		return
 	}
 
 	if err := ch.service.CheckDBStatus(ctx); err != nil {
-		log.Error().Err(err).Msg(xerr.FailedToPingDatabase.Error())
-		errResp()
+		errResp(err)
 		return
 	}
 
-	respBody := oapigen.Health{
-		Status: http.StatusOK,
-	}
-
-	RespondJSON(w, http.StatusOK, &respBody)
+	RespondJSON200(w)
 }

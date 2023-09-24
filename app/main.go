@@ -3,36 +3,51 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
+	"net/http"
 	"os"
 
-	"github.com/42milez/go-oidc-server/app/api"
-
-	"github.com/42milez/go-oidc-server/app/config"
-
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+
+	"github.com/42milez/go-oidc-server/app/api"
+	"github.com/42milez/go-oidc-server/app/config"
 )
 
 var Version = "dev"
 
-func Run(ctx context.Context, cfg *config.Config) error {
+func NewServer(lis net.Listener, mux http.Handler) *Server {
+	return &Server{
+		lis: lis,
+		srv: &http.Server{Handler: mux},
+	}
+}
+
+func NewBaseLogger(cfg *config.Config) *zerolog.Logger {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixNano
+	ret := zerolog.New(os.Stderr).Level(cfg.LogLevel).With().Timestamp().Str("env", cfg.Env).
+		Str("service", config.AppName).Logger()
+	return &ret
+}
+
+func Run(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
-	if err != nil {
-		log.Fatal().Stack().Err(err).Msgf("failed to listen port %d", cfg.Port)
-	}
-
-	log.Info().Msgf("listening on tcp://%s", lis.Addr().String())
-	log.Info().Msgf("application starting in %s (Version: %s)\n", cfg.Env, Version)
-
-	mux, cleanup, err := api.NewMux(ctx, cfg)
 
 	if err != nil {
-		log.Fatal().Stack().Err(err).Msg("failed to build routes")
+		log.Fatalf("failed to listen port %d", cfg.Port)
 	}
+
+	log.Printf("listening on tcp://%s", lis.Addr().String())
+	log.Printf("application starting in %s (Version: %s)\n", cfg.Env, Version)
+
+	mux, cleanup, err := api.NewMux(ctx, cfg, logger)
 
 	if cleanup != nil {
 		defer cleanup()
+	}
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	srv := NewServer(lis, mux)
@@ -41,17 +56,16 @@ func Run(ctx context.Context, cfg *config.Config) error {
 }
 
 func main() {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Str("role", "idp").Logger()
-
 	var cfg *config.Config
 	var err error
 
 	if cfg, err = config.New(); err != nil {
-		log.Fatal().Stack().Err(err).Msg("failed to parse env variable")
+		log.Fatal(err)
 	}
 
-	if err = Run(context.Background(), cfg); err != nil {
-		log.Fatal().Stack().Err(err).Msg("failed to shutdown")
+	baseLogger := NewBaseLogger(cfg)
+
+	if err = Run(context.Background(), cfg, baseLogger); err != nil {
+		log.Fatal(err)
 	}
 }

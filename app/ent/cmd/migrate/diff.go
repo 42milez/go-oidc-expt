@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/42milez/go-oidc-server/app/config"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent/migrate"
 
 	atlas "ariga.io/atlas/sql/migrate"
@@ -17,12 +18,6 @@ import (
 )
 
 func main() {
-	cfg, err := config.New()
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	workDir, err := os.Getwd()
 
 	if err != nil {
@@ -35,21 +30,19 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Create a local migration directory able to understand Atlas migration file format for replay.
 	dir, err := atlas.NewLocalDir(migrationDir)
 
 	if err != nil {
-		log.Fatalf("failed creating atlas migration directory: %+v", err)
+		log.Fatalf("failed to create atlas migration directory: %+v", err)
 	}
 
-	// Migrate diff options.
 	opts := []schema.MigrateOption{
-		schema.WithDir(dir),                         // provide migration directory
-		schema.WithMigrationMode(schema.ModeReplay), // provide migration mode
-		schema.WithDialect(dialect.MySQL),           // Ent dialect to use
-		schema.WithFormatter(atlas.DefaultFormatter),
-		schema.WithDropIndex(true),
+		schema.WithDir(dir),
+		schema.WithDialect(dialect.MySQL),
+		schema.WithMigrationMode(schema.ModeReplay),
 		schema.WithDropColumn(true),
+		schema.WithDropIndex(true),
+		schema.WithFormatter(atlas.DefaultFormatter),
 	}
 
 	if len(os.Args) != 2 {
@@ -57,14 +50,19 @@ func main() {
 	}
 
 	ctx := context.Background()
+	cfg, err := config.New()
 
-	// Generate migrations using Atlas support for MySQL (note the Ent dialect option passed above).
-	dbName := "atlas"
-	dbAdmin := dbName
-	dbPassword := dbName
-	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", dbAdmin, dbPassword, cfg.DBHost, cfg.DBPort, dbName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cfg.DBName = "atlas"
+	cfg.DBAdmin = cfg.DBName
+	cfg.DBPassword = cfg.DBName
+
+	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 
 	if err = migrate.NamedDiff(ctx, url, os.Args[1], opts...); err != nil {
-		log.Fatalf("failed generating migration file: %+v", err)
+		log.Fatalf("failed to generate migration file: %+v", err)
 	}
 }

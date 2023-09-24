@@ -34,7 +34,7 @@ func AssertResponse(t *testing.T, got *http.Response, want *Response) {
 	t.Helper()
 	t.Cleanup(func() {
 		if err := got.Body.Close(); err != nil {
-			t.Errorf("%s", xerr.FailedToCloseResponseBody)
+			t.Fatal(err)
 		}
 	})
 	assertStatus(t, want, got)
@@ -46,7 +46,7 @@ func AssertResponseJSON(t *testing.T, got *http.Response, want *Response) {
 	t.Helper()
 	t.Cleanup(func() {
 		if err := got.Body.Close(); err != nil {
-			t.Errorf("%s", xerr.FailedToCloseResponseBody)
+			t.Fatal(err)
 		}
 	})
 	assertStatus(t, want, got)
@@ -68,7 +68,7 @@ func assertLocation(t *testing.T, want *Response, got *http.Response) {
 	gotLocation, err := got.Location()
 
 	if err != nil && !errors.Is(err, http.ErrNoLocation) {
-		t.Error(xerr.FailedToReadResponseLocation)
+		t.Error(err)
 	}
 
 	if len(want.Location) > 0 && want.Location != gotLocation.String() {
@@ -121,7 +121,7 @@ func assertBodyJSON(t *testing.T, want *Response, got *http.Response) {
 	}
 
 	if d := cmp.Diff(wantJSON, gotJSON); !xutil.IsEmpty(d) {
-		t.Errorf("%s (-got +want)\n%s", xerr.ResponseBodyNotMatched, d)
+		t.Errorf("HTTP Response Body Mismatch (-want +got):\n%s", d)
 	}
 }
 
@@ -158,7 +158,7 @@ func LoadFile(t *testing.T, path string) []byte {
 	t.Helper()
 	data, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("%s: %v", xerr.FailedToReadFile, err)
+		t.Fatal(err)
 	}
 	return data
 }

@@ -8,18 +8,11 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
-	"github.com/rs/zerolog/log"
-)
-
-const (
-	errFailedToEncodeHTTPResponse = "failed to encode http response"
-	errFailedToWriteHTTPResponse  = "failed to write http response"
-	errFailedToDecodeRequestBody  = "failed to decode request body"
-	errValidationError            = "validation error"
 )
 
 type ErrResponse struct {
-	Error   xerr.PublicErr `json:"error"`
+	Status  int            `json:"status"`
+	Summary xerr.PublicErr `json:"error"`
 	Details []string       `json:"details,omitempty"`
 }
 
@@ -29,16 +22,14 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 	bodyBytes, err := json.Marshal(body)
 
 	if err != nil {
-		log.Error().Err(err).Msg(errFailedToEncodeHTTPResponse)
-
 		w.WriteHeader(http.StatusInternalServerError)
 
 		resp := ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
+			Summary: xerr.UnexpectedErrorOccurred,
 		}
 
 		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			log.Error().Err(err).Msg(errFailedToWriteHTTPResponse)
+			appLogger.Error().Err(err)
 		}
 
 		return
@@ -47,13 +38,62 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 	w.WriteHeader(statusCode)
 
 	if _, err = fmt.Fprintf(w, "%s", bodyBytes); err != nil {
-		log.Error().Err(err).Msg(errFailedToWriteHTTPResponse)
+		appLogger.Error().Err(err)
 	}
 }
 
-func RespondJson500(w http.ResponseWriter, msg xerr.PublicErr) {
+func RespondJSON200(w http.ResponseWriter) {
+	RespondJSON(w, http.StatusOK, &ErrResponse{
+		Status:  http.StatusOK,
+		Summary: xerr.OK,
+	})
+}
+
+func RespondJSON400(w http.ResponseWriter, summary xerr.PublicErr, details []string, err error) {
+	body := &ErrResponse{
+		Status:  http.StatusBadRequest,
+		Summary: summary,
+	}
+	if details != nil {
+		body.Details = details
+	}
+	if err != nil {
+		appLogger.Error().Err(err).Send()
+	}
+	RespondJSON(w, http.StatusBadRequest, body)
+}
+
+func RespondJSON401(w http.ResponseWriter, summary xerr.PublicErr, details []string, err error) {
+	body := &ErrResponse{
+		Status:  http.StatusUnauthorized,
+		Summary: summary,
+	}
+	if details != nil {
+		body.Details = details
+	}
+	if err != nil {
+		appLogger.Error().Err(err).Send()
+	}
+	RespondJSON(w, http.StatusUnauthorized, body)
+}
+
+func RespondJSON500(w http.ResponseWriter, err error) {
+	if err != nil {
+		appLogger.Error().Err(err).Send()
+	}
 	RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-		Error: msg,
+		Status:  http.StatusInternalServerError,
+		Summary: xerr.UnexpectedErrorOccurred,
+	})
+}
+
+func RespondJSON503(w http.ResponseWriter, err error) {
+	if err != nil {
+		appLogger.Error().Err(err).Send()
+	}
+	RespondJSON(w, http.StatusServiceUnavailable, &ErrResponse{
+		Status:  http.StatusServiceUnavailable,
+		Summary: xerr.ServiceTemporaryUnavailable,
 	})
 }
 
@@ -61,14 +101,14 @@ func Redirect(w http.ResponseWriter, r *http.Request, u string, code int) {
 	redirectURL, err := url.Parse(u)
 
 	if err != nil {
-		RespondJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJSON500(w, err)
 		return
 	}
 
 	if !xutil.IsEmpty(r.URL.RawQuery) {
 		redirectURL, err = url.Parse(fmt.Sprintf("%s&%s", redirectURL, r.URL.RawQuery))
 		if err != nil {
-			RespondJson500(w, xerr.UnexpectedErrorOccurred)
+			RespondJSON500(w, err)
 			return
 		}
 	}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/typedef"

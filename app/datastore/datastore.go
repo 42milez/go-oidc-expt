@@ -10,7 +10,6 @@ import (
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
@@ -22,7 +21,7 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 
 	if err != nil {
 		xutil.CloseConnection(db)
-		return nil, xerr.FailToEstablishConnection.Wrap(err)
+		return nil, err
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
@@ -56,7 +55,7 @@ func NewCache(ctx context.Context, cfg *config.Config) (*Cache, error) {
 
 	if err := client.Ping(ctx).Err(); err != nil {
 		xutil.CloseConnection(client)
-		return nil, xerr.FailedToReachHost.Wrap(err)
+		return nil, err
 	}
 
 	return &Cache{

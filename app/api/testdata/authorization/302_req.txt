@@ -1,10 +1,9 @@
-client_id=s6BhdRkqt3&
+client_id=y6WKGu1WjDOFXhpMXDC1kGnOC4DElz&
 display=page&
-id_token_hint=TBD&
 max_age=86400&
-nonce=n-0S6_WzA2Mj&
+nonce=NqaIIfMi9LAZiGgHn8hBAzfR4lWePLzFM4h83j9SoKXaJV6u3EWCJcy1MOPOOkYE&
 prompt=consent&
-redirect_uri=https%3A%2F%2Fexample.com%2Fcb0&
+redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcb&
 response_type=code&
 scope=openid%20profile%20email&
-state=af0ifjsldkj
+state=xw3dP7pYkyD3j5wBfENPjbdarNxIB9KNpvmaunO4xAHcHzrIYLaRQgHNxDBnmm1x

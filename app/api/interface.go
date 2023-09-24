@@ -2,10 +2,11 @@ package api
 
 import (
 	"context"
-	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/entity"
 	"net/http"
 	"time"
+
+	"github.com/42milez/go-oidc-server/app/ent/ent"
+	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 )

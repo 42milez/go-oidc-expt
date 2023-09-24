@@ -7,8 +7,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/api/oapigen"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/config"
@@ -31,16 +29,12 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var reqBody oapigen.AuthenticateJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		log.Error().Err(err).Msg(errFailedToDecodeRequestBody)
-		RespondJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJSON500(w, err)
 		return
 	}
 
 	if err := ah.validator.Struct(reqBody); err != nil {
-		log.Error().Err(err).Msg(errValidationError)
-		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.InvalidRequest,
-		})
+		RespondJSON400(w, xerr.InvalidRequest, nil, err)
 		return
 	}
 
@@ -48,17 +42,13 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if errors.Is(err, xerr.UserNotFound) {
-			RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
-				Error: xerr.InvalidUsernameOrPassword,
-			})
+			RespondJSON401(w, xerr.InvalidUsernameOrPassword, nil, err)
 			return
 		} else if errors.Is(err, xerr.PasswordNotMatched) {
-			RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
-				Error: xerr.InvalidUsernameOrPassword,
-			})
+			RespondJSON401(w, xerr.InvalidUsernameOrPassword, nil, err)
 			return
 		} else {
-			RespondJson500(w, xerr.UnexpectedErrorOccurred)
+			RespondJSON500(w, err)
 			return
 		}
 	}
@@ -68,12 +58,12 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		RespondJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJSON500(w, err)
 		return
 	}
 
 	if err = ah.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
-		RespondJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJSON500(w, err)
 		return
 	}
 

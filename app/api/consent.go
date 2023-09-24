@@ -25,33 +25,24 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := &oapigen.AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+		RespondJSON500(w, err)
 		return
 	}
 
 	if err := ch.validator.Struct(q); err != nil {
-		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.InvalidRequest,
-		})
+		RespondJSON400(w, xerr.InvalidRequest, nil, err)
 		return
 	}
 
 	sess, ok := service.GetSession(ctx)
 
 	if !ok {
-		RespondJSON(w, http.StatusUnauthorized, &oapigen.ErrorResponse{
-			Status:  http.StatusUnauthorized,
-			Summary: xerr.UnauthorizedRequest,
-		})
+		RespondJSON401(w, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
 	if err := ch.service.AcceptConsent(ctx, sess.UserID, q.ClientId); err != nil {
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+		RespondJSON500(w, err)
 		return
 	}
 

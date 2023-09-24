@@ -6,8 +6,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/api/oapigen"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/config"
@@ -23,7 +21,7 @@ func RestoreSession(option *HandlerOption) oapigen.MiddlewareFunc {
 			}
 			req, err := option.sessionRestorer.Restore(r, typedef.SessionID(sid))
 			if err != nil {
-				RespondJson500(w, xerr.UnexpectedErrorOccurred)
+				RespondJSON500(w, err)
 				return
 			}
 			next.ServeHTTP(w, req)

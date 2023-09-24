@@ -50,7 +50,7 @@ const (
 )
 
 var validResponseTypeCombinations = []responseTypeNumber{
-	// Authorization Code Flow
+	// Authorization Status Flow
 	rtCode,
 	// Implicit Flow
 	rtIDToken | rtToken,
@@ -72,7 +72,7 @@ func convertResponseTypeToNumber(respTypes []string) (responseTypeNumber, error)
 		case "token":
 			ret |= rtToken
 		default:
-			return 0, xerr.InvalidResponseType
+			return 0, xerr.OIDCInvalidResponseType
 		}
 	}
 	return ret, nil
