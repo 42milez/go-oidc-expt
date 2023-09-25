@@ -58,8 +58,17 @@ type HealthChecker interface {
 //  AUTHENTICATION
 // --------------------------------------------------
 
+type ConsentVerifier interface {
+	VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error)
+}
+
+type PasswordVerifier interface {
+	VerifyPassword(ctx context.Context, name, pw string) (typedef.UserID, error)
+}
+
 type Authenticator interface {
-	Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error)
+	ConsentVerifier
+	PasswordVerifier
 }
 
 type UserCreator interface {

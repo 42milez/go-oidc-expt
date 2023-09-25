@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 
 	"github.com/42milez/go-oidc-server/app/service"
 
@@ -12,13 +15,13 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/golang/mock/gomock"
 )
 
 const (
 	tdAuthenticationDir         = "testdata/authentication/"
-	tdAuthenticationRequest200  = tdAuthenticationDir + "200_req.json"
+	tdAuthenticationReqBody200  = tdAuthenticationDir + "200_req_body.json"
+	tdAuthenticationReqParam200 = tdAuthenticationDir + "200_req_param.txt"
 	tdAuthenticationResponse200 = tdAuthenticationDir + "200_resp.json"
 	tdAuthenticationRequest400  = tdAuthenticationDir + "400_req.json"
 	tdAuthenticationResponse400 = tdAuthenticationDir + "400_resp.json"
@@ -28,9 +31,14 @@ const (
 const dummyUserID typedef.UserID = 475924035230777348
 
 func TestAuthentication_ServeHTTP(t *testing.T) {
-	type serviceMockResp struct {
+	type verifyPasswordMockResp struct {
 		userID typedef.UserID
 		err    error
+	}
+
+	type verifyConsentMockResp struct {
+		ok  bool
+		err error
 	}
 
 	type sessionMockResp struct {
@@ -46,16 +54,23 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 	sessionID := "dd9a0158-092c-4dc2-b470-7e68c97bfdb0"
 
 	tests := map[string]struct {
-		reqFile      string
-		respSVCMock  serviceMockResp
+		reqBodyFile  string
+		reqParamFile string
+		respVPMock   verifyPasswordMockResp
+		respVCMock   verifyConsentMockResp
 		respSessMock sessionMockResp
 		want         want
 	}{
-		"OK": {
-			reqFile: tdAuthenticationRequest200,
-			respSVCMock: serviceMockResp{
+		"ok": {
+			reqBodyFile:  tdAuthenticationReqBody200,
+			reqParamFile: tdAuthenticationReqParam200,
+			respVPMock: verifyPasswordMockResp{
 				userID: dummyUserID,
 				err:    nil,
+			},
+			respVCMock: verifyConsentMockResp{
+				ok:  false,
+				err: nil,
 			},
 			respSessMock: sessionMockResp{
 				sessionID: sessionID,
@@ -75,7 +90,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		//},
 		//"InternalServerError": {
 		//	reqFile: tdAuthenticationRequest200,
-		//	respSVCMock: serviceMockResp{
+		//	respVPMock: verifyPasswordMockResp{
 		//		err: xtestutil.DummyError,
 		//	},
 		//	want: want{
@@ -95,23 +110,37 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			r := httptest.NewRequest(
 				http.MethodPost,
 				"/authentication",
-				bytes.NewReader(xtestutil.LoadFile(t, tt.reqFile)))
+				bytes.NewReader(xtestutil.LoadFile(t, tt.reqBodyFile)))
+			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqParamFile)), "\n", "", -1)
+
+			ctx := r.Context()
 
 			svcMock := NewMockAuthenticator(gomock.NewController(t))
 			svcMock.
 				EXPECT().
-				Authenticate(r.Context(), gomock.Any(), gomock.Any()).
-				Return(tt.respSVCMock.userID, tt.respSVCMock.err).
+				VerifyPassword(ctx, gomock.Any(), gomock.Any()).
+				Return(tt.respVPMock.userID, tt.respVPMock.err).
+				AnyTimes()
+			svcMock.
+				EXPECT().
+				VerifyConsent(ctx, gomock.Any(), gomock.Any()).
+				Return(tt.respVCMock.ok, tt.respVCMock.err).
 				AnyTimes()
 
 			sessMock := NewMockSessionCreator(gomock.NewController(t))
 			sessMock.EXPECT().Create(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
+			v, err := NewAuthorizeParamValidator()
+
+			if err != nil {
+				t.Error(err)
+			}
+
 			sut := AuthenticateHdlr{
 				service:   svcMock,
 				session:   sessMock,
 				cookie:    service.NewCookie(rawHashKey, rawBlockKey, xtestutil.FixedClocker{}),
-				validator: validator.New(),
+				validator: v,
 			}
 			sut.ServeHTTP(w, r)
 

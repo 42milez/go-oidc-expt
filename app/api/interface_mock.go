@@ -329,6 +329,82 @@ func (mr *MockHealthCheckerMockRecorder) CheckDBStatus(ctx interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckDBStatus", reflect.TypeOf((*MockHealthChecker)(nil).CheckDBStatus), ctx)
 }
 
+// MockConsentVerifier is a mock of ConsentVerifier interface.
+type MockConsentVerifier struct {
+	ctrl     *gomock.Controller
+	recorder *MockConsentVerifierMockRecorder
+}
+
+// MockConsentVerifierMockRecorder is the mock recorder for MockConsentVerifier.
+type MockConsentVerifierMockRecorder struct {
+	mock *MockConsentVerifier
+}
+
+// NewMockConsentVerifier creates a new mock instance.
+func NewMockConsentVerifier(ctrl *gomock.Controller) *MockConsentVerifier {
+	mock := &MockConsentVerifier{ctrl: ctrl}
+	mock.recorder = &MockConsentVerifierMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockConsentVerifier) EXPECT() *MockConsentVerifierMockRecorder {
+	return m.recorder
+}
+
+// VerifyConsent mocks base method.
+func (m *MockConsentVerifier) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VerifyConsent", ctx, userID, clientID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// VerifyConsent indicates an expected call of VerifyConsent.
+func (mr *MockConsentVerifierMockRecorder) VerifyConsent(ctx, userID, clientID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyConsent", reflect.TypeOf((*MockConsentVerifier)(nil).VerifyConsent), ctx, userID, clientID)
+}
+
+// MockPasswordVerifier is a mock of PasswordVerifier interface.
+type MockPasswordVerifier struct {
+	ctrl     *gomock.Controller
+	recorder *MockPasswordVerifierMockRecorder
+}
+
+// MockPasswordVerifierMockRecorder is the mock recorder for MockPasswordVerifier.
+type MockPasswordVerifierMockRecorder struct {
+	mock *MockPasswordVerifier
+}
+
+// NewMockPasswordVerifier creates a new mock instance.
+func NewMockPasswordVerifier(ctrl *gomock.Controller) *MockPasswordVerifier {
+	mock := &MockPasswordVerifier{ctrl: ctrl}
+	mock.recorder = &MockPasswordVerifierMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPasswordVerifier) EXPECT() *MockPasswordVerifierMockRecorder {
+	return m.recorder
+}
+
+// VerifyPassword mocks base method.
+func (m *MockPasswordVerifier) VerifyPassword(ctx context.Context, name, pw string) (typedef.UserID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VerifyPassword", ctx, name, pw)
+	ret0, _ := ret[0].(typedef.UserID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// VerifyPassword indicates an expected call of VerifyPassword.
+func (mr *MockPasswordVerifierMockRecorder) VerifyPassword(ctx, name, pw interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyPassword", reflect.TypeOf((*MockPasswordVerifier)(nil).VerifyPassword), ctx, name, pw)
+}
+
 // MockAuthenticator is a mock of Authenticator interface.
 type MockAuthenticator struct {
 	ctrl     *gomock.Controller
@@ -352,19 +428,34 @@ func (m *MockAuthenticator) EXPECT() *MockAuthenticatorMockRecorder {
 	return m.recorder
 }
 
-// Authenticate mocks base method.
-func (m *MockAuthenticator) Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error) {
+// VerifyConsent mocks base method.
+func (m *MockAuthenticator) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Authenticate", ctx, name, pw)
+	ret := m.ctrl.Call(m, "VerifyConsent", ctx, userID, clientID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// VerifyConsent indicates an expected call of VerifyConsent.
+func (mr *MockAuthenticatorMockRecorder) VerifyConsent(ctx, userID, clientID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyConsent", reflect.TypeOf((*MockAuthenticator)(nil).VerifyConsent), ctx, userID, clientID)
+}
+
+// VerifyPassword mocks base method.
+func (m *MockAuthenticator) VerifyPassword(ctx context.Context, name, pw string) (typedef.UserID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VerifyPassword", ctx, name, pw)
 	ret0, _ := ret[0].(typedef.UserID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Authenticate indicates an expected call of Authenticate.
-func (mr *MockAuthenticatorMockRecorder) Authenticate(ctx, name, pw interface{}) *gomock.Call {
+// VerifyPassword indicates an expected call of VerifyPassword.
+func (mr *MockAuthenticatorMockRecorder) VerifyPassword(ctx, name, pw interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authenticate", reflect.TypeOf((*MockAuthenticator)(nil).Authenticate), ctx, name, pw)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyPassword", reflect.TypeOf((*MockAuthenticator)(nil).VerifyPassword), ctx, name, pw)
 }
 
 // MockUserCreator is a mock of UserCreator interface.

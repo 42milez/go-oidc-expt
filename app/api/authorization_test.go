@@ -41,7 +41,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 		resp    mockResp
 		want    want
 	}{
-		"OK": {
+		"ok": {
 			reqFile: tdAuthorizationRequest200,
 			resp: mockResp{
 				location: "https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA&state=af0ifjsldk",

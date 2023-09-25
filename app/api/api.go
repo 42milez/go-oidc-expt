@@ -20,7 +20,6 @@ import (
 	chimw "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-playground/validator/v10"
 )
 
 //go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config oapigen/config.yml -o oapigen/api.gen.go spec/spec.yml
@@ -75,7 +74,6 @@ type HandlerOption struct {
 	sessionCreator  *service.CreateSession
 	sessionRestorer *service.RestoreSession
 	sessionUpdater  *service.UpdateSession
-	validationUtil  *validator.Validate
 }
 
 func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (http.Handler, func(), error) {
@@ -114,7 +112,6 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 		sessionCreator:  service.NewCreateSession(repository.NewSession(cache)),
 		sessionRestorer: service.NewRestoreSession(repository.NewSession(cache)),
 		sessionUpdater:  service.NewUpdateSession(repository.NewSession(cache)),
-		validationUtil:  validator.New(),
 	}
 
 	if option.jwtUtil, err = NewJWT(xtime.RealClocker{}); err != nil {
@@ -124,16 +121,22 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	//  HANDLER
 	// --------------------------------------------------
 
-	authenticateUserHdlr = NewAuthenticateHdlr(option)
 	checkHealthHdlr = NewCheckHealthHdlr(option)
-	registerUserHdlr = NewRegisterHdlr(option)
 	tokenHdlr = NewTokenHdlr(option)
+
+	if authenticateUserHdlr, err = NewAuthenticateHdlr(option); err != nil {
+		return nil, nil, err
+	}
 
 	if authorizeGetHdlr, err = NewAuthorizeGetHdlr(option); err != nil {
 		return nil, nil, err
 	}
 
 	if consentHdlr, err = NewConsentHdlr(option); err != nil {
+		return nil, nil, err
+	}
+
+	if registerUserHdlr, err = NewRegisterHdlr(option); err != nil {
 		return nil, nil, err
 	}
 
@@ -180,13 +183,17 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	}, nil
 }
 
-func NewAuthenticateHdlr(option *HandlerOption) *AuthenticateHdlr {
+func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return nil, err
+	}
 	return &AuthenticateHdlr{
 		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.jwtUtil),
 		cookie:    option.cookie,
 		session:   option.sessionCreator,
-		validator: option.validationUtil,
-	}
+		validator: v,
+	}, nil
 }
 
 func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
@@ -217,12 +224,16 @@ func NewConsentHdlr(option *HandlerOption) (*ConsentHdlr, error) {
 	}, nil
 }
 
-func NewRegisterHdlr(option *HandlerOption) *RegisterHdlr {
+func NewRegisterHdlr(option *HandlerOption) (*RegisterHdlr, error) {
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return nil, err
+	}
 	return &RegisterHdlr{
 		service:   service.NewCreateUser(repository.NewUser(option.db, option.idGenerator)),
 		session:   option.sessionRestorer,
-		validator: option.validationUtil,
-	}
+		validator: v,
+	}, nil
 }
 
 func NewTokenHdlr(option *HandlerOption) *TokenHdlr {

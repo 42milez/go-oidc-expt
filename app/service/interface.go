@@ -57,8 +57,17 @@ type UserCreator interface {
 	CreateUser(ctx context.Context, name string, pw string) (*ent.User, error)
 }
 
+type ConsentReader interface {
+	ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error)
+}
+
 type UserByNameReader interface {
 	ReadUserByName(ctx context.Context, name string) (*ent.User, error)
+}
+
+type UserConsentReader interface {
+	ConsentReader
+	UserByNameReader
 }
 
 //  OIDC: AUTHORIZATION

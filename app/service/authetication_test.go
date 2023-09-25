@@ -36,7 +36,7 @@ func TestAuthenticate_Authenticate(t *testing.T) {
 	//			ReadUserByName(ctx, tt.username).
 	//			Return()
 	//
-	//		auth := &Authenticate{}
+	//		auth := &VerifyPassword{}
 	//	})
 	//}
 }

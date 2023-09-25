@@ -153,10 +153,10 @@ paths:
             examples:
               new:
                 summary: Issue Access Token
-                value: grant_type=authorization_code&client_id=s6BhdRkqt3&client_secret=some_secret12345&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb
+                value: grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcb
               refresh:
                 summary: Reissue Access Token
-                value: grant_type=refresh_token&client_id=s6BhdRkqt3&client_secret=some_secret12345&refresh_token=8xLOxBtZp8
+                value: grant_type=refresh_token&refresh_token=8xLOxBtZp8
   /user/register:
     post:
       description: Creates a new user in the database.

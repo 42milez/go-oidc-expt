@@ -2,7 +2,10 @@ package repository
 
 import (
 	"context"
+	"errors"
 
+	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
@@ -45,6 +48,18 @@ func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientI
 	}
 
 	return consent, nil
+}
+
+func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+	ret, err := u.db.Client.Consent.Query().Where(consent.UserID(userID), consent.ClientID(clientID)).Only(ctx)
+	if err != nil {
+		if errors.Is(err, &ent.NotFoundError{}) {
+			return nil, xerr.NotFound
+		} else {
+			return nil, err
+		}
+	}
+	return ret, nil
 }
 
 func (u *User) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {

@@ -329,6 +329,44 @@ func (mr *MockUserCreatorMockRecorder) CreateUser(ctx, name, pw interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserCreator)(nil).CreateUser), ctx, name, pw)
 }
 
+// MockConsentReader is a mock of ConsentReader interface.
+type MockConsentReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockConsentReaderMockRecorder
+}
+
+// MockConsentReaderMockRecorder is the mock recorder for MockConsentReader.
+type MockConsentReaderMockRecorder struct {
+	mock *MockConsentReader
+}
+
+// NewMockConsentReader creates a new mock instance.
+func NewMockConsentReader(ctrl *gomock.Controller) *MockConsentReader {
+	mock := &MockConsentReader{ctrl: ctrl}
+	mock.recorder = &MockConsentReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockConsentReader) EXPECT() *MockConsentReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadConsent mocks base method.
+func (m *MockConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadConsent", ctx, userID, clientID)
+	ret0, _ := ret[0].(*ent.Consent)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadConsent indicates an expected call of ReadConsent.
+func (mr *MockConsentReaderMockRecorder) ReadConsent(ctx, userID, clientID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadConsent", reflect.TypeOf((*MockConsentReader)(nil).ReadConsent), ctx, userID, clientID)
+}
+
 // MockUserByNameReader is a mock of UserByNameReader interface.
 type MockUserByNameReader struct {
 	ctrl     *gomock.Controller
@@ -365,6 +403,59 @@ func (m *MockUserByNameReader) ReadUserByName(ctx context.Context, name string) 
 func (mr *MockUserByNameReaderMockRecorder) ReadUserByName(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUserByName", reflect.TypeOf((*MockUserByNameReader)(nil).ReadUserByName), ctx, name)
+}
+
+// MockUserConsentReader is a mock of UserConsentReader interface.
+type MockUserConsentReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockUserConsentReaderMockRecorder
+}
+
+// MockUserConsentReaderMockRecorder is the mock recorder for MockUserConsentReader.
+type MockUserConsentReaderMockRecorder struct {
+	mock *MockUserConsentReader
+}
+
+// NewMockUserConsentReader creates a new mock instance.
+func NewMockUserConsentReader(ctrl *gomock.Controller) *MockUserConsentReader {
+	mock := &MockUserConsentReader{ctrl: ctrl}
+	mock.recorder = &MockUserConsentReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserConsentReader) EXPECT() *MockUserConsentReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadConsent mocks base method.
+func (m *MockUserConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadConsent", ctx, userID, clientID)
+	ret0, _ := ret[0].(*ent.Consent)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadConsent indicates an expected call of ReadConsent.
+func (mr *MockUserConsentReaderMockRecorder) ReadConsent(ctx, userID, clientID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadConsent", reflect.TypeOf((*MockUserConsentReader)(nil).ReadConsent), ctx, userID, clientID)
+}
+
+// ReadUserByName mocks base method.
+func (m *MockUserConsentReader) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadUserByName", ctx, name)
+	ret0, _ := ret[0].(*ent.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadUserByName indicates an expected call of ReadUserByName.
+func (mr *MockUserConsentReaderMockRecorder) ReadUserByName(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUserByName", reflect.TypeOf((*MockUserConsentReader)(nil).ReadUserByName), ctx, name)
 }
 
 // MockAuthCodeCreator is a mock of AuthCodeCreator interface.

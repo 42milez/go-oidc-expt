@@ -15,11 +15,23 @@ import (
 var errEntNotFoundError = &ent.NotFoundError{}
 
 type Authenticate struct {
-	repo     UserByNameReader
+	repo     UserConsentReader
 	tokenGen TokenGenerator
 }
 
-func (a *Authenticate) Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error) {
+func (a *Authenticate) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error) {
+	_, err := a.repo.ReadConsent(ctx, userID, clientID)
+	if err != nil {
+		if errors.Is(err, xerr.NotFound) {
+			return false, nil
+		} else {
+			return false, err
+		}
+	}
+	return true, nil
+}
+
+func (a *Authenticate) VerifyPassword(ctx context.Context, name, pw string) (typedef.UserID, error) {
 	user, err := a.repo.ReadUserByName(ctx, name)
 
 	if err != nil {

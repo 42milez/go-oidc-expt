@@ -8,7 +8,7 @@ import (
 //  AUTHENTICATION
 // --------------------------------------------------
 
-func NewAuthenticate(repo UserByNameReader, tokenGen TokenGenerator) *Authenticate {
+func NewAuthenticate(repo UserConsentReader, tokenGen TokenGenerator) *Authenticate {
 	return &Authenticate{
 		repo:     repo,
 		tokenGen: tokenGen,
