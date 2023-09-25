@@ -30,7 +30,7 @@ type Response struct {
 	Body       []byte
 }
 
-func AssertResponse(t *testing.T, got *http.Response, want *Response) {
+func AssertResponse(t *testing.T, want *Response, got *http.Response) {
 	t.Helper()
 	t.Cleanup(func() {
 		if err := got.Body.Close(); err != nil {
@@ -42,7 +42,7 @@ func AssertResponse(t *testing.T, got *http.Response, want *Response) {
 	assertBody(t, want, got)
 }
 
-func AssertResponseJSON(t *testing.T, got *http.Response, want *Response) {
+func AssertResponseJSON(t *testing.T, want *Response, got *http.Response) {
 	t.Helper()
 	t.Cleanup(func() {
 		if err := got.Body.Close(); err != nil {
@@ -56,7 +56,6 @@ func AssertResponseJSON(t *testing.T, got *http.Response, want *Response) {
 
 func assertStatus(t *testing.T, want *Response, got *http.Response) {
 	t.Helper()
-
 	if want.StatusCode != got.StatusCode {
 		t.Errorf("status not matched ( want = %d; got = %d )", want.StatusCode, got.StatusCode)
 	}
@@ -93,7 +92,7 @@ func assertBody(t *testing.T, want *Response, got *http.Response) {
 	gb := strings.Replace(xstring.ByteToString(gotBody), "\n", "", -1)
 
 	if wb != gb {
-		t.Errorf("body not matched ( want = %s; got = %s", wb, gb)
+		t.Errorf("response body not matched ( want = %s; got = %s", wb, gb)
 	}
 }
 
@@ -103,7 +102,7 @@ func assertBodyJSON(t *testing.T, want *Response, got *http.Response) {
 	gotBody, err := io.ReadAll(got.Body)
 
 	if err != nil {
-		t.Errorf("%s", xerr.FailedToReadResponseBody)
+		t.Fatal(err)
 	}
 
 	if xutil.IsEmpty(want.Body) && xutil.IsEmpty(gotBody) {
@@ -113,27 +112,16 @@ func assertBodyJSON(t *testing.T, want *Response, got *http.Response) {
 	var wantJSON, gotJSON any
 
 	if err = json.Unmarshal(want.Body, &wantJSON); err != nil {
-		t.Errorf("%s", xerr.FailedToUnmarshalJSON)
+		t.Fatal(err)
 	}
 
 	if err = json.Unmarshal(gotBody, &gotJSON); err != nil {
-		t.Errorf("%s", xerr.FailedToUnmarshalJSON)
+		t.Fatal(err)
 	}
 
 	if d := cmp.Diff(wantJSON, gotJSON); !xutil.IsEmpty(d) {
-		t.Errorf("HTTP Response Body Mismatch (-want +got):\n%s", d)
+		t.Errorf("response body not matched (-want +got):\n%s", d)
 	}
-}
-
-//  Error
-// --------------------------------------------------
-
-const DummyError DummyErr = "DUMMY ERROR"
-
-type DummyErr string
-
-func (v DummyErr) Error() string {
-	return string(v)
 }
 
 //  Clock

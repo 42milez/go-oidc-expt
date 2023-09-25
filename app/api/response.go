@@ -10,9 +10,9 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 )
 
-type ErrResponse struct {
+type Response struct {
 	Status  int            `json:"status"`
-	Summary xerr.PublicErr `json:"error"`
+	Summary xerr.PublicErr `json:"summary"`
 	Details []string       `json:"details,omitempty"`
 }
 
@@ -24,7 +24,7 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 
-		resp := ErrResponse{
+		resp := Response{
 			Summary: xerr.UnexpectedErrorOccurred,
 		}
 
@@ -43,14 +43,14 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 }
 
 func RespondJSON200(w http.ResponseWriter) {
-	RespondJSON(w, http.StatusOK, &ErrResponse{
+	RespondJSON(w, http.StatusOK, &Response{
 		Status:  http.StatusOK,
 		Summary: xerr.OK,
 	})
 }
 
 func RespondJSON400(w http.ResponseWriter, summary xerr.PublicErr, details []string, err error) {
-	body := &ErrResponse{
+	body := &Response{
 		Status:  http.StatusBadRequest,
 		Summary: summary,
 	}
@@ -64,7 +64,7 @@ func RespondJSON400(w http.ResponseWriter, summary xerr.PublicErr, details []str
 }
 
 func RespondJSON401(w http.ResponseWriter, summary xerr.PublicErr, details []string, err error) {
-	body := &ErrResponse{
+	body := &Response{
 		Status:  http.StatusUnauthorized,
 		Summary: summary,
 	}
@@ -81,7 +81,7 @@ func RespondJSON500(w http.ResponseWriter, err error) {
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
+	RespondJSON(w, http.StatusInternalServerError, &Response{
 		Status:  http.StatusInternalServerError,
 		Summary: xerr.UnexpectedErrorOccurred,
 	})
@@ -91,7 +91,7 @@ func RespondJSON503(w http.ResponseWriter, err error) {
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, http.StatusServiceUnavailable, &ErrResponse{
+	RespondJSON(w, http.StatusServiceUnavailable, &Response{
 		Status:  http.StatusServiceUnavailable,
 		Summary: xerr.ServiceTemporaryUnavailable,
 	})

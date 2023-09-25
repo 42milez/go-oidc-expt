@@ -46,8 +46,7 @@ func New() (*Config, error) {
 // --------------------------------------------------
 
 const (
-	AppName    = "idp"
-	ConsentURL = "/consent"
+	AppName = "idp"
 )
 
 //  COOKIE
@@ -69,9 +68,14 @@ const (
 // --------------------------------------------------
 
 const (
-	AuthCodeLength        = 30
-	AuthCodeLifetime      = 10 * time.Minute
-	AuthorizationEndpoint = "/authorize"
+	AuthenticationEndpoint = "/authenticate"
+	ConsentEndpoint        = "/consent"
+	AuthorizationEndpoint  = "/authorize"
+)
+
+const (
+	AuthCodeLength   = 30
+	AuthCodeLifetime = 10 * time.Minute
 )
 
 const (

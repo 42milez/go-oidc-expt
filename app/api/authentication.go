@@ -43,6 +43,7 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if reqBody, err = ah.parseRequestBody(r); err != nil {
 		ah.respondError(w, err)
+		return
 	}
 
 	var userID typedef.UserID
@@ -74,7 +75,7 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !isConsented {
-		Redirect(w, r, config.ConsentURL, http.StatusFound)
+		Redirect(w, r, config.ConsentEndpoint, http.StatusFound)
 		return
 	}
 
@@ -104,7 +105,7 @@ func (ah *AuthenticateHdlr) parseRequestBody(r *http.Request) (*oapigen.Authenti
 	}
 
 	if err := ah.validator.Struct(ret); err != nil {
-		return nil, xerr.FailedToValidate
+		return nil, xerr.FailedToValidate.Wrap(err)
 	}
 
 	return ret, nil

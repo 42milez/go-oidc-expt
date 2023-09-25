@@ -2,6 +2,8 @@ package api
 
 import (
 	"bytes"
+	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -22,13 +24,11 @@ const (
 	tdAuthenticationDir         = "testdata/authentication/"
 	tdAuthenticationReqBody200  = tdAuthenticationDir + "200_req_body.json"
 	tdAuthenticationReqParam200 = tdAuthenticationDir + "200_req_param.txt"
-	tdAuthenticationResponse200 = tdAuthenticationDir + "200_resp.json"
-	tdAuthenticationRequest400  = tdAuthenticationDir + "400_req.json"
-	tdAuthenticationResponse400 = tdAuthenticationDir + "400_resp.json"
+	tdAuthenticationReqBody400  = tdAuthenticationDir + "400_req_body.json"
+	tdAuthenticationReqParam400 = tdAuthenticationDir + "400_req_param.txt"
+	tdAuthenticationRespBody400 = tdAuthenticationDir + "400_resp_body.json"
 	tdAuthenticationResponse500 = tdAuthenticationDir + "500_resp.json"
 )
-
-const dummyUserID typedef.UserID = 475924035230777348
 
 func TestAuthentication_ServeHTTP(t *testing.T) {
 	type verifyPasswordMockResp struct {
@@ -51,7 +51,8 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		resp       []byte
 	}
 
-	sessionID := "dd9a0158-092c-4dc2-b470-7e68c97bfdb0"
+	const userID = 475924035230777348
+	const sessionID = "dd9a0158-092c-4dc2-b470-7e68c97bfdb0"
 
 	tests := map[string]struct {
 		reqBodyFile  string
@@ -61,11 +62,11 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		respSessMock sessionMockResp
 		want         want
 	}{
-		"ok": {
+		"OK": {
 			reqBodyFile:  tdAuthenticationReqBody200,
 			reqParamFile: tdAuthenticationReqParam200,
 			respVPMock: verifyPasswordMockResp{
-				userID: dummyUserID,
+				userID: userID,
 				err:    nil,
 			},
 			respVCMock: verifyConsentMockResp{
@@ -81,13 +82,18 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				resp:       nil,
 			},
 		},
-		//"BadRequest": {
-		//	reqFile: tdAuthenticationRequest400,
-		//	want: want{
-		//		statusCode: http.StatusBadRequest,
-		//		resp:       xtestutil.LoadFile(t, tdAuthenticationResponse400),
-		//	},
-		//},
+		"BadRequest": {
+			reqBodyFile:  tdAuthenticationReqBody400,
+			reqParamFile: tdAuthenticationReqParam400,
+			respVPMock: verifyPasswordMockResp{
+				userID: 0,
+				err:    xerr.InvalidUsernameOrPassword,
+			},
+			want: want{
+				statusCode: http.StatusBadRequest,
+				resp:       xtestutil.LoadFile(t, tdAuthenticationRespBody400),
+			},
+		},
 		//"InternalServerError": {
 		//	reqFile: tdAuthenticationRequest200,
 		//	respVPMock: verifyPasswordMockResp{
@@ -109,7 +115,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(
 				http.MethodPost,
-				"/authentication",
+				config.AuthenticationEndpoint,
 				bytes.NewReader(xtestutil.LoadFile(t, tt.reqBodyFile)))
 			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqParamFile)), "\n", "", -1)
 
@@ -152,9 +158,9 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			}
 
 			if tt.want.resp != nil {
-				xtestutil.AssertResponseJSON(t, resp, wantResp)
+				xtestutil.AssertResponseJSON(t, wantResp, resp)
 			} else {
-				xtestutil.AssertResponse(t, resp, wantResp)
+				xtestutil.AssertResponse(t, wantResp, resp)
 			}
 		})
 	}

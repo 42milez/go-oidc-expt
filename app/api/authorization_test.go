@@ -97,7 +97,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				Body:       xtestutil.LoadFile(t, tt.want.respFile),
 			}
 
-			xtestutil.AssertResponse(t, resp, wantResp)
+			xtestutil.AssertResponse(t, wantResp, resp)
 		})
 	}
 }

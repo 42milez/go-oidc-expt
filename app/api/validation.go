@@ -50,7 +50,7 @@ const (
 )
 
 var validResponseTypeCombinations = []responseTypeNumber{
-	// Authorization Status Flow
+	// Authorization Code Flow
 	rtCode,
 	// Implicit Flow
 	rtIDToken | rtToken,
