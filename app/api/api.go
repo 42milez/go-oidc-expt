@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	_ "embed"
+	"github.com/lestrrat-go/jwx/v2/jwk"
 	"net/http"
 
 	"github.com/rs/zerolog"
@@ -181,6 +182,28 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 		xutil.CloseConnection(db.Client)
 		xutil.CloseConnection(cache.Client)
 	}, nil
+}
+
+func NewJWT(clock xtime.Clocker) (*JWT, error) {
+	parseKey := func(key []byte) (jwk.Key, error) {
+		return jwk.ParseKey(key, jwk.WithPEM(true))
+	}
+
+	ret := &JWT{
+		clock: clock,
+	}
+
+	var err error
+
+	if ret.privateKey, err = parseKey(rawPrivateKey); err != nil {
+		return nil, err
+	}
+
+	if ret.publicKey, err = parseKey(rawPublicKey); err != nil {
+		return nil, err
+	}
+
+	return ret, nil
 }
 
 func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {

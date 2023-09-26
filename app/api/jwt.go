@@ -23,37 +23,16 @@ var rawPrivateKey []byte
 //go:embed secret/keypair/public.pem
 var rawPublicKey []byte
 
-func NewJWT(clock xtime.Clocker) (*JWT, error) {
-	var err error
-
-	parseKey := func(key []byte) (jwk.Key, error) {
-		return jwk.ParseKey(key, jwk.WithPEM(true))
-	}
-
-	ret := &JWT{
-		clock: clock,
-	}
-
-	if ret.privateKey, err = parseKey(rawPrivateKey); err != nil {
-		return nil, err
-	}
-
-	if ret.publicKey, err = parseKey(rawPublicKey); err != nil {
-		return nil, err
-	}
-
-	return ret, nil
-}
-
 type JWT struct {
 	privateKey, publicKey jwk.Key
 	clock                 xtime.Clocker
 }
 
 func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
-	ret, err := j.parseRequest(r)
+	var ret jwt.Token
+	var err error
 
-	if err != nil {
+	if ret, err = j.parseRequest(r); err != nil {
 		return nil, err
 	}
 
@@ -65,22 +44,17 @@ func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
 }
 
 func (j *JWT) MakeAccessToken(name string) ([]byte, error) {
-	token, err := jwt.
-		NewBuilder().
-		JwtID(uuid.New().String()).
-		Issuer(issuer).
-		Subject(accessTokenSubject).
-		IssuedAt(j.clock.Now().Add(30*time.Minute)).
-		Claim(nameKey, name).
-		Build()
+	var token jwt.Token
+	var err error
 
-	if err != nil {
+	if token, err = jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(issuer).Subject(accessTokenSubject).
+		IssuedAt(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, name).Build(); err != nil {
 		return nil, err
 	}
 
-	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
+	var ret []byte
 
-	if err != nil {
+	if ret, err = jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey)); err != nil {
 		return nil, err
 	}
 

@@ -32,14 +32,14 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		td500ResBody  = testdataDir + "500_resp_body.json"
 	)
 
-	type verifyPasswordMockResp struct {
-		userID typedef.UserID
-		err    error
-	}
-
 	type verifyConsentMockResp struct {
 		ok  bool
 		err error
+	}
+
+	type verifyPasswordMockResp struct {
+		userID typedef.UserID
+		err    error
 	}
 
 	type sessionMockResp struct {
@@ -58,25 +58,25 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 	tests := map[string]struct {
 		reqBodyFile  string
 		reqParamFile string
-		respVPMock   verifyPasswordMockResp
-		respVCMock   verifyConsentMockResp
 		respSessMock sessionMockResp
+		respVCMock   verifyConsentMockResp
+		respVPMock   verifyPasswordMockResp
 		want         want
 	}{
 		"OK": {
 			reqBodyFile:  td200ReqBody,
 			reqParamFile: td200ReqParam,
-			respVPMock: verifyPasswordMockResp{
-				userID: userID,
-				err:    nil,
+			respSessMock: sessionMockResp{
+				sessionID: sessionID,
+				err:       nil,
 			},
 			respVCMock: verifyConsentMockResp{
 				ok:  false,
 				err: nil,
 			},
-			respSessMock: sessionMockResp{
-				sessionID: sessionID,
-				err:       nil,
+			respVPMock: verifyPasswordMockResp{
+				userID: userID,
+				err:    nil,
 			},
 			want: want{
 				statusCode: http.StatusFound,
@@ -123,16 +123,16 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				resp:       xtestutil.LoadFile(t, td401RespBody),
 			},
 		},
-		"InternalServerError": {
+		"InternalServerError_FailedToCreateSession": {
 			reqBodyFile:  td200ReqBody,
 			reqParamFile: td200ReqParam,
-			respVPMock: verifyPasswordMockResp{
-				userID: userID,
-				err:    nil,
-			},
 			respSessMock: sessionMockResp{
 				sessionID: "",
 				err:       xerr.FailedToCreateSession,
+			},
+			respVPMock: verifyPasswordMockResp{
+				userID: userID,
+				err:    nil,
 			},
 			want: want{
 				statusCode: http.StatusInternalServerError,
