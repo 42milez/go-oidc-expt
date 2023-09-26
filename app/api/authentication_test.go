@@ -20,17 +20,18 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-const (
-	tdAuthenticationDir         = "testdata/authentication/"
-	tdAuthenticationReqBody200  = tdAuthenticationDir + "200_req_body.json"
-	tdAuthenticationReqParam200 = tdAuthenticationDir + "200_req_param.txt"
-	tdAuthenticationReqBody400  = tdAuthenticationDir + "400_req_body.json"
-	tdAuthenticationReqParam400 = tdAuthenticationDir + "400_req_param.txt"
-	tdAuthenticationRespBody400 = tdAuthenticationDir + "400_resp_body.json"
-	tdAuthenticationResponse500 = tdAuthenticationDir + "500_resp.json"
-)
-
 func TestAuthentication_ServeHTTP(t *testing.T) {
+	const (
+		testdataDir   = "testdata/authentication/"
+		td200ReqBody  = testdataDir + "200_req_body.json"
+		td200ReqParam = testdataDir + "200_req_param.txt"
+		td400ReqBody  = testdataDir + "400_req_body.json"
+		td400ReqParam = testdataDir + "400_req_param.txt"
+		td400RespBody = testdataDir + "400_resp_body.json"
+		td401RespBody = testdataDir + "401_resp_body.json"
+		td500ResBody  = testdataDir + "500_resp_body.json"
+	)
+
 	type verifyPasswordMockResp struct {
 		userID typedef.UserID
 		err    error
@@ -63,8 +64,8 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 		want         want
 	}{
 		"OK": {
-			reqBodyFile:  tdAuthenticationReqBody200,
-			reqParamFile: tdAuthenticationReqParam200,
+			reqBodyFile:  td200ReqBody,
+			reqParamFile: td200ReqParam,
 			respVPMock: verifyPasswordMockResp{
 				userID: userID,
 				err:    nil,
@@ -82,28 +83,62 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				resp:       nil,
 			},
 		},
-		"BadRequest": {
-			reqBodyFile:  tdAuthenticationReqBody400,
-			reqParamFile: tdAuthenticationReqParam400,
-			respVPMock: verifyPasswordMockResp{
-				userID: 0,
-				err:    xerr.InvalidUsernameOrPassword,
-			},
+		"BadRequest_FailedToParseQueryParam": {
+			reqBodyFile:  td200ReqBody,
+			reqParamFile: td400ReqParam,
 			want: want{
 				statusCode: http.StatusBadRequest,
-				resp:       xtestutil.LoadFile(t, tdAuthenticationRespBody400),
+				resp:       xtestutil.LoadFile(t, td400RespBody),
 			},
 		},
-		//"InternalServerError": {
-		//	reqFile: tdAuthenticationRequest200,
-		//	respVPMock: verifyPasswordMockResp{
-		//		err: xtestutil.DummyError,
-		//	},
-		//	want: want{
-		//		statusCode: http.StatusInternalServerError,
-		//		resp:       xtestutil.LoadFile(t, tdAuthenticationResponse500),
-		//	},
-		//},
+		"BadRequest_FailedToParseRequestBody": {
+			reqBodyFile:  td400ReqBody,
+			reqParamFile: td200ReqParam,
+			want: want{
+				statusCode: http.StatusBadRequest,
+				resp:       xtestutil.LoadFile(t, td400RespBody),
+			},
+		},
+		"Unauthorized_PasswordNotMatched": {
+			reqBodyFile:  td200ReqBody,
+			reqParamFile: td200ReqParam,
+			respVPMock: verifyPasswordMockResp{
+				userID: 0,
+				err:    xerr.PasswordNotMatched,
+			},
+			want: want{
+				statusCode: http.StatusUnauthorized,
+				resp:       xtestutil.LoadFile(t, td401RespBody),
+			},
+		},
+		"Unauthorized_UserNotFound": {
+			reqBodyFile:  td200ReqBody,
+			reqParamFile: td200ReqParam,
+			respVPMock: verifyPasswordMockResp{
+				userID: 0,
+				err:    xerr.UserNotFound,
+			},
+			want: want{
+				statusCode: http.StatusUnauthorized,
+				resp:       xtestutil.LoadFile(t, td401RespBody),
+			},
+		},
+		"InternalServerError": {
+			reqBodyFile:  td200ReqBody,
+			reqParamFile: td200ReqParam,
+			respVPMock: verifyPasswordMockResp{
+				userID: userID,
+				err:    nil,
+			},
+			respSessMock: sessionMockResp{
+				sessionID: "",
+				err:       xerr.FailedToCreateSession,
+			},
+			want: want{
+				statusCode: http.StatusInternalServerError,
+				resp:       xtestutil.LoadFile(t, td500ResBody),
+			},
+		},
 	}
 
 	for n, tt := range tests {

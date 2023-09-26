@@ -5,16 +5,15 @@ import (
 )
 
 var (
+	FailedToCreateSession    InternalErr = "session id already exists"
 	FailedToInitialize       InternalErr = "failed to initialize"
 	FailedToReadResponseBody InternalErr = "failed to read response body"
-	FailedToUnmarshalJSON    InternalErr = "failed to unmarshal json"
+	FailedToValidate         InternalErr = "failed to validate"
 	NotFound                 InternalErr = "not found"
 	OIDCInvalidResponseType  InternalErr = "invalid response type"
 	PasswordNotMatched       InternalErr = "password not matched"
-	SessionIDAlreadyExists   InternalErr = "session id already exists"
 	SessionNotFound          InternalErr = "session not found"
 	UserNotFound             InternalErr = "user not found"
-	FailedToValidate         InternalErr = "failed to validate"
 )
 
 var (

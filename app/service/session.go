@@ -42,7 +42,7 @@ func (cs *CreateSession) Create(ctx context.Context, sess *entity.Session) (stri
 	}
 
 	if !ok {
-		return "", xerr.SessionIDAlreadyExists
+		return "", xerr.FailedToCreateSession
 	}
 
 	return id.String(), nil

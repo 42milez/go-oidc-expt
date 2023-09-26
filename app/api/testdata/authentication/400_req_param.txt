@@ -1,4 +1,3 @@
-client_id=y6WKGu1WjDOFXhpMXDC1kGnOC4DElz&
 display=page&
 max_age=86400&
 nonce=NqaIIfMi9LAZiGgHn8hBAzfR4lWePLzFM4h83j9SoKXaJV6u3EWCJcy1MOPOOkYE&

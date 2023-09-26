@@ -43,7 +43,7 @@ func TestSession_Create(t *testing.T) {
 	}
 
 	if !ok {
-		t.Error(xerr.SessionIDAlreadyExists)
+		t.Error(xerr.FailedToCreateSession)
 	}
 }
 
