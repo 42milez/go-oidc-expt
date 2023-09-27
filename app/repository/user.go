@@ -15,6 +15,13 @@ import (
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 )
 
+func NewUser(db *datastore.Database, idGen IDGenerator) *User {
+	return &User{
+		db:    db,
+		idGen: idGen,
+	}
+}
+
 type User struct {
 	db    *datastore.Database
 	idGen IDGenerator

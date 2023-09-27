@@ -6,6 +6,13 @@ import (
 	"github.com/42milez/go-oidc-server/app/datastore"
 )
 
+func NewCheckHealth(db *datastore.Database, cache *datastore.Cache) *CheckHealth {
+	return &CheckHealth{
+		db:    db,
+		cache: cache,
+	}
+}
+
 type CheckHealth struct {
 	cache *datastore.Cache
 	db    *datastore.Database

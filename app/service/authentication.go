@@ -14,6 +14,13 @@ import (
 
 var errEntNotFoundError = &ent.NotFoundError{}
 
+func NewAuthenticate(repo UserConsentReader, tokenGen TokenGenerator) *Authenticate {
+	return &Authenticate{
+		repo:     repo,
+		tokenGen: tokenGen,
+	}
+}
+
 type Authenticate struct {
 	repo     UserConsentReader
 	tokenGen TokenGenerator

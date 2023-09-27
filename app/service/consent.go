@@ -6,6 +6,12 @@ import (
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
+func NewConsent(repo ConsentCreator) *AcceptConsent {
+	return &AcceptConsent{
+		repo: repo,
+	}
+}
+
 type AcceptConsent struct {
 	repo ConsentCreator
 }

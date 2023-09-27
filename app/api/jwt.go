@@ -23,6 +23,28 @@ var rawPrivateKey []byte
 //go:embed secret/keypair/public.pem
 var rawPublicKey []byte
 
+func NewJWT(clock xtime.Clocker) (*JWT, error) {
+	parseKey := func(key []byte) (jwk.Key, error) {
+		return jwk.ParseKey(key, jwk.WithPEM(true))
+	}
+
+	ret := &JWT{
+		clock: clock,
+	}
+
+	var err error
+
+	if ret.privateKey, err = parseKey(rawPrivateKey); err != nil {
+		return nil, err
+	}
+
+	if ret.publicKey, err = parseKey(rawPublicKey); err != nil {
+		return nil, err
+	}
+
+	return ret, nil
+}
+
 type JWT struct {
 	privateKey, publicKey jwk.Key
 	clock                 xtime.Clocker

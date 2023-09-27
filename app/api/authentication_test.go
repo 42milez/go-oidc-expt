@@ -2,12 +2,13 @@ package api
 
 import (
 	"bytes"
-	"github.com/42milez/go-oidc-server/app/config"
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 

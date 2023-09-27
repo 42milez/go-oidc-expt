@@ -15,6 +15,12 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+func NewSession(cache *datastore.Cache) *Session {
+	return &Session{
+		cache: cache,
+	}
+}
+
 type Session struct {
 	cache *datastore.Cache
 }

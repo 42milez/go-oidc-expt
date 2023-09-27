@@ -7,6 +7,12 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
 )
 
+func NewCreateUser(repo UserCreator) *CreateUser {
+	return &CreateUser{
+		repo: repo,
+	}
+}
+
 type CreateUser struct {
 	repo UserCreator
 }

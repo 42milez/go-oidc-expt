@@ -2,6 +2,12 @@ package api
 
 import "net/http"
 
+var tokenHdlr *TokenHdlr
+
+func NewTokenHdlr(option *HandlerOption) *TokenHdlr {
+	return &TokenHdlr{}
+}
+
 type TokenHdlr struct{}
 
 func (th *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {

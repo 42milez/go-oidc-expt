@@ -10,7 +10,7 @@ import (
 
 const LoggerTagKey = "log"
 const AppLoggerTagValue = "app"
-const MWLoggerTagValue = "mw"
+const AccessLoggerTagValue = "access"
 
 //  ENVIRONMENT VARIABLE
 // --------------------------------------------------

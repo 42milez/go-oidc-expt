@@ -9,6 +9,12 @@ import (
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
+func NewRelyingParty(db *datastore.Database) *RelyingParty {
+	return &RelyingParty{
+		db: db,
+	}
+}
+
 type RelyingParty struct {
 	db *datastore.Database
 }

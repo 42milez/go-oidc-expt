@@ -13,6 +13,12 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+func NewAuthorize(repo Authorizer) *Authorize {
+	return &Authorize{
+		repo: repo,
+	}
+}
+
 type Authorize struct {
 	repo Authorizer
 }

@@ -9,6 +9,13 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
+func NewCookie(hashKey, blockKey []byte, clock xtime.Clocker) *Cookie {
+	return &Cookie{
+		clock: clock,
+		sc:    securecookie.New(hashKey, blockKey),
+	}
+}
+
 type Cookie struct {
 	clock xtime.Clocker
 	sc    *securecookie.SecureCookie

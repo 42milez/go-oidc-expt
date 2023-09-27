@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/repository"
+
 	"github.com/42milez/go-oidc-server/app/service"
 
 	"github.com/42milez/go-oidc-server/app/api/oapigen"
@@ -12,6 +14,15 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
+
+var consentHdlr *ConsentHdlr
+
+func NewConsentHdlr(option *HandlerOption) (*ConsentHdlr, error) {
+	return &ConsentHdlr{
+		service:   service.NewConsent(repository.NewUser(option.db, option.idGenerator)),
+		validator: option.validator,
+	}, nil
+}
 
 type ConsentHdlr struct {
 	service   ConsentAcceptor
@@ -25,24 +36,24 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := &oapigen.AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
-		RespondJSON500(w, err)
+		RespondJSON500(w, r, err)
 		return
 	}
 
 	if err := ch.validator.Struct(q); err != nil {
-		RespondJSON400(w, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
 	sess, ok := service.GetSession(ctx)
 
 	if !ok {
-		RespondJSON401(w, xerr.UnauthorizedRequest, nil, nil)
+		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
 	if err := ch.service.AcceptConsent(ctx, sess.UserID, q.ClientId); err != nil {
-		RespondJSON500(w, err)
+		RespondJSON500(w, r, err)
 		return
 	}
 

@@ -5,9 +5,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/repository"
+	"github.com/42milez/go-oidc-server/app/service"
 
-	"github.com/gorilla/schema"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/api/oapigen"
 
@@ -20,6 +21,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+const sessionIDCookieName = config.SessionIDCookieName
+
+var authenticateUserHdlr *AuthenticateHdlr
+
 type AuthenticateHdlr struct {
 	service   Authenticator
 	cookie    CookieWriter
@@ -27,7 +32,14 @@ type AuthenticateHdlr struct {
 	validator *validator.Validate
 }
 
-const sessionIDCookieName = config.SessionIDCookieName
+func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {
+	return &AuthenticateHdlr{
+		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.jwtUtil),
+		cookie:    option.cookie,
+		session:   option.sessionCreator,
+		validator: option.validator,
+	}, nil
+}
 
 func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -36,20 +48,20 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var reqBody *oapigen.AuthenticateJSONRequestBody
 	var err error
 
-	if q, err = ah.parseQueryParam(r); err != nil {
-		ah.respondError(w, err)
+	if q, err = parseAuthorizeParam(r, ah.validator); err != nil {
+		ah.respondError(w, r, err)
 		return
 	}
 
 	if reqBody, err = ah.parseRequestBody(r); err != nil {
-		ah.respondError(w, err)
+		ah.respondError(w, r, err)
 		return
 	}
 
 	var userID typedef.UserID
 
 	if userID, err = ah.service.VerifyPassword(ctx, reqBody.Name, reqBody.Password); err != nil {
-		ah.respondError(w, err)
+		ah.respondError(w, r, err)
 		return
 	}
 
@@ -58,19 +70,19 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if sessionID, err = ah.session.Create(ctx, &entity.Session{
 		UserID: userID,
 	}); err != nil {
-		ah.respondError(w, err)
+		ah.respondError(w, r, err)
 		return
 	}
 
 	if err = ah.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
-		ah.respondError(w, err)
+		ah.respondError(w, r, err)
 		return
 	}
 
 	var isConsented bool
 
 	if isConsented, err = ah.service.VerifyConsent(ctx, userID, q.ClientId); err != nil {
-		ah.respondError(w, err)
+		ah.respondError(w, r, err)
 		return
 	}
 
@@ -80,21 +92,6 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Redirect(w, r, config.AuthorizationEndpoint, http.StatusFound)
-}
-
-func (ah *AuthenticateHdlr) parseQueryParam(r *http.Request) (*oapigen.AuthorizeParams, error) {
-	decoder := schema.NewDecoder()
-	ret := &oapigen.AuthorizeParams{}
-
-	if err := decoder.Decode(ret, r.URL.Query()); err != nil {
-		return nil, err
-	}
-
-	if err := ah.validator.Struct(ret); err != nil {
-		return nil, xerr.FailedToValidate.Wrap(err)
-	}
-
-	return ret, nil
 }
 
 func (ah *AuthenticateHdlr) parseRequestBody(r *http.Request) (*oapigen.AuthenticateJSONRequestBody, error) {
@@ -111,18 +108,18 @@ func (ah *AuthenticateHdlr) parseRequestBody(r *http.Request) (*oapigen.Authenti
 	return ret, nil
 }
 
-func (ah *AuthenticateHdlr) respondError(w http.ResponseWriter, err error) {
+func (ah *AuthenticateHdlr) respondError(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, xerr.FailedToValidate) {
-		RespondJSON400(w, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
 	if errors.Is(err, xerr.PasswordNotMatched) || errors.Is(err, xerr.UserNotFound) {
-		RespondJSON401(w, xerr.InvalidUsernameOrPassword, nil, err)
+		RespondJSON401(w, r, xerr.InvalidUsernameOrPassword, nil, err)
 		return
 	}
 
-	RespondJSON500(w, err)
+	RespondJSON500(w, r, err)
 
 	return
 }

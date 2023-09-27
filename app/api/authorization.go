@@ -3,6 +3,9 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/repository"
+	"github.com/42milez/go-oidc-server/app/service"
+
 	"github.com/42milez/go-oidc-server/app/api/oapigen"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -10,6 +13,19 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
+
+var authorizeGetHdlr *AuthorizeGetHdlr
+
+func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return nil, err
+	}
+	return &AuthorizeGetHdlr{
+		service:   service.NewAuthorize(repository.NewRelyingParty(option.db)),
+		validator: v,
+	}, nil
+}
 
 type AuthorizeGetHdlr struct {
 	service   Authorizer
@@ -21,12 +37,12 @@ func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	q := &oapigen.AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
-		RespondJSON500(w, err)
+		RespondJSON500(w, r, err)
 		return
 	}
 
 	if err := ag.validator.Struct(q); err != nil {
-		RespondJSON400(w, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
@@ -39,7 +55,7 @@ func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	location, err := ag.service.Authorize(r.Context(), q.ClientId, q.RedirectUri, q.State)
 
 	if err != nil {
-		RespondJSON400(w, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
@@ -57,4 +73,19 @@ type AuthorizePost struct {
 
 func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// NOT IMPLEMENTED YET
+}
+
+func parseAuthorizeParam(r *http.Request, v *validator.Validate) (*oapigen.AuthorizeParams, error) {
+	decoder := schema.NewDecoder()
+	ret := &oapigen.AuthorizeParams{}
+
+	if err := decoder.Decode(ret, r.URL.Query()); err != nil {
+		return nil, err
+	}
+
+	if err := v.Struct(ret); err != nil {
+		return nil, xerr.FailedToValidate.Wrap(err)
+	}
+
+	return ret, nil
 }

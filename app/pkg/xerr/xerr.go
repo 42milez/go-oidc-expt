@@ -13,6 +13,7 @@ var (
 	OIDCInvalidResponseType  InternalErr = "invalid response type"
 	PasswordNotMatched       InternalErr = "password not matched"
 	SessionNotFound          InternalErr = "session not found"
+	UnknownSecurityScheme    InternalErr = "unknown security scheme"
 	UserNotFound             InternalErr = "user not found"
 )
 

@@ -16,7 +16,7 @@ type Response struct {
 	Details []string       `json:"details,omitempty"`
 }
 
-func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
+func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	bodyBytes, err := json.Marshal(body)
@@ -29,7 +29,7 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 		}
 
 		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			appLogger.Error().Err(err)
+			LogError(r, err, nil)
 		}
 
 		return
@@ -38,18 +38,18 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 	w.WriteHeader(statusCode)
 
 	if _, err = fmt.Fprintf(w, "%s", bodyBytes); err != nil {
-		appLogger.Error().Err(err)
+		LogError(r, err, nil)
 	}
 }
 
-func RespondJSON200(w http.ResponseWriter) {
-	RespondJSON(w, http.StatusOK, &Response{
+func RespondJSON200(w http.ResponseWriter, r *http.Request) {
+	RespondJSON(w, r, http.StatusOK, &Response{
 		Status:  http.StatusOK,
 		Summary: xerr.OK,
 	})
 }
 
-func RespondJSON400(w http.ResponseWriter, summary xerr.PublicErr, details []string, err error) {
+func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
 	body := &Response{
 		Status:  http.StatusBadRequest,
 		Summary: summary,
@@ -60,10 +60,10 @@ func RespondJSON400(w http.ResponseWriter, summary xerr.PublicErr, details []str
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, http.StatusBadRequest, body)
+	RespondJSON(w, r, http.StatusBadRequest, body)
 }
 
-func RespondJSON401(w http.ResponseWriter, summary xerr.PublicErr, details []string, err error) {
+func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
 	body := &Response{
 		Status:  http.StatusUnauthorized,
 		Summary: summary,
@@ -74,24 +74,24 @@ func RespondJSON401(w http.ResponseWriter, summary xerr.PublicErr, details []str
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, http.StatusUnauthorized, body)
+	RespondJSON(w, r, http.StatusUnauthorized, body)
 }
 
-func RespondJSON500(w http.ResponseWriter, err error) {
+func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, http.StatusInternalServerError, &Response{
+	RespondJSON(w, r, http.StatusInternalServerError, &Response{
 		Status:  http.StatusInternalServerError,
 		Summary: xerr.UnexpectedErrorOccurred,
 	})
 }
 
-func RespondJSON503(w http.ResponseWriter, err error) {
+func RespondJSON503(w http.ResponseWriter, r *http.Request, err error) {
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, http.StatusServiceUnavailable, &Response{
+	RespondJSON(w, r, http.StatusServiceUnavailable, &Response{
 		Status:  http.StatusServiceUnavailable,
 		Summary: xerr.ServiceTemporaryUnavailable,
 	})
@@ -101,14 +101,14 @@ func Redirect(w http.ResponseWriter, r *http.Request, u string, code int) {
 	redirectURL, err := url.Parse(u)
 
 	if err != nil {
-		RespondJSON500(w, err)
+		RespondJSON500(w, r, err)
 		return
 	}
 
 	if !xutil.IsEmpty(r.URL.RawQuery) {
 		redirectURL, err = url.Parse(fmt.Sprintf("%s&%s", redirectURL, r.URL.RawQuery))
 		if err != nil {
-			RespondJSON500(w, err)
+			RespondJSON500(w, r, err)
 			return
 		}
 	}
