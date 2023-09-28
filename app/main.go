@@ -25,7 +25,7 @@ func NewServer(lis net.Listener, mux http.Handler) *Server {
 
 func NewBaseLogger(cfg *config.Config) *zerolog.Logger {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixNano
-	ret := zerolog.New(os.Stderr).Level(cfg.LogLevel).With().Timestamp().Str("env", cfg.Env).
+	ret := zerolog.New(os.Stdout).Level(cfg.LogLevel).With().Timestamp().Str("env", cfg.Env).
 		Str("service", config.AppName).Logger()
 	return &ret
 }

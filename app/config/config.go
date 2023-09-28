@@ -8,7 +8,7 @@ import (
 	"github.com/caarlos0/env/v8"
 )
 
-const LoggerTagKey = "log"
+const LoggerTagKey = "type"
 const AppLoggerTagValue = "app"
 const AccessLoggerTagValue = "access"
 

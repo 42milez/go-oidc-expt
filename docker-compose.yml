@@ -48,6 +48,7 @@ services:
       driver: fluentd
       options:
         fluentd-address: localhost:24224
+        fluentd-async-connect: 'true' # https://github.com/moby/moby/issues/44511
         tag: docker.{{.Name}}
   cache:
     container_name: go-oidc-server-cache
@@ -121,8 +122,11 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: docker/log/fluent-bit.yml
-        target: /fluent-bit/etc/fluent-bit.yml
+        source: docker/log/fluent-bit.conf
+        target: /fluent-bit/etc/fluent-bit.conf
+      - type: bind
+        source: docker/log/parsers.conf
+        target: /fluent-bit/etc/parsers.conf
     deploy:
       resources:
         limits:
