@@ -39,10 +39,16 @@ services:
     depends_on:
       - cache
       - db
+      - log
     cap_add:
       - SYS_PTRACE
     security_opt:
       - apparmor:unconfined
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: docker.{{.Name}}
   cache:
     container_name: go-oidc-server-cache
     image: redis:7.2.0
@@ -77,11 +83,11 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: ./docker/db/conf.d
+        source: docker/db/conf.d
         target: /etc/mysql/conf.d
         read_only: true
       - type: bind
-        source: ./docker/db/docker-entrypoint-initdb.d
+        source: docker/db/docker-entrypoint-initdb.d
         target: /docker-entrypoint-initdb.d
         read_only: true
       - type: volume
@@ -100,6 +106,31 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
+  log:
+    build:
+      context: .
+      dockerfile: docker/log/Dockerfile
+    container_name: go-oidc-server-log
+    image: go-oidc-server-log:latest
+    networks:
+      - dev
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: docker/log/fluent-bit.yml
+        target: /fluent-bit/etc/fluent-bit.yml
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
   swagger-ui:
     container_name: go-oidc-server-swagger-ui
     image: 42milez/swagger-ui:v5.6.2
@@ -111,7 +142,7 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: ./app/api/spec/spec.yml
+        source: app/api/spec/spec.yml
         target: /spec.yml
         read_only: true
     environment:
@@ -135,7 +166,7 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: ./app/api/spec/spec.yml
+        source: app/api/spec/spec.yml
         target: /spec.yml
     environment:
       SWAGGER_FILE: /spec.yml
