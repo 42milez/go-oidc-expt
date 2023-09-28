@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	lenFlag = flag.Int("len", 0, "the length of random string")
+	lenFlag = flag.Int("len", 0, "Length of random string")
 )
 
 func main() {

@@ -13,7 +13,7 @@ echo "create directory: ${KEY_DIR}"
 mkdir -p "${KEY_DIR}"
 
 echo "create hash key: ${HASH_KEY_FILE}"
-go run "${SCRIPT_DIR}/../randomkey/main.go" --len "${HASH_KEY_LENGTH}" > "${HASH_KEY_FILE}"
+go run "${SCRIPT_DIR}/../random_string.go" --len "${HASH_KEY_LENGTH}" > "${HASH_KEY_FILE}"
 
 echo "create block key: ${BLOCK_KEY_FILE}"
-go run "${SCRIPT_DIR}/../randomkey/main.go" --len "${BLOCK_KEY_LENGTH}" > "${BLOCK_KEY_FILE}"
+go run "${SCRIPT_DIR}/../random_string.go" --len "${BLOCK_KEY_LENGTH}" > "${BLOCK_KEY_FILE}"
