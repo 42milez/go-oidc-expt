@@ -60,7 +60,7 @@ services:
     tty: true
     volumes:
       - type: volume
-        source: cache_data
+        source: redis_data
         target: /data
     deploy:
       resources:
@@ -91,10 +91,10 @@ services:
         target: /docker-entrypoint-initdb.d
         read_only: true
       - type: volume
-        source: db_data
+        source: mysql_data
         target: /var/lib/mysql
       - type: volume
-        source: db_logs
+        source: mysql_log
         target: /var/log/mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
@@ -186,9 +186,9 @@ volumes:
     driver: local
   app_mod_cache:
     driver: local
-  cache_data:
+  mysql_data:
     driver: local
-  db_data:
+  mysql_log:
     driver: local
-  db_logs:
+  redis_data:
     driver: local
