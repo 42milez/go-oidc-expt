@@ -22,6 +22,8 @@ import (
 	"github.com/rs/zerolog"
 )
 
+const basicAuthSchemeName = "basicAuth"
+
 func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (http.Handler, func(), error) {
 	var err error
 
@@ -85,6 +87,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 		Options: openapi3filter.Options{
 			AuthenticationFunc: NewOapiAuthentication(),
 		},
+		ErrorHandler: NewOapiErrorHandler(),
 	}))
 
 	// Middleware Configuration on Each Handler
@@ -107,15 +110,37 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 
 func NewOapiAuthentication() openapi3filter.AuthenticationFunc {
 	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-		return OapiAuthenticate(ctx, input)
+		return oapiAuthenticate(ctx, input)
 	}
 }
 
-func OapiAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-	if input.SecuritySchemeName != "BasicAuth" {
+func oapiAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+	if input.SecuritySchemeName != basicAuthSchemeName {
 		return xerr.UnknownSecurityScheme
 	}
+
+	authHdr := input.RequestValidationInput.Request.Header.Get("Authentication")
+
+	if xutil.IsEmpty(authHdr) {
+		return xerr.UnauthorizedRequest
+	}
+
 	return nil
+}
+
+func NewOapiErrorHandler() chimw.ErrorHandler {
+	return func(w http.ResponseWriter, message string, statusCode int) {
+		switch statusCode {
+		case http.StatusBadRequest:
+			RespondJSON400(w, nil, xerr.InvalidRequest, nil, nil)
+		case http.StatusUnauthorized:
+			RespondJSON401(w, nil, xerr.UnauthorizedRequest, nil, nil)
+		case http.StatusNotFound:
+			RespondJSON404(w)
+		default:
+			RespondJSON500(w, nil, nil)
+		}
+	}
 }
 
 func NewHandlerOption() (*HandlerOption, error) {

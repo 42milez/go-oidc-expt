@@ -13,26 +13,32 @@ import (
 	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
 )
 
-func PrintSeeds(data any) {
+func printSeeds(data any) {
 	v := reflect.ValueOf(data)
 	for i := 0; i < v.Len(); i++ {
 		fmt.Printf("%+v\n", v.Index(i).Interface())
 	}
 }
 
-func Run(ctx context.Context, db *datastore.Database) error {
+func run(ctx context.Context, db *datastore.Database) error {
+	var err error
+
+	//  For Swagger
+	// --------------------------------------------------
+
+	if err = insertFixedData(ctx, db); err != nil {
+		return err
+	}
+
+	//  Owner Edges
+	// --------------------------------------------------
+
 	nUser := 10
 	nConsentByUser := 3
 
 	nRelyingParty := nUser * nConsentByUser
 	nAuthCodeByRelyingParty := 3
 	nRedirectUriByRelyingParty := 3
-
-	var err error
-
-	// --------------------------------------------------
-	//  OWNER EDGES
-	// --------------------------------------------------
 
 	var relyingParties []*ent.RelyingParty
 	var users []*ent.User
@@ -41,16 +47,15 @@ func Run(ctx context.Context, db *datastore.Database) error {
 		return err
 	}
 
-	PrintSeeds(relyingParties)
+	printSeeds(relyingParties)
 
 	if users, err = InsertUsers(ctx, db, nUser); err != nil {
 		return err
 	}
 
-	PrintSeeds(users)
+	printSeeds(users)
 
-	// --------------------------------------------------
-	//  OTHER EDGES
+	//  Other Edges
 	// --------------------------------------------------
 
 	var authCodes []*ent.AuthCode
@@ -61,19 +66,19 @@ func Run(ctx context.Context, db *datastore.Database) error {
 		return err
 	}
 
-	PrintSeeds(authCodes)
+	printSeeds(authCodes)
 
 	if redirectURIs, err = InsertRedirectURIs(ctx, db, relyingParties, nRedirectUriByRelyingParty); err != nil {
 		return err
 	}
 
-	PrintSeeds(redirectURIs)
+	printSeeds(redirectURIs)
 
 	if consents, err = InsertConsents(ctx, db, users, relyingParties, nConsentByUser); err != nil {
 		return err
 	}
 
-	PrintSeeds(consents)
+	printSeeds(consents)
 
 	return nil
 }
@@ -95,7 +100,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err = Run(ctx, db); err != nil {
+	if err = run(ctx, db); err != nil {
 		log.Fatal(err)
 	}
 }

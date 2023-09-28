@@ -16,10 +16,6 @@ type Consent struct {
 }
 
 func InsertConsents(ctx context.Context, db *datastore.Database, users []*ent.User, relyingParties []*ent.RelyingParty, nConsent int) ([]*ent.Consent, error) {
-	if db == nil {
-		return nil, fmt.Errorf("database client required")
-	}
-
 	if nConsent < nUserMin {
 		return nil, fmt.Errorf("the number of consents must be greater than or equal to %d", nConsentMin)
 	}

@@ -149,14 +149,37 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              type: string
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  example: authorization_code
+                code:
+                  type: string
+                  nullable: true
+                  example: EYdxIU30xstnWZKxgA54RJMz1YUR0J
+                redirect_uri:
+                  type: string
+                  nullable: true
+                  example: http%3A%2F%2Flocalhost%3A8080%2Fcb
+                refresh_token:
+                  type: string
+                  nullable: true
+                  example: 8xLOxBtZp8
+              required:
+                - grant_type
             examples:
               new:
                 summary: Issue Access Token
-                value: grant_type=authorization_code&code=SplxlOBeZQQYbYS6WxSbIA&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcb
+                value:
+                  grant_type: authorization_code
+                  code: SplxlOBeZQQYbYS6WxSbIA
+                  redirect_uri: http%3A%2F%2Flocalhost%3A8080%2Fcb
               refresh:
                 summary: Reissue Access Token
-                value: grant_type=refresh_token&refresh_token=8xLOxBtZp8
+                value:
+                  grant_type: refresh_token
+                  refresh_token: 8xLOxBtZp8
   /user/register:
     post:
       description: Creates a new user in the database.

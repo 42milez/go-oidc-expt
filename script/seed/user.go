@@ -17,10 +17,6 @@ type User struct {
 }
 
 func InsertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent.User, error) {
-	if db == nil {
-		return nil, fmt.Errorf("database client required")
-	}
-
 	if nUser < nUserMin {
 		return nil, fmt.Errorf("the number of users must be greater than or equal to %d", nUserMin)
 	}

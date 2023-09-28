@@ -27,7 +27,7 @@ type Config struct {
 	RedisPort     int           `env:"REDIS_PORT" envDefault:"6379"`
 	RedisPassword string        `env:"REDIS_PASSWORD" envDefault:""`
 	RedisDB       int           `env:"REDIS_DB" envDefault:"0"`
-	LogLevel      zerolog.Level `env:"ZEROLOG_LOG_LEVEL" envDefault:"0"` // debug
+	LogLevel      zerolog.Level `env:"ZEROLOG_LEVEL" envDefault:"0"` // debug
 }
 
 func (p *Config) IsDevelopment() bool {

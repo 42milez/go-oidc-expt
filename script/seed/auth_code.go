@@ -21,10 +21,6 @@ type AuthCode struct {
 }
 
 func InsertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties []*ent.RelyingParty, users []*ent.User, nAuthCode int) ([]*ent.AuthCode, error) {
-	if db == nil {
-		return nil, fmt.Errorf("database client required")
-	}
-
 	if nAuthCode < nAuthCodeMin {
 		return nil, fmt.Errorf("the number of auth codes must be greater than or equal to %d", nAuthCodeMin)
 	}

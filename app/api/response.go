@@ -22,9 +22,12 @@ func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body an
 	bodyBytes, err := json.Marshal(body)
 
 	if err != nil {
+		LogError(r, err, nil)
+
 		w.WriteHeader(http.StatusInternalServerError)
 
 		resp := Response{
+			Status:  http.StatusInternalServerError,
 			Summary: xerr.UnexpectedErrorOccurred,
 		}
 
@@ -75,6 +78,10 @@ func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicE
 		appLogger.Error().Err(err).Send()
 	}
 	RespondJSON(w, r, http.StatusUnauthorized, body)
+}
+
+func RespondJSON404(w http.ResponseWriter) {
+	RespondJSON(w, nil, http.StatusNotFound, nil)
 }
 
 func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {

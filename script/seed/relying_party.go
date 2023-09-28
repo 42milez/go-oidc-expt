@@ -18,10 +18,6 @@ type RelyingParty struct {
 }
 
 func InsertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingParty int) ([]*ent.RelyingParty, error) {
-	if db == nil {
-		return nil, fmt.Errorf("database client required")
-	}
-
 	if nRelyingParty < nRelyingPartyMin {
 		return nil, fmt.Errorf("the number of relying parties must be greater than or equal to %d", nRelyingPartyMin)
 	}

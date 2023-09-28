@@ -16,10 +16,6 @@ type RedirectURI struct {
 }
 
 func InsertRedirectURIs(ctx context.Context, db *datastore.Database, relyingParties []*ent.RelyingParty, nRedirectURI int) ([]*ent.RedirectURI, error) {
-	if db == nil {
-		return nil, fmt.Errorf("database client required")
-	}
-
 	if nRedirectURI < nRedirectUriMin {
 		return nil, fmt.Errorf("the number of redirect uris must be greater than or equal to %d", nRedirectUriMin)
 	}
