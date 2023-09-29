@@ -89,3 +89,10 @@ type Authorizer interface {
 type ConsentAcceptor interface {
 	AcceptConsent(ctx context.Context, userID typedef.UserID, clientID string) error
 }
+
+// OIDC: Token
+// --------------------------------------------------
+
+type CredentialValidator interface {
+	ValidateCredential(ctx context.Context, clientID, clientSecret string) error
+}

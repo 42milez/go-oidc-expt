@@ -2,7 +2,9 @@ package api
 
 import (
 	"context"
+	"encoding/base64"
 	"net/http"
+	"strings"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/getkin/kin-openapi/openapi3filter"
@@ -85,7 +87,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 
 	mux.Use(chimw.OapiRequestValidatorWithOptions(swag, &chimw.Options{
 		Options: openapi3filter.Options{
-			AuthenticationFunc: NewOapiAuthentication(),
+			AuthenticationFunc: NewOapiAuthentication(option.db),
 		},
 		ErrorHandler: NewOapiErrorHandler(),
 	}))
@@ -108,24 +110,52 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	}, nil
 }
 
-func NewOapiAuthentication() openapi3filter.AuthenticationFunc {
+func NewOapiAuthentication(db *datastore.Database) openapi3filter.AuthenticationFunc {
+	repo := repository.NewRelyingParty(db)
 	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-		return oapiAuthenticate(ctx, input)
+		return oapiAuthenticate(ctx, input, repo)
 	}
 }
 
-func oapiAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+func oapiAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationInput, repo CredentialValidator) error {
 	if input.SecuritySchemeName != basicAuthSchemeName {
 		return xerr.UnknownSecurityScheme
 	}
 
-	authHdr := input.RequestValidationInput.Request.Header.Get("Authentication")
+	credentials, err := extractCredential(input.RequestValidationInput.Request)
 
-	if xutil.IsEmpty(authHdr) {
-		return xerr.UnauthorizedRequest
+	if err != nil {
+		return err
+	}
+
+	clientID := credentials[0]
+	clientSecret := credentials[1]
+
+	if err = repo.ValidateCredential(ctx, clientID, clientSecret); err != nil {
+		LogError(input.RequestValidationInput.Request, err, nil)
+		return err
 	}
 
 	return nil
+}
+
+func extractCredential(r *http.Request) ([]string, error) {
+	authHdr := r.Header.Get("Authentication")
+
+	if xutil.IsEmpty(authHdr) {
+		return nil, xerr.UnauthorizedRequest
+	}
+
+	credentialBase64 := strings.Replace(authHdr, "Basic ", "", -1)
+	credentialDecoded, err := base64.StdEncoding.DecodeString(credentialBase64)
+
+	if err != nil {
+		return nil, xerr.UnexpectedErrorOccurred
+	}
+
+	credentials := strings.Split(string(credentialDecoded), ":")
+
+	return credentials, nil
 }
 
 func NewOapiErrorHandler() chimw.ErrorHandler {

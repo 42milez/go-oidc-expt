@@ -31,3 +31,9 @@ func (rp *RelyingParty) ReadRedirectUriByClientID(ctx context.Context, clientID 
 		QueryRedirectUris().
 		All(ctx)
 }
+
+func (rp *RelyingParty) ValidateCredential(ctx context.Context, clientID, clientSecret string) error {
+	_, err := rp.db.Client.RelyingParty.Query().
+		Where(relyingparty.ClientID(clientID), relyingparty.ClientSecret(clientSecret)).Only(ctx)
+	return err
+}

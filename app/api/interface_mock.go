@@ -608,3 +608,40 @@ func (mr *MockConsentAcceptorMockRecorder) AcceptConsent(ctx, userID, clientID i
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AcceptConsent", reflect.TypeOf((*MockConsentAcceptor)(nil).AcceptConsent), ctx, userID, clientID)
 }
+
+// MockCredentialValidator is a mock of CredentialValidator interface.
+type MockCredentialValidator struct {
+	ctrl     *gomock.Controller
+	recorder *MockCredentialValidatorMockRecorder
+}
+
+// MockCredentialValidatorMockRecorder is the mock recorder for MockCredentialValidator.
+type MockCredentialValidatorMockRecorder struct {
+	mock *MockCredentialValidator
+}
+
+// NewMockCredentialValidator creates a new mock instance.
+func NewMockCredentialValidator(ctrl *gomock.Controller) *MockCredentialValidator {
+	mock := &MockCredentialValidator{ctrl: ctrl}
+	mock.recorder = &MockCredentialValidatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCredentialValidator) EXPECT() *MockCredentialValidatorMockRecorder {
+	return m.recorder
+}
+
+// ValidateCredential mocks base method.
+func (m *MockCredentialValidator) ValidateCredential(ctx context.Context, clientID, clientSecret string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateCredential", ctx, clientID, clientSecret)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ValidateCredential indicates an expected call of ValidateCredential.
+func (mr *MockCredentialValidatorMockRecorder) ValidateCredential(ctx, clientID, clientSecret interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateCredential", reflect.TypeOf((*MockCredentialValidator)(nil).ValidateCredential), ctx, clientID, clientSecret)
+}
