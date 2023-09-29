@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/app/Dockerfile
+      dockerfile: ./docker/app/Dockerfile
       target: dev
     container_name: go-oidc-server-app
     image: go-oidc-server-app:latest
@@ -73,7 +73,7 @@ services:
         max_attempts: 3
   db:
     build:
-      context: docker/db
+      context: ./docker/db
     container_name: go-oidc-server-db
     image: go-oidc-server-db:latest
     networks:
@@ -84,11 +84,11 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: docker/db/conf.d
+        source: ./docker/db/conf.d
         target: /etc/mysql/conf.d
         read_only: true
       - type: bind
-        source: docker/db/docker-entrypoint-initdb.d
+        source: ./docker/db/docker-entrypoint-initdb.d
         target: /docker-entrypoint-initdb.d
         read_only: true
       - type: volume
@@ -110,7 +110,7 @@ services:
   log:
     build:
       context: .
-      dockerfile: docker/log/Dockerfile
+      dockerfile: ./docker/log/Dockerfile
     container_name: go-oidc-server-log
     image: go-oidc-server-log:latest
     networks:
@@ -122,10 +122,10 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: docker/log/fluent-bit.conf
+        source: ./docker/log/fluent-bit.conf
         target: /fluent-bit/etc/fluent-bit.conf
       - type: bind
-        source: docker/log/parsers.conf
+        source: ./docker/log/parsers.conf
         target: /fluent-bit/etc/parsers.conf
     deploy:
       resources:
@@ -146,7 +146,7 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: app/api/spec/spec.yml
+        source: ./app/api/spec/spec.yml
         target: /spec.yml
         read_only: true
     environment:
@@ -170,7 +170,7 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: app/api/spec/spec.yml
+        source: ./app/api/spec/spec.yml
         target: /spec.yml
     environment:
       SWAGGER_FILE: /spec.yml
