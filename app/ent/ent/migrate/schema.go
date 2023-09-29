@@ -111,6 +111,13 @@ var (
 		Name:       "relying_parties",
 		Columns:    RelyingPartiesColumns,
 		PrimaryKey: []*schema.Column{RelyingPartiesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "relyingparty_client_id_client_secret",
+				Unique:  true,
+				Columns: []*schema.Column{RelyingPartiesColumns[1], RelyingPartiesColumns[2]},
+			},
+		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{

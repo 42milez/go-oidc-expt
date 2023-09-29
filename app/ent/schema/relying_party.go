@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"entgo.io/ent/schema/index"
 	"time"
 
 	"entgo.io/ent"
@@ -42,5 +43,12 @@ func (RelyingParty) Edges() []ent.Edge {
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 		edge.To("redirect_uris", RedirectURI.Type).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
+	}
+}
+
+func (RelyingParty) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("client_id", "client_secret").
+			Unique(),
 	}
 }
