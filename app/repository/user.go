@@ -44,7 +44,7 @@ func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientI
 		return nil, rollback(tx, err)
 	}
 
-	consent, err := tx.Consent.Create().SetUser(targetUser).SetClientID(clientID).Save(ctx)
+	c, err := tx.Consent.Create().SetUser(targetUser).SetClientID(clientID).Save(ctx)
 
 	if err != nil {
 		return nil, rollback(tx, err)
@@ -54,7 +54,7 @@ func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientI
 		return nil, rollback(tx, err)
 	}
 
-	return consent, nil
+	return c, nil
 }
 
 func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {

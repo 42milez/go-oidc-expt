@@ -104,6 +104,15 @@ type AuthCodeReader interface {
 	ReadAuthCode(ctx context.Context, code string, clientId string) (*ent.AuthCode, error)
 }
 
+type AuthCodeMarker interface {
+	MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*ent.AuthCode, error)
+}
+
+type AuthCodeReadMarker interface {
+	AuthCodeReader
+	AuthCodeMarker
+}
+
 type RedirectUriReader interface {
 	ReadRedirectUri(ctx context.Context, uri, clientId string) (*ent.RedirectURI, error)
 }

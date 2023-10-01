@@ -701,6 +701,97 @@ func (mr *MockAuthCodeReaderMockRecorder) ReadAuthCode(ctx, code, clientId inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReader)(nil).ReadAuthCode), ctx, code, clientId)
 }
 
+// MockAuthCodeMarker is a mock of AuthCodeMarker interface.
+type MockAuthCodeMarker struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthCodeMarkerMockRecorder
+}
+
+// MockAuthCodeMarkerMockRecorder is the mock recorder for MockAuthCodeMarker.
+type MockAuthCodeMarkerMockRecorder struct {
+	mock *MockAuthCodeMarker
+}
+
+// NewMockAuthCodeMarker creates a new mock instance.
+func NewMockAuthCodeMarker(ctrl *gomock.Controller) *MockAuthCodeMarker {
+	mock := &MockAuthCodeMarker{ctrl: ctrl}
+	mock.recorder = &MockAuthCodeMarkerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthCodeMarker) EXPECT() *MockAuthCodeMarkerMockRecorder {
+	return m.recorder
+}
+
+// MarkAuthCodeUsed mocks base method.
+func (m *MockAuthCodeMarker) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MarkAuthCodeUsed", ctx, code, clientId)
+	ret0, _ := ret[0].(*ent.AuthCode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MarkAuthCodeUsed indicates an expected call of MarkAuthCodeUsed.
+func (mr *MockAuthCodeMarkerMockRecorder) MarkAuthCodeUsed(ctx, code, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MarkAuthCodeUsed", reflect.TypeOf((*MockAuthCodeMarker)(nil).MarkAuthCodeUsed), ctx, code, clientId)
+}
+
+// MockAuthCodeReadMarker is a mock of AuthCodeReadMarker interface.
+type MockAuthCodeReadMarker struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthCodeReadMarkerMockRecorder
+}
+
+// MockAuthCodeReadMarkerMockRecorder is the mock recorder for MockAuthCodeReadMarker.
+type MockAuthCodeReadMarkerMockRecorder struct {
+	mock *MockAuthCodeReadMarker
+}
+
+// NewMockAuthCodeReadMarker creates a new mock instance.
+func NewMockAuthCodeReadMarker(ctrl *gomock.Controller) *MockAuthCodeReadMarker {
+	mock := &MockAuthCodeReadMarker{ctrl: ctrl}
+	mock.recorder = &MockAuthCodeReadMarkerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthCodeReadMarker) EXPECT() *MockAuthCodeReadMarkerMockRecorder {
+	return m.recorder
+}
+
+// MarkAuthCodeUsed mocks base method.
+func (m *MockAuthCodeReadMarker) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MarkAuthCodeUsed", ctx, code, clientId)
+	ret0, _ := ret[0].(*ent.AuthCode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// MarkAuthCodeUsed indicates an expected call of MarkAuthCodeUsed.
+func (mr *MockAuthCodeReadMarkerMockRecorder) MarkAuthCodeUsed(ctx, code, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MarkAuthCodeUsed", reflect.TypeOf((*MockAuthCodeReadMarker)(nil).MarkAuthCodeUsed), ctx, code, clientId)
+}
+
+// ReadAuthCode mocks base method.
+func (m *MockAuthCodeReadMarker) ReadAuthCode(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientId)
+	ret0, _ := ret[0].(*ent.AuthCode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadAuthCode indicates an expected call of ReadAuthCode.
+func (mr *MockAuthCodeReadMarkerMockRecorder) ReadAuthCode(ctx, code, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReadMarker)(nil).ReadAuthCode), ctx, code, clientId)
+}
+
 // MockRedirectUriReader is a mock of RedirectUriReader interface.
 type MockRedirectUriReader struct {
 	ctrl     *gomock.Controller

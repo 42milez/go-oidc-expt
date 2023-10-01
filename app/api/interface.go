@@ -110,6 +110,10 @@ type TokenRequestValidator interface {
 	RedirectUriValidator
 }
 
+type AuthCodeRevoker interface {
+	RevokeAuthCode(ctx context.Context, code, clientId string) error
+}
+
 type AccessTokenGenerator interface {
 	GenerateAccessToken() (string, error)
 }
@@ -124,6 +128,7 @@ type IdTokenGenerator interface {
 
 type TokenRequestAcceptor interface {
 	TokenRequestValidator
+	AuthCodeRevoker
 	AccessTokenGenerator
 	RefreshTokenGenerator
 	IdTokenGenerator

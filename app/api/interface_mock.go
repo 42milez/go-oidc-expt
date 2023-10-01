@@ -771,6 +771,43 @@ func (mr *MockTokenRequestValidatorMockRecorder) ValidateRedirectUri(ctx, uri, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRedirectUri", reflect.TypeOf((*MockTokenRequestValidator)(nil).ValidateRedirectUri), ctx, uri, clientId)
 }
 
+// MockAuthCodeRevoker is a mock of AuthCodeRevoker interface.
+type MockAuthCodeRevoker struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthCodeRevokerMockRecorder
+}
+
+// MockAuthCodeRevokerMockRecorder is the mock recorder for MockAuthCodeRevoker.
+type MockAuthCodeRevokerMockRecorder struct {
+	mock *MockAuthCodeRevoker
+}
+
+// NewMockAuthCodeRevoker creates a new mock instance.
+func NewMockAuthCodeRevoker(ctrl *gomock.Controller) *MockAuthCodeRevoker {
+	mock := &MockAuthCodeRevoker{ctrl: ctrl}
+	mock.recorder = &MockAuthCodeRevokerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthCodeRevoker) EXPECT() *MockAuthCodeRevokerMockRecorder {
+	return m.recorder
+}
+
+// RevokeAuthCode mocks base method.
+func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code, clientId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RevokeAuthCode indicates an expected call of RevokeAuthCode.
+func (mr *MockAuthCodeRevokerMockRecorder) RevokeAuthCode(ctx, code, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeRevoker)(nil).RevokeAuthCode), ctx, code, clientId)
+}
+
 // MockAccessTokenGenerator is a mock of AccessTokenGenerator interface.
 type MockAccessTokenGenerator struct {
 	ctrl     *gomock.Controller
@@ -951,6 +988,20 @@ func (m *MockTokenRequestAcceptor) GenerateRefreshToken() (string, error) {
 func (mr *MockTokenRequestAcceptorMockRecorder) GenerateRefreshToken() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).GenerateRefreshToken))
+}
+
+// RevokeAuthCode mocks base method.
+func (m *MockTokenRequestAcceptor) RevokeAuthCode(ctx context.Context, code, clientId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RevokeAuthCode indicates an expected call of RevokeAuthCode.
+func (mr *MockTokenRequestAcceptorMockRecorder) RevokeAuthCode(ctx, code, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).RevokeAuthCode), ctx, code, clientId)
 }
 
 // ValidateAuthCode mocks base method.

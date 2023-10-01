@@ -18,7 +18,7 @@ func NewToken(db *datastore.Database) *Token {
 }
 
 type Token struct {
-	authCodeRepo    AuthCodeReader
+	authCodeRepo    AuthCodeReadMarker
 	redirectUriRepo RedirectUriReader
 }
 
@@ -36,6 +36,14 @@ func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) err
 		return xerr.AuthCodeUsed
 	}
 
+	return nil
+}
+
+func (t *Token) RevokeAuthCode(ctx context.Context, code, clientId string) error {
+	_, err := t.authCodeRepo.MarkAuthCodeUsed(ctx, code, clientId)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
