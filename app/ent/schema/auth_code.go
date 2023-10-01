@@ -27,15 +27,15 @@ func (AuthCode) Fields() []ent.Field {
 		field.Uint64("id").
 			GoType(typedef.AuthCodeID(0)).
 			Immutable(),
-		field.Uint64("user_id").
-			GoType(typedef.UserID(0)).
-			Immutable(),
 		field.String("code").
 			SchemaType(map[string]string{
 				dialect.MySQL: AuthCodeSchemaType(),
 			}).
 			NotEmpty().
 			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-zA-Z]{%d}$", config.AuthCodeLength))).
+			Immutable(),
+		field.Uint64("user_id").
+			GoType(typedef.UserID(0)).
 			Immutable(),
 		field.Time("expire_at").
 			Default(func() time.Time {

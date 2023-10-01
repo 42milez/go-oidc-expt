@@ -82,3 +82,8 @@ const (
 	ClientIdLength     = 30
 	ClientSecretLength = 30
 )
+
+const (
+	AuthorizationCodeGrantType = "authorization_code"
+	RefreshTokenGrantType      = "refresh_token"
+)

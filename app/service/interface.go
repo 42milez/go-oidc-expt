@@ -53,12 +53,12 @@ type HealthChecker interface {
 //  AUTHENTICATION
 // --------------------------------------------------
 
-type UserCreator interface {
-	CreateUser(ctx context.Context, name string, pw string) (*ent.User, error)
-}
-
 type ConsentReader interface {
 	ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error)
+}
+
+type UserCreator interface {
+	CreateUser(ctx context.Context, name string, pw string) (*ent.User, error)
 }
 
 type UserByNameReader interface {
@@ -68,6 +68,13 @@ type UserByNameReader interface {
 type UserConsentReader interface {
 	ConsentReader
 	UserByNameReader
+}
+
+//  OIDC: Authentication
+// --------------------------------------------------
+
+type CredentialReader interface {
+	ReadCredential(ctx context.Context, clientID, clientSecret string) (*ent.RelyingParty, error)
 }
 
 //  OIDC: AUTHORIZATION
@@ -88,4 +95,11 @@ type Authorizer interface {
 
 type ConsentCreator interface {
 	CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error)
+}
+
+//  OIDC: Token
+// --------------------------------------------------
+
+type AuthCodeReader interface {
+	ReadAuthCode(ctx context.Context, code string, clientId string) (*ent.AuthCode, error)
 }

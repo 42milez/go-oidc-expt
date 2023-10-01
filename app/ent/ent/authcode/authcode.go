@@ -14,10 +14,10 @@ const (
 	Label = "auth_code"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldUserID holds the string denoting the user_id field in the database.
-	FieldUserID = "user_id"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
+	// FieldUserID holds the string denoting the user_id field in the database.
+	FieldUserID = "user_id"
 	// FieldExpireAt holds the string denoting the expire_at field in the database.
 	FieldExpireAt = "expire_at"
 	// FieldUsedAt holds the string denoting the used_at field in the database.
@@ -44,8 +44,8 @@ const (
 // Columns holds all SQL columns for authcode fields.
 var Columns = []string{
 	FieldID,
-	FieldUserID,
 	FieldCode,
+	FieldUserID,
 	FieldExpireAt,
 	FieldUsedAt,
 	FieldCreatedAt,
@@ -84,14 +84,14 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByUserID orders the results by the user_id field.
-func ByUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserID, opts...).ToFunc()
-}
-
 // ByCode orders the results by the code field.
 func ByCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCode, opts...).ToFunc()
+}
+
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
 }
 
 // ByExpireAt orders the results by the expire_at field.

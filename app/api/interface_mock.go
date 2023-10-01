@@ -645,3 +645,338 @@ func (mr *MockCredentialValidatorMockRecorder) ValidateCredential(ctx, clientID,
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateCredential", reflect.TypeOf((*MockCredentialValidator)(nil).ValidateCredential), ctx, clientID, clientSecret)
 }
+
+// MockAuthCodeValidator is a mock of AuthCodeValidator interface.
+type MockAuthCodeValidator struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthCodeValidatorMockRecorder
+}
+
+// MockAuthCodeValidatorMockRecorder is the mock recorder for MockAuthCodeValidator.
+type MockAuthCodeValidatorMockRecorder struct {
+	mock *MockAuthCodeValidator
+}
+
+// NewMockAuthCodeValidator creates a new mock instance.
+func NewMockAuthCodeValidator(ctrl *gomock.Controller) *MockAuthCodeValidator {
+	mock := &MockAuthCodeValidator{ctrl: ctrl}
+	mock.recorder = &MockAuthCodeValidatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthCodeValidator) EXPECT() *MockAuthCodeValidatorMockRecorder {
+	return m.recorder
+}
+
+// ValidateAuthCode mocks base method.
+func (m *MockAuthCodeValidator) ValidateAuthCode(ctx context.Context, code, clientId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateAuthCode", ctx, code, clientId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ValidateAuthCode indicates an expected call of ValidateAuthCode.
+func (mr *MockAuthCodeValidatorMockRecorder) ValidateAuthCode(ctx, code, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockAuthCodeValidator)(nil).ValidateAuthCode), ctx, code, clientId)
+}
+
+// MockRedirectUriValidator is a mock of RedirectUriValidator interface.
+type MockRedirectUriValidator struct {
+	ctrl     *gomock.Controller
+	recorder *MockRedirectUriValidatorMockRecorder
+}
+
+// MockRedirectUriValidatorMockRecorder is the mock recorder for MockRedirectUriValidator.
+type MockRedirectUriValidatorMockRecorder struct {
+	mock *MockRedirectUriValidator
+}
+
+// NewMockRedirectUriValidator creates a new mock instance.
+func NewMockRedirectUriValidator(ctrl *gomock.Controller) *MockRedirectUriValidator {
+	mock := &MockRedirectUriValidator{ctrl: ctrl}
+	mock.recorder = &MockRedirectUriValidatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRedirectUriValidator) EXPECT() *MockRedirectUriValidatorMockRecorder {
+	return m.recorder
+}
+
+// ValidateRedirectUri mocks base method.
+func (m *MockRedirectUriValidator) ValidateRedirectUri(ctx context.Context, uri string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateRedirectUri", ctx, uri)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ValidateRedirectUri indicates an expected call of ValidateRedirectUri.
+func (mr *MockRedirectUriValidatorMockRecorder) ValidateRedirectUri(ctx, uri interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRedirectUri", reflect.TypeOf((*MockRedirectUriValidator)(nil).ValidateRedirectUri), ctx, uri)
+}
+
+// MockTokenRequestValidator is a mock of TokenRequestValidator interface.
+type MockTokenRequestValidator struct {
+	ctrl     *gomock.Controller
+	recorder *MockTokenRequestValidatorMockRecorder
+}
+
+// MockTokenRequestValidatorMockRecorder is the mock recorder for MockTokenRequestValidator.
+type MockTokenRequestValidatorMockRecorder struct {
+	mock *MockTokenRequestValidator
+}
+
+// NewMockTokenRequestValidator creates a new mock instance.
+func NewMockTokenRequestValidator(ctrl *gomock.Controller) *MockTokenRequestValidator {
+	mock := &MockTokenRequestValidator{ctrl: ctrl}
+	mock.recorder = &MockTokenRequestValidatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTokenRequestValidator) EXPECT() *MockTokenRequestValidatorMockRecorder {
+	return m.recorder
+}
+
+// ValidateAuthCode mocks base method.
+func (m *MockTokenRequestValidator) ValidateAuthCode(ctx context.Context, code, clientId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateAuthCode", ctx, code, clientId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ValidateAuthCode indicates an expected call of ValidateAuthCode.
+func (mr *MockTokenRequestValidatorMockRecorder) ValidateAuthCode(ctx, code, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockTokenRequestValidator)(nil).ValidateAuthCode), ctx, code, clientId)
+}
+
+// ValidateRedirectUri mocks base method.
+func (m *MockTokenRequestValidator) ValidateRedirectUri(ctx context.Context, uri string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateRedirectUri", ctx, uri)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ValidateRedirectUri indicates an expected call of ValidateRedirectUri.
+func (mr *MockTokenRequestValidatorMockRecorder) ValidateRedirectUri(ctx, uri interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRedirectUri", reflect.TypeOf((*MockTokenRequestValidator)(nil).ValidateRedirectUri), ctx, uri)
+}
+
+// MockAccessTokenGenerator is a mock of AccessTokenGenerator interface.
+type MockAccessTokenGenerator struct {
+	ctrl     *gomock.Controller
+	recorder *MockAccessTokenGeneratorMockRecorder
+}
+
+// MockAccessTokenGeneratorMockRecorder is the mock recorder for MockAccessTokenGenerator.
+type MockAccessTokenGeneratorMockRecorder struct {
+	mock *MockAccessTokenGenerator
+}
+
+// NewMockAccessTokenGenerator creates a new mock instance.
+func NewMockAccessTokenGenerator(ctrl *gomock.Controller) *MockAccessTokenGenerator {
+	mock := &MockAccessTokenGenerator{ctrl: ctrl}
+	mock.recorder = &MockAccessTokenGeneratorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAccessTokenGenerator) EXPECT() *MockAccessTokenGeneratorMockRecorder {
+	return m.recorder
+}
+
+// GenerateAccessToken mocks base method.
+func (m *MockAccessTokenGenerator) GenerateAccessToken() (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateAccessToken")
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateAccessToken indicates an expected call of GenerateAccessToken.
+func (mr *MockAccessTokenGeneratorMockRecorder) GenerateAccessToken() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockAccessTokenGenerator)(nil).GenerateAccessToken))
+}
+
+// MockRefreshTokenGenerator is a mock of RefreshTokenGenerator interface.
+type MockRefreshTokenGenerator struct {
+	ctrl     *gomock.Controller
+	recorder *MockRefreshTokenGeneratorMockRecorder
+}
+
+// MockRefreshTokenGeneratorMockRecorder is the mock recorder for MockRefreshTokenGenerator.
+type MockRefreshTokenGeneratorMockRecorder struct {
+	mock *MockRefreshTokenGenerator
+}
+
+// NewMockRefreshTokenGenerator creates a new mock instance.
+func NewMockRefreshTokenGenerator(ctrl *gomock.Controller) *MockRefreshTokenGenerator {
+	mock := &MockRefreshTokenGenerator{ctrl: ctrl}
+	mock.recorder = &MockRefreshTokenGeneratorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRefreshTokenGenerator) EXPECT() *MockRefreshTokenGeneratorMockRecorder {
+	return m.recorder
+}
+
+// GenerateRefreshToken mocks base method.
+func (m *MockRefreshTokenGenerator) GenerateRefreshToken() (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateRefreshToken")
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
+func (mr *MockRefreshTokenGeneratorMockRecorder) GenerateRefreshToken() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockRefreshTokenGenerator)(nil).GenerateRefreshToken))
+}
+
+// MockIdTokenGenerator is a mock of IdTokenGenerator interface.
+type MockIdTokenGenerator struct {
+	ctrl     *gomock.Controller
+	recorder *MockIdTokenGeneratorMockRecorder
+}
+
+// MockIdTokenGeneratorMockRecorder is the mock recorder for MockIdTokenGenerator.
+type MockIdTokenGeneratorMockRecorder struct {
+	mock *MockIdTokenGenerator
+}
+
+// NewMockIdTokenGenerator creates a new mock instance.
+func NewMockIdTokenGenerator(ctrl *gomock.Controller) *MockIdTokenGenerator {
+	mock := &MockIdTokenGenerator{ctrl: ctrl}
+	mock.recorder = &MockIdTokenGeneratorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockIdTokenGenerator) EXPECT() *MockIdTokenGeneratorMockRecorder {
+	return m.recorder
+}
+
+// GenerateIdToken mocks base method.
+func (m *MockIdTokenGenerator) GenerateIdToken() (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateIdToken")
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateIdToken indicates an expected call of GenerateIdToken.
+func (mr *MockIdTokenGeneratorMockRecorder) GenerateIdToken() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockIdTokenGenerator)(nil).GenerateIdToken))
+}
+
+// MockTokenRequestAcceptor is a mock of TokenRequestAcceptor interface.
+type MockTokenRequestAcceptor struct {
+	ctrl     *gomock.Controller
+	recorder *MockTokenRequestAcceptorMockRecorder
+}
+
+// MockTokenRequestAcceptorMockRecorder is the mock recorder for MockTokenRequestAcceptor.
+type MockTokenRequestAcceptorMockRecorder struct {
+	mock *MockTokenRequestAcceptor
+}
+
+// NewMockTokenRequestAcceptor creates a new mock instance.
+func NewMockTokenRequestAcceptor(ctrl *gomock.Controller) *MockTokenRequestAcceptor {
+	mock := &MockTokenRequestAcceptor{ctrl: ctrl}
+	mock.recorder = &MockTokenRequestAcceptorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTokenRequestAcceptor) EXPECT() *MockTokenRequestAcceptorMockRecorder {
+	return m.recorder
+}
+
+// GenerateAccessToken mocks base method.
+func (m *MockTokenRequestAcceptor) GenerateAccessToken() (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateAccessToken")
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateAccessToken indicates an expected call of GenerateAccessToken.
+func (mr *MockTokenRequestAcceptorMockRecorder) GenerateAccessToken() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).GenerateAccessToken))
+}
+
+// GenerateIdToken mocks base method.
+func (m *MockTokenRequestAcceptor) GenerateIdToken() (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateIdToken")
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateIdToken indicates an expected call of GenerateIdToken.
+func (mr *MockTokenRequestAcceptorMockRecorder) GenerateIdToken() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).GenerateIdToken))
+}
+
+// GenerateRefreshToken mocks base method.
+func (m *MockTokenRequestAcceptor) GenerateRefreshToken() (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateRefreshToken")
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
+func (mr *MockTokenRequestAcceptorMockRecorder) GenerateRefreshToken() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).GenerateRefreshToken))
+}
+
+// ValidateAuthCode mocks base method.
+func (m *MockTokenRequestAcceptor) ValidateAuthCode(ctx context.Context, code, clientId string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateAuthCode", ctx, code, clientId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ValidateAuthCode indicates an expected call of ValidateAuthCode.
+func (mr *MockTokenRequestAcceptorMockRecorder) ValidateAuthCode(ctx, code, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).ValidateAuthCode), ctx, code, clientId)
+}
+
+// ValidateRedirectUri mocks base method.
+func (m *MockTokenRequestAcceptor) ValidateRedirectUri(ctx context.Context, uri string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateRedirectUri", ctx, uri)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ValidateRedirectUri indicates an expected call of ValidateRedirectUri.
+func (mr *MockTokenRequestAcceptorMockRecorder) ValidateRedirectUri(ctx, uri interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRedirectUri", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).ValidateRedirectUri), ctx, uri)
+}

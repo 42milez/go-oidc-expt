@@ -96,3 +96,35 @@ type ConsentAcceptor interface {
 type CredentialValidator interface {
 	ValidateCredential(ctx context.Context, clientID, clientSecret string) error
 }
+
+type AuthCodeValidator interface {
+	ValidateAuthCode(ctx context.Context, code, clientId string) error
+}
+
+type RedirectUriValidator interface {
+	ValidateRedirectUri(ctx context.Context, uri string) error
+}
+
+type TokenRequestValidator interface {
+	AuthCodeValidator
+	RedirectUriValidator
+}
+
+type AccessTokenGenerator interface {
+	GenerateAccessToken() (string, error)
+}
+
+type RefreshTokenGenerator interface {
+	GenerateRefreshToken() (string, error)
+}
+
+type IdTokenGenerator interface {
+	GenerateIdToken() (string, error)
+}
+
+type TokenRequestAcceptor interface {
+	TokenRequestValidator
+	AccessTokenGenerator
+	RefreshTokenGenerator
+	IdTokenGenerator
+}

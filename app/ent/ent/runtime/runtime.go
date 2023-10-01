@@ -20,7 +20,7 @@ func init() {
 	authcodeFields := schema.AuthCode{}.Fields()
 	_ = authcodeFields
 	// authcodeDescCode is the schema descriptor for code field.
-	authcodeDescCode := authcodeFields[2].Descriptor()
+	authcodeDescCode := authcodeFields[1].Descriptor()
 	// authcode.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	authcode.CodeValidator = func() func(string) error {
 		validators := authcodeDescCode.Validators

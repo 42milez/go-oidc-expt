@@ -22,15 +22,15 @@ type AuthCodeCreate struct {
 	hooks    []Hook
 }
 
-// SetUserID sets the "user_id" field.
-func (acc *AuthCodeCreate) SetUserID(ti typedef.UserID) *AuthCodeCreate {
-	acc.mutation.SetUserID(ti)
-	return acc
-}
-
 // SetCode sets the "code" field.
 func (acc *AuthCodeCreate) SetCode(s string) *AuthCodeCreate {
 	acc.mutation.SetCode(s)
+	return acc
+}
+
+// SetUserID sets the "user_id" field.
+func (acc *AuthCodeCreate) SetUserID(ti typedef.UserID) *AuthCodeCreate {
+	acc.mutation.SetUserID(ti)
 	return acc
 }
 
@@ -158,9 +158,6 @@ func (acc *AuthCodeCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (acc *AuthCodeCreate) check() error {
-	if _, ok := acc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthCode.user_id"`)}
-	}
 	if _, ok := acc.mutation.Code(); !ok {
 		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "AuthCode.code"`)}
 	}
@@ -168,6 +165,9 @@ func (acc *AuthCodeCreate) check() error {
 		if err := authcode.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "AuthCode.code": %w`, err)}
 		}
+	}
+	if _, ok := acc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AuthCode.user_id"`)}
 	}
 	if _, ok := acc.mutation.ExpireAt(); !ok {
 		return &ValidationError{Name: "expire_at", err: errors.New(`ent: missing required field "AuthCode.expire_at"`)}
@@ -216,13 +216,13 @@ func (acc *AuthCodeCreate) createSpec() (*AuthCode, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := acc.mutation.UserID(); ok {
-		_spec.SetField(authcode.FieldUserID, field.TypeUint64, value)
-		_node.UserID = value
-	}
 	if value, ok := acc.mutation.Code(); ok {
 		_spec.SetField(authcode.FieldCode, field.TypeString, value)
 		_node.Code = value
+	}
+	if value, ok := acc.mutation.UserID(); ok {
+		_spec.SetField(authcode.FieldUserID, field.TypeUint64, value)
+		_node.UserID = value
 	}
 	if value, ok := acc.mutation.ExpireAt(); ok {
 		_spec.SetField(authcode.FieldExpireAt, field.TypeTime, value)

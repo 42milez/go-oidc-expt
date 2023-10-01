@@ -19,10 +19,10 @@ type AuthCode struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID typedef.AuthCodeID `json:"id,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID typedef.UserID `json:"user_id,omitempty"`
 	// Code holds the value of the "code" field.
 	Code string `json:"code,omitempty"`
+	// UserID holds the value of the "user_id" field.
+	UserID typedef.UserID `json:"user_id,omitempty"`
 	// ExpireAt holds the value of the "expire_at" field.
 	ExpireAt time.Time `json:"expire_at,omitempty"`
 	// UsedAt holds the value of the "used_at" field.
@@ -93,17 +93,17 @@ func (ac *AuthCode) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ac.ID = typedef.AuthCodeID(value.Int64)
 			}
-		case authcode.FieldUserID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				ac.UserID = typedef.UserID(value.Int64)
-			}
 		case authcode.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
 			} else if value.Valid {
 				ac.Code = value.String
+			}
+		case authcode.FieldUserID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+			} else if value.Valid {
+				ac.UserID = typedef.UserID(value.Int64)
 			}
 		case authcode.FieldExpireAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -177,11 +177,11 @@ func (ac *AuthCode) String() string {
 	var builder strings.Builder
 	builder.WriteString("AuthCode(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", ac.ID))
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", ac.UserID))
-	builder.WriteString(", ")
 	builder.WriteString("code=")
 	builder.WriteString(ac.Code)
+	builder.WriteString(", ")
+	builder.WriteString("user_id=")
+	builder.WriteString(fmt.Sprintf("%v", ac.UserID))
 	builder.WriteString(", ")
 	builder.WriteString("expire_at=")
 	builder.WriteString(ac.ExpireAt.Format(time.ANSIC))

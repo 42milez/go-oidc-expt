@@ -300,12 +300,12 @@ func (acq *AuthCodeQuery) WithRelyingParty(opts ...func(*RelyingPartyQuery)) *Au
 // Example:
 //
 //	var v []struct {
-//		UserID typedef.UserID `json:"user_id,omitempty"`
+//		Code string `json:"code,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.AuthCode.Query().
-//		GroupBy(authcode.FieldUserID).
+//		GroupBy(authcode.FieldCode).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (acq *AuthCodeQuery) GroupBy(field string, fields ...string) *AuthCodeGroupBy {
@@ -323,11 +323,11 @@ func (acq *AuthCodeQuery) GroupBy(field string, fields ...string) *AuthCodeGroup
 // Example:
 //
 //	var v []struct {
-//		UserID typedef.UserID `json:"user_id,omitempty"`
+//		Code string `json:"code,omitempty"`
 //	}
 //
 //	client.AuthCode.Query().
-//		Select(authcode.FieldUserID).
+//		Select(authcode.FieldCode).
 //		Scan(ctx, &v)
 func (acq *AuthCodeQuery) Select(fields ...string) *AuthCodeSelect {
 	acq.ctx.Fields = append(acq.ctx.Fields, fields...)

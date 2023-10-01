@@ -42,9 +42,9 @@ type AuthCodeMutation struct {
 	op                   Op
 	typ                  string
 	id                   *typedef.AuthCodeID
+	code                 *string
 	user_id              *typedef.UserID
 	adduser_id           *typedef.UserID
-	code                 *string
 	expire_at            *time.Time
 	used_at              *time.Time
 	created_at           *time.Time
@@ -161,6 +161,42 @@ func (m *AuthCodeMutation) IDs(ctx context.Context) ([]typedef.AuthCodeID, error
 	}
 }
 
+// SetCode sets the "code" field.
+func (m *AuthCodeMutation) SetCode(s string) {
+	m.code = &s
+}
+
+// Code returns the value of the "code" field in the mutation.
+func (m *AuthCodeMutation) Code() (r string, exists bool) {
+	v := m.code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCode returns the old "code" field's value of the AuthCode entity.
+// If the AuthCode object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AuthCodeMutation) OldCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCode: %w", err)
+	}
+	return oldValue.Code, nil
+}
+
+// ResetCode resets all changes to the "code" field.
+func (m *AuthCodeMutation) ResetCode() {
+	m.code = nil
+}
+
 // SetUserID sets the "user_id" field.
 func (m *AuthCodeMutation) SetUserID(ti typedef.UserID) {
 	m.user_id = &ti
@@ -215,42 +251,6 @@ func (m *AuthCodeMutation) AddedUserID() (r typedef.UserID, exists bool) {
 func (m *AuthCodeMutation) ResetUserID() {
 	m.user_id = nil
 	m.adduser_id = nil
-}
-
-// SetCode sets the "code" field.
-func (m *AuthCodeMutation) SetCode(s string) {
-	m.code = &s
-}
-
-// Code returns the value of the "code" field in the mutation.
-func (m *AuthCodeMutation) Code() (r string, exists bool) {
-	v := m.code
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCode returns the old "code" field's value of the AuthCode entity.
-// If the AuthCode object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AuthCodeMutation) OldCode(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCode is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCode requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCode: %w", err)
-	}
-	return oldValue.Code, nil
-}
-
-// ResetCode resets all changes to the "code" field.
-func (m *AuthCodeMutation) ResetCode() {
-	m.code = nil
 }
 
 // SetExpireAt sets the "expire_at" field.
@@ -508,11 +508,11 @@ func (m *AuthCodeMutation) Type() string {
 // AddedFields().
 func (m *AuthCodeMutation) Fields() []string {
 	fields := make([]string, 0, 7)
-	if m.user_id != nil {
-		fields = append(fields, authcode.FieldUserID)
-	}
 	if m.code != nil {
 		fields = append(fields, authcode.FieldCode)
+	}
+	if m.user_id != nil {
+		fields = append(fields, authcode.FieldUserID)
 	}
 	if m.expire_at != nil {
 		fields = append(fields, authcode.FieldExpireAt)
@@ -537,10 +537,10 @@ func (m *AuthCodeMutation) Fields() []string {
 // schema.
 func (m *AuthCodeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case authcode.FieldUserID:
-		return m.UserID()
 	case authcode.FieldCode:
 		return m.Code()
+	case authcode.FieldUserID:
+		return m.UserID()
 	case authcode.FieldExpireAt:
 		return m.ExpireAt()
 	case authcode.FieldUsedAt:
@@ -560,10 +560,10 @@ func (m *AuthCodeMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AuthCodeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case authcode.FieldUserID:
-		return m.OldUserID(ctx)
 	case authcode.FieldCode:
 		return m.OldCode(ctx)
+	case authcode.FieldUserID:
+		return m.OldUserID(ctx)
 	case authcode.FieldExpireAt:
 		return m.OldExpireAt(ctx)
 	case authcode.FieldUsedAt:
@@ -583,19 +583,19 @@ func (m *AuthCodeMutation) OldField(ctx context.Context, name string) (ent.Value
 // type.
 func (m *AuthCodeMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case authcode.FieldUserID:
-		v, ok := value.(typedef.UserID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
-		return nil
 	case authcode.FieldCode:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCode(v)
+		return nil
+	case authcode.FieldUserID:
+		v, ok := value.(typedef.UserID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
 		return nil
 	case authcode.FieldExpireAt:
 		v, ok := value.(time.Time)
@@ -705,11 +705,11 @@ func (m *AuthCodeMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AuthCodeMutation) ResetField(name string) error {
 	switch name {
-	case authcode.FieldUserID:
-		m.ResetUserID()
-		return nil
 	case authcode.FieldCode:
 		m.ResetCode()
+		return nil
+	case authcode.FieldUserID:
+		m.ResetUserID()
 		return nil
 	case authcode.FieldExpireAt:
 		m.ResetExpireAt()

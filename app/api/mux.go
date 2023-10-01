@@ -67,10 +67,6 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 
 	// Common Middleware Configuration
 
-	//mwLogger := logger.With().Str(config.LoggerTagKey, config.AccessLoggerTagValue).Logger()
-	//
-	//mux.Use(httplog.RequestLogger(mwLogger))
-
 	mux.Use(middleware.RequestID)
 	mux.Use(AccessLogger)
 	mux.Use(middleware.Recoverer)
@@ -111,13 +107,13 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 }
 
 func NewOapiAuthentication(db *datastore.Database) openapi3filter.AuthenticationFunc {
-	repo := repository.NewRelyingParty(db)
+	svc := service.NewOapiAuthenticate(repository.NewRelyingParty(db))
 	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-		return oapiAuthenticate(ctx, input, repo)
+		return oapiBasicAuthenticate(ctx, input, svc)
 	}
 }
 
-func oapiAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationInput, repo CredentialValidator) error {
+func oapiBasicAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationInput, svc CredentialValidator) error {
 	if input.SecuritySchemeName != basicAuthSchemeName {
 		return xerr.UnknownSecurityScheme
 	}
@@ -131,7 +127,7 @@ func oapiAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationI
 	clientID := credentials[0]
 	clientSecret := credentials[1]
 
-	if err = repo.ValidateCredential(ctx, clientID, clientSecret); err != nil {
+	if err = svc.ValidateCredential(ctx, clientID, clientSecret); err != nil {
 		LogError(input.RequestValidationInput.Request, err, nil)
 		return err
 	}

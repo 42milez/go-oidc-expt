@@ -15,6 +15,10 @@ var (
 	SessionNotFound          InternalErr = "session not found"
 	UnknownSecurityScheme    InternalErr = "unknown security scheme"
 	UserNotFound             InternalErr = "user not found"
+	AuthCodeNotFound         InternalErr = "auth code not found"
+	AuthCodeExpired          InternalErr = "auth code expired"
+	AuthCodeUsed             InternalErr = "auth code used"
+	MalformedFormParameter   InternalErr = "malformed form parameter"
 )
 
 var (
