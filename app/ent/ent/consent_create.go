@@ -177,11 +177,15 @@ func (cc *ConsentCreate) createSpec() (*Consent, *sqlgraph.CreateSpec) {
 // ConsentCreateBulk is the builder for creating many Consent entities in bulk.
 type ConsentCreateBulk struct {
 	config
+	err      error
 	builders []*ConsentCreate
 }
 
 // Save creates the Consent entities in the database.
 func (ccb *ConsentCreateBulk) Save(ctx context.Context) ([]*Consent, error) {
+	if ccb.err != nil {
+		return nil, ccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*Consent, len(ccb.builders))
 	mutators := make([]Mutator, len(ccb.builders))

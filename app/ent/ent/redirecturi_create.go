@@ -207,11 +207,15 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 // RedirectURICreateBulk is the builder for creating many RedirectURI entities in bulk.
 type RedirectURICreateBulk struct {
 	config
+	err      error
 	builders []*RedirectURICreate
 }
 
 // Save creates the RedirectURI entities in the database.
 func (rucb *RedirectURICreateBulk) Save(ctx context.Context) ([]*RedirectURI, error) {
+	if rucb.err != nil {
+		return nil, rucb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rucb.builders))
 	nodes := make([]*RedirectURI, len(rucb.builders))
 	mutators := make([]Mutator, len(rucb.builders))

@@ -30,6 +30,12 @@ TBD ( Use the image upload to Docker Hub )
 ./script/bootstrap/keypair.sh
 ```
 
+### Generate keys for encrypting/decrypting cookie
+
+```
+./script/bootstrap/key.sh
+```
+
 The script creates a key pair in `app/pkg/xjwt/cert`.
 
 References:

@@ -449,6 +449,7 @@ func (m *AuthCodeMutation) ResetRelyingPartyID() {
 // ClearRelyingParty clears the "relying_party" edge to the RelyingParty entity.
 func (m *AuthCodeMutation) ClearRelyingParty() {
 	m.clearedrelying_party = true
+	m.clearedFields[authcode.FieldRelyingPartyID] = struct{}{}
 }
 
 // RelyingPartyCleared reports if the "relying_party" edge to the RelyingParty entity was cleared.
@@ -1034,6 +1035,7 @@ func (m *ConsentMutation) ResetUserID() {
 // ClearUser clears the "user" edge to the User entity.
 func (m *ConsentMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[consent.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
@@ -1567,6 +1569,7 @@ func (m *RedirectURIMutation) ResetRelyingPartyID() {
 // ClearRelyingParty clears the "relying_party" edge to the RelyingParty entity.
 func (m *RedirectURIMutation) ClearRelyingParty() {
 	m.clearedrelying_party = true
+	m.clearedFields[redirecturi.FieldRelyingPartyID] = struct{}{}
 }
 
 // RelyingPartyCleared reports if the "relying_party" edge to the RelyingParty entity was cleared.

@@ -249,11 +249,15 @@ func (rpc *RelyingPartyCreate) createSpec() (*RelyingParty, *sqlgraph.CreateSpec
 // RelyingPartyCreateBulk is the builder for creating many RelyingParty entities in bulk.
 type RelyingPartyCreateBulk struct {
 	config
+	err      error
 	builders []*RelyingPartyCreate
 }
 
 // Save creates the RelyingParty entities in the database.
 func (rpcb *RelyingPartyCreateBulk) Save(ctx context.Context) ([]*RelyingParty, error) {
+	if rpcb.err != nil {
+		return nil, rpcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rpcb.builders))
 	nodes := make([]*RelyingParty, len(rpcb.builders))
 	mutators := make([]Mutator, len(rpcb.builders))
