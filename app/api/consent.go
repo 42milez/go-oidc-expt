@@ -29,7 +29,7 @@ type ConsentHdlr struct {
 	validator *validator.Validate
 }
 
-func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	decoder := schema.NewDecoder()
@@ -40,7 +40,7 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ch.validator.Struct(q); err != nil {
+	if err := c.validator.Struct(q); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
@@ -52,7 +52,7 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ch.service.AcceptConsent(ctx, sess.UserID, q.ClientId); err != nil {
+	if err := c.service.AcceptConsent(ctx, sess.UserID, q.ClientId); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

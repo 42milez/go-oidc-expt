@@ -41,48 +41,48 @@ func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {
 	}, nil
 }
 
-func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var q *oapigen.AuthorizeParams
 	var reqBody *oapigen.AuthenticateJSONRequestBody
 	var err error
 
-	if q, err = parseAuthorizeParam(r, ah.validator); err != nil {
-		ah.respondError(w, r, err)
+	if q, err = parseAuthorizeParam(r, a.validator); err != nil {
+		a.respondError(w, r, err)
 		return
 	}
 
-	if reqBody, err = ah.parseRequestBody(r); err != nil {
-		ah.respondError(w, r, err)
+	if reqBody, err = a.parseRequestBody(r); err != nil {
+		a.respondError(w, r, err)
 		return
 	}
 
 	var userID typedef.UserID
 
-	if userID, err = ah.service.VerifyPassword(ctx, reqBody.Name, reqBody.Password); err != nil {
-		ah.respondError(w, r, err)
+	if userID, err = a.service.VerifyPassword(ctx, reqBody.Name, reqBody.Password); err != nil {
+		a.respondError(w, r, err)
 		return
 	}
 
 	var sessionID string
 
-	if sessionID, err = ah.session.Create(ctx, &entity.Session{
+	if sessionID, err = a.session.Create(ctx, &entity.Session{
 		UserID: userID,
 	}); err != nil {
-		ah.respondError(w, r, err)
+		a.respondError(w, r, err)
 		return
 	}
 
-	if err = ah.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
-		ah.respondError(w, r, err)
+	if err = a.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
+		a.respondError(w, r, err)
 		return
 	}
 
 	var isConsented bool
 
-	if isConsented, err = ah.service.VerifyConsent(ctx, userID, q.ClientId); err != nil {
-		ah.respondError(w, r, err)
+	if isConsented, err = a.service.VerifyConsent(ctx, userID, q.ClientId); err != nil {
+		a.respondError(w, r, err)
 		return
 	}
 
@@ -94,21 +94,21 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	Redirect(w, r, config.AuthorizationEndpoint, http.StatusFound)
 }
 
-func (ah *AuthenticateHdlr) parseRequestBody(r *http.Request) (*oapigen.AuthenticateJSONRequestBody, error) {
+func (a *AuthenticateHdlr) parseRequestBody(r *http.Request) (*oapigen.AuthenticateJSONRequestBody, error) {
 	var ret *oapigen.AuthenticateJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&ret); err != nil {
 		return nil, err
 	}
 
-	if err := ah.validator.Struct(ret); err != nil {
+	if err := a.validator.Struct(ret); err != nil {
 		return nil, xerr.FailedToValidate.Wrap(err)
 	}
 
 	return ret, nil
 }
 
-func (ah *AuthenticateHdlr) respondError(w http.ResponseWriter, r *http.Request, err error) {
+func (a *AuthenticateHdlr) respondError(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, xerr.FailedToValidate) {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return

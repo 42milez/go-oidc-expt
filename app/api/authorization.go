@@ -32,7 +32,7 @@ type AuthorizeGetHdlr struct {
 	validator *validator.Validate
 }
 
-func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
 	q := &oapigen.AuthorizeParams{}
 
@@ -41,7 +41,7 @@ func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ag.validator.Struct(q); err != nil {
+	if err := a.validator.Struct(q); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
@@ -52,7 +52,7 @@ func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	location, err := ag.service.Authorize(r.Context(), q.ClientId, q.RedirectUri, q.State)
+	location, err := a.service.Authorize(r.Context(), q.ClientId, q.RedirectUri, q.State)
 
 	if err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)

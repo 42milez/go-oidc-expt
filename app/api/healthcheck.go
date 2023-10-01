@@ -19,18 +19,18 @@ type CheckHealthHdlr struct {
 	service HealthChecker
 }
 
-func (ch *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	errResp := func(err error) {
 		RespondJSON503(w, r, err)
 	}
 	ctx := r.Context()
 
-	if err := ch.service.CheckCacheStatus(ctx); err != nil {
+	if err := c.service.CheckCacheStatus(ctx); err != nil {
 		errResp(err)
 		return
 	}
 
-	if err := ch.service.CheckDBStatus(ctx); err != nil {
+	if err := c.service.CheckDBStatus(ctx); err != nil {
 		errResp(err)
 		return
 	}

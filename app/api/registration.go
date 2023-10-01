@@ -29,7 +29,7 @@ type RegisterHdlr struct {
 	validator *validator.Validate
 }
 
-func (rh *RegisterHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (rr *RegisterHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var req oapigen.RegisterJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -37,12 +37,12 @@ func (rh *RegisterHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := rh.validator.Struct(req); err != nil {
+	if err := rr.validator.Struct(req); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
-	_, err := rh.service.CreateUser(r.Context(), req.Name, req.Password)
+	_, err := rr.service.CreateUser(r.Context(), req.Name, req.Password)
 
 	if err != nil {
 		RespondJSON500(w, r, err)
