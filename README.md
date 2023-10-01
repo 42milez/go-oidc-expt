@@ -36,6 +36,13 @@ References:
 
 - [Generating an Elliptic Curve keys](https://cloud.google.com/iot/docs/how-tos/credentials/keys#generating_an_elliptic_curve_keys)
 
+### Create and switch docker context:
+
+```
+docker context create lima-go-oidc-server --docker "host=unix:///${HOME}/.lima/go-oidc-server/sock/docker.sock"
+docker context use lima-go-oidc-server
+```
+
 ### Create and start the virtual machine thant runs docker containers
 
 ```
@@ -46,13 +53,6 @@ make lc-start
 The virtual machine:
 - can be stopped with `make lc-stop`
 - can be deleted with `make lc-delete`
-
-### Create and switch docker context:
-
-```
-docker context create lima-go-oidc-server --docker "host=unix:///${HOME}/.lima/go-oidc-server/sock/docker.sock"
-docker context use lima-go-oidc-server
-```
 
 ### Run containers
 
