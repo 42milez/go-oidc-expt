@@ -20,7 +20,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.15
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/redis/go-redis/v9 v9.1.0
-	github.com/rivo/uniseg v0.2.0
+	github.com/rivo/uniseg v0.4.4
 	github.com/rs/zerolog v1.30.0
 	github.com/sony/sonyflake v1.2.0
 	github.com/spf13/cobra v1.7.0
