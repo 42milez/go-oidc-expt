@@ -6,7 +6,7 @@ require (
 	ariga.io/atlas v0.14.0
 	entgo.io/ent v0.12.3
 	github.com/caarlos0/env/v8 v8.0.0
-	github.com/deepmap/oapi-codegen v1.14.0
+	github.com/deepmap/oapi-codegen v1.15.0
 	github.com/getkin/kin-openapi v0.120.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.15.4
@@ -63,7 +63,7 @@ require (
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.12.1-0.20230815132531-74c255bcf846 // indirect
