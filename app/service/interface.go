@@ -103,3 +103,7 @@ type ConsentCreator interface {
 type AuthCodeReader interface {
 	ReadAuthCode(ctx context.Context, code string, clientId string) (*ent.AuthCode, error)
 }
+
+type RedirectUriReader interface {
+	ReadRedirectUri(ctx context.Context, uri, clientId string) (*ent.RedirectURI, error)
+}

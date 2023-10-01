@@ -700,3 +700,41 @@ func (mr *MockAuthCodeReaderMockRecorder) ReadAuthCode(ctx, code, clientId inter
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReader)(nil).ReadAuthCode), ctx, code, clientId)
 }
+
+// MockRedirectUriReader is a mock of RedirectUriReader interface.
+type MockRedirectUriReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockRedirectUriReaderMockRecorder
+}
+
+// MockRedirectUriReaderMockRecorder is the mock recorder for MockRedirectUriReader.
+type MockRedirectUriReaderMockRecorder struct {
+	mock *MockRedirectUriReader
+}
+
+// NewMockRedirectUriReader creates a new mock instance.
+func NewMockRedirectUriReader(ctrl *gomock.Controller) *MockRedirectUriReader {
+	mock := &MockRedirectUriReader{ctrl: ctrl}
+	mock.recorder = &MockRedirectUriReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRedirectUriReader) EXPECT() *MockRedirectUriReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadRedirectUri mocks base method.
+func (m *MockRedirectUriReader) ReadRedirectUri(ctx context.Context, uri, clientId string) (*ent.RedirectURI, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, uri, clientId)
+	ret0, _ := ret[0].(*ent.RedirectURI)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadRedirectUri indicates an expected call of ReadRedirectUri.
+func (mr *MockRedirectUriReaderMockRecorder) ReadRedirectUri(ctx, uri, clientId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockRedirectUriReader)(nil).ReadRedirectUri), ctx, uri, clientId)
+}

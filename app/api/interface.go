@@ -102,7 +102,7 @@ type AuthCodeValidator interface {
 }
 
 type RedirectUriValidator interface {
-	ValidateRedirectUri(ctx context.Context, uri string) error
+	ValidateRedirectUri(ctx context.Context, uri, clientId string) error
 }
 
 type TokenRequestValidator interface {

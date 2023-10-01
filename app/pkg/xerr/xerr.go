@@ -19,6 +19,7 @@ var (
 	AuthCodeExpired          InternalErr = "auth code expired"
 	AuthCodeUsed             InternalErr = "auth code used"
 	MalformedFormParameter   InternalErr = "malformed form parameter"
+	RedirectUriNotFound      InternalErr = "redirect uri not found"
 )
 
 var (

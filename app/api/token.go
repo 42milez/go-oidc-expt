@@ -64,27 +64,39 @@ func (th *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (th *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Request, params url.Values, clientId string) {
 	ctx := r.Context()
 
-	code := params.Get("code")
-	if xutil.IsEmpty(code) {
+	//code := params.Get("code")
+	//if xutil.IsEmpty(code) {
+	//	RespondJSON400(w, r, xerr.InvalidRequest, nil, nil)
+	//	return
+	//}
+	//
+	//if err := th.svc.ValidateAuthCode(ctx, code, clientId); err != nil {
+	//	if errors.Is(err, xerr.AuthCodeNotFound) {
+	//		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+	//	} else if errors.Is(err, xerr.AuthCodeExpired) {
+	//		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+	//	} else if errors.Is(err, xerr.AuthCodeUsed) {
+	//		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+	//	} else {
+	//		RespondJSON500(w, r, err)
+	//	}
+	//	return
+	//}
+
+	uri := params.Get("redirect_uri")
+	if xutil.IsEmpty(uri) {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, nil)
 		return
 	}
 
-	if err := th.svc.ValidateAuthCode(ctx, code, clientId); err != nil {
-		if errors.Is(err, xerr.AuthCodeNotFound) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-		} else if errors.Is(err, xerr.AuthCodeExpired) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-		} else if errors.Is(err, xerr.AuthCodeUsed) {
+	if err := th.svc.ValidateRedirectUri(ctx, uri, clientId); err != nil {
+		if errors.Is(err, xerr.RedirectUriNotFound) {
 			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		} else {
 			RespondJSON500(w, r, err)
 		}
 		return
 	}
-
-	// TODO: Validate Redirect URI
-	// ...
 
 	// TODO: Generate Access Token, Refresh token and ID Token if grant_type is authorization_code.
 	// ...

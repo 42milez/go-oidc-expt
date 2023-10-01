@@ -12,12 +12,14 @@ import (
 
 func NewToken(db *datastore.Database) *Token {
 	return &Token{
-		authCodeRepo: repository.NewAuthCode(db),
+		authCodeRepo:    repository.NewAuthCode(db),
+		redirectUriRepo: repository.NewRedirectUri(db),
 	}
 }
 
 type Token struct {
-	authCodeRepo AuthCodeReader
+	authCodeRepo    AuthCodeReader
+	redirectUriRepo RedirectUriReader
 }
 
 func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) error {
@@ -37,7 +39,15 @@ func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) err
 	return nil
 }
 
-func (t *Token) ValidateRedirectUri(ctx context.Context, uri string) error {
+func (t *Token) ValidateRedirectUri(ctx context.Context, uri, clientId string) error {
+	_, err := t.redirectUriRepo.ReadRedirectUri(ctx, uri, clientId)
+	if err != nil {
+		return err
+	}
+
+	// TODO: Compare the redirect uri with the one that passed to authorization endpoint.
+	// ...
+
 	return nil
 }
 
