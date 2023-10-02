@@ -3,8 +3,8 @@ module github.com/42milez/go-oidc-server
 go 1.21
 
 require (
-	ariga.io/atlas v0.14.0
-	entgo.io/ent v0.12.3
+	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935
+	entgo.io/ent v0.12.4
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/deepmap/oapi-codegen v1.15.0
 	github.com/getkin/kin-openapi v0.120.0
