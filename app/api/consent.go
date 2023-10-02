@@ -57,5 +57,5 @@ func (c *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Redirect(w, r, config.AuthorizationEndpoint, http.StatusFound)
+	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
 }

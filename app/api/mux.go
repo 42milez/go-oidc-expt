@@ -48,17 +48,17 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 		return nil, nil, err
 	}
 
+	//  SERVICE
+	// --------------------------------------------------
+
+	ConfigureService(option)
+
 	//  HANDLER
 	// --------------------------------------------------
 
 	if err = ConfigureHandler(option); err != nil {
 		return nil, nil, err
 	}
-
-	//  SERVICE
-	// --------------------------------------------------
-
-	ConfigureService(option)
 
 	//  ROUTER
 	// --------------------------------------------------

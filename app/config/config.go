@@ -28,6 +28,7 @@ type Config struct {
 	RedisPassword string        `env:"REDIS_PASSWORD" envDefault:""`
 	RedisDB       int           `env:"REDIS_DB" envDefault:"0"`
 	LogLevel      zerolog.Level `env:"ZEROLOG_LEVEL" envDefault:"0"` // debug
+	IdpHost       string        `env:"IDP_HOST" envDefault:"http://localhost:8080"`
 }
 
 func (p *Config) IsDevelopment() bool {
@@ -64,13 +65,20 @@ const (
 	SessionTTL = 24 * time.Hour * 30 // 30 days
 )
 
+//  User
+// --------------------------------------------------
+
+const (
+	RegisterPath = "/user/register"
+)
+
 //  OIDC
 // --------------------------------------------------
 
 const (
-	AuthenticationEndpoint = "/authenticate"
-	ConsentEndpoint        = "/consent"
-	AuthorizationEndpoint  = "/authorize"
+	AuthenticationPath = "/authenticate"
+	AuthorizationPath  = "/authorize"
+	ConsentPath        = "/consent"
 )
 
 const (

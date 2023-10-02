@@ -87,11 +87,11 @@ func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !isConsented {
-		Redirect(w, r, config.ConsentEndpoint, http.StatusFound)
+		Redirect(w, r, config.ConsentPath, http.StatusFound)
 		return
 	}
 
-	Redirect(w, r, config.AuthorizationEndpoint, http.StatusFound)
+	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
 }
 
 func (a *AuthenticateHdlr) parseRequestBody(r *http.Request) (*oapigen.AuthenticateJSONRequestBody, error) {

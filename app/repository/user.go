@@ -60,8 +60,8 @@ func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientI
 func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
 	ret, err := u.db.Client.Consent.Query().Where(consent.UserID(userID), consent.ClientID(clientID)).Only(ctx)
 	if err != nil {
-		if errors.Is(err, &ent.NotFoundError{}) {
-			return nil, xerr.NotFound
+		if errors.As(err, &errEntNotFoundError) {
+			return nil, xerr.ConsentNotFound
 		} else {
 			return nil, err
 		}
@@ -70,5 +70,12 @@ func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID 
 }
 
 func (u *User) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {
-	return u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
+	ret, err := u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
+	if err != nil {
+		if errors.As(err, &errEntNotFoundError) {
+			return nil, xerr.UserNotFound
+		}
+		return nil, err
+	}
+	return ret, err
 }

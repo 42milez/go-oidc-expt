@@ -413,6 +413,7 @@ components:
               type: integer
               format: uint64
               example: 479552814176534893
+              x-go-type: typedef.UserID
               x-oapi-codegen-extra-tags:
                 validate: required
         - $ref: '#/components/schemas/UserName'

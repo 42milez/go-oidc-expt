@@ -20,6 +20,7 @@ var (
 	AuthCodeUsed             InternalErr = "auth code used"
 	MalformedFormParameter   InternalErr = "malformed form parameter"
 	RedirectUriNotFound      InternalErr = "redirect uri not found"
+	ConsentNotFound          InternalErr = "consent not found"
 )
 
 var (

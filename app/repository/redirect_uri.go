@@ -27,7 +27,7 @@ func (ru *RedirectUri) ReadRedirectUri(ctx context.Context, uri, clientId string
 	}).Only(ctx)
 
 	if err != nil {
-		if errors.Is(err, &ent.NotFoundError{}) {
+		if errors.As(err, &errEntNotFoundError) {
 			return nil, xerr.RedirectUriNotFound
 		} else {
 			return nil, err

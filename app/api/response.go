@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/42milez/go-oidc-server/app/config"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 )
@@ -104,8 +106,14 @@ func RespondJSON503(w http.ResponseWriter, r *http.Request, err error) {
 	})
 }
 
-func Redirect(w http.ResponseWriter, r *http.Request, u string, code int) {
-	redirectURL, err := url.Parse(u)
+func Redirect(w http.ResponseWriter, r *http.Request, path string, code int) {
+	cfg, err := config.New()
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	redirectURL, err := url.Parse(cfg.IdpHost + path)
 
 	if err != nil {
 		RespondJSON500(w, r, err)

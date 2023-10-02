@@ -53,7 +53,7 @@ func (a *AuthCode) ReadAuthCode(ctx context.Context, code, clientId string) (*en
 	}).Only(ctx)
 
 	if err != nil {
-		if errors.Is(err, &ent.NotFoundError{}) {
+		if errors.As(err, &errEntNotFoundError) {
 			return nil, xerr.AuthCodeNotFound
 		} else {
 			return nil, err

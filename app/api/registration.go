@@ -42,10 +42,15 @@ func (rr *RegisterHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := rr.service.CreateUser(r.Context(), req.Name, req.Password)
+	u, err := rr.service.CreateUser(r.Context(), req.Name, req.Password)
 
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
+
+	RespondJSON(w, r, http.StatusOK, &oapigen.User{
+		Id:   u.ID,
+		Name: u.Name,
+	})
 }

@@ -151,7 +151,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(
 				http.MethodPost,
-				config.AuthenticationEndpoint,
+				config.AuthenticationPath,
 				bytes.NewReader(xtestutil.LoadFile(t, tt.reqBodyFile)))
 			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqParamFile)), "\n", "", -1)
 
