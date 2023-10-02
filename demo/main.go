@@ -131,29 +131,29 @@ func register(c *http.Client, u *url.URL, data *oapigen.RegisterJSONRequestBody)
 	return nil
 }
 
-func authenticate(c *http.Client, u *url.URL, data *oapigen.AuthenticateJSONRequestBody) (string, error) {
+func authenticate(c *http.Client, u *url.URL, data *oapigen.AuthenticateJSONRequestBody) (*url.URL, error) {
 	reqBody, err := json.Marshal(data)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	resp, err := post(c, u, reqBody)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if resp.StatusCode != http.StatusFound {
 		var respBody api.Response
 		if err = json.NewDecoder(resp.Body).Decode(&respBody); (err != nil) && (err != io.EOF) {
-			return "", err
+			return nil, err
 		}
-		return "", respBody.Summary
+		return nil, respBody.Summary
 	}
 
 	l, err := resp.Location()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return l.String(), nil
+	return l, nil
 }
