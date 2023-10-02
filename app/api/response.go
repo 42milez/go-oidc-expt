@@ -121,7 +121,7 @@ func Redirect(w http.ResponseWriter, r *http.Request, path string, code int) {
 	}
 
 	if !xutil.IsEmpty(r.URL.RawQuery) {
-		redirectURL, err = url.Parse(fmt.Sprintf("%s&%s", redirectURL, r.URL.RawQuery))
+		redirectURL, err = url.Parse(fmt.Sprintf("%s?%s", redirectURL, r.URL.RawQuery))
 		if err != nil {
 			RespondJSON500(w, r, err)
 			return
