@@ -50,6 +50,53 @@ services:
         fluentd-address: localhost:24224
         fluentd-async-connect: 'true' # https://github.com/moby/moby/issues/44511
         tag: docker.{{.Name}}
+  app-ci:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+      target: dev
+    container_name: go-oidc-server-app-ci
+    image: go-oidc-server-app-ci:latest
+    networks:
+      - dev
+    ports:
+      - "8081:80"
+      - "22345:2345"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+        read_only: true
+      - type: volume
+        source: app_ci_build_cache
+        target: /root/.cache/go-build
+      - type: volume
+        source: app_ci_mod_cache
+        target: /go/pkg/mod
+    environment:
+      DB_HOST: db
+      DB_USER: idp_test
+      DB_PASSWORD: idp_test
+      DB_NAME: idp_test
+      REDIS_HOST: cache
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    depends_on:
+      - cache
+      - db
+      - log
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
   cache:
     container_name: go-oidc-server-cache
     image: redis:7.2.0
@@ -189,6 +236,10 @@ volumes:
   app_build_cache:
     driver: local
   app_mod_cache:
+    driver: local
+  app_ci_build_cache:
+    driver: local
+  app_ci_mod_cache:
     driver: local
   mysql_data:
     driver: local
