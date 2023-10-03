@@ -4,6 +4,8 @@ import (
 	_ "embed"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
 	"github.com/42milez/go-oidc-server/app/service"
@@ -46,12 +48,13 @@ func (_ *HandlerImpl) Token(w http.ResponseWriter, r *http.Request) {
 
 type HandlerOption struct {
 	cache           *datastore.Cache
+	clock           xtime.Clocker
 	cookie          *service.Cookie
 	db              *datastore.Database
 	idGenerator     *xid.UniqueID
-	jwtUtil         *JWT
 	sessionCreator  *service.CreateSession
 	sessionRestorer *service.RestoreSession
 	sessionUpdater  *service.UpdateSession
+	tokenGenerator  *JWT
 	validator       *validator.Validate
 }

@@ -136,7 +136,7 @@ func oapiBasicAuthenticate(ctx context.Context, input *openapi3filter.Authentica
 }
 
 func extractCredential(r *http.Request) ([]string, error) {
-	authHdr := r.Header.Get("Authentication")
+	authHdr := r.Header.Get("Authorization")
 
 	if xutil.IsEmpty(authHdr) {
 		return nil, xerr.UnauthorizedRequest
@@ -178,11 +178,12 @@ func NewHandlerOption() (*HandlerOption, error) {
 	}
 
 	option := &HandlerOption{
+		clock:       &xtime.RealClocker{},
 		cookie:      service.NewCookie(rawHashKey, rawBlockKey, xtime.RealClocker{}),
 		idGenerator: idGen,
 	}
 
-	if option.jwtUtil, err = NewJWT(xtime.RealClocker{}); err != nil {
+	if option.tokenGenerator, err = NewJWT(xtime.RealClocker{}); err != nil {
 		return nil, err
 	}
 

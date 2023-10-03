@@ -37,19 +37,19 @@ func (m *MockTokenGenerator) EXPECT() *MockTokenGeneratorMockRecorder {
 	return m.recorder
 }
 
-// MakeAccessToken mocks base method.
-func (m *MockTokenGenerator) MakeAccessToken(name string) ([]byte, error) {
+// GenerateToken mocks base method.
+func (m *MockTokenGenerator) GenerateToken(name string) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MakeAccessToken", name)
+	ret := m.ctrl.Call(m, "GenerateToken", name)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// MakeAccessToken indicates an expected call of MakeAccessToken.
-func (mr *MockTokenGeneratorMockRecorder) MakeAccessToken(name interface{}) *gomock.Call {
+// GenerateToken indicates an expected call of GenerateToken.
+func (mr *MockTokenGeneratorMockRecorder) GenerateToken(name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeAccessToken", reflect.TypeOf((*MockTokenGenerator)(nil).MakeAccessToken), name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateToken), name)
 }
 
 // MockSessionCreator is a mock of SessionCreator interface.

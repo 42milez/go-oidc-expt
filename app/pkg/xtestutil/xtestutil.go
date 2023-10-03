@@ -1,11 +1,13 @@
 package xtestutil
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -175,6 +177,7 @@ func NewDatabase(t *testing.T) *datastore.Database {
 	cfg.DBHost = TestDBHost
 	cfg.DBPort = TestDBPort
 	cfg.DBName = TestDBName
+	cfg.Debug = false
 
 	var db *datastore.Database
 
@@ -224,4 +227,62 @@ func NewCache(t *testing.T) *datastore.Cache {
 	})
 
 	return cache
+}
+
+func ExitOnError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatal()
+	}
+}
+
+type RequestParam struct {
+	Cookies []*http.Cookie
+	Headers map[string]string
+}
+
+func Request(t *testing.T, c *http.Client, method string, u *url.URL, p *RequestParam, data []byte) (*http.Response, error) {
+	t.Helper()
+
+	var payload io.Reader = nil
+
+	if data != nil {
+		payload = bytes.NewReader(data)
+	}
+
+	req, e := http.NewRequest(method, u.String(), payload)
+	if e != nil {
+		return nil, e
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	if (p != nil) && len(p.Headers) > 0 {
+		for k, v := range p.Headers {
+			req.Header.Set(k, v)
+		}
+	}
+
+	if (p != nil) && (len(p.Cookies) > 0) {
+		for _, v := range p.Cookies {
+			req.AddCookie(v)
+		}
+	}
+
+	resp, e := c.Do(req)
+	if e != nil {
+		return nil, e
+	}
+
+	return resp, nil
+}
+
+func CloseResponseBody(t *testing.T, resp *http.Response) {
+	t.Helper()
+	if resp == nil {
+		return
+	}
+	if err := resp.Body.Close(); err != nil {
+		t.Fatal(err)
+	}
 }

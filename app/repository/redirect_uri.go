@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
@@ -22,9 +23,17 @@ type RedirectUri struct {
 }
 
 func (ru *RedirectUri) ReadRedirectUri(ctx context.Context, uri, clientId string) (*ent.RedirectURI, error) {
-	ret, err := ru.db.Client.RedirectURI.Query().Where(redirecturi.URI(uri)).WithRelyingParty(func(q *ent.RelyingPartyQuery) {
-		q.Where(relyingparty.ClientID(clientId))
-	}).Only(ctx)
+	ret, err := ru.db.Client.RedirectURI.Query().
+		Where(func(s *sql.Selector) {
+			t := sql.Table(relyingparty.Table)
+			s.Where(
+				sql.In(
+					s.C(redirecturi.FieldRelyingPartyID),
+					sql.Select(t.C(relyingparty.FieldID)).From(t).Where(sql.EQ(t.C(relyingparty.FieldClientID), clientId)),
+				),
+			)
+		}).
+		Only(ctx)
 
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {

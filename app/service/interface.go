@@ -16,7 +16,7 @@ import (
 // --------------------------------------------------
 
 type TokenGenerator interface {
-	MakeAccessToken(name string) ([]byte, error)
+	GenerateToken(name string) ([]byte, error)
 }
 
 //  SESSION

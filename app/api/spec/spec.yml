@@ -180,6 +180,22 @@ paths:
                 value:
                   grant_type: refresh_token
                   refresh_token: 8xLOxBtZp8
+      responses:
+        '200':
+          description: Successfully accepted.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: 'no-store'
+            Pragma:
+              schema:
+                type: string
+                example: 'no-cache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
   /user/register:
     post:
       description: Creates a new user in the database.
@@ -439,6 +455,33 @@ components:
           example: vXdt-9ZQ34!8NM3z
           x-oapi-codegen-extra-tags:
             validate: required
+    TokenResponse:
+        description: ''
+        type: object
+        required:
+          - access_token
+          - refresh_token
+          - id_token
+          - token_type
+          - expires_in
+        properties:
+          access_token:
+            type: string
+            example: ''
+          id_token:
+            type: string
+            example: ''
+          refresh_token:
+            type: string
+            example: ''
+          token_type:
+            type: string
+            x-go-type: typedef.TokenType
+            example: 'Bearer'
+          expires_in:
+            type: integer
+            format: uint64
+            example: 3600
     ErrorResponse:
       description: represents error response
       type: object

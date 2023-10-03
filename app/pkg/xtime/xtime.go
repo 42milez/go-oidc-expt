@@ -9,5 +9,5 @@ type Clocker interface {
 type RealClocker struct{}
 
 func (v RealClocker) Now() time.Time {
-	return time.Now()
+	return time.Now().UTC()
 }

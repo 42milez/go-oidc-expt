@@ -1,8 +1,9 @@
 package api
 
 import (
-	"github.com/rs/zerolog"
 	"testing"
+
+	"github.com/rs/zerolog"
 )
 
 func TestMain(m *testing.M) {

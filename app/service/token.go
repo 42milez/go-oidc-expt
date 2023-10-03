@@ -2,24 +2,26 @@ package service
 
 import (
 	"context"
-	"time"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 	"github.com/42milez/go-oidc-server/app/repository"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewToken(db *datastore.Database) *Token {
+func NewToken(db *datastore.Database, c xtime.Clocker) *Token {
 	return &Token{
 		authCodeRepo:    repository.NewAuthCode(db),
 		redirectUriRepo: repository.NewRedirectUri(db),
+		clock:           c,
 	}
 }
 
 type Token struct {
 	authCodeRepo    AuthCodeReadMarker
 	redirectUriRepo RedirectUriReader
+	clock           xtime.Clocker
 }
 
 func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) error {
@@ -28,7 +30,7 @@ func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) err
 		return err
 	}
 
-	if authCode.ExpireAt.After(time.Now()) {
+	if !authCode.ExpireAt.After(t.clock.Now()) {
 		return xerr.AuthCodeExpired
 	}
 

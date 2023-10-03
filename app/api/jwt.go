@@ -65,7 +65,7 @@ func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
 	return ret, nil
 }
 
-func (j *JWT) MakeAccessToken(name string) ([]byte, error) {
+func (j *JWT) GenerateToken(name string) ([]byte, error) {
 	var token jwt.Token
 	var err error
 

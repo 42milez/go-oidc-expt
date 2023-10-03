@@ -3,6 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/rs/zerolog"
 
 	"github.com/caarlos0/env/v8"
@@ -29,6 +31,7 @@ type Config struct {
 	RedisDB       int           `env:"REDIS_DB" envDefault:"0"`
 	LogLevel      zerolog.Level `env:"ZEROLOG_LEVEL" envDefault:"0"` // debug
 	IdpHost       string        `env:"IDP_HOST" envDefault:"http://localhost:8080"`
+	Debug         bool          `env:"DEBUG" envDefault:"true"`
 }
 
 func (p *Config) IsDevelopment() bool {
@@ -79,6 +82,7 @@ const (
 	AuthenticationPath = "/authenticate"
 	AuthorizationPath  = "/authorize"
 	ConsentPath        = "/consent"
+	TokenPath          = "/token"
 )
 
 const (
@@ -94,4 +98,8 @@ const (
 const (
 	AuthorizationCodeGrantType = "authorization_code"
 	RefreshTokenGrantType      = "refresh_token"
+)
+
+const (
+	BearerTokenType typedef.TokenType = "Bearer"
 )

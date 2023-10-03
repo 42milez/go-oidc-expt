@@ -34,7 +34,7 @@ type AuthenticateHdlr struct {
 
 func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {
 	return &AuthenticateHdlr{
-		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.jwtUtil),
+		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.tokenGenerator),
 		cookie:    option.cookie,
 		session:   option.sessionCreator,
 		validator: option.validator,

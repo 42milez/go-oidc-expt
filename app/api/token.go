@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
+
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -17,12 +19,14 @@ var tokenHdlr *TokenHdlr
 
 func NewTokenHdlr(option *HandlerOption) *TokenHdlr {
 	return &TokenHdlr{
-		svc: service.NewToken(option.db),
+		svc:      service.NewToken(option.db, option.clock),
+		tokenGen: option.tokenGenerator,
 	}
 }
 
 type TokenHdlr struct {
-	svc TokenRequestAcceptor
+	svc      TokenRequestAcceptor
+	tokenGen service.TokenGenerator
 }
 
 func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -71,15 +75,7 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 	}
 
 	if err := t.svc.ValidateAuthCode(ctx, code, clientId); err != nil {
-		if errors.Is(err, xerr.AuthCodeNotFound) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-		} else if errors.Is(err, xerr.AuthCodeExpired) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-		} else if errors.Is(err, xerr.AuthCodeUsed) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-		} else {
-			RespondJSON500(w, r, err)
-		}
+		t.respondAuthCodeError(w, r, err)
 		return
 	}
 
@@ -103,8 +99,45 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// TODO: Generate Access Token, Refresh token and ID Token if grant_type is authorization_code.
-	// ...
+	accessToken, err := t.tokenGen.GenerateToken("")
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	refreshToken, err := t.tokenGen.GenerateToken("")
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	idToken, err := t.tokenGen.GenerateToken("")
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	resp := &oapigen.TokenResponse{
+		AccessToken:  string(accessToken),
+		RefreshToken: string(refreshToken),
+		IdToken:      string(idToken),
+		TokenType:    config.BearerTokenType,
+		ExpiresIn:    3600,
+	}
+
+	RespondJSON(w, r, http.StatusOK, resp)
+}
+
+func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request, err error) {
+	if errors.Is(err, xerr.AuthCodeNotFound) {
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+	} else if errors.Is(err, xerr.AuthCodeExpired) {
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+	} else if errors.Is(err, xerr.AuthCodeUsed) {
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+	} else {
+		RespondJSON500(w, r, err)
+	}
 }
 
 func (t *TokenHdlr) handleRefreshTokenGrantType() {

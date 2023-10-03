@@ -38,7 +38,7 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 	drv := entsql.OpenDB(dbDialect, db)
 	client := ent.NewClient(ent.Driver(drv))
 
-	if cfg.IsDevelopment() {
+	if cfg.Debug {
 		client = client.Debug()
 	}
 
