@@ -53,7 +53,9 @@ func main() {
 	params.Add("max_age", "86400")
 	params.Add("prompt", "consent")
 
-	client := &http.Client{
+	var client *http.Client
+
+	client = &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
@@ -86,15 +88,28 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print(consentUrl)
+
+	authorizationUrl, err := consent(client, consentUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(authorizationUrl)
 }
 
 func post(c *http.Client, u *url.URL, data []byte) (*http.Response, error) {
 	log.Printf("RequestTo: %s\n", u.String())
-	resp, err := c.Post(u.String(), "application/json", bytes.NewReader(data))
+
+	var payload io.Reader = nil
+
+	if data != nil {
+		payload = bytes.NewReader(data)
+	}
+
+	resp, err := c.Post(u.String(), "application/json", payload)
 	if err != nil {
 		return nil, err
 	}
+
 	return resp, nil
 }
 
@@ -138,6 +153,28 @@ func authenticate(c *http.Client, u *url.URL, data *oapigen.AuthenticateJSONRequ
 	}
 
 	resp, err := post(c, u, reqBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusFound {
+		var respBody api.Response
+		if err = json.NewDecoder(resp.Body).Decode(&respBody); (err != nil) && (err != io.EOF) {
+			return nil, err
+		}
+		return nil, respBody.Summary
+	}
+
+	l, err := resp.Location()
+	if err != nil {
+		return nil, err
+	}
+
+	return l, nil
+}
+
+func consent(c *http.Client, u *url.URL) (*url.URL, error) {
+	resp, err := post(c, u, nil)
 	if err != nil {
 		return nil, err
 	}
