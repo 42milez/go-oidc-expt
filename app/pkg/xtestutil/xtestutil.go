@@ -235,7 +235,7 @@ func NewCache(t *testing.T) *datastore.Cache {
 func ExitOnError(t *testing.T, err error) {
 	t.Helper()
 	if err != nil {
-		t.Fatal()
+		t.Fatal(err)
 	}
 }
 
