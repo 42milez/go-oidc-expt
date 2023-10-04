@@ -39,8 +39,10 @@ jobs:
         run: docker-compose up -d app-integ-test cache db
       - name: Wait for database to be available
         run: .github/scripts/waiter/db.sh
+      - name: Install atlas
+        run: curl -sSf https://atlasgo.sh | sh
       - name: Apply migrations
-        run: make migration-apply DB_NAMES=idp_integ_test
+        run: make migrate-apply DB_NAMES=idp_integ_test
       - name: Create key pair
         run: |
           ./script/bootstrap/key.sh
