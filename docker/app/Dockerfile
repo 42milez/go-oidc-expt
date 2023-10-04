@@ -12,7 +12,7 @@ WORKDIR /workspace
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY idp ./
+COPY app/ ./app
 RUN go build -trimpath -ldflags "-s -w -X main.Version=${VERSION}" -o app ./app
 
 #  deploy

@@ -54,7 +54,9 @@ services:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
-      target: dev
+      target: deploy
+      args:
+        VERSION: dev
     container_name: go-oidc-server-app-integ-test
     image: go-oidc-server-app-integ-test:latest
     networks:
