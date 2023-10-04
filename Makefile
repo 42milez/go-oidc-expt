@@ -64,7 +64,7 @@ lint:
 
 ## migrate-apply: Apply migrations
 migrate-apply:
-	@./script/atlas/migrate-apply.sh
+	@./script/atlas/migrate-apply.sh ${DB_NAMES}
 
 ## migrate-diff: Generate migrations
 migrate-diff:

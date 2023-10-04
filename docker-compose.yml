@@ -50,13 +50,13 @@ services:
         fluentd-address: localhost:24224
         fluentd-async-connect: 'true' # https://github.com/moby/moby/issues/44511
         tag: docker.{{.Name}}
-  app-ci:
+  app-integ-test:
     build:
       context: .
       dockerfile: ./docker/app/Dockerfile
       target: dev
-    container_name: go-oidc-server-app-ci
-    image: go-oidc-server-app-ci:latest
+    container_name: go-oidc-server-app-integ-test
+    image: go-oidc-server-app-integ-test:latest
     networks:
       - dev
     ports:

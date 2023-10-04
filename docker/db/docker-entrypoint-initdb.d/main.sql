@@ -3,16 +3,16 @@ CREATE DATABASE IF NOT EXISTS idp_test;
 CREATE DATABASE IF NOT EXISTS idp_integ_test;
 CREATE DATABASE IF NOT EXISTS atlas;
 
--- "idp" user
+-- 'idp' user
 CREATE USER IF NOT EXISTS `idp`@`%` IDENTIFIED BY 'idp';
 GRANT DELETE, INSERT, SELECT, UPDATE ON idp.* TO 'idp'@'%';
 
--- "idp_test" user
+-- 'idp_test' user
 CREATE USER IF NOT EXISTS `idp_test`@`%` IDENTIFIED BY 'idp_test';
 GRANT DELETE, INSERT, SELECT, UPDATE ON idp_test.* TO 'idp_test'@'%';
 GRANT DELETE, INSERT, SELECT, UPDATE ON idp_integ_test.* TO 'idp_test'@'%';
 
--- "atlas" user
+-- 'atlas' user
 CREATE USER IF NOT EXISTS `atlas`@`%` IDENTIFIED BY 'atlas';
 GRANT ALTER, CREATE, DROP, INDEX, REFERENCES ON atlas.* TO 'atlas'@'%';
 GRANT ALTER, CREATE, DROP, INDEX, REFERENCES ON `atlas\_dev\_%`.* TO 'atlas'@'%';
