@@ -41,7 +41,18 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	xtestutil.ExitOnError(t, err)
 
 	ctx := context.Background()
-	db := xtestutil.NewDatabase(t)
+
+	cfg, err := config.New()
+	xtestutil.ExitOnError(t, err)
+
+	cfg.DBAdmin = xtestutil.TestDBUser
+	cfg.DBPassword = xtestutil.TestDBPassword
+	cfg.DBHost = xtestutil.TestDBHost
+	cfg.DBPort = xtestutil.TestDBPort
+	cfg.DBName = "idp_integ_test"
+	cfg.Debug = false
+
+	db := xtestutil.NewDatabase(t, cfg)
 
 	rp, err := db.Client.RelyingParty.Create().SetClientID(clientId).SetClientSecret(clientSecret).Save(ctx)
 	xtestutil.ExitOnError(t, err)

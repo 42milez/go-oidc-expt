@@ -10,7 +10,7 @@ import (
 
 func TestNewCheckHealth(t *testing.T) {
 	t.Parallel()
-	if ch := NewCheckHealth(xtestutil.NewDatabase(t), xtestutil.NewCache(t)); ch == nil {
+	if ch := NewCheckHealth(xtestutil.NewDatabase(t, nil), xtestutil.NewCache(t)); ch == nil {
 		t.Error(xerr.FailedToInitialize)
 	}
 }
@@ -28,7 +28,7 @@ func TestNewUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if user := NewUser(xtestutil.NewDatabase(t), idGen); user == nil {
+	if user := NewUser(xtestutil.NewDatabase(t, nil), idGen); user == nil {
 		t.Error(xerr.FailedToInitialize)
 	}
 }

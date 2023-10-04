@@ -79,7 +79,7 @@ services:
       DB_HOST: db
       DB_USER: idp_test
       DB_PASSWORD: idp_test
-      DB_NAME: idp_test
+      DB_NAME: idp_integ_test
       REDIS_HOST: cache
     deploy:
       resources:

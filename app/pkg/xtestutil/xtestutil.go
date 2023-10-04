@@ -162,22 +162,25 @@ const TestDBUser = "idp_test"
 const TestDBPassword = "idp_test"
 const TestDBName = "idp_test"
 
-func NewDatabase(t *testing.T) *datastore.Database {
+func NewDatabase(t *testing.T, c *config.Config) *datastore.Database {
 	t.Helper()
 
 	var cfg *config.Config
 	var err error
 
-	if cfg, err = config.New(); err != nil {
-		t.Fatal(err)
+	if c != nil {
+		cfg = c
+	} else {
+		if cfg, err = config.New(); err != nil {
+			t.Fatal(err)
+		}
+		cfg.DBAdmin = TestDBUser
+		cfg.DBPassword = TestDBPassword
+		cfg.DBHost = TestDBHost
+		cfg.DBPort = TestDBPort
+		cfg.DBName = TestDBName
+		cfg.Debug = false
 	}
-
-	cfg.DBAdmin = TestDBUser
-	cfg.DBPassword = TestDBPassword
-	cfg.DBHost = TestDBHost
-	cfg.DBPort = TestDBPort
-	cfg.DBName = TestDBName
-	cfg.Debug = false
 
 	var db *datastore.Database
 

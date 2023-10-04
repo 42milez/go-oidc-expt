@@ -14,3 +14,7 @@ atlas migrate apply \
 atlas migrate apply \
   --dir "${MIGRATION_DIR}" \
   --url "mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DBNAME}_test"
+
+atlas migrate apply \
+  --dir "${MIGRATION_DIR}" \
+  --url "mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DBNAME}_integ_test"

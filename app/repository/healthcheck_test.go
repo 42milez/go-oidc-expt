@@ -18,7 +18,7 @@ func TestCheckHealth_PingCache(t *testing.T) {
 
 func TestCheckHealth_PingDB(t *testing.T) {
 	ch := &CheckHealth{
-		db: xtestutil.NewDatabase(t),
+		db: xtestutil.NewDatabase(t, nil),
 	}
 	if err := ch.PingDatabase(context.Background()); err != nil {
 		t.Error(err)
