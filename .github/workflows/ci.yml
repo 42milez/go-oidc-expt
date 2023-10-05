@@ -35,18 +35,18 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - name: Start services
-        run: docker-compose up -d app-integ-test cache db
-      - name: Wait for database to be available
-        run: .github/scripts/waiter/db.sh
-      - name: Install atlas
-        run: curl -sSf https://atlasgo.sh | sh
-      - name: Apply migrations
-        run: make migrate-apply DB_NAMES=idp_integ_test
       - name: Create key pair
         run: |
           ./script/bootstrap/key.sh
           ./script/bootstrap/keypair.sh
+      - name: Install atlas
+        run: curl -sSf https://atlasgo.sh | sh
+      - name: Start services
+        run: docker-compose up -d app-integ-test cache db
+      - name: Wait for database to be available
+        run: .github/scripts/waiter/db.sh
+      - name: Apply migrations
+        run: make migrate-apply DB_NAMES=idp_integ_test
       - name: Run all tests
         run: make test
   notify:
