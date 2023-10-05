@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math/rand"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -14,6 +15,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
 )
+
+const nMaxRetry = 5
+const initialWaitTime = 2
 
 func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
@@ -27,7 +31,7 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
-	if err = db.PingContext(ctx); err != nil {
+	if err = pingDB(ctx, db); err != nil {
 		return nil, err
 	}
 
@@ -48,12 +52,29 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 	}, nil
 }
 
+func pingDB(ctx context.Context, db *sql.DB) error {
+	retries := 0
+	for {
+		if err := db.PingContext(ctx); err != nil {
+			if retries > nMaxRetry {
+				return err
+			}
+			waitTime := (initialWaitTime << retries) + rand.Intn(1000)/1000
+			time.Sleep(time.Duration(waitTime) * time.Second)
+			retries++
+			continue
+		}
+		break
+	}
+	return nil
+}
+
 func NewCache(ctx context.Context, cfg *config.Config) (*Cache, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
 	})
 
-	if err := client.Ping(ctx).Err(); err != nil {
+	if err := pingCache(ctx, client); err != nil {
 		xutil.CloseConnection(client)
 		return nil, err
 	}
@@ -61,4 +82,21 @@ func NewCache(ctx context.Context, cfg *config.Config) (*Cache, error) {
 	return &Cache{
 		Client: client,
 	}, nil
+}
+
+func pingCache(ctx context.Context, client *redis.Client) error {
+	retries := 0
+	for {
+		if err := client.Ping(ctx).Err(); err != nil {
+			if retries > nMaxRetry {
+				return err
+			}
+			retries++
+			waitTime := (initialWaitTime << retries) + rand.Intn(1000)/1000
+			time.Sleep(time.Duration(waitTime) * time.Second)
+			continue
+		}
+		break
+	}
+	return nil
 }
