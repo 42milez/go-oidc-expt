@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/getkin/kin-openapi/openapi3filter"
@@ -25,6 +26,7 @@ import (
 )
 
 const basicAuthSchemeName = "basicAuth"
+const requestTimeout = 30 * time.Second
 
 func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (http.Handler, func(), error) {
 	var err error
@@ -69,6 +71,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 
 	mux.Use(middleware.RequestID)
 	mux.Use(AccessLogger)
+	mux.Use(middleware.Timeout(requestTimeout))
 	mux.Use(middleware.Recoverer)
 
 	// OpenAPI Validation Middleware
