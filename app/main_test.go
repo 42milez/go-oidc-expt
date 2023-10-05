@@ -23,7 +23,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	const nonceLength = 30
 	const stateLength = 30
 
-	const idpBaseUrl = "http://localhost:8081"
+	const idpBaseUrl = "http://127.0.0.1:8081"
 	const registerEndpoint = idpBaseUrl + config.RegisterPath
 	const authenticationEndpoint = idpBaseUrl + config.AuthenticationPath
 	const consentEndpoint = idpBaseUrl + config.ConsentPath
