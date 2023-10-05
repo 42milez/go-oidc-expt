@@ -94,7 +94,6 @@ services:
     depends_on:
       - cache
       - db
-      - log
     cap_add:
       - SYS_PTRACE
     security_opt:
