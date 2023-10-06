@@ -17,6 +17,7 @@ jobs:
         with:
           go-version-file: ./go.mod
           cache: false
+          check-latest: false
       - name: Create key pair
         run: |
           ./script/bootstrap/key.sh
@@ -37,6 +38,7 @@ jobs:
         with:
           go-version-file: ./go.mod
           cache: false
+          check-latest: false
       - name: Create key pair
         run: |
           ./script/bootstrap/key.sh
