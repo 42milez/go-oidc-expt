@@ -3,9 +3,10 @@ package datastore
 import (
 	"context"
 	"database/sql"
+	"fmt"
+
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
-	"fmt"
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
