@@ -47,7 +47,7 @@ func Run(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) error 
 	}
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to initialize mux: %s", err)
 	}
 
 	srv := NewServer(lis, mux)
@@ -60,12 +60,12 @@ func main() {
 	var err error
 
 	if cfg, err = config.New(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to get config values: %s", err)
 	}
 
 	baseLogger := NewBaseLogger(cfg)
 
 	if err = Run(context.Background(), cfg, baseLogger); err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to run server: %s", err)
 	}
 }

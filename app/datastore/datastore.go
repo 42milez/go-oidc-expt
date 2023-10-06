@@ -3,21 +3,16 @@ package datastore
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"math/rand"
-	"time"
-
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
+	"fmt"
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
+	"github.com/cenkalti/backoff/v4"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
 )
-
-const nMaxRetry = 5
-const initialWaitTime = 2
 
 func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
@@ -28,10 +23,14 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
-	defer cancel()
+	//ctx, cancel := context.WithTimeout(ctx, pingCtxTimeout*time.Second)
+	//defer cancel()
 
-	if err = pingDB(ctx, db); err != nil {
+	pingOp := func() error {
+		return db.PingContext(ctx)
+	}
+
+	if err = ping(ctx, pingOp); err != nil {
 		return nil, err
 	}
 
@@ -52,29 +51,16 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 	}, nil
 }
 
-func pingDB(ctx context.Context, db *sql.DB) error {
-	retries := 0
-	for {
-		if err := db.PingContext(ctx); err != nil {
-			if retries > nMaxRetry {
-				return err
-			}
-			waitTime := (initialWaitTime << retries) + rand.Intn(1000)/1000
-			time.Sleep(time.Duration(waitTime) * time.Second)
-			retries++
-			continue
-		}
-		break
-	}
-	return nil
-}
-
 func NewCache(ctx context.Context, cfg *config.Config) (*Cache, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
 	})
 
-	if err := pingCache(ctx, client); err != nil {
+	pingOp := func() error {
+		return client.Ping(ctx).Err()
+	}
+
+	if err := ping(ctx, pingOp); err != nil {
 		xutil.CloseConnection(client)
 		return nil, err
 	}
@@ -84,19 +70,10 @@ func NewCache(ctx context.Context, cfg *config.Config) (*Cache, error) {
 	}, nil
 }
 
-func pingCache(ctx context.Context, client *redis.Client) error {
-	retries := 0
-	for {
-		if err := client.Ping(ctx).Err(); err != nil {
-			if retries > nMaxRetry {
-				return err
-			}
-			retries++
-			waitTime := (initialWaitTime << retries) + rand.Intn(1000)/1000
-			time.Sleep(time.Duration(waitTime) * time.Second)
-			continue
-		}
-		break
+func ping(ctx context.Context, op func() error) error {
+	b := backoff.WithContext(backoff.NewExponentialBackOff(), ctx)
+	if err := backoff.Retry(op, b); err != nil {
+		return err
 	}
 	return nil
 }
