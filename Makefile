@@ -111,7 +111,7 @@ lc-delete:
 
 ## up: Create and start containers
 up:
-	@docker-compose up -d
+	@docker-compose up -d app cache db log
 
 ## down: Stop and remove containers
 down:

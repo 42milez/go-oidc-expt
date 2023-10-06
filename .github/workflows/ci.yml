@@ -21,12 +21,13 @@ jobs:
           cache: false
           check-latest: false
       - name: Restore caches
+        id: restore-cache
         uses: actions/cache/restore@v3
         with:
           path: |
-            /home/runner/.cache/go-build
-            /home/runner/go/pkg/mod
-          key: go-${{ matrix.go-version }}-${{ github.ref_name }}-${{ github.job }}-${{ hashFiles('go.sum') }}
+            ~/.cache/go-build
+            ~/go/pkg
+          key: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-${{ hashFiles('go.sum') }}
       - name: Generate secrets
         run: |
           ./script/bootstrap/key.sh
@@ -34,13 +35,16 @@ jobs:
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
+          skip-pkg-cache: true
+          skip-build-cache: true
       - name: Save caches
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v3
         with:
           path: |
-            /home/runner/.cache/go-build
-            /home/runner/go/pkg/mod
-          key: go-${{ matrix.go-version }}-${{ github.ref_name }}-${{ github.job }}-${{ hashFiles('go.sum') }}
+            ~/.cache/go-build
+            ~/go/pkg
+          key: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-${{ hashFiles('go.sum') }}
   test:
     needs: analyze
     strategy:
@@ -58,12 +62,13 @@ jobs:
           cache: false
           check-latest: false
       - name: Restore caches
+        id: restore-cache
         uses: actions/cache/restore@v3
         with:
           path: |
-            /home/runner/.cache/go-build
-            /home/runner/go/pkg/mod
-          key: go-${{ matrix.go-version }}-${{ github.ref_name }}-${{ github.job }}-${{ hashFiles('go.sum') }}
+            ~/.cache/go-build
+            ~/go/pkg
+          key: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-${{ hashFiles('go.sum') }}
       - name: Generate secrets
         run: |
           ./script/bootstrap/key.sh
@@ -79,12 +84,13 @@ jobs:
       - name: Run all tests
         run: make test
       - name: Save caches
+        if: steps.restore-cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v3
         with:
           path: |
-            /home/runner/.cache/go-build
-            /home/runner/go/pkg/mod
-          key: go-${{ matrix.go-version }}-${{ github.ref_name }}-${{ github.job }}-${{ hashFiles('go.sum') }}
+            ~/.cache/go-build
+            ~/go/pkg
+          key: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-${{ hashFiles('go.sum') }}
   notify:
     if: always()
     needs: [ analyze, test ]
