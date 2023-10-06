@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: ./go.mod
+          cache: false
       - name: Create key pair
         run: |
           ./script/bootstrap/key.sh
@@ -35,6 +36,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: ./go.mod
+          cache: false
       - name: Create key pair
         run: |
           ./script/bootstrap/key.sh
