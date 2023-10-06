@@ -11,11 +11,14 @@ import (
 var (
 	// AuthCodesColumns holds the columns for the "auth_codes" table.
 	AuthCodesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(10)"}},
-		{Name: "expire_at", Type: field.TypeTime},
-		{Name: "created_at", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(30)"}},
 		{Name: "user_id", Type: field.TypeUint64},
+		{Name: "expire_at", Type: field.TypeTime},
+		{Name: "used_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "modified_at", Type: field.TypeTime},
+		{Name: "relying_party_id", Type: field.TypeUint64},
 	}
 	// AuthCodesTable holds the schema information for the "auth_codes" table.
 	AuthCodesTable = &schema.Table{
@@ -24,27 +27,55 @@ var (
 		PrimaryKey: []*schema.Column{AuthCodesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "auth_codes_users_auth_codes",
-				Columns:    []*schema.Column{AuthCodesColumns[4]},
+				Symbol:     "auth_codes_relying_parties_auth_codes",
+				Columns:    []*schema.Column{AuthCodesColumns[7]},
+				RefColumns: []*schema.Column{RelyingPartiesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "authcode_relying_party_id_code",
+				Unique:  true,
+				Columns: []*schema.Column{AuthCodesColumns[7], AuthCodesColumns[1]},
+			},
+		},
+	}
+	// ConsentsColumns holds the columns for the "consents" table.
+	ConsentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "client_id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "user_id", Type: field.TypeUint64},
+	}
+	// ConsentsTable holds the schema information for the "consents" table.
+	ConsentsTable = &schema.Table{
+		Name:       "consents",
+		Columns:    ConsentsColumns,
+		PrimaryKey: []*schema.Column{ConsentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "consents_users_consents",
+				Columns:    []*schema.Column{ConsentsColumns[3]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "authcode_user_id_code",
+				Name:    "consent_user_id_client_id",
 				Unique:  true,
-				Columns: []*schema.Column{AuthCodesColumns[4], AuthCodesColumns[1]},
+				Columns: []*schema.Column{ConsentsColumns[3], ConsentsColumns[1]},
 			},
 		},
 	}
 	// RedirectUrisColumns holds the columns for the "redirect_uris" table.
 	RedirectUrisColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "uri", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "modified_at", Type: field.TypeTime},
-		{Name: "user_id", Type: field.TypeUint64},
+		{Name: "relying_party_id", Type: field.TypeUint64},
 	}
 	// RedirectUrisTable holds the schema information for the "redirect_uris" table.
 	RedirectUrisTable = &schema.Table{
@@ -53,17 +84,38 @@ var (
 		PrimaryKey: []*schema.Column{RedirectUrisColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "redirect_uris_users_redirect_uris",
+				Symbol:     "redirect_uris_relying_parties_redirect_uris",
 				Columns:    []*schema.Column{RedirectUrisColumns[4]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
+				RefColumns: []*schema.Column{RelyingPartiesColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "redirecturi_user_id_uri",
+				Name:    "redirecturi_relying_party_id_uri",
 				Unique:  true,
 				Columns: []*schema.Column{RedirectUrisColumns[4], RedirectUrisColumns[1]},
+			},
+		},
+	}
+	// RelyingPartiesColumns holds the columns for the "relying_parties" table.
+	RelyingPartiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "client_id", Type: field.TypeString, Unique: true},
+		{Name: "client_secret", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "modified_at", Type: field.TypeTime},
+	}
+	// RelyingPartiesTable holds the schema information for the "relying_parties" table.
+	RelyingPartiesTable = &schema.Table{
+		Name:       "relying_parties",
+		Columns:    RelyingPartiesColumns,
+		PrimaryKey: []*schema.Column{RelyingPartiesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "relyingparty_client_id_client_secret",
+				Unique:  true,
+				Columns: []*schema.Column{RelyingPartiesColumns[1], RelyingPartiesColumns[2]},
 			},
 		},
 	}
@@ -85,14 +137,17 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AuthCodesTable,
+		ConsentsTable,
 		RedirectUrisTable,
+		RelyingPartiesTable,
 		UsersTable,
 	}
 )
 
 func init() {
-	AuthCodesTable.ForeignKeys[0].RefTable = UsersTable
-	RedirectUrisTable.ForeignKeys[0].RefTable = UsersTable
+	AuthCodesTable.ForeignKeys[0].RefTable = RelyingPartiesTable
+	ConsentsTable.ForeignKeys[0].RefTable = UsersTable
+	RedirectUrisTable.ForeignKeys[0].RefTable = RelyingPartiesTable
 	RedirectUrisTable.Annotation = &entsql.Annotation{
 		Table: "redirect_uris",
 	}

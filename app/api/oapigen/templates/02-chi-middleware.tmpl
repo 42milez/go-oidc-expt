@@ -1,0 +1,114 @@
+//  MIDDLEWARE
+// --------------------------------------------------
+
+// HandlerInterfaceWrapper converts contexts to parameters.
+type HandlerInterfaceWrapper struct {
+    Handler          HandlerInterface
+    ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
+}
+
+type MiddlewareFunc func(http.Handler) http.Handler
+
+func NewMiddlewareFuncMap() *MiddlewareFuncMap {
+    return &MiddlewareFuncMap{
+        m: make(map[string][]MiddlewareFunc),
+    }
+}
+
+type MiddlewareFuncMap struct {
+    m map[string][]MiddlewareFunc
+}
+
+func (mfm *MiddlewareFuncMap) raw(key string) []func(http.Handler) http.Handler {
+    ret := make([]func(http.Handler) http.Handler, len(mfm.m[key]), len(mfm.m[key]))
+    v, ok := mfm.m[key]
+    if !ok {
+        return nil
+    }
+    for i, f := range v {
+        ret[i] = f
+    }
+    return ret
+}
+
+{{range .}}
+func (mfm *MiddlewareFuncMap) Set{{.OperationId}}MW(mf ...MiddlewareFunc) *MiddlewareFuncMap {
+    mfm.append("{{.OperationId}}", mf...)
+    return mfm
+}
+{{end}}
+
+func (mfm *MiddlewareFuncMap) append(key string, mf ...MiddlewareFunc) {
+    for _, v := range mf {
+        mfm.m[key] = append(mfm.m[key], v)
+    }
+}
+
+type UnescapedCookieParamError struct {
+    ParamName string
+    Err error
+}
+
+func (e *UnescapedCookieParamError) Error() string {
+    return fmt.Sprintf("error unescaping cookie parameter '%s'", e.ParamName)
+}
+
+func (e *UnescapedCookieParamError) Unwrap() error {
+    return e.Err
+}
+
+type UnmarshalingParamError struct {
+    ParamName string
+    Err error
+}
+
+func (e *UnmarshalingParamError) Error() string {
+    return fmt.Sprintf("Error unmarshaling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
+}
+
+func (e *UnmarshalingParamError) Unwrap() error {
+    return e.Err
+}
+
+type RequiredParamError struct {
+    ParamName string
+}
+
+func (e *RequiredParamError) Error() string {
+    return fmt.Sprintf("Query argument %s is required, but not found", e.ParamName)
+}
+
+type RequiredHeaderError struct {
+    ParamName string
+    Err error
+}
+
+func (e *RequiredHeaderError) Error() string {
+    return fmt.Sprintf("Header parameter %s is required, but not found", e.ParamName)
+}
+
+func (e *RequiredHeaderError) Unwrap() error {
+    return e.Err
+}
+
+type InvalidParamFormatError struct {
+    ParamName string
+    Err error
+}
+
+func (e *InvalidParamFormatError) Error() string {
+    return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
+}
+
+func (e *InvalidParamFormatError) Unwrap() error {
+    return e.Err
+}
+
+type TooManyValuesForParamError struct {
+    ParamName string
+    Count int
+}
+
+func (e *TooManyValuesForParamError) Error() string {
+    return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
+}

@@ -1,25 +1,16 @@
 package repository
 
 import (
-	"github.com/42milez/go-oidc-server/app/datastore"
+	"fmt"
+
+	"github.com/42milez/go-oidc-server/app/ent/ent"
 )
 
-func NewCheckHealth(db *datastore.Database, cache *datastore.Cache) *CheckHealth {
-	return &CheckHealth{
-		db:    db,
-		cache: cache,
-	}
-}
+var errEntNotFoundError = &ent.NotFoundError{}
 
-func NewSession(cache *datastore.Cache) *Session {
-	return &Session{
-		cache: cache,
+func rollback(tx *ent.Tx, err error) error {
+	if retErr := tx.Rollback(); retErr != nil {
+		return fmt.Errorf("%w: %v", err, retErr)
 	}
-}
-
-func NewUser(db *datastore.Database, idGen IDGenerator) *User {
-	return &User{
-		db:    db,
-		idGen: idGen,
-	}
+	return err
 }

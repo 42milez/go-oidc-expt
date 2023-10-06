@@ -23,7 +23,7 @@ images:
     arch: "aarch64"
 cpus: 2
 memory: "4GiB"
-disk: "10GiB"
+disk: "20GiB"
 mounts:
   - location: "~"
   - location: "/tmp/lima"

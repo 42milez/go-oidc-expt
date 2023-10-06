@@ -4,6 +4,12 @@ import (
 	"context"
 )
 
+func NewCheckHealth(repo HealthChecker) *CheckHealth {
+	return &CheckHealth{
+		repo: repo,
+	}
+}
+
 type CheckHealth struct {
 	repo HealthChecker
 }

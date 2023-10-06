@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 set -eu
 
-readonly DBNAME="idp"
-readonly MIGRATION_DIR="file://app/ent/migrations"
-
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 . "${SCRIPT_DIR}/config.sh"
 
-atlas migrate apply \
-  --dir "${MIGRATION_DIR}" \
-  --url "mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DBNAME}"
+readonly DB_NAMES=(${1//,/ })
+readonly MIGRATION_DIR="file://app/ent/migrations"
 
-atlas migrate apply \
-  --dir "${MIGRATION_DIR}" \
-  --url "mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DBNAME}_test"
+function Migrate() {
+  local -r dbname="${1}"
+  local -r dir="${MIGRATION_DIR}"
+  local -r url="mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${dbname}"
+  echo "apply '${dir}' to '${url}'"
+  atlas migrate apply --dir "${dir}" --url "${url}"
+}
+
+for dbname in "${DB_NAMES[@]}"; do
+  Migrate "${dbname}"
+done

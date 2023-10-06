@@ -7,21 +7,25 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RedirectURIQuery is the builder for querying RedirectURI entities.
 type RedirectURIQuery struct {
 	config
-	ctx        *QueryContext
-	order      []redirecturi.OrderOption
-	inters     []Interceptor
-	predicates []predicate.RedirectURI
-	withFKs    bool
+	ctx              *QueryContext
+	order            []redirecturi.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.RedirectURI
+	withRelyingParty *RelyingPartyQuery
+	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +62,28 @@ func (ruq *RedirectURIQuery) Order(o ...redirecturi.OrderOption) *RedirectURIQue
 	return ruq
 }
 
+// QueryRelyingParty chains the current query on the "relying_party" edge.
+func (ruq *RedirectURIQuery) QueryRelyingParty() *RelyingPartyQuery {
+	query := (&RelyingPartyClient{config: ruq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ruq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ruq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(redirecturi.Table, redirecturi.FieldID, selector),
+			sqlgraph.To(relyingparty.Table, relyingparty.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, redirecturi.RelyingPartyTable, redirecturi.RelyingPartyColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ruq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first RedirectURI entity from the query.
 // Returns a *NotFoundError when no RedirectURI was found.
 func (ruq *RedirectURIQuery) First(ctx context.Context) (*RedirectURI, error) {
@@ -82,8 +108,8 @@ func (ruq *RedirectURIQuery) FirstX(ctx context.Context) *RedirectURI {
 
 // FirstID returns the first RedirectURI ID from the query.
 // Returns a *NotFoundError when no RedirectURI ID was found.
-func (ruq *RedirectURIQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ruq *RedirectURIQuery) FirstID(ctx context.Context) (id typedef.RedirectURIID, err error) {
+	var ids []typedef.RedirectURIID
 	if ids, err = ruq.Limit(1).IDs(setContextOp(ctx, ruq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -95,7 +121,7 @@ func (ruq *RedirectURIQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ruq *RedirectURIQuery) FirstIDX(ctx context.Context) int {
+func (ruq *RedirectURIQuery) FirstIDX(ctx context.Context) typedef.RedirectURIID {
 	id, err := ruq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +159,8 @@ func (ruq *RedirectURIQuery) OnlyX(ctx context.Context) *RedirectURI {
 // OnlyID is like Only, but returns the only RedirectURI ID in the query.
 // Returns a *NotSingularError when more than one RedirectURI ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ruq *RedirectURIQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ruq *RedirectURIQuery) OnlyID(ctx context.Context) (id typedef.RedirectURIID, err error) {
+	var ids []typedef.RedirectURIID
 	if ids, err = ruq.Limit(2).IDs(setContextOp(ctx, ruq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -150,7 +176,7 @@ func (ruq *RedirectURIQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ruq *RedirectURIQuery) OnlyIDX(ctx context.Context) int {
+func (ruq *RedirectURIQuery) OnlyIDX(ctx context.Context) typedef.RedirectURIID {
 	id, err := ruq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,7 +204,7 @@ func (ruq *RedirectURIQuery) AllX(ctx context.Context) []*RedirectURI {
 }
 
 // IDs executes the query and returns a list of RedirectURI IDs.
-func (ruq *RedirectURIQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (ruq *RedirectURIQuery) IDs(ctx context.Context) (ids []typedef.RedirectURIID, err error) {
 	if ruq.ctx.Unique == nil && ruq.path != nil {
 		ruq.Unique(true)
 	}
@@ -190,7 +216,7 @@ func (ruq *RedirectURIQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ruq *RedirectURIQuery) IDsX(ctx context.Context) []int {
+func (ruq *RedirectURIQuery) IDsX(ctx context.Context) []typedef.RedirectURIID {
 	ids, err := ruq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -245,15 +271,27 @@ func (ruq *RedirectURIQuery) Clone() *RedirectURIQuery {
 		return nil
 	}
 	return &RedirectURIQuery{
-		config:     ruq.config,
-		ctx:        ruq.ctx.Clone(),
-		order:      append([]redirecturi.OrderOption{}, ruq.order...),
-		inters:     append([]Interceptor{}, ruq.inters...),
-		predicates: append([]predicate.RedirectURI{}, ruq.predicates...),
+		config:           ruq.config,
+		ctx:              ruq.ctx.Clone(),
+		order:            append([]redirecturi.OrderOption{}, ruq.order...),
+		inters:           append([]Interceptor{}, ruq.inters...),
+		predicates:       append([]predicate.RedirectURI{}, ruq.predicates...),
+		withRelyingParty: ruq.withRelyingParty.Clone(),
 		// clone intermediate query.
 		sql:  ruq.sql.Clone(),
 		path: ruq.path,
 	}
+}
+
+// WithRelyingParty tells the query-builder to eager-load the nodes that are connected to
+// the "relying_party" edge. The optional arguments are used to configure the query builder of the edge.
+func (ruq *RedirectURIQuery) WithRelyingParty(opts ...func(*RelyingPartyQuery)) *RedirectURIQuery {
+	query := (&RelyingPartyClient{config: ruq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ruq.withRelyingParty = query
+	return ruq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -332,20 +370,23 @@ func (ruq *RedirectURIQuery) prepareQuery(ctx context.Context) error {
 
 func (ruq *RedirectURIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*RedirectURI, error) {
 	var (
-		nodes   = []*RedirectURI{}
-		withFKs = ruq.withFKs
-		_spec   = ruq.querySpec()
+		nodes       = []*RedirectURI{}
+		_spec       = ruq.querySpec()
+		loadedTypes = [1]bool{
+			ruq.withRelyingParty != nil,
+		}
 	)
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, redirecturi.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*RedirectURI).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &RedirectURI{config: ruq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
+	}
+	if len(ruq.modifiers) > 0 {
+		_spec.Modifiers = ruq.modifiers
 	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
@@ -356,11 +397,50 @@ func (ruq *RedirectURIQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := ruq.withRelyingParty; query != nil {
+		if err := ruq.loadRelyingParty(ctx, query, nodes, nil,
+			func(n *RedirectURI, e *RelyingParty) { n.Edges.RelyingParty = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (ruq *RedirectURIQuery) loadRelyingParty(ctx context.Context, query *RelyingPartyQuery, nodes []*RedirectURI, init func(*RedirectURI), assign func(*RedirectURI, *RelyingParty)) error {
+	ids := make([]typedef.RelyingPartyID, 0, len(nodes))
+	nodeids := make(map[typedef.RelyingPartyID][]*RedirectURI)
+	for i := range nodes {
+		fk := nodes[i].RelyingPartyID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(relyingparty.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "relying_party_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (ruq *RedirectURIQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ruq.querySpec()
+	if len(ruq.modifiers) > 0 {
+		_spec.Modifiers = ruq.modifiers
+	}
 	_spec.Node.Columns = ruq.ctx.Fields
 	if len(ruq.ctx.Fields) > 0 {
 		_spec.Unique = ruq.ctx.Unique != nil && *ruq.ctx.Unique
@@ -369,7 +449,7 @@ func (ruq *RedirectURIQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ruq *RedirectURIQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	_spec.From = ruq.sql
 	if unique := ruq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -383,6 +463,9 @@ func (ruq *RedirectURIQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != redirecturi.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if ruq.withRelyingParty != nil {
+			_spec.Node.AddColumnOnce(redirecturi.FieldRelyingPartyID)
 		}
 	}
 	if ps := ruq.predicates; len(ps) > 0 {
@@ -423,6 +506,9 @@ func (ruq *RedirectURIQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if ruq.ctx.Unique != nil && *ruq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range ruq.modifiers {
+		m(selector)
+	}
 	for _, p := range ruq.predicates {
 		p(selector)
 	}
@@ -438,6 +524,32 @@ func (ruq *RedirectURIQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (ruq *RedirectURIQuery) ForUpdate(opts ...sql.LockOption) *RedirectURIQuery {
+	if ruq.driver.Dialect() == dialect.Postgres {
+		ruq.Unique(false)
+	}
+	ruq.modifiers = append(ruq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return ruq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (ruq *RedirectURIQuery) ForShare(opts ...sql.LockOption) *RedirectURIQuery {
+	if ruq.driver.Dialect() == dialect.Postgres {
+		ruq.Unique(false)
+	}
+	ruq.modifiers = append(ruq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return ruq
 }
 
 // RedirectURIGroupBy is the group-by builder for RedirectURI entities.

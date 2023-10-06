@@ -20,6 +20,12 @@ type SessionKey struct{}
 
 type UserIDKey struct{}
 
+func NewCreateSession(repo SessionCreator) *CreateSession {
+	return &CreateSession{
+		repo: repo,
+	}
+}
+
 type CreateSession struct {
 	repo SessionCreator
 }
@@ -42,10 +48,16 @@ func (cs *CreateSession) Create(ctx context.Context, sess *entity.Session) (stri
 	}
 
 	if !ok {
-		return "", xerr.SessionIDAlreadyExists
+		return "", xerr.FailedToCreateSession
 	}
 
 	return id.String(), nil
+}
+
+func NewRestoreSession(repo SessionReader) *RestoreSession {
+	return &RestoreSession{
+		repo: repo,
+	}
 }
 
 type RestoreSession struct {
@@ -65,6 +77,12 @@ func (rs *RestoreSession) Restore(r *http.Request, sid typedef.SessionID) (*http
 	ctx = context.WithValue(ctx, UserIDKey{}, sess.UserID)
 
 	return r.Clone(ctx), nil
+}
+
+func NewUpdateSession(repo SessionUpdater) *UpdateSession {
+	return &UpdateSession{
+		repo: repo,
+	}
 }
 
 type UpdateSession struct {

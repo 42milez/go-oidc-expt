@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
+	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -21,12 +21,12 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx              *QueryContext
-	order            []user.OrderOption
-	inters           []Interceptor
-	predicates       []predicate.User
-	withAuthCodes    *AuthCodeQuery
-	withRedirectUris *RedirectURIQuery
+	ctx          *QueryContext
+	order        []user.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.User
+	withConsents *ConsentQuery
+	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,9 +63,9 @@ func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	return uq
 }
 
-// QueryAuthCodes chains the current query on the "auth_codes" edge.
-func (uq *UserQuery) QueryAuthCodes() *AuthCodeQuery {
-	query := (&AuthCodeClient{config: uq.config}).Query()
+// QueryConsents chains the current query on the "consents" edge.
+func (uq *UserQuery) QueryConsents() *ConsentQuery {
+	query := (&ConsentClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,30 +76,8 @@ func (uq *UserQuery) QueryAuthCodes() *AuthCodeQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(authcode.Table, authcode.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.AuthCodesTable, user.AuthCodesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryRedirectUris chains the current query on the "redirect_uris" edge.
-func (uq *UserQuery) QueryRedirectUris() *RedirectURIQuery {
-	query := (&RedirectURIClient{config: uq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := uq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := uq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(redirecturi.Table, redirecturi.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.RedirectUrisTable, user.RedirectUrisColumn),
+			sqlgraph.To(consent.Table, consent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ConsentsTable, user.ConsentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,38 +272,26 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:           uq.config,
-		ctx:              uq.ctx.Clone(),
-		order:            append([]user.OrderOption{}, uq.order...),
-		inters:           append([]Interceptor{}, uq.inters...),
-		predicates:       append([]predicate.User{}, uq.predicates...),
-		withAuthCodes:    uq.withAuthCodes.Clone(),
-		withRedirectUris: uq.withRedirectUris.Clone(),
+		config:       uq.config,
+		ctx:          uq.ctx.Clone(),
+		order:        append([]user.OrderOption{}, uq.order...),
+		inters:       append([]Interceptor{}, uq.inters...),
+		predicates:   append([]predicate.User{}, uq.predicates...),
+		withConsents: uq.withConsents.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
 	}
 }
 
-// WithAuthCodes tells the query-builder to eager-load the nodes that are connected to
-// the "auth_codes" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithAuthCodes(opts ...func(*AuthCodeQuery)) *UserQuery {
-	query := (&AuthCodeClient{config: uq.config}).Query()
+// WithConsents tells the query-builder to eager-load the nodes that are connected to
+// the "consents" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithConsents(opts ...func(*ConsentQuery)) *UserQuery {
+	query := (&ConsentClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withAuthCodes = query
-	return uq
-}
-
-// WithRedirectUris tells the query-builder to eager-load the nodes that are connected to
-// the "redirect_uris" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithRedirectUris(opts ...func(*RedirectURIQuery)) *UserQuery {
-	query := (&RedirectURIClient{config: uq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	uq.withRedirectUris = query
+	uq.withConsents = query
 	return uq
 }
 
@@ -407,9 +373,8 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [2]bool{
-			uq.withAuthCodes != nil,
-			uq.withRedirectUris != nil,
+		loadedTypes = [1]bool{
+			uq.withConsents != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -421,6 +386,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(uq.modifiers) > 0 {
+		_spec.Modifiers = uq.modifiers
+	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
@@ -430,24 +398,17 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := uq.withAuthCodes; query != nil {
-		if err := uq.loadAuthCodes(ctx, query, nodes,
-			func(n *User) { n.Edges.AuthCodes = []*AuthCode{} },
-			func(n *User, e *AuthCode) { n.Edges.AuthCodes = append(n.Edges.AuthCodes, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := uq.withRedirectUris; query != nil {
-		if err := uq.loadRedirectUris(ctx, query, nodes,
-			func(n *User) { n.Edges.RedirectUris = []*RedirectURI{} },
-			func(n *User, e *RedirectURI) { n.Edges.RedirectUris = append(n.Edges.RedirectUris, e) }); err != nil {
+	if query := uq.withConsents; query != nil {
+		if err := uq.loadConsents(ctx, query, nodes,
+			func(n *User) { n.Edges.Consents = []*Consent{} },
+			func(n *User, e *Consent) { n.Edges.Consents = append(n.Edges.Consents, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (uq *UserQuery) loadAuthCodes(ctx context.Context, query *AuthCodeQuery, nodes []*User, init func(*User), assign func(*User, *AuthCode)) error {
+func (uq *UserQuery) loadConsents(ctx context.Context, query *ConsentQuery, nodes []*User, init func(*User), assign func(*User, *Consent)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[typedef.UserID]*User)
 	for i := range nodes {
@@ -457,53 +418,21 @@ func (uq *UserQuery) loadAuthCodes(ctx context.Context, query *AuthCodeQuery, no
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
-	query.Where(predicate.AuthCode(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.AuthCodesColumn), fks...))
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(consent.FieldUserID)
+	}
+	query.Where(predicate.Consent(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ConsentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.user_id
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.UserID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (uq *UserQuery) loadRedirectUris(ctx context.Context, query *RedirectURIQuery, nodes []*User, init func(*User), assign func(*User, *RedirectURI)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[typedef.UserID]*User)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.RedirectURI(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.RedirectUrisColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.user_id
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -512,6 +441,9 @@ func (uq *UserQuery) loadRedirectUris(ctx context.Context, query *RedirectURIQue
 
 func (uq *UserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := uq.querySpec()
+	if len(uq.modifiers) > 0 {
+		_spec.Modifiers = uq.modifiers
+	}
 	_spec.Node.Columns = uq.ctx.Fields
 	if len(uq.ctx.Fields) > 0 {
 		_spec.Unique = uq.ctx.Unique != nil && *uq.ctx.Unique
@@ -574,6 +506,9 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if uq.ctx.Unique != nil && *uq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range uq.modifiers {
+		m(selector)
+	}
 	for _, p := range uq.predicates {
 		p(selector)
 	}
@@ -589,6 +524,32 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (uq *UserQuery) ForUpdate(opts ...sql.LockOption) *UserQuery {
+	if uq.driver.Dialect() == dialect.Postgres {
+		uq.Unique(false)
+	}
+	uq.modifiers = append(uq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return uq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (uq *UserQuery) ForShare(opts ...sql.LockOption) *UserQuery {
+	if uq.driver.Dialect() == dialect.Postgres {
+		uq.Unique(false)
+	}
+	uq.modifiers = append(uq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return uq
 }
 
 // UserGroupBy is the group-by builder for User entities.

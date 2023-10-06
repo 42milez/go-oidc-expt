@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/google/uuid"
@@ -25,8 +24,6 @@ var rawPrivateKey []byte
 var rawPublicKey []byte
 
 func NewJWT(clock xtime.Clocker) (*JWT, error) {
-	var err error
-
 	parseKey := func(key []byte) (jwk.Key, error) {
 		return jwk.ParseKey(key, jwk.WithPEM(true))
 	}
@@ -35,12 +32,14 @@ func NewJWT(clock xtime.Clocker) (*JWT, error) {
 		clock: clock,
 	}
 
+	var err error
+
 	if ret.privateKey, err = parseKey(rawPrivateKey); err != nil {
-		return nil, xerr.FailedToParsePrivateKey.Wrap(err)
+		return nil, err
 	}
 
 	if ret.publicKey, err = parseKey(rawPublicKey); err != nil {
-		return nil, xerr.FailedToParsePublicKey.Wrap(err)
+		return nil, err
 	}
 
 	return ret, nil
@@ -52,37 +51,33 @@ type JWT struct {
 }
 
 func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
-	ret, err := j.parseRequest(r)
+	var ret jwt.Token
+	var err error
 
-	if err != nil {
-		return nil, xerr.FailedToParseRequest.Wrap(err)
+	if ret, err = j.parseRequest(r); err != nil {
+		return nil, err
 	}
 
 	if err = j.validate(ret); err != nil {
-		return nil, xerr.InvalidToken.Wrap(err)
+		return nil, err
 	}
 
 	return ret, nil
 }
 
-func (j *JWT) MakeAccessToken(name string) ([]byte, error) {
-	token, err := jwt.
-		NewBuilder().
-		JwtID(uuid.New().String()).
-		Issuer(issuer).
-		Subject(accessTokenSubject).
-		IssuedAt(j.clock.Now().Add(30*time.Minute)).
-		Claim(nameKey, name).
-		Build()
+func (j *JWT) GenerateToken(name string) ([]byte, error) {
+	var token jwt.Token
+	var err error
 
-	if err != nil {
-		return nil, xerr.FailedToBuildToken.Wrap(err)
+	if token, err = jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(issuer).Subject(accessTokenSubject).
+		IssuedAt(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, name).Build(); err != nil {
+		return nil, err
 	}
 
-	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
+	var ret []byte
 
-	if err != nil {
-		return nil, xerr.FailedToSignToken.Wrap(err)
+	if ret, err = jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey)); err != nil {
+		return nil, err
 	}
 
 	return ret, nil

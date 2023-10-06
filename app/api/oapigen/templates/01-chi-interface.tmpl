@@ -1,0 +1,10 @@
+//  INTERFACE
+// --------------------------------------------------
+
+// HandlerInterface represents all server handlers.
+type HandlerInterface interface {
+    {{range .}}{{.SummaryAsComment}}
+    // {{.Method}}: {{.Path}}
+    {{.OperationId}}(w http.ResponseWriter, r *http.Request{{genParamArgs .PathParams}})
+    {{end}}
+}

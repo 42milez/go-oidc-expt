@@ -9,7 +9,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/entity"
 
-	"github.com/42milez/go-oidc-server/app/api/validation"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
@@ -42,7 +41,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 		resp    mockResp
 		want    want
 	}{
-		"OK": {
+		"ok": {
 			reqFile: tdAuthorizationRequest200,
 			resp: mockResp{
 				location: "https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA&state=af0ifjsldk",
@@ -75,11 +74,11 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.
 				EXPECT().
-				Authorize(r.Context(), gomock.Any(), gomock.Any()).
+				Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(tt.resp.location, nil).
 				AnyTimes()
 
-			v, err := validation.NewAuthorizeValidator()
+			v, err := NewAuthorizeParamValidator()
 
 			if err != nil {
 				t.Error(xerr.FailedToInitialize)
@@ -98,7 +97,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				Body:       xtestutil.LoadFile(t, tt.want.respFile),
 			}
 
-			xtestutil.AssertResponse(t, resp, wantResp)
+			xtestutil.AssertResponse(t, wantResp, resp)
 		})
 	}
 }

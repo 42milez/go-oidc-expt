@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,6 +28,32 @@ func (acu *AuthCodeUpdate) Where(ps ...predicate.AuthCode) *AuthCodeUpdate {
 	return acu
 }
 
+// SetUsedAt sets the "used_at" field.
+func (acu *AuthCodeUpdate) SetUsedAt(t time.Time) *AuthCodeUpdate {
+	acu.mutation.SetUsedAt(t)
+	return acu
+}
+
+// SetNillableUsedAt sets the "used_at" field if the given value is not nil.
+func (acu *AuthCodeUpdate) SetNillableUsedAt(t *time.Time) *AuthCodeUpdate {
+	if t != nil {
+		acu.SetUsedAt(*t)
+	}
+	return acu
+}
+
+// ClearUsedAt clears the value of the "used_at" field.
+func (acu *AuthCodeUpdate) ClearUsedAt() *AuthCodeUpdate {
+	acu.mutation.ClearUsedAt()
+	return acu
+}
+
+// SetModifiedAt sets the "modified_at" field.
+func (acu *AuthCodeUpdate) SetModifiedAt(t time.Time) *AuthCodeUpdate {
+	acu.mutation.SetModifiedAt(t)
+	return acu
+}
+
 // Mutation returns the AuthCodeMutation object of the builder.
 func (acu *AuthCodeUpdate) Mutation() *AuthCodeMutation {
 	return acu.mutation
@@ -34,6 +61,7 @@ func (acu *AuthCodeUpdate) Mutation() *AuthCodeMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (acu *AuthCodeUpdate) Save(ctx context.Context) (int, error) {
+	acu.defaults()
 	return withHooks(ctx, acu.sqlSave, acu.mutation, acu.hooks)
 }
 
@@ -59,14 +87,42 @@ func (acu *AuthCodeUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (acu *AuthCodeUpdate) defaults() {
+	if _, ok := acu.mutation.ModifiedAt(); !ok {
+		v := authcode.UpdateDefaultModifiedAt()
+		acu.mutation.SetModifiedAt(v)
+	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (acu *AuthCodeUpdate) check() error {
+	if _, ok := acu.mutation.RelyingPartyID(); acu.mutation.RelyingPartyCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "AuthCode.relying_party"`)
+	}
+	return nil
+}
+
 func (acu *AuthCodeUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt))
+	if err := acu.check(); err != nil {
+		return n, err
+	}
+	_spec := sqlgraph.NewUpdateSpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64))
 	if ps := acu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := acu.mutation.UsedAt(); ok {
+		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
+	}
+	if acu.mutation.UsedAtCleared() {
+		_spec.ClearField(authcode.FieldUsedAt, field.TypeTime)
+	}
+	if value, ok := acu.mutation.ModifiedAt(); ok {
+		_spec.SetField(authcode.FieldModifiedAt, field.TypeTime, value)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, acu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -86,6 +142,32 @@ type AuthCodeUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *AuthCodeMutation
+}
+
+// SetUsedAt sets the "used_at" field.
+func (acuo *AuthCodeUpdateOne) SetUsedAt(t time.Time) *AuthCodeUpdateOne {
+	acuo.mutation.SetUsedAt(t)
+	return acuo
+}
+
+// SetNillableUsedAt sets the "used_at" field if the given value is not nil.
+func (acuo *AuthCodeUpdateOne) SetNillableUsedAt(t *time.Time) *AuthCodeUpdateOne {
+	if t != nil {
+		acuo.SetUsedAt(*t)
+	}
+	return acuo
+}
+
+// ClearUsedAt clears the value of the "used_at" field.
+func (acuo *AuthCodeUpdateOne) ClearUsedAt() *AuthCodeUpdateOne {
+	acuo.mutation.ClearUsedAt()
+	return acuo
+}
+
+// SetModifiedAt sets the "modified_at" field.
+func (acuo *AuthCodeUpdateOne) SetModifiedAt(t time.Time) *AuthCodeUpdateOne {
+	acuo.mutation.SetModifiedAt(t)
+	return acuo
 }
 
 // Mutation returns the AuthCodeMutation object of the builder.
@@ -108,6 +190,7 @@ func (acuo *AuthCodeUpdateOne) Select(field string, fields ...string) *AuthCodeU
 
 // Save executes the query and returns the updated AuthCode entity.
 func (acuo *AuthCodeUpdateOne) Save(ctx context.Context) (*AuthCode, error) {
+	acuo.defaults()
 	return withHooks(ctx, acuo.sqlSave, acuo.mutation, acuo.hooks)
 }
 
@@ -133,8 +216,27 @@ func (acuo *AuthCodeUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (acuo *AuthCodeUpdateOne) defaults() {
+	if _, ok := acuo.mutation.ModifiedAt(); !ok {
+		v := authcode.UpdateDefaultModifiedAt()
+		acuo.mutation.SetModifiedAt(v)
+	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (acuo *AuthCodeUpdateOne) check() error {
+	if _, ok := acuo.mutation.RelyingPartyID(); acuo.mutation.RelyingPartyCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "AuthCode.relying_party"`)
+	}
+	return nil
+}
+
 func (acuo *AuthCodeUpdateOne) sqlSave(ctx context.Context) (_node *AuthCode, err error) {
-	_spec := sqlgraph.NewUpdateSpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt))
+	if err := acuo.check(); err != nil {
+		return _node, err
+	}
+	_spec := sqlgraph.NewUpdateSpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64))
 	id, ok := acuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "AuthCode.id" for update`)}
@@ -158,6 +260,15 @@ func (acuo *AuthCodeUpdateOne) sqlSave(ctx context.Context) (_node *AuthCode, er
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := acuo.mutation.UsedAt(); ok {
+		_spec.SetField(authcode.FieldUsedAt, field.TypeTime, value)
+	}
+	if acuo.mutation.UsedAtCleared() {
+		_spec.ClearField(authcode.FieldUsedAt, field.TypeTime)
+	}
+	if value, ok := acuo.mutation.ModifiedAt(); ok {
+		_spec.SetField(authcode.FieldModifiedAt, field.TypeTime, value)
 	}
 	_node = &AuthCode{config: acuo.config}
 	_spec.Assign = _node.assignValues

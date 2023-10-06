@@ -9,8 +9,14 @@ import (
 // AuthCode is the predicate function for authcode builders.
 type AuthCode func(*sql.Selector)
 
+// Consent is the predicate function for consent builders.
+type Consent func(*sql.Selector)
+
 // RedirectURI is the predicate function for redirecturi builders.
 type RedirectURI func(*sql.Selector)
+
+// RelyingParty is the predicate function for relyingparty builders.
+type RelyingParty func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

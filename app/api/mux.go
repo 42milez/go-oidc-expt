@@ -2,13 +2,18 @@ package api
 
 import (
 	"context"
+	"encoding/base64"
 	"net/http"
+	"strings"
+	"time"
 
-	"github.com/42milez/go-oidc-server/app/api/validation"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/getkin/kin-openapi/openapi3filter"
+	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/42milez/go-oidc-server/app/datastore"
-
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
 	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
@@ -17,147 +22,222 @@ import (
 	chimw "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-playground/validator/v10"
+	"github.com/rs/zerolog"
 )
 
-type HandlerOption struct {
-	cache           *datastore.Cache
-	cookie          *service.Cookie
-	db              *datastore.Database
-	idGenerator     *xid.UniqueID
-	jwtUtil         *JWT
-	sessionCreator  *service.CreateSession
-	sessionRestorer *service.RestoreSession
-	sessionUpdater  *service.UpdateSession
-	validationUtil  *validator.Validate
-}
+const basicAuthSchemeName = "basicAuth"
+const requestTimeout = 30 * time.Second
 
-func NewMux(ctx context.Context, cfg *config.Config) (http.Handler, func(), error) {
+func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (http.Handler, func(), error) {
 	var err error
 
-	// --------------------------------------------------
-	//  DATASTORE
-	// --------------------------------------------------
+	appLogger = logger.With().Str(config.LoggerTagKey, config.AppLoggerTagValue).Logger()
+	accessLogger = logger.With().Str(config.LoggerTagKey, config.AccessLoggerTagValue).Logger()
 
-	var db *datastore.Database
-	var cache *datastore.Cache
-
-	if db, err = datastore.NewDatabase(ctx, cfg); err != nil {
-		return nil, nil, err
-	}
-
-	if cache, err = datastore.NewCache(ctx, cfg); err != nil {
-		return nil, nil, err
-	}
-
-	// --------------------------------------------------
 	//  HANDLER OPTION
 	// --------------------------------------------------
 
-	var idGen *xid.UniqueID
+	var option *HandlerOption
 
-	if idGen, err = xid.GetUniqueID(); err != nil {
+	if option, err = NewHandlerOption(); err != nil {
 		return nil, nil, err
 	}
 
-	option := &HandlerOption{
-		cache:           cache,
-		cookie:          service.NewCookie(rawHashKey, rawBlockKey, xtime.RealClocker{}),
-		db:              db,
-		idGenerator:     idGen,
-		sessionCreator:  service.NewCreateSession(repository.NewSession(cache)),
-		sessionRestorer: service.NewRestoreSession(repository.NewSession(cache)),
-		sessionUpdater:  service.NewUpdateSession(repository.NewSession(cache)),
-		validationUtil:  validator.New(),
-	}
-
-	if option.jwtUtil, err = NewJWT(xtime.RealClocker{}); err != nil {
-		return nil, nil, err
-	}
-
+	//  DATASTORE
 	// --------------------------------------------------
+
+	if err = ConfigureDatastore(ctx, cfg, option); err != nil {
+		return nil, nil, err
+	}
+
+	//  SERVICE
+	// --------------------------------------------------
+
+	ConfigureService(option)
+
 	//  HANDLER
 	// --------------------------------------------------
 
-	authenticateUserHdlr = NewAuthenticateHdlr(option)
-	checkHealthHdlr = NewCheckHealthHdlr(option)
-	consentHdlr = NewConsentHdlr(option)
-	registerUserHdlr = NewRegisterHdlr(option)
-
-	if authorizeGetHdlr, err = NewAuthorizeGetHdlr(option); err != nil {
+	if err = ConfigureHandler(option); err != nil {
 		return nil, nil, err
 	}
 
-	// --------------------------------------------------
 	//  ROUTER
 	// --------------------------------------------------
 
-	var mux *chi.Mux
-	var mw *MiddlewareFuncMap
+	mux := chi.NewRouter()
+
+	// Common Middleware Configuration
+
+	mux.Use(middleware.RequestID)
+	mux.Use(AccessLogger)
+	mux.Use(middleware.Timeout(requestTimeout))
+	mux.Use(middleware.Recoverer)
+
+	// OpenAPI Validation Middleware
+
 	var swag *openapi3.T
 
-	mux = chi.NewRouter()
-
-	if swag, err = GetSwagger(); err != nil {
+	if swag, err = oapigen.GetSwagger(); err != nil {
 		return nil, nil, err
 	}
 
 	swag.Servers = nil
 
-	mux.Use(chimw.OapiRequestValidator(swag))
+	mux.Use(chimw.OapiRequestValidatorWithOptions(swag, &chimw.Options{
+		Options: openapi3filter.Options{
+			AuthenticationFunc: NewOapiAuthentication(option.db),
+		},
+		ErrorHandler: NewOapiErrorHandler(),
+	}))
 
-	mw = NewMiddlewareFuncMap()
+	// Middleware Configuration on Each Handler
 
+	mw := oapigen.NewMiddlewareFuncMap()
 	rs := RestoreSession(option)
-	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs)
 
-	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
+	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs).SetTokenMW(rs)
+
+	mux = oapigen.MuxWithOptions(&HandlerImpl{}, &oapigen.ChiServerOptions{
 		BaseRouter:  mux,
 		Middlewares: mw,
 	})
 
 	return mux, func() {
-		xutil.CloseConnection(db.Client)
-		xutil.CloseConnection(cache.Client)
+		xutil.CloseConnection(option.db.Client)
+		xutil.CloseConnection(option.cache.Client)
 	}, nil
 }
 
-func NewAuthenticateHdlr(option *HandlerOption) *AuthenticateHdlr {
-	return &AuthenticateHdlr{
-		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.jwtUtil),
-		cookie:    option.cookie,
-		session:   option.sessionCreator,
-		validator: option.validationUtil,
+func NewOapiAuthentication(db *datastore.Database) openapi3filter.AuthenticationFunc {
+	svc := service.NewOapiAuthenticate(repository.NewRelyingParty(db))
+	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+		return oapiBasicAuthenticate(ctx, input, svc)
 	}
 }
 
-func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
-	v, err := validation.NewAuthorizeValidator()
+func oapiBasicAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationInput, svc CredentialValidator) error {
+	if input.SecuritySchemeName != basicAuthSchemeName {
+		return xerr.UnknownSecurityScheme
+	}
+
+	credentials, err := extractCredential(input.RequestValidationInput.Request)
+
 	if err != nil {
+		return err
+	}
+
+	clientID := credentials[0]
+	clientSecret := credentials[1]
+
+	if err = svc.ValidateCredential(ctx, clientID, clientSecret); err != nil {
+		LogError(input.RequestValidationInput.Request, err, nil)
+		return err
+	}
+
+	return nil
+}
+
+func extractCredential(r *http.Request) ([]string, error) {
+	authHdr := r.Header.Get("Authorization")
+
+	if xutil.IsEmpty(authHdr) {
+		return nil, xerr.UnauthorizedRequest
+	}
+
+	credentialBase64 := strings.Replace(authHdr, "Basic ", "", -1)
+	credentialDecoded, err := base64.StdEncoding.DecodeString(credentialBase64)
+
+	if err != nil {
+		return nil, xerr.UnexpectedErrorOccurred
+	}
+
+	credentials := strings.Split(string(credentialDecoded), ":")
+
+	return credentials, nil
+}
+
+func NewOapiErrorHandler() chimw.ErrorHandler {
+	return func(w http.ResponseWriter, message string, statusCode int) {
+		switch statusCode {
+		case http.StatusBadRequest:
+			RespondJSON400(w, nil, xerr.InvalidRequest, nil, nil)
+		case http.StatusUnauthorized:
+			RespondJSON401(w, nil, xerr.UnauthorizedRequest, nil, nil)
+		case http.StatusNotFound:
+			RespondJSON404(w)
+		default:
+			RespondJSON500(w, nil, nil)
+		}
+	}
+}
+
+func NewHandlerOption() (*HandlerOption, error) {
+	var idGen *xid.UniqueID
+	var err error
+
+	if idGen, err = xid.GetUniqueID(); err != nil {
 		return nil, err
 	}
-	return &AuthorizeGetHdlr{
-		service:   service.NewAuthorize(repository.NewUser(option.db, option.idGenerator)),
-		validator: v,
-	}, nil
+
+	option := &HandlerOption{
+		clock:       &xtime.RealClocker{},
+		cookie:      service.NewCookie(rawHashKey, rawBlockKey, xtime.RealClocker{}),
+		idGenerator: idGen,
+	}
+
+	if option.tokenGenerator, err = NewJWT(xtime.RealClocker{}); err != nil {
+		return nil, err
+	}
+
+	if option.validator, err = NewAuthorizeParamValidator(); err != nil {
+		return nil, err
+	}
+
+	return option, nil
 }
 
-func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {
-	return &CheckHealthHdlr{
-		service: service.NewCheckHealth(repository.NewCheckHealth(option.db, option.cache)),
+func ConfigureDatastore(ctx context.Context, cfg *config.Config, option *HandlerOption) error {
+	var err error
+
+	if option.db, err = datastore.NewDatabase(ctx, cfg); err != nil {
+		return err
 	}
+
+	if option.cache, err = datastore.NewCache(ctx, cfg); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func NewConsentHdlr(option *HandlerOption) *ConsentHdlr {
-	return &ConsentHdlr{
-		session: option.sessionUpdater,
+func ConfigureHandler(option *HandlerOption) error {
+	var err error
+
+	checkHealthHdlr = NewCheckHealthHdlr(option)
+	tokenHdlr = NewTokenHdlr(option)
+
+	if authenticateUserHdlr, err = NewAuthenticateHdlr(option); err != nil {
+		return err
 	}
+
+	if authorizeGetHdlr, err = NewAuthorizeGetHdlr(option); err != nil {
+		return err
+	}
+
+	if consentHdlr, err = NewConsentHdlr(option); err != nil {
+		return err
+	}
+
+	if registerUserHdlr, err = NewRegisterHdlr(option); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func NewRegisterHdlr(option *HandlerOption) *RegisterHdlr {
-	return &RegisterHdlr{
-		service:   service.NewCreateUser(repository.NewUser(option.db, option.idGenerator)),
-		session:   option.sessionRestorer,
-		validator: option.validationUtil,
-	}
+func ConfigureService(option *HandlerOption) {
+	option.sessionCreator = service.NewCreateSession(repository.NewSession(option.cache))
+	option.sessionRestorer = service.NewRestoreSession(repository.NewSession(option.cache))
+	option.sessionUpdater = service.NewUpdateSession(repository.NewSession(option.cache))
 }

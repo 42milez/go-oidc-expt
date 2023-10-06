@@ -5,15 +5,42 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/service"
-
-	"github.com/42milez/go-oidc-server/app/entity"
-	"github.com/42milez/go-oidc-server/app/typedef"
-
 	"github.com/42milez/go-oidc-server/app/ent/ent"
+	"github.com/42milez/go-oidc-server/app/entity"
+
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
-//go:generate mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
+//go:generate go run -mod=mod github.com/golang/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
+
+//  COOKIE
+// --------------------------------------------------
+
+type CookieReader interface {
+	Read(r *http.Request, name string) (string, error)
+}
+
+type CookieWriter interface {
+	Write(w http.ResponseWriter, name, val string, ttl time.Duration) error
+}
+
+//  SESSION
+// --------------------------------------------------
+
+type SessionCreator interface {
+	Create(ctx context.Context, sess *entity.Session) (string, error)
+}
+
+type SessionRestorer interface {
+	Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error)
+}
+
+type SessionUpdater interface {
+	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error
+}
+
+//  HEALTH CHECK
+// --------------------------------------------------
 
 type CacheStatusChecker interface {
 	CheckCacheStatus(ctx context.Context) error
@@ -28,12 +55,20 @@ type HealthChecker interface {
 	DBStatusChecker
 }
 
-type Authenticator interface {
-	Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error)
+//  AUTHENTICATION
+// --------------------------------------------------
+
+type ConsentVerifier interface {
+	VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error)
 }
 
-type Authorizer interface {
-	Authorize(ctx context.Context, userID typedef.UserID, param *service.AuthorizeParams) (string, error)
+type PasswordVerifier interface {
+	VerifyPassword(ctx context.Context, name, pw string) (typedef.UserID, error)
+}
+
+type Authenticator interface {
+	ConsentVerifier
+	PasswordVerifier
 }
 
 type UserCreator interface {
@@ -44,22 +79,57 @@ type UserReader interface {
 	SelectUser(ctx context.Context) (*ent.User, error)
 }
 
-type SessionCreator interface {
-	Create(ctx context.Context, sess *entity.Session) (string, error)
+//  OIDC: AUTHORIZATION
+// --------------------------------------------------
+
+type Authorizer interface {
+	Authorize(ctx context.Context, clientID, redirectURI, state string) (string, error)
 }
 
-type SessionRestorer interface {
-	Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error)
+type ConsentAcceptor interface {
+	AcceptConsent(ctx context.Context, userID typedef.UserID, clientID string) error
 }
 
-type SessionUpdater interface {
-	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error
+// OIDC: Token
+// --------------------------------------------------
+
+type CredentialValidator interface {
+	ValidateCredential(ctx context.Context, clientID, clientSecret string) error
 }
 
-type CookieReader interface {
-	Read(r *http.Request, name string) (string, error)
+type AuthCodeValidator interface {
+	ValidateAuthCode(ctx context.Context, code, clientId string) error
 }
 
-type CookieWriter interface {
-	Write(w http.ResponseWriter, name, val string, ttl time.Duration) error
+type RedirectUriValidator interface {
+	ValidateRedirectUri(ctx context.Context, uri, clientId string) error
+}
+
+type TokenRequestValidator interface {
+	AuthCodeValidator
+	RedirectUriValidator
+}
+
+type AuthCodeRevoker interface {
+	RevokeAuthCode(ctx context.Context, code, clientId string) error
+}
+
+type AccessTokenGenerator interface {
+	GenerateAccessToken() (string, error)
+}
+
+type RefreshTokenGenerator interface {
+	GenerateRefreshToken() (string, error)
+}
+
+type IdTokenGenerator interface {
+	GenerateIdToken() (string, error)
+}
+
+type TokenRequestAcceptor interface {
+	TokenRequestValidator
+	AuthCodeRevoker
+	AccessTokenGenerator
+	RefreshTokenGenerator
+	IdTokenGenerator
 }

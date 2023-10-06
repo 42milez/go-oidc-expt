@@ -366,44 +366,21 @@ func ModifiedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldModifiedAt, v))
 }
 
-// HasAuthCodes applies the HasEdge predicate on the "auth_codes" edge.
-func HasAuthCodes() predicate.User {
+// HasConsents applies the HasEdge predicate on the "consents" edge.
+func HasConsents() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AuthCodesTable, AuthCodesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, ConsentsTable, ConsentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAuthCodesWith applies the HasEdge predicate on the "auth_codes" edge with a given conditions (other predicates).
-func HasAuthCodesWith(preds ...predicate.AuthCode) predicate.User {
+// HasConsentsWith applies the HasEdge predicate on the "consents" edge with a given conditions (other predicates).
+func HasConsentsWith(preds ...predicate.Consent) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newAuthCodesStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasRedirectUris applies the HasEdge predicate on the "redirect_uris" edge.
-func HasRedirectUris() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RedirectUrisTable, RedirectUrisColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasRedirectUrisWith applies the HasEdge predicate on the "redirect_uris" edge with a given conditions (other predicates).
-func HasRedirectUrisWith(preds ...predicate.RedirectURI) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := newRedirectUrisStep()
+		step := newConsentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -414,32 +391,15 @@ func HasRedirectUrisWith(preds ...predicate.RedirectURI) predicate.User {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.User(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.User) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.User(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.User) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.User(sql.NotPredicates(p))
 }

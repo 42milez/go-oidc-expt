@@ -6,39 +6,35 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/42milez/go-oidc-server/app/config"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
-	"github.com/rs/zerolog/log"
 )
 
-const (
-	errFailedToEncodeHTTPResponse = "failed to encode http response"
-	errFailedToWriteHTTPResponse  = "failed to write http response"
-	errFailedToDecodeRequestBody  = "failed to decode request body"
-	errValidationError            = "validation error"
-)
-
-type ErrResponse struct {
-	Error   xerr.PublicErr `json:"error"`
+type Response struct {
+	Status  int            `json:"status"`
+	Summary xerr.PublicErr `json:"summary"`
 	Details []string       `json:"details,omitempty"`
 }
 
-func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
+func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	bodyBytes, err := json.Marshal(body)
 
 	if err != nil {
-		log.Error().Err(err).Msg(errFailedToEncodeHTTPResponse)
+		LogError(r, err, nil)
 
 		w.WriteHeader(http.StatusInternalServerError)
 
-		resp := ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
+		resp := Response{
+			Status:  http.StatusInternalServerError,
+			Summary: xerr.UnexpectedErrorOccurred,
 		}
 
 		if err = json.NewEncoder(w).Encode(resp); err != nil {
-			log.Error().Err(err).Msg(errFailedToWriteHTTPResponse)
+			LogError(r, err, nil)
 		}
 
 		return
@@ -47,28 +43,87 @@ func RespondJSON(w http.ResponseWriter, statusCode int, body any) {
 	w.WriteHeader(statusCode)
 
 	if _, err = fmt.Fprintf(w, "%s", bodyBytes); err != nil {
-		log.Error().Err(err).Msg(errFailedToWriteHTTPResponse)
+		LogError(r, err, nil)
 	}
 }
 
-func RespondJson500(w http.ResponseWriter, msg xerr.PublicErr) {
-	RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-		Error: msg,
+func RespondJSON200(w http.ResponseWriter, r *http.Request) {
+	RespondJSON(w, r, http.StatusOK, &Response{
+		Status:  http.StatusOK,
+		Summary: xerr.OK,
 	})
 }
 
-func Redirect(w http.ResponseWriter, r *http.Request, u string, code int) {
-	redirectURL, err := url.Parse(u)
+func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
+	body := &Response{
+		Status:  http.StatusBadRequest,
+		Summary: summary,
+	}
+	if details != nil {
+		body.Details = details
+	}
+	if err != nil {
+		appLogger.Error().Err(err).Send()
+	}
+	RespondJSON(w, r, http.StatusBadRequest, body)
+}
+
+func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
+	body := &Response{
+		Status:  http.StatusUnauthorized,
+		Summary: summary,
+	}
+	if details != nil {
+		body.Details = details
+	}
+	if err != nil {
+		appLogger.Error().Err(err).Send()
+	}
+	RespondJSON(w, r, http.StatusUnauthorized, body)
+}
+
+func RespondJSON404(w http.ResponseWriter) {
+	RespondJSON(w, nil, http.StatusNotFound, nil)
+}
+
+func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {
+	if err != nil {
+		appLogger.Error().Err(err).Send()
+	}
+	RespondJSON(w, r, http.StatusInternalServerError, &Response{
+		Status:  http.StatusInternalServerError,
+		Summary: xerr.UnexpectedErrorOccurred,
+	})
+}
+
+func RespondJSON503(w http.ResponseWriter, r *http.Request, err error) {
+	if err != nil {
+		appLogger.Error().Err(err).Send()
+	}
+	RespondJSON(w, r, http.StatusServiceUnavailable, &Response{
+		Status:  http.StatusServiceUnavailable,
+		Summary: xerr.ServiceTemporaryUnavailable,
+	})
+}
+
+func Redirect(w http.ResponseWriter, r *http.Request, path string, code int) {
+	cfg, err := config.New()
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	redirectURL, err := url.Parse(cfg.IdpHost + path)
 
 	if err != nil {
-		RespondJson500(w, xerr.UnexpectedErrorOccurred)
+		RespondJSON500(w, r, err)
 		return
 	}
 
 	if !xutil.IsEmpty(r.URL.RawQuery) {
-		redirectURL, err = url.Parse(fmt.Sprintf("%s&%s", redirectURL, r.URL.RawQuery))
+		redirectURL, err = url.Parse(fmt.Sprintf("%s?%s", redirectURL, r.URL.RawQuery))
 		if err != nil {
-			RespondJson500(w, xerr.UnexpectedErrorOccurred)
+			RespondJSON500(w, r, err)
 			return
 		}
 	}

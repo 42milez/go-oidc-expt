@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -55,10 +56,21 @@ func (ruc *RedirectURICreate) SetNillableModifiedAt(t *time.Time) *RedirectURICr
 	return ruc
 }
 
-// SetUserID sets the "user_id" field.
-func (ruc *RedirectURICreate) SetUserID(ti typedef.UserID) *RedirectURICreate {
-	ruc.mutation.SetUserID(ti)
+// SetRelyingPartyID sets the "relying_party_id" field.
+func (ruc *RedirectURICreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *RedirectURICreate {
+	ruc.mutation.SetRelyingPartyID(tpi)
 	return ruc
+}
+
+// SetID sets the "id" field.
+func (ruc *RedirectURICreate) SetID(tu typedef.RedirectURIID) *RedirectURICreate {
+	ruc.mutation.SetID(tu)
+	return ruc
+}
+
+// SetRelyingParty sets the "relying_party" edge to the RelyingParty entity.
+func (ruc *RedirectURICreate) SetRelyingParty(r *RelyingParty) *RedirectURICreate {
+	return ruc.SetRelyingPartyID(r.ID)
 }
 
 // Mutation returns the RedirectURIMutation object of the builder.
@@ -122,8 +134,11 @@ func (ruc *RedirectURICreate) check() error {
 	if _, ok := ruc.mutation.ModifiedAt(); !ok {
 		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "RedirectURI.modified_at"`)}
 	}
-	if _, ok := ruc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "RedirectURI.user_id"`)}
+	if _, ok := ruc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "RedirectURI.relying_party_id"`)}
+	}
+	if _, ok := ruc.mutation.RelyingPartyID(); !ok {
+		return &ValidationError{Name: "relying_party", err: errors.New(`ent: missing required edge "RedirectURI.relying_party"`)}
 	}
 	return nil
 }
@@ -139,8 +154,10 @@ func (ruc *RedirectURICreate) sqlSave(ctx context.Context) (*RedirectURI, error)
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = typedef.RedirectURIID(id)
+	}
 	ruc.mutation.id = &_node.ID
 	ruc.mutation.done = true
 	return _node, nil
@@ -149,8 +166,12 @@ func (ruc *RedirectURICreate) sqlSave(ctx context.Context) (*RedirectURI, error)
 func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) {
 	var (
 		_node = &RedirectURI{config: ruc.config}
-		_spec = sqlgraph.NewCreateSpec(redirecturi.Table, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(redirecturi.Table, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	)
+	if id, ok := ruc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ruc.mutation.URI(); ok {
 		_spec.SetField(redirecturi.FieldURI, field.TypeString, value)
 		_node.URI = value
@@ -163,9 +184,22 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
 		_node.ModifiedAt = value
 	}
-	if value, ok := ruc.mutation.UserID(); ok {
-		_spec.SetField(redirecturi.FieldUserID, field.TypeUint64, value)
-		_node.UserID = value
+	if nodes := ruc.mutation.RelyingPartyIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   redirecturi.RelyingPartyTable,
+			Columns: []string{redirecturi.RelyingPartyColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(relyingparty.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RelyingPartyID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -173,11 +207,15 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 // RedirectURICreateBulk is the builder for creating many RedirectURI entities in bulk.
 type RedirectURICreateBulk struct {
 	config
+	err      error
 	builders []*RedirectURICreate
 }
 
 // Save creates the RedirectURI entities in the database.
 func (rucb *RedirectURICreateBulk) Save(ctx context.Context) ([]*RedirectURI, error) {
+	if rucb.err != nil {
+		return nil, rucb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rucb.builders))
 	nodes := make([]*RedirectURI, len(rucb.builders))
 	mutators := make([]Mutator, len(rucb.builders))
@@ -211,9 +249,9 @@ func (rucb *RedirectURICreateBulk) Save(ctx context.Context) ([]*RedirectURI, er
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
+					nodes[i].ID = typedef.RedirectURIID(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

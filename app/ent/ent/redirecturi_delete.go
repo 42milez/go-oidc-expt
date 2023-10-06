@@ -40,7 +40,7 @@ func (rud *RedirectURIDelete) ExecX(ctx context.Context) int {
 }
 
 func (rud *RedirectURIDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(redirecturi.Table, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(redirecturi.Table, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	if ps := rud.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

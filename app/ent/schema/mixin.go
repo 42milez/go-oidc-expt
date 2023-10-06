@@ -26,10 +26,10 @@ func (BaseMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("id").
 			GoType(typedef.UserID(0)).
-			Immutable().
 			Annotations(entsql.Annotation{
 				Incremental: xutil.NewFalse(),
-			}),
+			}).
+			Immutable(),
 	}
 }
 

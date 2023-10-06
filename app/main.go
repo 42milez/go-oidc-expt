@@ -3,55 +3,69 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
+	"net/http"
 	"os"
 
-	"github.com/42milez/go-oidc-server/app/api"
-
-	"github.com/42milez/go-oidc-server/app/config"
-
 	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+
+	"github.com/42milez/go-oidc-server/app/api"
+	"github.com/42milez/go-oidc-server/app/config"
 )
 
-var version = "dev"
+var Version = "dev"
 
-func main() {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Str("role", "idp").Logger()
-
-	var cfg *config.Config
-	var err error
-
-	if cfg, err = config.New(); err != nil {
-		log.Fatal().Stack().Err(err).Msg("failed to parse env variable")
-	}
-
-	if err = run(context.Background(), cfg); err != nil {
-		log.Fatal().Stack().Err(err).Msg("failed to shutdown")
+func NewServer(lis net.Listener, mux http.Handler) *Server {
+	return &Server{
+		lis: lis,
+		srv: &http.Server{Handler: mux},
 	}
 }
 
-func run(ctx context.Context, cfg *config.Config) error {
+func NewBaseLogger(cfg *config.Config) *zerolog.Logger {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixNano
+	ret := zerolog.New(os.Stdout).Level(cfg.LogLevel).With().Timestamp().Str("env", cfg.Env).
+		Str("service", config.AppName).Logger()
+	return &ret
+}
+
+func Run(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
-	if err != nil {
-		log.Fatal().Stack().Err(err).Msgf("failed to listen port %d", cfg.Port)
-	}
-
-	log.Info().Msgf("listening on tcp://%s", lis.Addr().String())
-	log.Info().Msgf("application starting in %s (version: %s)\n", cfg.Env, version)
-
-	mux, cleanup, err := api.NewMux(ctx, cfg)
 
 	if err != nil {
-		log.Fatal().Stack().Err(err).Msg("failed to build routes")
+		log.Fatalf("failed to listen port %d", cfg.Port)
 	}
+
+	log.Printf("listening on tcp://%s", lis.Addr().String())
+	log.Printf("application starting in %s (Version: %s)\n", cfg.Env, Version)
+
+	mux, cleanup, err := api.NewMux(ctx, cfg, logger)
 
 	if cleanup != nil {
 		defer cleanup()
 	}
 
+	if err != nil {
+		log.Fatalf("failed to initialize mux: %s", err)
+	}
+
 	srv := NewServer(lis, mux)
 
 	return srv.Run(ctx)
+}
+
+func main() {
+	var cfg *config.Config
+	var err error
+
+	if cfg, err = config.New(); err != nil {
+		log.Fatalf("failed to get config values: %s", err)
+	}
+
+	baseLogger := NewBaseLogger(cfg)
+
+	if err = Run(context.Background(), cfg, baseLogger); err != nil {
+		log.Fatalf("failed to run server: %s", err)
+	}
 }

@@ -3,49 +3,59 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/entity"
-	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/repository"
 
 	"github.com/42milez/go-oidc-server/app/service"
 
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
+
 	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/schema"
 )
 
-type ConsentHdlr struct {
-	session SessionUpdater
+var consentHdlr *ConsentHdlr
+
+func NewConsentHdlr(option *HandlerOption) (*ConsentHdlr, error) {
+	return &ConsentHdlr{
+		service:   service.NewConsent(repository.NewUser(option.db, option.idGenerator)),
+		validator: option.validator,
+	}, nil
 }
 
-func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+type ConsentHdlr struct {
+	service   ConsentAcceptor
+	validator *validator.Validate
+}
+
+func (c *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var sessId typedef.SessionID
-	var sess *entity.Session
-	var ok bool
+	decoder := schema.NewDecoder()
+	q := &oapigen.AuthorizeParams{}
 
-	if sessId, ok = service.GetSessionID(ctx); !ok {
-		RespondJSON(w, http.StatusUnauthorized, &ErrorResponse{
-			Detail: xerr.UnauthorizedRequest.Error(),
-			Status: http.StatusUnauthorized,
-		})
+	if err := decoder.Decode(q, r.URL.Query()); err != nil {
+		RespondJSON500(w, r, err)
 		return
 	}
 
-	if sess, ok = service.GetSession(ctx); !ok {
-		RespondJSON(w, http.StatusUnauthorized, &ErrorResponse{
-			Detail: xerr.UnauthorizedRequest.Error(),
-			Status: http.StatusUnauthorized,
-		})
+	if err := c.validator.Struct(q); err != nil {
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
-	sess.Consent = true
+	sess, ok := service.GetSession(ctx)
 
-	if err := ch.session.Update(ctx, sessId, sess); err != nil {
-		RespondJson500(w, xerr.UnexpectedErrorOccurred)
+	if !ok {
+		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
-	Redirect(w, r, config.AuthorizationEndpoint, http.StatusFound)
+	if err := c.service.AcceptConsent(ctx, sess.UserID, q.ClientId); err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
 }

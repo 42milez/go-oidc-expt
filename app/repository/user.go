@@ -2,34 +2,80 @@ package repository
 
 import (
 	"context"
+	"errors"
+
+	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
-
 	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
 	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 )
+
+func NewUser(db *datastore.Database, idGen IDGenerator) *User {
+	return &User{
+		db:    db,
+		idGen: idGen,
+	}
+}
 
 type User struct {
 	db    *datastore.Database
 	idGen IDGenerator
 }
 
-func (u *User) CreateAuthCode(ctx context.Context, userID typedef.UserID, code string) (*ent.AuthCode, error) {
-	return u.db.Client.AuthCode.Create().SetUserID(userID).SetCode(code).Save(ctx)
-}
-
 func (u *User) CreateUser(ctx context.Context, name string, pw string) (*ent.User, error) {
 	return u.db.Client.User.Create().SetName(name).SetPassword(pw).Save(ctx)
 }
 
-func (u *User) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {
-	return u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
+func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+	tx, err := u.db.Client.Tx(ctx)
+
+	if err != nil {
+		return nil, rollback(tx, err)
+	}
+
+	targetUser, err := tx.User.Query().Where(user.ID(userID)).ForShare().Only(ctx)
+
+	if err != nil {
+		return nil, rollback(tx, err)
+	}
+
+	c, err := tx.Consent.Create().SetUser(targetUser).SetClientID(clientID).Save(ctx)
+
+	if err != nil {
+		return nil, rollback(tx, err)
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, rollback(tx, err)
+	}
+
+	return c, nil
 }
 
-func (u *User) ReadRedirectUriByUserID(ctx context.Context, userID typedef.UserID) ([]*ent.RedirectURI, error) {
-	return u.db.Client.RedirectURI.Query().Where(redirecturi.UserIDEQ(userID)).All(ctx)
+func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+	ret, err := u.db.Client.Consent.Query().Where(consent.UserID(userID), consent.ClientID(clientID)).Only(ctx)
+	if err != nil {
+		if errors.As(err, &errEntNotFoundError) {
+			return nil, xerr.ConsentNotFound
+		} else {
+			return nil, err
+		}
+	}
+	return ret, nil
+}
+
+func (u *User) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {
+	ret, err := u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
+	if err != nil {
+		if errors.As(err, &errEntNotFoundError) {
+			return nil, xerr.UserNotFound
+		}
+		return nil, err
+	}
+	return ret, err
 }

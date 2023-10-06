@@ -59,12 +59,12 @@ gen:
 
 ## lint: Run linters
 lint:
-	@golangci-lint run --fix
-	@vacuum lint -d app/api/spec/spec.yml
+	@go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run --fix
+	@vacuum lint -r vacuum-ignore-rules.yml -d app/api/spec/spec.yml
 
 ## migrate-apply: Apply migrations
 migrate-apply:
-	@./script/atlas/migrate-apply.sh
+	@./script/atlas/migrate-apply.sh ${DB_NAMES}
 
 ## migrate-diff: Generate migrations
 migrate-diff:
@@ -83,7 +83,7 @@ resolve:
 
 ## seed: Seeding database
 seed:
-	@go run ./script/seed/main.go
+	@go run ./script/seed/*.go
 
 ## test: Run all tests
 test:

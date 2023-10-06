@@ -1,7 +1,6 @@
 package xutil
 
 import (
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,7 +13,7 @@ func CloseConnection(client ClosableClient) {
 		return
 	}
 	if err := client.Close(); err != nil {
-		log.Error().Err(err).Msg(xerr.FailedToCloseConnection.Error())
+		log.Error().Stack().Err(err).Send()
 	}
 }
 

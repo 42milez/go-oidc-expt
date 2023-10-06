@@ -23,6 +23,7 @@ tags:
   - name: Authorization
   - name: HealthCheck
   - name: Registration
+  - name: Token
 paths:
   /health:
     get:
@@ -37,13 +38,165 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+              example:
+                status: 200
         '500':
           description: service not operational
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
-  /register:
+              example:
+                status: 500
+  /authenticate:
+    post:
+      description: Authenticates a user.
+      operationId: authenticate
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        description: User credential
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserName'
+                - $ref: '#/components/schemas/UserPassword'
+      responses:
+        '200':
+          description: Successfully authenticated.
+          headers:
+            Location:
+              description: Redirects consent endpoint with authorization request parameters.
+              schema:
+                type: string
+                format: url
+              example: http://localhost:8080/consent?&client_id=y6WKGu1WjDOFXhpMXDC1kGnOC4DElz&display=page&max_age=86400&nonce=NqaIIfMi9LAZiGgHn8hBAzfR4lWePLzFM4h83j9SoKXaJV6u3EWCJcy1MOPOOkYE&prompt=consent&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcb&response_type=code&scope=openid%20profile%20email&state=xw3dP7pYkyD3j5wBfENPjbdarNxIB9KNpvmaunO4xAHcHzrIYLaRQgHNxDBnmm1x
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /consent:
+    post:
+      description: Grant relying party permission to use user data.
+      operationId: consent
+      tags:
+        - Authorization
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '302':
+          description: Consent successfully accepted.
+          headers:
+            Location:
+              description: Redirects to authorization endpoint with authorization request parameters.
+              schema:
+                type: string
+                format: url
+              example: http://localhost:8080/consent?&client_id=y6WKGu1WjDOFXhpMXDC1kGnOC4DElz&display=page&max_age=86400&nonce=NqaIIfMi9LAZiGgHn8hBAzfR4lWePLzFM4h83j9SoKXaJV6u3EWCJcy1MOPOOkYE&prompt=consent&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcb&response_type=code&scope=openid%20profile%20email&state=xw3dP7pYkyD3j5wBfENPjbdarNxIB9KNpvmaunO4xAHcHzrIYLaRQgHNxDBnmm1x
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /authorize:
+    get:
+      description: Determines authentication and authorization status of user, redirects user to the appropriate page and returns an authorization code.
+      operationId: authorize
+      tags:
+        - Authorization
+      parameters:
+        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/Nonce'
+        - $ref: '#/components/parameters/RedirectUri'
+        - $ref: '#/components/parameters/ResponseType'
+        - $ref: '#/components/parameters/Scope'
+        - $ref: '#/components/parameters/State'
+        - $ref: '#/components/parameters/Display'
+        - $ref: '#/components/parameters/MaxAge'
+        - $ref: '#/components/parameters/Prompt'
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '302':
+          description: Successfully authorized.
+          headers:
+            Location:
+              description: Redirects to the "redirect_uri" with authorization code.
+              schema:
+                type: string
+                format: url
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /token:
+    post:
+      description: Returns a new Access Token, Refresh Token, and ID Token using the authorization code obtained from the authorization endpoint. The Refresh Token is used to reissue the access token.
+      operationId: token
+      tags:
+        - Token
+      security:
+        - basicAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        description: Issues a new access token if grant_type is authorization_code, and reissues access token if grant_type is refresh_token.
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  example: authorization_code
+                code:
+                  type: string
+                  nullable: true
+                  example: EYdxIU30xstnWZKxgA54RJMz1YUR0J
+                redirect_uri:
+                  type: string
+                  nullable: true
+                  example: http%3A%2F%2Flocalhost%3A8080%2Fcb
+                refresh_token:
+                  type: string
+                  nullable: true
+                  example: 8xLOxBtZp8
+              required:
+                - grant_type
+            examples:
+              new:
+                summary: Issue Access Token
+                value:
+                  grant_type: authorization_code
+                  code: SplxlOBeZQQYbYS6WxSbIA
+                  redirect_uri: http%3A%2F%2Flocalhost%3A8080%2Fcb
+              refresh:
+                summary: Reissue Access Token
+                value:
+                  grant_type: refresh_token
+                  refresh_token: 8xLOxBtZp8
+      responses:
+        '200':
+          description: Successfully accepted.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: 'no-store'
+            Pragma:
+              schema:
+                type: string
+                example: 'no-cache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+  /user/register:
     post:
       description: Creates a new user in the database.
       operationId: register
@@ -73,94 +226,20 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
               example:
                 status: 400
-                detail: invalid request
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /authenticate:
-    post:
-      description: Authenticates a user.
-      operationId: authenticate
-      tags:
-        - Authentication
-      parameters:
-        - $ref: '#/components/parameters/SessionId'
-      requestBody:
-        description: User to authenticate
-        required: true
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/UserName'
-                - $ref: '#/components/schemas/UserPassword'
-      responses:
-        '200':
-          description: Successfully authenticated.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Authentication failed due to invalid request.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: 400
-                detail: invalid request
-        '401':
-          description: Authentication failed due to invalid username or password.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                status: 401
-                detail: invalid username or password
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /consent:
-    post:
-      description: Grant relying party permission to use user data.
-      operationId: consent
-      tags:
-        - Authorization
-      parameters:
-        - $ref: '#/components/parameters/SessionId'
-      responses:
-        '302':
-          description: Successfully consented.
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /authorize:
-    get:
-      description: Authorize a user, and the user receive authorization code after successfully authorized.
-      operationId: authorize
-      tags:
-        - Authorization
-      parameters:
-        - $ref: '#/components/parameters/ClientId'
-        - $ref: '#/components/parameters/Nonce'
-        - $ref: '#/components/parameters/RedirectUri'
-        - $ref: '#/components/parameters/ResponseType'
-        - $ref: '#/components/parameters/Scope'
-        - $ref: '#/components/parameters/State'
-        - $ref: '#/components/parameters/Display'
-        - $ref: '#/components/parameters/IdTokenHint'
-        - $ref: '#/components/parameters/MaxAge'
-        - $ref: '#/components/parameters/Prompt'
-        - $ref: '#/components/parameters/SessionId'
-      responses:
-        '302':
-          description: Successfully authorized.
-        '400':
-          description: Invalid authorization parameters.
-        '401':
-          description: User not authenticated.
+                summary: invalid request
+                details:
+                  - some error 1
+                  - some error 2
+                  - some error 3
         '500':
           $ref: '#/components/responses/InternalServerError'
 components:
+  securitySchemes:
+    # https://swagger.io/docs/specification/authentication/basic-authentication/
+    basicAuth:
+      description: The combination of "client_id" and "client_secret" that concatenated with colon and base64 encoded.
+      type: http
+      scheme: basic
   parameters:
     SessionId:
       name: sid
@@ -173,7 +252,7 @@ components:
     ClientId:
       name: client_id
       in: query
-      description: represents "client_id" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "client_id" parameter
       required: true
       schema:
         type: string
@@ -181,10 +260,21 @@ components:
       x-oapi-codegen-extra-tags:
         schema: client_id
         validate: required,alphanum
+    Code:
+      name: code
+      in: query
+      description: represents "code" parameter described in
+      required: true
+      schema:
+        type: string
+      example: ''
+      x-oapi-codegen-extra-tags:
+        schema: code
+        validate: required,alphanum
     Display:
       name: display
       in: query
-      description: represents "display" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "display" parameter
       required: true
       schema:
         type: string
@@ -192,21 +282,21 @@ components:
       x-oapi-codegen-extra-tags:
         schema: display
         validate: required
-    IdTokenHint:
-      name: id_token_hint
+    GrantType:
+      name: grant_type
       in: query
-      description: represents "id_token_hint" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "grant_type" parameter
       required: true
       schema:
         type: string
       example: ''
       x-oapi-codegen-extra-tags:
-        schema: id_token_hint
-        validate: required,alpha
+        schema: grant_type
+        validate: required
     MaxAge:
       name: max_age
       in: query
-      description: represents "max_age" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "max_age" parameter
       required: true
       schema:
         type: integer
@@ -218,7 +308,7 @@ components:
     Nonce:
       name: nonce
       in: query
-      description: represents "nonce" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "nonce" parameter
       required: true
       schema:
         type: string
@@ -229,7 +319,7 @@ components:
     Prompt:
       name: prompt
       in: query
-      description: represents "prompt" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "prompt" parameter
       required: true
       schema:
         type: string
@@ -240,7 +330,7 @@ components:
     RedirectUri:
       name: redirect_uri
       in: query
-      description: represents "redirect_uri" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "redirect_uri" parameter
       required: true
       schema:
         type: string
@@ -251,7 +341,7 @@ components:
     ResponseType:
       name: response_type
       in: query
-      description: represents "response_type" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "response_type" parameter
       required: true
       schema:
         type: string
@@ -262,7 +352,7 @@ components:
     Scope:
       name: scope
       in: query
-      description: represents "scope" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "scope" parameter
       required: true
       schema:
         type: string
@@ -273,7 +363,7 @@ components:
     State:
       name: state
       in: query
-      description: represents "state" parameter described in https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+      description: represents "state" parameter
       required: true
       schema:
         type: string
@@ -290,7 +380,33 @@ components:
             $ref: '#/components/schemas/ErrorResponse'
           example:
             status: 500
-            detail: unexpected error occurred
+            summary: unexpected error occurred
+    InvalidRequest:
+      description: Operation failed due to invalid request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 400
+            summary: invalid request
+            details:
+              - some error 1
+              - some error 2
+              - some error 3
+    UnauthorizedRequest:
+      description: Operation failed due to unauthorized request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            status: 400
+            summary: unauthorized request
+            details:
+              - some error 1
+              - some error 2
+              - some error 3
   schemas:
     Health:
       description: represents the status of service.
@@ -312,6 +428,8 @@ components:
             id:
               type: integer
               format: uint64
+              example: 479552814176534893
+              x-go-type: typedef.UserID
               x-oapi-codegen-extra-tags:
                 validate: required
         - $ref: '#/components/schemas/UserName'
@@ -323,7 +441,7 @@ components:
       properties:
         name:
           type: string
-          example: username0
+          example: 42milez
           x-oapi-codegen-extra-tags:
             validate: required
     UserPassword:
@@ -334,20 +452,57 @@ components:
       properties:
         password:
           type: string
-          example: username0
+          example: vXdt-9ZQ34!8NM3z
           x-oapi-codegen-extra-tags:
             validate: required
+    TokenResponse:
+        description: ''
+        type: object
+        required:
+          - access_token
+          - refresh_token
+          - id_token
+          - token_type
+          - expires_in
+        properties:
+          access_token:
+            type: string
+            example: ''
+          id_token:
+            type: string
+            example: ''
+          refresh_token:
+            type: string
+            example: ''
+          token_type:
+            type: string
+            x-go-type: typedef.TokenType
+            example: 'Bearer'
+          expires_in:
+            type: integer
+            format: uint64
+            example: 3600
     ErrorResponse:
-      description: represents error
+      description: represents error response
       type: object
       required:
         - status
-        - detail
+        - summary
       properties:
         status:
           type: integer
           format: uint64
-          example: 0
-        detail:
+          example: 500
+        summary:
           type: string
-          example: ''
+          example: unexpected error occurred
+          x-go-type: xerr.PublicErr
+          x-go-type-skip-optional-pointer: true
+        details:
+          type: array
+          items:
+            type: string
+          example:
+            - some error 1
+            - some error 2
+            - some error 3

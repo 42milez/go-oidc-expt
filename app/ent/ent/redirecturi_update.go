@@ -88,6 +88,9 @@ func (ruu *RedirectURIUpdate) check() error {
 			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectURI.uri": %w`, err)}
 		}
 	}
+	if _, ok := ruu.mutation.RelyingPartyID(); ruu.mutation.RelyingPartyCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "RedirectURI.relying_party"`)
+	}
 	return nil
 }
 
@@ -95,7 +98,7 @@ func (ruu *RedirectURIUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := ruu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	if ps := ruu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -202,6 +205,9 @@ func (ruuo *RedirectURIUpdateOne) check() error {
 			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectURI.uri": %w`, err)}
 		}
 	}
+	if _, ok := ruuo.mutation.RelyingPartyID(); ruuo.mutation.RelyingPartyCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "RedirectURI.relying_party"`)
+	}
 	return nil
 }
 
@@ -209,7 +215,7 @@ func (ruuo *RedirectURIUpdateOne) sqlSave(ctx context.Context) (_node *RedirectU
 	if err := ruuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	id, ok := ruuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RedirectURI.id" for update`)}

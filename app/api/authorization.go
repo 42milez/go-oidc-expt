@@ -3,7 +3,10 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
+
+	"github.com/42milez/go-oidc-server/app/api/oapigen"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
@@ -11,26 +14,35 @@ import (
 	"github.com/gorilla/schema"
 )
 
+var authorizeGetHdlr *AuthorizeGetHdlr
+
+func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return nil, err
+	}
+	return &AuthorizeGetHdlr{
+		service:   service.NewAuthorize(repository.NewRelyingParty(option.db)),
+		validator: v,
+	}, nil
+}
+
 type AuthorizeGetHdlr struct {
 	service   Authorizer
 	validator *validator.Validate
 }
 
-func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
-	q := &AuthorizeParams{}
+	q := &oapigen.AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
-		RespondJSON(w, http.StatusInternalServerError, &ErrResponse{
-			Error: xerr.UnexpectedErrorOccurred,
-		})
+		RespondJSON500(w, r, err)
 		return
 	}
 
-	if err := ag.validator.Struct(q); err != nil {
-		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.InvalidRequest,
-		})
+	if err := a.validator.Struct(q); err != nil {
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
@@ -40,25 +52,10 @@ func (ag *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	sess, ok := service.GetSession(r.Context())
-
-	if !ok {
-		RespondJSON(w, http.StatusUnauthorized, &ErrResponse{
-			Error: xerr.UnauthorizedRequest,
-		})
-		return
-	}
-
-	params := &service.AuthorizeParams{
-		RedirectUri: q.RedirectUri,
-		State:       q.State,
-	}
-	location, err := ag.service.Authorize(r.Context(), sess.UserID, params)
+	location, err := a.service.Authorize(r.Context(), q.ClientId, q.RedirectUri, q.State)
 
 	if err != nil {
-		RespondJSON(w, http.StatusBadRequest, &ErrResponse{
-			Error: xerr.InvalidParameter,
-		})
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
@@ -76,4 +73,19 @@ type AuthorizePost struct {
 
 func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// NOT IMPLEMENTED YET
+}
+
+func parseAuthorizeParam(r *http.Request, v *validator.Validate) (*oapigen.AuthorizeParams, error) {
+	decoder := schema.NewDecoder()
+	ret := &oapigen.AuthorizeParams{}
+
+	if err := decoder.Decode(ret, r.URL.Query()); err != nil {
+		return nil, err
+	}
+
+	if err := v.Struct(ret); err != nil {
+		return nil, xerr.FailedToValidate.Wrap(err)
+	}
+
+	return ret, nil
 }

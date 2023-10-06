@@ -1,0 +1,8 @@
+display=page&
+max_age=86400&
+nonce=NqaIIfMi9LAZiGgHn8hBAzfR4lWePLzFM4h83j9SoKXaJV6u3EWCJcy1MOPOOkYE&
+prompt=consent&
+redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcb&
+response_type=code&
+scope=openid%20profile%20email&
+state=xw3dP7pYkyD3j5wBfENPjbdarNxIB9KNpvmaunO4xAHcHzrIYLaRQgHNxDBnmm1x

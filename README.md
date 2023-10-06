@@ -30,11 +30,24 @@ TBD ( Use the image upload to Docker Hub )
 ./script/bootstrap/keypair.sh
 ```
 
+### Generate keys for encrypting/decrypting cookie
+
+```
+./script/bootstrap/key.sh
+```
+
 The script creates a key pair in `app/pkg/xjwt/cert`.
 
 References:
 
 - [Generating an Elliptic Curve keys](https://cloud.google.com/iot/docs/how-tos/credentials/keys#generating_an_elliptic_curve_keys)
+
+### Create and switch docker context:
+
+```
+docker context create lima-go-oidc-server --docker "host=unix:///${HOME}/.lima/go-oidc-server/sock/docker.sock"
+docker context use lima-go-oidc-server
+```
 
 ### Create and start the virtual machine thant runs docker containers
 
@@ -46,13 +59,6 @@ make lc-start
 The virtual machine:
 - can be stopped with `make lc-stop`
 - can be deleted with `make lc-delete`
-
-### Create and switch docker context:
-
-```
-docker context create lima-go-oidc-server --docker "host=unix:///${HOME}/.lima/go-oidc-server/sock/docker.sock"
-docker context use lima-go-oidc-server
-```
 
 ### Run containers
 
@@ -95,7 +101,7 @@ e.g. The following command generates `AuthCode` schema.
 go run -mod=mod entgo.io/ent/cmd/ent new --target app/ent/schema AuthCode
 ```
 
-### Generating versioned migration files
+### Generating versioned a migration file
 
 ```
 make migrate-diff MIGRATION_NAME=<MIGRATION_NAME>

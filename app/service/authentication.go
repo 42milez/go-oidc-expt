@@ -8,23 +8,38 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/app/ent/ent"
 )
 
-var errEntNotFoundError = &ent.NotFoundError{}
+func NewAuthenticate(repo UserConsentReader, tokenGen TokenGenerator) *Authenticate {
+	return &Authenticate{
+		repo:     repo,
+		tokenGen: tokenGen,
+	}
+}
 
 type Authenticate struct {
-	repo     UserByNameReader
+	repo     UserConsentReader
 	tokenGen TokenGenerator
 }
 
-func (a *Authenticate) Authenticate(ctx context.Context, name, pw string) (typedef.UserID, error) {
+func (a *Authenticate) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error) {
+	_, err := a.repo.ReadConsent(ctx, userID, clientID)
+	if err != nil {
+		if errors.Is(err, xerr.ConsentNotFound) {
+			return false, nil
+		} else {
+			return false, err
+		}
+	}
+	return true, nil
+}
+
+func (a *Authenticate) VerifyPassword(ctx context.Context, name, pw string) (typedef.UserID, error) {
 	user, err := a.repo.ReadUserByName(ctx, name)
 
 	if err != nil {
-		if errors.As(err, &errEntNotFoundError) {
-			return 0, xerr.UserNotFound.Wrap(err)
+		if errors.Is(err, xerr.UserNotFound) {
+			return 0, xerr.UserNotFound
 		} else {
 			return 0, err
 		}

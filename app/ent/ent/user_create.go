@@ -10,8 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
-	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
@@ -83,34 +82,19 @@ func (uc *UserCreate) SetID(ti typedef.UserID) *UserCreate {
 	return uc
 }
 
-// AddAuthCodeIDs adds the "auth_codes" edge to the AuthCode entity by IDs.
-func (uc *UserCreate) AddAuthCodeIDs(ids ...int) *UserCreate {
-	uc.mutation.AddAuthCodeIDs(ids...)
+// AddConsentIDs adds the "consents" edge to the Consent entity by IDs.
+func (uc *UserCreate) AddConsentIDs(ids ...typedef.ConsentID) *UserCreate {
+	uc.mutation.AddConsentIDs(ids...)
 	return uc
 }
 
-// AddAuthCodes adds the "auth_codes" edges to the AuthCode entity.
-func (uc *UserCreate) AddAuthCodes(a ...*AuthCode) *UserCreate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// AddConsents adds the "consents" edges to the Consent entity.
+func (uc *UserCreate) AddConsents(c ...*Consent) *UserCreate {
+	ids := make([]typedef.ConsentID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return uc.AddAuthCodeIDs(ids...)
-}
-
-// AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
-func (uc *UserCreate) AddRedirectURIIDs(ids ...int) *UserCreate {
-	uc.mutation.AddRedirectURIIDs(ids...)
-	return uc
-}
-
-// AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
-func (uc *UserCreate) AddRedirectUris(r ...*RedirectURI) *UserCreate {
-	ids := make([]int, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
-	}
-	return uc.AddRedirectURIIDs(ids...)
+	return uc.AddConsentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -248,31 +232,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldModifiedAt, field.TypeTime, value)
 		_node.ModifiedAt = value
 	}
-	if nodes := uc.mutation.AuthCodesIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.ConsentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.AuthCodesTable,
-			Columns: []string{user.AuthCodesColumn},
+			Table:   user.ConsentsTable,
+			Columns: []string{user.ConsentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := uc.mutation.RedirectUrisIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.RedirectUrisTable,
-			Columns: []string{user.RedirectUrisColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(consent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -286,11 +254,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 // UserCreateBulk is the builder for creating many User entities in bulk.
 type UserCreateBulk struct {
 	config
+	err      error
 	builders []*UserCreate
 }
 
 // Save creates the User entities in the database.
 func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
+	if ucb.err != nil {
+		return nil, ucb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ucb.builders))
 	nodes := make([]*User, len(ucb.builders))
 	mutators := make([]Mutator, len(ucb.builders))

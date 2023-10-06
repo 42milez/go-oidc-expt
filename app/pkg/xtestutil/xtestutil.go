@@ -1,11 +1,13 @@
 package xtestutil
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -30,11 +32,11 @@ type Response struct {
 	Body       []byte
 }
 
-func AssertResponse(t *testing.T, got *http.Response, want *Response) {
+func AssertResponse(t *testing.T, want *Response, got *http.Response) {
 	t.Helper()
 	t.Cleanup(func() {
 		if err := got.Body.Close(); err != nil {
-			t.Errorf("%s", xerr.FailedToCloseResponseBody)
+			t.Fatal(err)
 		}
 	})
 	assertStatus(t, want, got)
@@ -42,11 +44,11 @@ func AssertResponse(t *testing.T, got *http.Response, want *Response) {
 	assertBody(t, want, got)
 }
 
-func AssertResponseJSON(t *testing.T, got *http.Response, want *Response) {
+func AssertResponseJSON(t *testing.T, want *Response, got *http.Response) {
 	t.Helper()
 	t.Cleanup(func() {
 		if err := got.Body.Close(); err != nil {
-			t.Errorf("%s", xerr.FailedToCloseResponseBody)
+			t.Fatal(err)
 		}
 	})
 	assertStatus(t, want, got)
@@ -56,7 +58,6 @@ func AssertResponseJSON(t *testing.T, got *http.Response, want *Response) {
 
 func assertStatus(t *testing.T, want *Response, got *http.Response) {
 	t.Helper()
-
 	if want.StatusCode != got.StatusCode {
 		t.Errorf("status not matched ( want = %d; got = %d )", want.StatusCode, got.StatusCode)
 	}
@@ -68,7 +69,7 @@ func assertLocation(t *testing.T, want *Response, got *http.Response) {
 	gotLocation, err := got.Location()
 
 	if err != nil && !errors.Is(err, http.ErrNoLocation) {
-		t.Error(xerr.FailedToReadResponseLocation)
+		t.Error(err)
 	}
 
 	if len(want.Location) > 0 && want.Location != gotLocation.String() {
@@ -93,7 +94,7 @@ func assertBody(t *testing.T, want *Response, got *http.Response) {
 	gb := strings.Replace(xstring.ByteToString(gotBody), "\n", "", -1)
 
 	if wb != gb {
-		t.Errorf("body not matched ( want = %s; got = %s", wb, gb)
+		t.Errorf("response body not matched ( want = %s; got = %s", wb, gb)
 	}
 }
 
@@ -103,7 +104,7 @@ func assertBodyJSON(t *testing.T, want *Response, got *http.Response) {
 	gotBody, err := io.ReadAll(got.Body)
 
 	if err != nil {
-		t.Errorf("%s", xerr.FailedToReadResponseBody)
+		t.Fatal(err)
 	}
 
 	if xutil.IsEmpty(want.Body) && xutil.IsEmpty(gotBody) {
@@ -113,27 +114,16 @@ func assertBodyJSON(t *testing.T, want *Response, got *http.Response) {
 	var wantJSON, gotJSON any
 
 	if err = json.Unmarshal(want.Body, &wantJSON); err != nil {
-		t.Errorf("%s", xerr.FailedToUnmarshalJSON)
+		t.Fatal(err)
 	}
 
 	if err = json.Unmarshal(gotBody, &gotJSON); err != nil {
-		t.Errorf("%s", xerr.FailedToUnmarshalJSON)
+		t.Fatal(err)
 	}
 
 	if d := cmp.Diff(wantJSON, gotJSON); !xutil.IsEmpty(d) {
-		t.Errorf("%s (-got +want)\n%s", xerr.ResponseBodyNotMatched, d)
+		t.Errorf("response body not matched (-want +got):\n%s", d)
 	}
-}
-
-//  Error
-// --------------------------------------------------
-
-const DummyError DummyErr = "DUMMY ERROR"
-
-type DummyErr string
-
-func (v DummyErr) Error() string {
-	return string(v)
 }
 
 //  Clock
@@ -158,7 +148,7 @@ func LoadFile(t *testing.T, path string) []byte {
 	t.Helper()
 	data, err := os.ReadFile(path)
 	if err != nil {
-		t.Fatalf("%s: %v", xerr.FailedToReadFile, err)
+		t.Fatal(err)
 	}
 	return data
 }
@@ -172,21 +162,25 @@ const TestDBUser = "idp_test"
 const TestDBPassword = "idp_test"
 const TestDBName = "idp_test"
 
-func NewDatabase(t *testing.T) *datastore.Database {
+func NewDatabase(t *testing.T, c *config.Config) *datastore.Database {
 	t.Helper()
 
 	var cfg *config.Config
 	var err error
 
-	if cfg, err = config.New(); err != nil {
-		t.Fatal(err)
+	if c != nil {
+		cfg = c
+	} else {
+		if cfg, err = config.New(); err != nil {
+			t.Fatal(err)
+		}
+		cfg.DBAdmin = TestDBUser
+		cfg.DBPassword = TestDBPassword
+		cfg.DBHost = TestDBHost
+		cfg.DBPort = TestDBPort
+		cfg.DBName = TestDBName
+		cfg.Debug = false
 	}
-
-	cfg.DBAdmin = TestDBUser
-	cfg.DBPassword = TestDBPassword
-	cfg.DBHost = TestDBHost
-	cfg.DBPort = TestDBPort
-	cfg.DBName = TestDBName
 
 	var db *datastore.Database
 
@@ -236,4 +230,62 @@ func NewCache(t *testing.T) *datastore.Cache {
 	})
 
 	return cache
+}
+
+func ExitOnError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+type RequestParam struct {
+	Cookies []*http.Cookie
+	Headers map[string]string
+}
+
+func Request(t *testing.T, c *http.Client, method string, u *url.URL, p *RequestParam, data []byte) (*http.Response, error) {
+	t.Helper()
+
+	var payload io.Reader = nil
+
+	if data != nil {
+		payload = bytes.NewReader(data)
+	}
+
+	req, e := http.NewRequest(method, u.String(), payload)
+	if e != nil {
+		return nil, e
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	if (p != nil) && len(p.Headers) > 0 {
+		for k, v := range p.Headers {
+			req.Header.Set(k, v)
+		}
+	}
+
+	if (p != nil) && (len(p.Cookies) > 0) {
+		for _, v := range p.Cookies {
+			req.AddCookie(v)
+		}
+	}
+
+	resp, e := c.Do(req)
+	if e != nil {
+		return nil, e
+	}
+
+	return resp, nil
+}
+
+func CloseResponseBody(t *testing.T, resp *http.Response) {
+	t.Helper()
+	if resp == nil {
+		return
+	}
+	if err := resp.Body.Close(); err != nil {
+		t.Fatal(err)
+	}
 }

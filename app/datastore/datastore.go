@@ -4,14 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
+	"github.com/cenkalti/backoff/v4"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
 )
@@ -22,13 +21,17 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 
 	if err != nil {
 		xutil.CloseConnection(db)
-		return nil, xerr.FailToEstablishConnection.Wrap(err)
+		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
-	defer cancel()
+	//ctx, cancel := context.WithTimeout(ctx, pingCtxTimeout*time.Second)
+	//defer cancel()
 
-	if err = db.PingContext(ctx); err != nil {
+	pingOp := func() error {
+		return db.PingContext(ctx)
+	}
+
+	if err = ping(ctx, pingOp); err != nil {
 		return nil, err
 	}
 
@@ -38,6 +41,10 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 
 	drv := entsql.OpenDB(dbDialect, db)
 	client := ent.NewClient(ent.Driver(drv))
+
+	if cfg.Debug {
+		client = client.Debug()
+	}
 
 	return &Database{
 		Client: client,
@@ -50,12 +57,24 @@ func NewCache(ctx context.Context, cfg *config.Config) (*Cache, error) {
 		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
 	})
 
-	if err := client.Ping(ctx).Err(); err != nil {
+	pingOp := func() error {
+		return client.Ping(ctx).Err()
+	}
+
+	if err := ping(ctx, pingOp); err != nil {
 		xutil.CloseConnection(client)
-		return nil, xerr.FailedToReachHost.Wrap(err)
+		return nil, err
 	}
 
 	return &Cache{
 		Client: client,
 	}, nil
+}
+
+func ping(ctx context.Context, op func() error) error {
+	b := backoff.WithContext(backoff.NewExponentialBackOff(), ctx)
+	if err := backoff.Retry(op, b); err != nil {
+		return err
+	}
+	return nil
 }

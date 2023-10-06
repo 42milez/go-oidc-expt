@@ -7,21 +7,25 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
 	"github.com/42milez/go-oidc-server/app/ent/ent/predicate"
+	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // AuthCodeQuery is the builder for querying AuthCode entities.
 type AuthCodeQuery struct {
 	config
-	ctx        *QueryContext
-	order      []authcode.OrderOption
-	inters     []Interceptor
-	predicates []predicate.AuthCode
-	withFKs    bool
+	ctx              *QueryContext
+	order            []authcode.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.AuthCode
+	withRelyingParty *RelyingPartyQuery
+	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +62,28 @@ func (acq *AuthCodeQuery) Order(o ...authcode.OrderOption) *AuthCodeQuery {
 	return acq
 }
 
+// QueryRelyingParty chains the current query on the "relying_party" edge.
+func (acq *AuthCodeQuery) QueryRelyingParty() *RelyingPartyQuery {
+	query := (&RelyingPartyClient{config: acq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := acq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := acq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authcode.Table, authcode.FieldID, selector),
+			sqlgraph.To(relyingparty.Table, relyingparty.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, authcode.RelyingPartyTable, authcode.RelyingPartyColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(acq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first AuthCode entity from the query.
 // Returns a *NotFoundError when no AuthCode was found.
 func (acq *AuthCodeQuery) First(ctx context.Context) (*AuthCode, error) {
@@ -82,8 +108,8 @@ func (acq *AuthCodeQuery) FirstX(ctx context.Context) *AuthCode {
 
 // FirstID returns the first AuthCode ID from the query.
 // Returns a *NotFoundError when no AuthCode ID was found.
-func (acq *AuthCodeQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (acq *AuthCodeQuery) FirstID(ctx context.Context) (id typedef.AuthCodeID, err error) {
+	var ids []typedef.AuthCodeID
 	if ids, err = acq.Limit(1).IDs(setContextOp(ctx, acq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -95,7 +121,7 @@ func (acq *AuthCodeQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (acq *AuthCodeQuery) FirstIDX(ctx context.Context) int {
+func (acq *AuthCodeQuery) FirstIDX(ctx context.Context) typedef.AuthCodeID {
 	id, err := acq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -133,8 +159,8 @@ func (acq *AuthCodeQuery) OnlyX(ctx context.Context) *AuthCode {
 // OnlyID is like Only, but returns the only AuthCode ID in the query.
 // Returns a *NotSingularError when more than one AuthCode ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (acq *AuthCodeQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (acq *AuthCodeQuery) OnlyID(ctx context.Context) (id typedef.AuthCodeID, err error) {
+	var ids []typedef.AuthCodeID
 	if ids, err = acq.Limit(2).IDs(setContextOp(ctx, acq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -150,7 +176,7 @@ func (acq *AuthCodeQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (acq *AuthCodeQuery) OnlyIDX(ctx context.Context) int {
+func (acq *AuthCodeQuery) OnlyIDX(ctx context.Context) typedef.AuthCodeID {
 	id, err := acq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -178,7 +204,7 @@ func (acq *AuthCodeQuery) AllX(ctx context.Context) []*AuthCode {
 }
 
 // IDs executes the query and returns a list of AuthCode IDs.
-func (acq *AuthCodeQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (acq *AuthCodeQuery) IDs(ctx context.Context) (ids []typedef.AuthCodeID, err error) {
 	if acq.ctx.Unique == nil && acq.path != nil {
 		acq.Unique(true)
 	}
@@ -190,7 +216,7 @@ func (acq *AuthCodeQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (acq *AuthCodeQuery) IDsX(ctx context.Context) []int {
+func (acq *AuthCodeQuery) IDsX(ctx context.Context) []typedef.AuthCodeID {
 	ids, err := acq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -245,15 +271,27 @@ func (acq *AuthCodeQuery) Clone() *AuthCodeQuery {
 		return nil
 	}
 	return &AuthCodeQuery{
-		config:     acq.config,
-		ctx:        acq.ctx.Clone(),
-		order:      append([]authcode.OrderOption{}, acq.order...),
-		inters:     append([]Interceptor{}, acq.inters...),
-		predicates: append([]predicate.AuthCode{}, acq.predicates...),
+		config:           acq.config,
+		ctx:              acq.ctx.Clone(),
+		order:            append([]authcode.OrderOption{}, acq.order...),
+		inters:           append([]Interceptor{}, acq.inters...),
+		predicates:       append([]predicate.AuthCode{}, acq.predicates...),
+		withRelyingParty: acq.withRelyingParty.Clone(),
 		// clone intermediate query.
 		sql:  acq.sql.Clone(),
 		path: acq.path,
 	}
+}
+
+// WithRelyingParty tells the query-builder to eager-load the nodes that are connected to
+// the "relying_party" edge. The optional arguments are used to configure the query builder of the edge.
+func (acq *AuthCodeQuery) WithRelyingParty(opts ...func(*RelyingPartyQuery)) *AuthCodeQuery {
+	query := (&RelyingPartyClient{config: acq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	acq.withRelyingParty = query
+	return acq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -332,20 +370,23 @@ func (acq *AuthCodeQuery) prepareQuery(ctx context.Context) error {
 
 func (acq *AuthCodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AuthCode, error) {
 	var (
-		nodes   = []*AuthCode{}
-		withFKs = acq.withFKs
-		_spec   = acq.querySpec()
+		nodes       = []*AuthCode{}
+		_spec       = acq.querySpec()
+		loadedTypes = [1]bool{
+			acq.withRelyingParty != nil,
+		}
 	)
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, authcode.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AuthCode).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &AuthCode{config: acq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
+	}
+	if len(acq.modifiers) > 0 {
+		_spec.Modifiers = acq.modifiers
 	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
@@ -356,11 +397,50 @@ func (acq *AuthCodeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := acq.withRelyingParty; query != nil {
+		if err := acq.loadRelyingParty(ctx, query, nodes, nil,
+			func(n *AuthCode, e *RelyingParty) { n.Edges.RelyingParty = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (acq *AuthCodeQuery) loadRelyingParty(ctx context.Context, query *RelyingPartyQuery, nodes []*AuthCode, init func(*AuthCode), assign func(*AuthCode, *RelyingParty)) error {
+	ids := make([]typedef.RelyingPartyID, 0, len(nodes))
+	nodeids := make(map[typedef.RelyingPartyID][]*AuthCode)
+	for i := range nodes {
+		fk := nodes[i].RelyingPartyID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(relyingparty.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "relying_party_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (acq *AuthCodeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := acq.querySpec()
+	if len(acq.modifiers) > 0 {
+		_spec.Modifiers = acq.modifiers
+	}
 	_spec.Node.Columns = acq.ctx.Fields
 	if len(acq.ctx.Fields) > 0 {
 		_spec.Unique = acq.ctx.Unique != nil && *acq.ctx.Unique
@@ -369,7 +449,7 @@ func (acq *AuthCodeQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (acq *AuthCodeQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(authcode.Table, authcode.Columns, sqlgraph.NewFieldSpec(authcode.FieldID, field.TypeUint64))
 	_spec.From = acq.sql
 	if unique := acq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -383,6 +463,9 @@ func (acq *AuthCodeQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != authcode.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if acq.withRelyingParty != nil {
+			_spec.Node.AddColumnOnce(authcode.FieldRelyingPartyID)
 		}
 	}
 	if ps := acq.predicates; len(ps) > 0 {
@@ -423,6 +506,9 @@ func (acq *AuthCodeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if acq.ctx.Unique != nil && *acq.ctx.Unique {
 		selector.Distinct()
 	}
+	for _, m := range acq.modifiers {
+		m(selector)
+	}
 	for _, p := range acq.predicates {
 		p(selector)
 	}
@@ -438,6 +524,32 @@ func (acq *AuthCodeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// ForUpdate locks the selected rows against concurrent updates, and prevent them from being
+// updated, deleted or "selected ... for update" by other sessions, until the transaction is
+// either committed or rolled-back.
+func (acq *AuthCodeQuery) ForUpdate(opts ...sql.LockOption) *AuthCodeQuery {
+	if acq.driver.Dialect() == dialect.Postgres {
+		acq.Unique(false)
+	}
+	acq.modifiers = append(acq.modifiers, func(s *sql.Selector) {
+		s.ForUpdate(opts...)
+	})
+	return acq
+}
+
+// ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
+// on any rows that are read. Other sessions can read the rows, but cannot modify them
+// until your transaction commits.
+func (acq *AuthCodeQuery) ForShare(opts ...sql.LockOption) *AuthCodeQuery {
+	if acq.driver.Dialect() == dialect.Postgres {
+		acq.Unique(false)
+	}
+	acq.modifiers = append(acq.modifiers, func(s *sql.Selector) {
+		s.ForShare(opts...)
+	})
+	return acq
 }
 
 // AuthCodeGroupBy is the group-by builder for AuthCode entities.

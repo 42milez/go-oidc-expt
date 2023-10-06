@@ -6,8 +6,6 @@ import (
 	"encoding/base64"
 	"encoding/gob"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-
 	"golang.org/x/crypto/argon2"
 )
 
@@ -42,7 +40,7 @@ func HashPassword(raw string) (string, error) {
 	salt := make([]byte, saltLength)
 
 	if _, err := rand.Read(salt); err != nil {
-		return "", xerr.FailedToGenerateRandomBytes.Wrap(err)
+		return "", err
 	}
 
 	hash := argon2.IDKey([]byte(raw), salt, iterations, memory, parallelism, keyLength)
@@ -62,7 +60,7 @@ func HashPassword(raw string) (string, error) {
 	enc := gob.NewEncoder(&buf)
 
 	if err := enc.Encode(rep); err != nil {
-		return "", xerr.FailedToEncodeInToBytes.Wrap(err)
+		return "", err
 	}
 
 	ret := base64.RawStdEncoding.EncodeToString(buf.Bytes())
@@ -74,7 +72,7 @@ func ComparePassword(raw string, encoded string) (bool, error) {
 	b, err := base64.RawStdEncoding.DecodeString(encoded)
 
 	if err != nil {
-		return false, xerr.FailedToDecodeInToBytes.Wrap(err)
+		return false, err
 	}
 
 	buf := bytes.NewBuffer(b)
@@ -82,7 +80,7 @@ func ComparePassword(raw string, encoded string) (bool, error) {
 	repr := &argon2Representation{}
 
 	if err = dec.Decode(&repr); err != nil {
-		return false, xerr.FailedToDecodeInToStruct.Wrap(err)
+		return false, err
 	}
 
 	hash := argon2.IDKey([]byte(raw), repr.Salt, repr.Iterations, repr.Memory, repr.Parallelism, repr.KeyLength)
