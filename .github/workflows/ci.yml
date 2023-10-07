@@ -64,6 +64,7 @@ jobs:
       - uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./docker/app/Dockerfile
           push: true
           tags: 42milez/go-oidc-server-app-integ-test:latest
           cache-from: type=registry,ref=42milez/go-oidc-server-app-integ-test:buildcache
