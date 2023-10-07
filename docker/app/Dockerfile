@@ -10,10 +10,13 @@ ARG VERSION
 WORKDIR /workspace
 
 COPY go.mod go.sum ./
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 
 COPY app/ ./app
-RUN go build -trimpath -ldflags "-s -w -X main.Version=${VERSION}" -o app ./app
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    go build -trimpath -ldflags "-s -w -X main.Version=${VERSION}" -o app ./app
 
 #  deploy
 # --------------------------------------------------
