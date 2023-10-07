@@ -20,14 +20,14 @@ jobs:
           go-version: ${{ matrix.go-version }}
           cache: false
           check-latest: false
-      - name: Restore caches
+      - uses: actions/cache@v3
         id: restore-cache
-        uses: actions/cache/restore@v3
         with:
           path: |
             ~/.cache/go-build
             ~/go/pkg
           key: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-${{ hashFiles('go.sum') }}
+          restore-keys: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-
       - name: Generate secrets
         run: |
           ./script/bootstrap/key.sh
@@ -37,14 +37,6 @@ jobs:
           version: latest
           skip-pkg-cache: true
           skip-build-cache: true
-      - name: Save caches
-        if: steps.restore-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg
-          key: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-${{ hashFiles('go.sum') }}
   build:
     needs: analyze
     strategy:
@@ -73,8 +65,10 @@ jobs:
           build-args: "VERSION=dev"
           push: true
           tags: 42milez/go-oidc-server-app-integ-test:latest
-          cache-from: type=registry,ref=42milez/go-oidc-server-app-integ-test:buildcache
-          cache-to: type=registry,ref=42milez/go-oidc-server-app-integ-test:buildcache,mode=max
+#          cache-from: type=registry,ref=42milez/go-oidc-server-app-integ-test:buildcache
+#          cache-to: type=registry,ref=42milez/go-oidc-server-app-integ-test:buildcache,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
   test:
     needs:
       - analyze
@@ -93,14 +87,14 @@ jobs:
           go-version: ${{ matrix.go-version }}
           cache: false
           check-latest: false
-      - name: Restore caches
+      - uses: actions/cache@v3
         id: restore-cache
-        uses: actions/cache/restore@v3
         with:
           path: |
             ~/.cache/go-build
             ~/go/pkg
           key: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-${{ hashFiles('go.sum') }}
+          restore-keys: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-
       - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -119,14 +113,6 @@ jobs:
         run: make migrate-apply DB_NAMES=idp_integ_test
       - name: Run all tests
         run: make test
-      - name: Save caches
-        if: steps.restore-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg
-          key: ${{ github.job }}-go${{ matrix.go-version }}-${{ github.ref_name }}-${{ hashFiles('go.sum') }}
   notify:
     if: always()
     needs: [ analyze, test ]
