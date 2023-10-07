@@ -66,8 +66,8 @@ jobs:
           context: .
           push: true
           tags: 42milez/go-oidc-server-app-integ-test:latest
-          cache-from: type=registry,ref=42milez/go-oidc-server-app-integ-test:latest:buildcache
-          cache-to: type=registry,ref=42milez/go-oidc-server-app-integ-test:latest:buildcache,mode=max
+          cache-from: type=registry,ref=42milez/go-oidc-server-app-integ-test:buildcache
+          cache-to: type=registry,ref=42milez/go-oidc-server-app-integ-test:buildcache,mode=max
   test:
     needs:
       - analyze
