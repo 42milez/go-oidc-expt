@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: ./docker/app/Dockerfile
       target: dev
-    container_name: go-oidc-server-app
+    container_name: app
     image: go-oidc-server-app:latest
     networks:
       - dev
@@ -51,14 +51,8 @@ services:
         fluentd-async-connect: 'true' # https://github.com/moby/moby/issues/44511
         tag: docker.{{.Name}}
   app-integ-test:
-    build:
-      context: .
-      dockerfile: ./docker/app/Dockerfile
-      target: deploy
-      args:
-        VERSION: dev
-    container_name: go-oidc-server-app-integ-test
-    image: go-oidc-server-app-integ-test:latest
+    container_name: app-integ-test
+    image: 42milez/go-oidc-server-app-integ-test:latest
     networks:
       - dev
     ports:
@@ -99,7 +93,7 @@ services:
     security_opt:
       - apparmor:unconfined
   cache:
-    container_name: go-oidc-server-cache
+    container_name: cache
     image: redis:7.2.0
     networks:
       - dev
@@ -122,7 +116,7 @@ services:
   db:
     build:
       context: ./docker/db
-    container_name: go-oidc-server-db
+    container_name: db
     image: go-oidc-server-db:latest
     networks:
       - dev
@@ -159,7 +153,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/log/Dockerfile
-    container_name: go-oidc-server-log
+    container_name: log
     image: go-oidc-server-log:latest
     networks:
       - dev
@@ -184,7 +178,7 @@ services:
         condition: on-failure
         max_attempts: 3
   swagger-ui:
-    container_name: go-oidc-server-swagger-ui
+    container_name: swagger-ui
     image: 42milez/swagger-ui:v5.6.2
     networks:
       - dev
@@ -208,7 +202,7 @@ services:
         condition: on-failure
         max_attempts: 3
   swagger-editor:
-    container_name: go-oidc-server-swagger-editor
+    container_name: swagger-editor
     image: 42milez/swagger-editor:v4.10.2
     networks:
       - dev
