@@ -56,8 +56,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: go-build-cache
-          key: ${{ matrix.os }}-go${{ matrix.go-version }}-${{ github.jom }}-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ matrix.os }}-go${{ matrix.go-version }}-${{ github.jom }}-
+          key: ${{ matrix.os }}-go${{ matrix.go-version }}-${{ github.job }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ matrix.os }}-go${{ matrix.go-version }}-${{ github.job }}-
       - name: Inject Go build cache into docker
         uses: reproducible-containers/buildkit-cache-dance@v2.1.2
         with:
