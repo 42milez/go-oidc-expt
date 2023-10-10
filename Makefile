@@ -2,6 +2,8 @@ PROJECT_NAME := go-oidc-server
 VERSION := $(shell git tag --sort=-v:refname | head -n 1)
 GITHUB_ID := 42milez
 
+export CI_BUILD_TARGET := dev
+
 .PHONY: $(shell cat $(MAKEFILE_LIST) | awk -F':' '/^[a-z0-9_-]+:/ {print $$1}')
 
 help: Makefile
@@ -59,7 +61,7 @@ gen:
 
 ## lint: Run linters
 lint:
-	@go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run --fix
+	@go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run -v --fix
 	@vacuum lint -r vacuum-ignore-rules.yml -d app/api/spec/spec.yml
 
 ## migrate-apply: Apply migrations
@@ -111,7 +113,7 @@ lc-delete:
 
 ## up: Create and start containers
 up:
-	@docker-compose up -d
+	@docker-compose up -d app cache db log ci-app
 
 ## down: Stop and remove containers
 down:

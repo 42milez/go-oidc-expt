@@ -8,56 +8,116 @@ jobs:
   analyze:
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        go-version: [ 1.21.0 ]
+        os:
+          - ubuntu-latest
+        go-version:
+          - 1.21.0
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - name: Create key pair
+          cache: false
+          check-latest: false
+      - name: Generate secrets
         run: |
           ./script/bootstrap/key.sh
           ./script/bootstrap/keypair.sh
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
+          args: -v --timeout=5m --config=.golangci.yml
   test:
-    needs: analyze
+    needs:
+      - analyze
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
-        go-version: [ 1.21.0 ]
+        os:
+          - ubuntu-latest
+        go-version:
+          - 1.21.0
     runs-on: ${{ matrix.os }}
     steps:
+      #  Setup
+      # --------------------------------------------------
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-      - name: Create key pair
+          check-latest: false
+      - uses: actions/cache@v3
+        with:
+          path: |
+            cache-go-build
+            cache-go-pkg
+          key: ${{ matrix.os }}-go${{ matrix.go-version }}-${{ github.job }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: ${{ matrix.os }}-go${{ matrix.go-version }}-${{ github.job }}-
+      - name: Generate secrets
         run: |
           ./script/bootstrap/key.sh
           ./script/bootstrap/keypair.sh
+      #  Build images
+      # --------------------------------------------------
+      - uses: docker/setup-buildx-action@v3
+      - name: Inject cache-go-build into docker
+        uses: reproducible-containers/buildkit-cache-dance@v2.1.2
+        with:
+          cache-source: cache-go-build
+          cache-target: /root/.cache/go-build
+      - name: Inject cache-go-pkg into docker
+        uses: reproducible-containers/buildkit-cache-dance@v2.1.2
+        with:
+          cache-source: cache-go-pkg
+          cache-target: /go/pkg
+      - name: Build ci-app
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/app/Dockerfile
+          target: deploy
+          tags: go-oidc-server-ci-app:dev
+          load: true
+          push: false
+      #- name: Build db
+      #  uses: docker/build-push-action@v5
+      #  with:
+      #    context: .
+      #    file: ./docker/db/Dockerfile
+      #    tags: go-oidc-server-db:dev
+      #    load: true
+      #    push: false
+      #  Start datastore
+      # --------------------------------------------------
       - name: Install atlas
         run: curl -sSf https://atlasgo.sh | sh
-      - name: Start services
-        run: docker-compose up -d app-integ-test cache db
+      - name: Start datastore
+        run: docker-compose up -d cache db
       - name: Wait for database to be available
         run: .github/scripts/waiter/db.sh
       - name: Apply migrations
-        run: make migrate-apply DB_NAMES=idp_integ_test
+        run: make migrate-apply DB_NAMES=idp_test
+      #  Start application
+      # --------------------------------------------------
+      - name: Start application
+        env:
+          CI_BUILD_TARGET: deploy
+        run: docker-compose up -d ci-app
+      #  Run tests
+      # --------------------------------------------------
       - name: Run all tests
         run: make test
   notify:
     if: always()
-    needs: [ analyze, test ]
+    needs:
+      - analyze
+      - test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Post CI status to Slack
         run: |
-          .github/scripts/notifier/post-ci-status-to-slack.sh
+          .github/scripts/notifier/slack.sh
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           TEST_RESULT: ${{ needs.test.result }}

@@ -5,8 +5,8 @@ services:
       context: .
       dockerfile: ./docker/app/Dockerfile
       target: dev
-    container_name: go-oidc-server-app
-    image: go-oidc-server-app:latest
+    container_name: app
+    image: go-oidc-server-app:dev
     networks:
       - dev
     ports:
@@ -50,56 +50,8 @@ services:
         fluentd-address: localhost:24224
         fluentd-async-connect: 'true' # https://github.com/moby/moby/issues/44511
         tag: docker.{{.Name}}
-  app-integ-test:
-    build:
-      context: .
-      dockerfile: ./docker/app/Dockerfile
-      target: deploy
-      args:
-        VERSION: dev
-    container_name: go-oidc-server-app-integ-test
-    image: go-oidc-server-app-integ-test:latest
-    networks:
-      - dev
-    ports:
-      - "8081:80"
-      - "22345:2345"
-    stdin_open: true
-    tty: true
-    volumes:
-      - type: bind
-        source: .
-        target: /workspace
-        read_only: true
-      - type: volume
-        source: app_ci_build_cache
-        target: /root/.cache/go-build
-      - type: volume
-        source: app_ci_mod_cache
-        target: /go/pkg/mod
-    environment:
-      DB_HOST: db
-      DB_USER: idp_test
-      DB_PASSWORD: idp_test
-      DB_NAME: idp_integ_test
-      REDIS_HOST: cache
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-    depends_on:
-      - cache
-      - db
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - apparmor:unconfined
   cache:
-    container_name: go-oidc-server-cache
+    container_name: cache
     image: redis:7.2.0
     networks:
       - dev
@@ -122,8 +74,8 @@ services:
   db:
     build:
       context: ./docker/db
-    container_name: go-oidc-server-db
-    image: go-oidc-server-db:latest
+    container_name: db
+    image: go-oidc-server-db:dev
     networks:
       - dev
     ports:
@@ -159,8 +111,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/log/Dockerfile
-    container_name: go-oidc-server-log
-    image: go-oidc-server-log:latest
+    container_name: log
+    image: go-oidc-server-log:dev
     networks:
       - dev
     ports:
@@ -184,7 +136,7 @@ services:
         condition: on-failure
         max_attempts: 3
   swagger-ui:
-    container_name: go-oidc-server-swagger-ui
+    container_name: swagger-ui
     image: 42milez/swagger-ui:v5.6.2
     networks:
       - dev
@@ -208,7 +160,7 @@ services:
         condition: on-failure
         max_attempts: 3
   swagger-editor:
-    container_name: go-oidc-server-swagger-editor
+    container_name: swagger-editor
     image: 42milez/swagger-editor:v4.10.2
     networks:
       - dev
@@ -230,6 +182,52 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
+  ci-app:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+      target: "${CI_BUILD_TARGET}"
+    container_name: ci-app
+    image: go-oidc-server-ci-app:dev
+    networks:
+      - dev
+    ports:
+      - "8081:80"
+      - "22345:2345"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+        read_only: true
+      - type: volume
+        source: ci_app_build_cache
+        target: /root/.cache/go-build
+      - type: volume
+        source: ci_app_mod_cache
+        target: /go/pkg/mod
+    environment:
+      DB_HOST: db
+      DB_USER: idp_test
+      DB_PASSWORD: idp_test
+      DB_NAME: idp_test
+      REDIS_HOST: cache
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    depends_on:
+      - cache
+      - db
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
 networks:
   dev:
     driver: bridge
@@ -238,13 +236,13 @@ volumes:
     driver: local
   app_mod_cache:
     driver: local
-  app_ci_build_cache:
-    driver: local
-  app_ci_mod_cache:
-    driver: local
   mysql_data:
     driver: local
   mysql_log:
     driver: local
   redis_data:
+    driver: local
+  ci_app_build_cache:
+    driver: local
+  ci_app_mod_cache:
     driver: local
