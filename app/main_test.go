@@ -12,6 +12,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/ent/ent"
+	"github.com/42milez/go-oidc-server/app/entity"
+	"github.com/google/go-querystring/query"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 
@@ -24,201 +28,222 @@ import (
 func TestAuthorizationCodeFlow(t *testing.T) {
 	t.Parallel()
 
-	const nonceLength = 30
-	const stateLength = 30
-
-	const idpBaseUrl = "http://127.0.0.1:8081"
-	const registerEndpoint = idpBaseUrl + config.RegisterPath
-	const authenticationEndpoint = idpBaseUrl + config.AuthenticationPath
-	const consentEndpoint = idpBaseUrl + config.ConsentPath
-	const authorizationEndpoint = idpBaseUrl + config.AuthorizationPath
-	const tokenEndpoint = idpBaseUrl + config.TokenPath
+	const baseUrl = "http://127.0.0.1:8081"
+	const registrationEndpoint = baseUrl + config.RegisterPath
+	const authenticationEndpoint = baseUrl + config.AuthenticationPath
+	const consentEndpoint = baseUrl + config.ConsentPath
+	const authorizationEndpoint = baseUrl + config.AuthorizationPath
+	const tokenEndpoint = baseUrl + config.TokenPath
 
 	const responseType = "code"
 	const scope = "openid profile email"
 	const redirectUri = "https://swagger.example.com/cb"
+	const nonceLength = 30
+	const stateLength = 30
 
 	ctx := context.Background()
 	db := xtestutil.NewDatabase(t, nil)
-
-	//  Relying Party Registration
-	// --------------------------------------------------
-
-	clientId, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIdLength)
-	xtestutil.ExitOnError(t, err)
-
-	clientSecret, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIdLength)
-	xtestutil.ExitOnError(t, err)
-
-	rp, err := db.Client.RelyingParty.Create().SetClientID(clientId).SetClientSecret(clientSecret).Save(ctx)
-	xtestutil.ExitOnError(t, err)
-
-	t.Cleanup(func() {
-		_, err = db.Client.RelyingParty.Delete().Where(relyingparty.ID(rp.ID)).Exec(ctx)
-		xtestutil.ExitOnError(t, err)
-	})
-
-	_, err = db.Client.RedirectURI.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
-	xtestutil.ExitOnError(t, err)
-
-	//  User Registration
-	// --------------------------------------------------
-
-	regUrl, err := url.Parse(registerEndpoint)
-	xtestutil.ExitOnError(t, err)
-
-	rand.New(rand.NewSource(time.Now().UnixNano()))
-	username := fmt.Sprintf("user%d", rand.Uint64())
-	password := "password"
-
-	regReqBody := &oapigen.RegisterJSONRequestBody{
-		Name:     username,
-		Password: password,
-	}
-
-	regData, err := json.Marshal(regReqBody)
-	xtestutil.ExitOnError(t, err)
-
-	client := &http.Client{
+	httpClient := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
 	}
 
-	regResp, err := xtestutil.Request(t, client, http.MethodPost, regUrl, nil, regData)
-	defer xtestutil.CloseResponseBody(t, regResp)
-	xtestutil.ExitOnError(t, err)
-
-	if regResp.StatusCode != http.StatusOK {
-		t.Fatalf("POST /register failed: want = %d; got = %d", http.StatusOK, regResp.StatusCode)
-	}
-
-	var regRespBody []byte
-	var u oapigen.User
-
-	regRespBody, err = io.ReadAll(regResp.Body)
-	xtestutil.ExitOnError(t, err)
-
-	err = json.Unmarshal(regRespBody, &u)
-	xtestutil.ExitOnError(t, err)
-
-	t.Cleanup(func() {
-		_, err = db.Client.User.Delete().Where(user.ID(u.Id)).Exec(ctx)
+	newAuthorizeParam := func(clientId string) string {
+		nonce, err := xrandom.MakeCryptoRandomString(nonceLength)
 		xtestutil.ExitOnError(t, err)
-	})
 
-	//  Authentication
-	// --------------------------------------------------
+		state, err := xrandom.MakeCryptoRandomString(stateLength)
+		xtestutil.ExitOnError(t, err)
 
-	nonce, err := xrandom.MakeCryptoRandomString(nonceLength)
-	xtestutil.ExitOnError(t, err)
+		authoParam := &oapigen.AuthorizeParams{
+			ClientId:     clientId,
+			Display:      "page",
+			MaxAge:       86400,
+			Nonce:        nonce,
+			Prompt:       "consent",
+			RedirectUri:  redirectUri,
+			ResponseType: responseType,
+			Scope:        scope,
+			State:        state,
+		}
 
-	state, err := xrandom.MakeCryptoRandomString(stateLength)
-	xtestutil.ExitOnError(t, err)
+		v, err := query.Values(authoParam)
+		xtestutil.ExitOnError(t, err)
 
-	authoParam := url.Values{}
-	authoParam.Add("client_id", clientId)
-	authoParam.Add("nonce", nonce)
-	authoParam.Add("redirect_uri", redirectUri)
-	authoParam.Add("response_type", responseType)
-	authoParam.Add("scope", scope)
-	authoParam.Add("state", state)
-	authoParam.Add("display", "page")
-	authoParam.Add("max_age", "86400")
-	authoParam.Add("prompt", "consent")
+		v.Del("sid")
 
-	autheUrl, err := url.Parse(fmt.Sprintf("%s?%s", authenticationEndpoint, authoParam.Encode()))
-	xtestutil.ExitOnError(t, err)
-
-	autheReqBody := &oapigen.AuthenticateJSONRequestBody{
-		Name:     username,
-		Password: password,
+		return v.Encode()
 	}
 
-	autheData, err := json.Marshal(autheReqBody)
-	xtestutil.ExitOnError(t, err)
+	registerRelyingParty := func() *entity.RelyingParty {
+		clientId, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIdLength)
+		xtestutil.ExitOnError(t, err)
 
-	autheResp, err := xtestutil.Request(t, client, http.MethodPost, autheUrl, nil, autheData)
-	defer xtestutil.CloseResponseBody(t, autheResp)
-	xtestutil.ExitOnError(t, err)
+		clientSecret, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIdLength)
+		xtestutil.ExitOnError(t, err)
 
-	if autheResp.StatusCode != http.StatusFound {
-		t.Fatalf("POST /authenticate failed: want = %d; got = %d", http.StatusFound, autheResp.StatusCode)
+		rp, err := db.Client.RelyingParty.Create().SetClientID(clientId).SetClientSecret(clientSecret).Save(ctx)
+		xtestutil.ExitOnError(t, err)
+
+		t.Cleanup(func() {
+			_, err = db.Client.RelyingParty.Delete().Where(relyingparty.ID(rp.ID)).Exec(ctx)
+			xtestutil.ExitOnError(t, err)
+		})
+
+		_, err = db.Client.RedirectURI.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
+		xtestutil.ExitOnError(t, err)
+
+		return entity.NewRelyingParty(rp)
 	}
 
-	cookies := autheResp.Cookies()
-	if len(cookies) == 0 {
-		t.Fatal("cookie not exist")
+	registerUser := func() *entity.User {
+		regUrl, err := url.Parse(registrationEndpoint)
+		xtestutil.ExitOnError(t, err)
+
+		rand.New(rand.NewSource(time.Now().UnixNano()))
+		username := fmt.Sprintf("user%d", rand.Uint64())
+		password := "password"
+
+		regReqBody := &oapigen.RegisterJSONRequestBody{
+			Name:     username,
+			Password: password,
+		}
+
+		regData, err := json.Marshal(regReqBody)
+		xtestutil.ExitOnError(t, err)
+
+		regResp, err := xtestutil.Request(t, httpClient, http.MethodPost, regUrl, nil, regData)
+		defer xtestutil.CloseResponseBody(t, regResp)
+		xtestutil.ExitOnError(t, err)
+
+		if regResp.StatusCode != http.StatusOK {
+			t.Fatalf("POST /register failed: want = %d; got = %d", http.StatusOK, regResp.StatusCode)
+		}
+
+		var regRespBody []byte
+		var u oapigen.User
+
+		regRespBody, err = io.ReadAll(regResp.Body)
+		xtestutil.ExitOnError(t, err)
+
+		err = json.Unmarshal(regRespBody, &u)
+		xtestutil.ExitOnError(t, err)
+
+		t.Cleanup(func() {
+			_, err = db.Client.User.Delete().Where(user.ID(u.Id)).Exec(ctx)
+			xtestutil.ExitOnError(t, err)
+		})
+
+		return entity.NewUser(&ent.User{
+			Name:     username,
+			Password: password,
+		})
 	}
 
-	//  Consent
-	// --------------------------------------------------
+	authenticate := func(u *entity.User, authoParam string) []*http.Cookie {
+		autheUrl, err := url.Parse(fmt.Sprintf("%s?%s", authenticationEndpoint, authoParam))
+		xtestutil.ExitOnError(t, err)
 
-	consentUrl, err := url.Parse(fmt.Sprintf("%s?%s", consentEndpoint, authoParam.Encode()))
-	xtestutil.ExitOnError(t, err)
+		autheReqBody := &oapigen.AuthenticateJSONRequestBody{
+			Name:     u.Name(),
+			Password: u.Password(),
+		}
 
-	consentReqParam := &xtestutil.RequestParam{
-		Cookies: cookies,
+		autheData, err := json.Marshal(autheReqBody)
+		xtestutil.ExitOnError(t, err)
+
+		autheResp, err := xtestutil.Request(t, httpClient, http.MethodPost, autheUrl, nil, autheData)
+		defer xtestutil.CloseResponseBody(t, autheResp)
+		xtestutil.ExitOnError(t, err)
+
+		if autheResp.StatusCode != http.StatusFound {
+			t.Fatalf("POST /authenticate failed: want = %d; got = %d", http.StatusFound, autheResp.StatusCode)
+		}
+
+		cookies := autheResp.Cookies()
+		if len(cookies) == 0 {
+			t.Fatal("cookie not exist")
+		}
+
+		return cookies
 	}
 
-	consentResp, err := xtestutil.Request(t, client, http.MethodPost, consentUrl, consentReqParam, nil)
-	defer xtestutil.CloseResponseBody(t, consentResp)
-	xtestutil.ExitOnError(t, err)
+	consent := func(cookies []*http.Cookie, authoParam string) {
+		consentUrl, err := url.Parse(fmt.Sprintf("%s?%s", consentEndpoint, authoParam))
+		xtestutil.ExitOnError(t, err)
 
-	if consentResp.StatusCode != http.StatusFound {
-		t.Fatalf("POST /consent failed: want = %d; got = %d", http.StatusFound, consentResp.StatusCode)
+		consentReqParam := &xtestutil.RequestParam{
+			Cookies: cookies,
+		}
+
+		consentResp, err := xtestutil.Request(t, httpClient, http.MethodPost, consentUrl, consentReqParam, nil)
+		defer xtestutil.CloseResponseBody(t, consentResp)
+		xtestutil.ExitOnError(t, err)
+
+		if consentResp.StatusCode != http.StatusFound {
+			t.Fatalf("POST /consent failed: want = %d; got = %d", http.StatusFound, consentResp.StatusCode)
+		}
 	}
 
-	//  Authorization
-	// --------------------------------------------------
+	authorize := func(cookies []*http.Cookie, authoParam string) *url.URL {
+		authoUrl, err := url.Parse(fmt.Sprintf("%s?%s", authorizationEndpoint, authoParam))
+		xtestutil.ExitOnError(t, err)
 
-	authoUrl, err := url.Parse(fmt.Sprintf("%s?%s", authorizationEndpoint, authoParam.Encode()))
-	xtestutil.ExitOnError(t, err)
+		authoReqParam := &xtestutil.RequestParam{
+			Cookies: cookies,
+		}
 
-	authoReqParam := &xtestutil.RequestParam{
-		Cookies: cookies,
+		authoResp, err := xtestutil.Request(t, httpClient, http.MethodGet, authoUrl, authoReqParam, nil)
+		defer xtestutil.CloseResponseBody(t, authoResp)
+		xtestutil.ExitOnError(t, err)
+
+		if authoResp.StatusCode != http.StatusFound {
+			t.Fatalf("GET /authorize failed: want = %d; got = %d", http.StatusFound, authoResp.StatusCode)
+		}
+
+		cbUrl, err := authoResp.Location()
+		xtestutil.ExitOnError(t, err)
+
+		return cbUrl
 	}
 
-	authoResp, err := xtestutil.Request(t, client, http.MethodGet, authoUrl, authoReqParam, nil)
-	defer xtestutil.CloseResponseBody(t, authoResp)
-	xtestutil.ExitOnError(t, err)
+	requestToken := func(rp *entity.RelyingParty, cookies []*http.Cookie, authoParam string, cbUrl *url.URL) {
+		tokenUrl, err := url.Parse(fmt.Sprintf("%s?%s", tokenEndpoint, authoParam))
+		xtestutil.ExitOnError(t, err)
 
-	if authoResp.StatusCode != http.StatusFound {
-		t.Fatalf("GET /authorize failed: want = %d; got = %d", http.StatusFound, authoResp.StatusCode)
+		credential := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", rp.ClientId(), rp.ClientSecret())))
+
+		tokenReqParam := &xtestutil.RequestParam{
+			Headers: map[string]string{
+				"Authorization": fmt.Sprintf("Basic %s", credential),
+				"Content-Type":  "application/x-www-form-urlencoded",
+			},
+			Cookies: cookies,
+		}
+
+		cbQuery := cbUrl.Query()
+
+		tokenParam := url.Values{}
+		tokenParam.Add("grant_type", "authorization_code")
+		tokenParam.Add("code", cbQuery.Get("code"))
+		tokenParam.Add("redirect_uri", redirectUri)
+		tokenReqBody := []byte(tokenParam.Encode())
+
+		tokenResp, err := xtestutil.Request(t, httpClient, http.MethodPost, tokenUrl, tokenReqParam, tokenReqBody)
+		defer xtestutil.CloseResponseBody(t, tokenResp)
+		xtestutil.ExitOnError(t, err)
+
+		if tokenResp.StatusCode != http.StatusOK {
+			t.Fatalf("POST /token failed: want = %d; got = %d", http.StatusOK, tokenResp.StatusCode)
+		}
 	}
 
-	//  Token
-	// --------------------------------------------------
-
-	tokenUrl, err := url.Parse(fmt.Sprintf("%s?%s", tokenEndpoint, authoParam.Encode()))
-	xtestutil.ExitOnError(t, err)
-
-	credential := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", clientId, clientSecret)))
-
-	tokenReqParam := &xtestutil.RequestParam{
-		Headers: map[string]string{
-			"Authorization": fmt.Sprintf("Basic %s", credential),
-			"Content-Type":  "application/x-www-form-urlencoded",
-		},
-		Cookies: cookies,
-	}
-
-	cbUrl, err := authoResp.Location()
-	xtestutil.ExitOnError(t, err)
-
-	cbQuery := cbUrl.Query()
-
-	tokenParam := url.Values{}
-	tokenParam.Add("grant_type", "authorization_code")
-	tokenParam.Add("code", cbQuery.Get("code"))
-	tokenParam.Add("redirect_uri", redirectUri)
-	tokenReqBody := []byte(tokenParam.Encode())
-
-	tokenResp, err := xtestutil.Request(t, client, http.MethodPost, tokenUrl, tokenReqParam, tokenReqBody)
-	defer xtestutil.CloseResponseBody(t, tokenResp)
-	xtestutil.ExitOnError(t, err)
-
-	if tokenResp.StatusCode != http.StatusOK {
-		t.Fatalf("POST /token failed: want = %d; got = %d", http.StatusOK, tokenResp.StatusCode)
-	}
+	registeredRp := registerRelyingParty()
+	registeredUser := registerUser()
+	authoParam := newAuthorizeParam(registeredRp.ClientId())
+	cookies := authenticate(registeredUser, authoParam)
+	consent(cookies, authoParam)
+	callbackUrl := authorize(cookies, authoParam)
+	requestToken(registeredRp, cookies, authoParam, callbackUrl)
 }

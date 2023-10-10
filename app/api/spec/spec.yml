@@ -249,6 +249,8 @@ components:
         type: string
       example: MTY5NDA4Nzc4MnxNNjBEOHUwTUxMLThObHBKajA2bkxkRFZJZC1kZnROc21WZjZFbFEtaVpmaHF4YkVvRk5uak9WYkdtRVM3eXctS1l4Q0FHeldab2M9fHDaZZGFzG1bSJdDRhgWPmMCQPuuFWg1h3VSE1WzOL8q
       x-go-json-ignore: true
+      x-oapi-codegen-extra-tags:
+        url: sid
     ClientId:
       name: client_id
       in: query
@@ -259,6 +261,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: client_id
+        url: client_id
         validate: required,alphanum
     Code:
       name: code
@@ -281,6 +284,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: display
+        url: display
         validate: required
     GrantType:
       name: grant_type
@@ -304,6 +308,7 @@ components:
       example: 0
       x-oapi-codegen-extra-tags:
         schema: max_age
+        url: max_age
         validate: required
     Nonce:
       name: nonce
@@ -315,6 +320,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: nonce
+        url: nonce
         validate: required,ascii
     Prompt:
       name: prompt
@@ -326,6 +332,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: prompt
+        url: prompt
         validate: required
     RedirectUri:
       name: redirect_uri
@@ -337,6 +344,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: redirect_uri
+        url: redirect_uri
         validate: required,printascii
     ResponseType:
       name: response_type
@@ -348,6 +356,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: response_type
+        url: response_type
         validate: required,response-type-validator
     Scope:
       name: scope
@@ -359,6 +368,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: scope
+        url: scope
         validate: required,scope-validator
     State:
       name: state
@@ -370,6 +380,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: state
+        url: state
         validate: required,alphanum
   responses:
     InternalServerError:
