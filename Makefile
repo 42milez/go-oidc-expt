@@ -2,7 +2,7 @@ PROJECT_NAME := go-oidc-server
 VERSION := $(shell git tag --sort=-v:refname | head -n 1)
 GITHUB_ID := 42milez
 
-export CI_BUILD_TARGET := dev
+export CI_APP_BUILD_TARGET := dev
 
 .PHONY: $(shell cat $(MAKEFILE_LIST) | awk -F':' '/^[a-z0-9_-]+:/ {print $$1}')
 
@@ -113,7 +113,7 @@ lc-delete:
 
 ## up: Create and start containers
 up:
-	@docker-compose up -d app cache db log ci-app
+	@docker-compose up -d app cache db log app-ci
 
 ## down: Stop and remove containers
 down:

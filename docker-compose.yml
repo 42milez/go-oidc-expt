@@ -50,6 +50,52 @@ services:
         fluentd-address: localhost:24224
         fluentd-async-connect: 'true' # https://github.com/moby/moby/issues/44511
         tag: docker.{{.Name}}
+  app-ci:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+      target: "${CI_APP_BUILD_TARGET}"
+    container_name: app-ci
+    image: go-oidc-server-app-ci:dev
+    networks:
+      - dev
+    ports:
+      - "8081:80"
+      - "22345:2345"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+        read_only: true
+      - type: volume
+        source: ci_app_build_cache
+        target: /root/.cache/go-build
+      - type: volume
+        source: ci_app_mod_cache
+        target: /go/pkg/mod
+    environment:
+      DB_HOST: db
+      DB_USER: idp_test
+      DB_PASSWORD: idp_test
+      DB_NAME: idp_test
+      REDIS_HOST: cache
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    depends_on:
+      - cache
+      - db
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
   cache:
     container_name: cache
     image: redis:7.2.0
@@ -61,7 +107,7 @@ services:
     tty: true
     volumes:
       - type: volume
-        source: redis_data
+        source: cache_data
         target: /data
     deploy:
       resources:
@@ -92,10 +138,10 @@ services:
         target: /docker-entrypoint-initdb.d
         read_only: true
       - type: volume
-        source: mysql_data
+        source: db_data
         target: /var/lib/mysql
       - type: volume
-        source: mysql_log
+        source: db_log
         target: /var/log/mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
@@ -182,52 +228,6 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
-  ci-app:
-    build:
-      context: .
-      dockerfile: ./docker/app/Dockerfile
-      target: "${CI_BUILD_TARGET}"
-    container_name: ci-app
-    image: go-oidc-server-ci-app:dev
-    networks:
-      - dev
-    ports:
-      - "8081:80"
-      - "22345:2345"
-    stdin_open: true
-    tty: true
-    volumes:
-      - type: bind
-        source: .
-        target: /workspace
-        read_only: true
-      - type: volume
-        source: ci_app_build_cache
-        target: /root/.cache/go-build
-      - type: volume
-        source: ci_app_mod_cache
-        target: /go/pkg/mod
-    environment:
-      DB_HOST: db
-      DB_USER: idp_test
-      DB_PASSWORD: idp_test
-      DB_NAME: idp_test
-      REDIS_HOST: cache
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-    depends_on:
-      - cache
-      - db
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - apparmor:unconfined
 networks:
   dev:
     driver: bridge
@@ -236,11 +236,11 @@ volumes:
     driver: local
   app_mod_cache:
     driver: local
-  mysql_data:
+  db_data:
     driver: local
-  mysql_log:
+  db_log:
     driver: local
-  redis_data:
+  cache_data:
     driver: local
   ci_app_build_cache:
     driver: local

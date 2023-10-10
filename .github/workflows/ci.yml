@@ -70,13 +70,13 @@ jobs:
         with:
           cache-source: cache-go-pkg
           cache-target: /go/pkg
-      - name: Build ci-app
+      - name: Build app-ci
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./docker/app/Dockerfile
           target: deploy
-          tags: go-oidc-server-ci-app:dev
+          tags: go-oidc-server-app-ci:dev
           load: true
           push: false
       #- name: Build db
@@ -101,8 +101,8 @@ jobs:
       # --------------------------------------------------
       - name: Start application
         env:
-          CI_BUILD_TARGET: deploy
-        run: docker-compose up -d ci-app
+          CI_APP_BUILD_TARGET: deploy
+        run: docker-compose up -d app-ci
       #  Run tests
       # --------------------------------------------------
       - name: Run all tests
