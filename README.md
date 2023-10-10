@@ -4,7 +4,11 @@
 
 ## Features
 
-TBD
+### Supported authentication path
+
+- [x] Authorization Code Flow
+- [ ] Implicit Flow
+- [ ] Hybrid Flow
 
 ## TRY FOR NOW :zap:
 
