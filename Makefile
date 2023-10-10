@@ -62,7 +62,7 @@ gen:
 ## lint: Run linters
 lint:
 	@go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run -v --fix
-	@vacuum lint -r vacuum-ignore-rules.yml -d app/api/spec/spec.yml
+	@vacuum lint -r .vacuum.yml -d app/api/spec/spec.yml
 
 ## migrate-apply: Apply migrations
 migrate-apply:
