@@ -10,10 +10,6 @@
 - [ ] Implicit Flow
 - [ ] Hybrid Flow
 
-## TRY FOR NOW :zap:
-
-TBD ( Use the image upload to Docker Hub )
-
 ## Setup for development
 
 ### Install required packages
@@ -25,7 +21,7 @@ TBD ( Use the image upload to Docker Hub )
 ### Enable docker-buildx
 
 ```
-./script/bootstrap/docker.sh
+./script/bootstrap/docker-buildx.sh
 ```
 
 ### Generate key pair for signing access token
@@ -84,18 +80,29 @@ The containers:
 
 ## Commands and scripts
 
-The commands described later require the following parameters:
+`make` supports the following commands:
 
-| Parameter      | Detail                                                                                                                 |
-|----------------|------------------------------------------------------------------------------------------------------------------------|
-| MIGRATION_NAME | A part of migration file name. The filename is determined according to the format `%Y%m%d%H%i%S_<MIGRATION_NAME>.sql`. |
-| N_LATEST       | The number of latest migration files to be analyzed. `migrate-list.sh` runs analysis on them.                          |
-
-### Generating assets
-
-```
-make gen
-```
+| Command       | Detail                                  |
+|---------------|-----------------------------------------|
+| build         | Build a docker image to deploy          |
+| build-local   | Build docker images                     |
+| benchmark     | Run all benchmarks                      |
+| cleanup-db    | Clean up database                       |
+| cleanup-go    | Clean up caches                         |
+| fmt           | Run formatter                           |
+| gen           | Run generator                           |
+| lint          | Run linters                             |
+| migrate-apply | Apply migrations                        |
+| migrate-diff  | Generate migrations                     |
+| migrate-lint  | Run analysis on the migration directory |
+| resolve       | Resolve dependencies                    |
+| seed          | Seeding database                        |
+| test          | Run all tests                           |
+| up            | Create and start containers             |
+| down          | Stop and remove containers              |
+| start         | Start containers                        |
+| stop          | Stop containers                         |
+| destroy       | Delete all resources                    |
 
 ### Generating database schema
 
@@ -111,19 +118,31 @@ go run -mod=mod entgo.io/ent/cmd/ent new --target app/ent/schema AuthCode
 make migrate-diff MIGRATION_NAME=<MIGRATION_NAME>
 ```
 
+| Parameter      | Detail                                                                                                                 |
+|----------------|------------------------------------------------------------------------------------------------------------------------|
+| MIGRATION_NAME | A part of migration file name. The filename is determined according to the format `%Y%m%d%H%i%S_<MIGRATION_NAME>.sql`. |
+
 ### Verifying and linting migrations
 
 ```
 make migrate-lint [N_LATEST=<N_LATEST>]
 ```
 
+| Parameter      | Detail                                                                                                                 |
+|----------------|------------------------------------------------------------------------------------------------------------------------|
+| N_LATEST       | The number of latest migration files to be analyzed. `migrate-list.sh` runs analysis on them.                          |
+
 If `N_LATEST` isn't specified, the diff between `main` branch and the current one is selected as the changeset.
 
 ### Applying migrations
 
 ```
-make migrate-apply
+make migrate-apply DB_NAMES=idp,idp_test
 ```
+
+| Parameter | Detail                                          |
+|-----------|-------------------------------------------------|
+| DB_NAMES  | Database names that will be applied migrations. |
 
 ### Seeding database
 
@@ -133,7 +152,13 @@ make seed
 
 ## Documents
 
-- API specification (Swagger UI) is available on `http://localhost:8080`.
+### Swagger
+
+API specification (Swagger UI) is available on `http://localhost:8880`. Before accessing the URL, it needs to run the following command to start `swagger-ui` container.
+
+```
+docker-compose up -d swagger-ui
+```
 
 ## References
 
