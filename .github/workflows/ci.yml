@@ -79,14 +79,14 @@ jobs:
           tags: go-oidc-server-ci-app:dev
           load: true
           push: false
-      - name: Build db
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/db/Dockerfile
-          tags: go-oidc-server-db:dev
-          load: true
-          push: false
+      #- name: Build db
+      #  uses: docker/build-push-action@v5
+      #  with:
+      #    context: .
+      #    file: ./docker/db/Dockerfile
+      #    tags: go-oidc-server-db:dev
+      #    load: true
+      #    push: false
       #  Start datastore
       # --------------------------------------------------
       - name: Install atlas
