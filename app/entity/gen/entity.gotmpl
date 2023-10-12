@@ -1,0 +1,25 @@
+import (
+    "github.com/42milez/go-oidc-server/app/ent/ent"
+    "github.com/42milez/go-oidc-server/app/typedef"
+    "time"
+)
+
+{{$schemaName := .SchemaName}}
+
+func New{{.SchemaName}}(entity *ent.{{.SchemaName}}) *{{.SchemaName}} {
+    return &{{.SchemaName}}{
+        entity: entity,
+    }
+}
+
+type {{.SchemaName}} struct {
+  entity *ent.{{.SchemaName}}
+}
+
+{{range $field := .Fields}}
+{{if regexMatch "^[A-Z]" $field.Name}}
+func (r *{{$schemaName}}) {{$field.Name}}() {{$field.Type}} {
+    return r.entity.{{$field.Name}}
+}
+{{end}}
+{{end}}

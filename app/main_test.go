@@ -212,7 +212,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		tokenUrl, err := url.Parse(fmt.Sprintf("%s?%s", tokenEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
-		credential := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", rp.ClientId(), rp.ClientSecret())))
+		credential := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", rp.ClientID(), rp.ClientSecret())))
 
 		tokenReqParam := &xtestutil.RequestParam{
 			Headers: map[string]string{
@@ -241,7 +241,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 
 	registeredRp := registerRelyingParty()
 	registeredUser := registerUser()
-	authoParam := newAuthorizeParam(registeredRp.ClientId())
+	authoParam := newAuthorizeParam(registeredRp.ClientID())
 	cookies := authenticate(registeredUser, authoParam)
 	consent(cookies, authoParam)
 	callbackUrl := authorize(cookies, authoParam)
