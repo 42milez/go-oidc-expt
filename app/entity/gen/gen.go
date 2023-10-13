@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
@@ -26,10 +27,22 @@ type EntParam struct {
 	Fields     []*EntField
 }
 
+func IsPublicField(f string) bool {
+	re, err := regexp.Compile(`^[A-Z]`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return re.MatchString(f)
+}
+
 func main() {
 	targets := []any{
 		ent.RelyingParty{},
 		ent.User{},
+	}
+
+	funcMap := template.FuncMap{
+		"IsPublicField": IsPublicField,
 	}
 
 	for _, v := range targets {
@@ -47,7 +60,8 @@ func main() {
 		}
 
 		var buf bytes.Buffer
-		t := template.Must(template.New(templateFile).Funcs(sprig.FuncMap()).ParseFiles(fmt.Sprintf("gen/%s", templateFile)))
+		t := template.Must(template.New(templateFile).Funcs(funcMap).Funcs(sprig.FuncMap()).
+			ParseFiles(fmt.Sprintf("gen/%s", templateFile)))
 		if err := t.Execute(&buf, param); err != nil {
 			log.Fatal(err)
 		}

@@ -13,11 +13,11 @@ func New{{.SchemaName}}(entity *ent.{{.SchemaName}}) *{{.SchemaName}} {
 }
 
 type {{.SchemaName}} struct {
-  entity *ent.{{.SchemaName}}
+    entity *ent.{{.SchemaName}}
 }
 
 {{range $field := .Fields}}
-{{if regexMatch "^[A-Z]" $field.Name}}
+{{if IsPublicField $field.Name}}
 func (r *{{$schemaName}}) {{$field.Name}}() {{$field.Type}} {
     return r.entity.{{$field.Name}}
 }
