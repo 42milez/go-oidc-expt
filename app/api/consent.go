@@ -7,8 +7,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/service"
 
-	"github.com/42milez/go-oidc-server/app/api/oapigen"
-
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/go-playground/validator/v10"
@@ -33,7 +31,7 @@ func (c *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	decoder := schema.NewDecoder()
-	q := &oapigen.AuthorizeParams{}
+	q := &AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
 		RespondJSON500(w, r, err)
@@ -46,13 +44,12 @@ func (c *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sess, ok := service.GetSession(ctx)
-
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
-	if err := c.service.AcceptConsent(ctx, sess.UserID, q.ClientId); err != nil {
+	if err := c.service.AcceptConsent(ctx, sess.UserID, q.ClientID); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

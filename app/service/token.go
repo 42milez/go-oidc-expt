@@ -30,11 +30,11 @@ func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) err
 		return err
 	}
 
-	if !authCode.ExpireAt.After(t.clock.Now()) {
+	if !authCode.ExpireAt().After(t.clock.Now()) {
 		return xerr.AuthCodeExpired
 	}
 
-	if authCode.UsedAt != nil {
+	if authCode.UsedAt() != nil {
 		return xerr.AuthCodeUsed
 	}
 
@@ -50,7 +50,7 @@ func (t *Token) RevokeAuthCode(ctx context.Context, code, clientId string) error
 }
 
 func (t *Token) ValidateRedirectUri(ctx context.Context, uri, clientId string) error {
-	_, err := t.redirectUriRepo.ReadRedirectUri(ctx, uri, clientId)
+	_, err := t.redirectUriRepo.ReadRedirectUri(ctx, clientId)
 	if err != nil {
 		return err
 	}

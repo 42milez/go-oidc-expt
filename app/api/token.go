@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/42milez/go-oidc-server/app/api/oapigen"
-
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -34,6 +32,7 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 	}
+
 	clientId := credentials[0]
 
 	params, err := t.parseForm(r)
@@ -117,7 +116,7 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	resp := &oapigen.TokenResponse{
+	resp := &TokenResponse{
 		AccessToken:  string(accessToken),
 		RefreshToken: string(refreshToken),
 		IdToken:      string(idToken),

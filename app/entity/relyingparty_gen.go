@@ -17,26 +17,22 @@ type RelyingParty struct {
 	entity *ent.RelyingParty
 }
 
-func (r *RelyingParty) ID() typedef.RelyingPartyID {
-	return r.entity.ID
+func (rp *RelyingParty) ID() typedef.RelyingPartyID {
+	return rp.entity.ID
 }
 
-func (r *RelyingParty) ClientID() string {
-	return r.entity.ClientID
+func (rp *RelyingParty) ClientID() string {
+	return rp.entity.ClientID
 }
 
-func (r *RelyingParty) ClientSecret() string {
-	return r.entity.ClientSecret
+func (rp *RelyingParty) ClientSecret() string {
+	return rp.entity.ClientSecret
 }
 
-func (r *RelyingParty) CreatedAt() time.Time {
-	return r.entity.CreatedAt
+func (rp *RelyingParty) CreatedAt() time.Time {
+	return rp.entity.CreatedAt
 }
 
-func (r *RelyingParty) ModifiedAt() time.Time {
-	return r.entity.ModifiedAt
-}
-
-func (r *RelyingParty) Edges() ent.RelyingPartyEdges {
-	return r.entity.Edges
+func (rp *RelyingParty) ModifiedAt() time.Time {
+	return rp.entity.ModifiedAt
 }

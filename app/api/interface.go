@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -72,11 +71,11 @@ type Authenticator interface {
 }
 
 type UserCreator interface {
-	CreateUser(ctx context.Context, name, pw string) (*ent.User, error)
+	CreateUser(ctx context.Context, name, pw string) (*entity.User, error)
 }
 
 type UserReader interface {
-	SelectUser(ctx context.Context) (*ent.User, error)
+	SelectUser(ctx context.Context) (*entity.User, error)
 }
 
 //  OIDC: AUTHORIZATION

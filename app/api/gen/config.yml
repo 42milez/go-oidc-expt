@@ -1,0 +1,11 @@
+package: api
+generate:
+  chi-server: true
+  embedded-spec: true
+  models: true
+output-options:
+  skip-prune: true
+  user-templates:
+    chi/chi-handler.tmpl: gen/templates/03-chi-handler.gotmpl
+    chi/chi-interface.tmpl: gen/templates/01-chi-interface.gotmpl
+    chi/chi-middleware.tmpl: gen/templates/02-chi-middleware.gotmpl

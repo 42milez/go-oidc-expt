@@ -10,7 +10,6 @@ import (
 	reflect "reflect"
 	time "time"
 
-	ent "github.com/42milez/go-oidc-server/app/ent/ent"
 	entity "github.com/42milez/go-oidc-server/app/entity"
 	typedef "github.com/42milez/go-oidc-server/app/typedef"
 	gomock "github.com/golang/mock/gomock"
@@ -482,10 +481,10 @@ func (m *MockUserCreator) EXPECT() *MockUserCreatorMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockUserCreator) CreateUser(ctx context.Context, name, pw string) (*ent.User, error) {
+func (m *MockUserCreator) CreateUser(ctx context.Context, name, pw string) (*entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, name, pw)
-	ret0, _ := ret[0].(*ent.User)
+	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -520,10 +519,10 @@ func (m *MockUserReader) EXPECT() *MockUserReaderMockRecorder {
 }
 
 // SelectUser mocks base method.
-func (m *MockUserReader) SelectUser(ctx context.Context) (*ent.User, error) {
+func (m *MockUserReader) SelectUser(ctx context.Context) (*entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SelectUser", ctx)
-	ret0, _ := ret[0].(*ent.User)
+	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -91,7 +91,7 @@ const (
 )
 
 const (
-	ClientIdLength     = 30
+	ClientIDLength     = 30
 	ClientSecretLength = 30
 )
 

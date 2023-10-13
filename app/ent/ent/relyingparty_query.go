@@ -27,7 +27,7 @@ type RelyingPartyQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.RelyingParty
 	withAuthCodes    *AuthCodeQuery
-	withRedirectUris *RedirectURIQuery
+	withRedirectUris *RedirectUriQuery
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -88,8 +88,8 @@ func (rpq *RelyingPartyQuery) QueryAuthCodes() *AuthCodeQuery {
 }
 
 // QueryRedirectUris chains the current query on the "redirect_uris" edge.
-func (rpq *RelyingPartyQuery) QueryRedirectUris() *RedirectURIQuery {
-	query := (&RedirectURIClient{config: rpq.config}).Query()
+func (rpq *RelyingPartyQuery) QueryRedirectUris() *RedirectUriQuery {
+	query := (&RedirectUriClient{config: rpq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rpq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -322,8 +322,8 @@ func (rpq *RelyingPartyQuery) WithAuthCodes(opts ...func(*AuthCodeQuery)) *Relyi
 
 // WithRedirectUris tells the query-builder to eager-load the nodes that are connected to
 // the "redirect_uris" edge. The optional arguments are used to configure the query builder of the edge.
-func (rpq *RelyingPartyQuery) WithRedirectUris(opts ...func(*RedirectURIQuery)) *RelyingPartyQuery {
-	query := (&RedirectURIClient{config: rpq.config}).Query()
+func (rpq *RelyingPartyQuery) WithRedirectUris(opts ...func(*RedirectUriQuery)) *RelyingPartyQuery {
+	query := (&RedirectUriClient{config: rpq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -444,8 +444,8 @@ func (rpq *RelyingPartyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	}
 	if query := rpq.withRedirectUris; query != nil {
 		if err := rpq.loadRedirectUris(ctx, query, nodes,
-			func(n *RelyingParty) { n.Edges.RedirectUris = []*RedirectURI{} },
-			func(n *RelyingParty, e *RedirectURI) { n.Edges.RedirectUris = append(n.Edges.RedirectUris, e) }); err != nil {
+			func(n *RelyingParty) { n.Edges.RedirectUris = []*RedirectUri{} },
+			func(n *RelyingParty, e *RedirectUri) { n.Edges.RedirectUris = append(n.Edges.RedirectUris, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -482,7 +482,7 @@ func (rpq *RelyingPartyQuery) loadAuthCodes(ctx context.Context, query *AuthCode
 	}
 	return nil
 }
-func (rpq *RelyingPartyQuery) loadRedirectUris(ctx context.Context, query *RedirectURIQuery, nodes []*RelyingParty, init func(*RelyingParty), assign func(*RelyingParty, *RedirectURI)) error {
+func (rpq *RelyingPartyQuery) loadRedirectUris(ctx context.Context, query *RedirectUriQuery, nodes []*RelyingParty, init func(*RelyingParty), assign func(*RelyingParty, *RedirectUri)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[typedef.RelyingPartyID]*RelyingParty)
 	for i := range nodes {
@@ -495,7 +495,7 @@ func (rpq *RelyingPartyQuery) loadRedirectUris(ctx context.Context, query *Redir
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(redirecturi.FieldRelyingPartyID)
 	}
-	query.Where(predicate.RedirectURI(func(s *sql.Selector) {
+	query.Where(predicate.RedirectUri(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(relyingparty.RedirectUrisColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)

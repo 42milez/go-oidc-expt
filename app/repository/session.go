@@ -31,13 +31,11 @@ func (s *Session) Create(ctx context.Context, sid typedef.SessionID, sess *entit
 
 func (s *Session) Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error) {
 	v, err := s.cache.Client.Get(ctx, string(sid)).Result()
-
 	if err != nil {
 		return nil, err
 	}
 
 	ret := &entity.Session{}
-
 	if err = json.Unmarshal([]byte(v), ret); err != nil {
 		return nil, err
 	}

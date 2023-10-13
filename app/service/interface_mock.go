@@ -8,7 +8,6 @@ import (
 	context "context"
 	reflect "reflect"
 
-	ent "github.com/42milez/go-oidc-server/app/ent/ent"
 	entity "github.com/42milez/go-oidc-server/app/entity"
 	typedef "github.com/42milez/go-oidc-server/app/typedef"
 	gomock "github.com/golang/mock/gomock"
@@ -315,10 +314,10 @@ func (m *MockConsentReader) EXPECT() *MockConsentReaderMockRecorder {
 }
 
 // ReadConsent mocks base method.
-func (m *MockConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+func (m *MockConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadConsent", ctx, userID, clientID)
-	ret0, _ := ret[0].(*ent.Consent)
+	ret0, _ := ret[0].(*entity.Consent)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -353,10 +352,10 @@ func (m *MockUserCreator) EXPECT() *MockUserCreatorMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockUserCreator) CreateUser(ctx context.Context, name, pw string) (*ent.User, error) {
+func (m *MockUserCreator) CreateUser(ctx context.Context, name, pw string) (*entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, name, pw)
-	ret0, _ := ret[0].(*ent.User)
+	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -391,10 +390,10 @@ func (m *MockUserByNameReader) EXPECT() *MockUserByNameReaderMockRecorder {
 }
 
 // ReadUserByName mocks base method.
-func (m *MockUserByNameReader) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {
+func (m *MockUserByNameReader) ReadUserByName(ctx context.Context, name string) (*entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadUserByName", ctx, name)
-	ret0, _ := ret[0].(*ent.User)
+	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -429,10 +428,10 @@ func (m *MockUserConsentReader) EXPECT() *MockUserConsentReaderMockRecorder {
 }
 
 // ReadConsent mocks base method.
-func (m *MockUserConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+func (m *MockUserConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadConsent", ctx, userID, clientID)
-	ret0, _ := ret[0].(*ent.Consent)
+	ret0, _ := ret[0].(*entity.Consent)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -444,10 +443,10 @@ func (mr *MockUserConsentReaderMockRecorder) ReadConsent(ctx, userID, clientID i
 }
 
 // ReadUserByName mocks base method.
-func (m *MockUserConsentReader) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {
+func (m *MockUserConsentReader) ReadUserByName(ctx context.Context, name string) (*entity.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadUserByName", ctx, name)
-	ret0, _ := ret[0].(*ent.User)
+	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -482,10 +481,10 @@ func (m *MockCredentialReader) EXPECT() *MockCredentialReaderMockRecorder {
 }
 
 // ReadCredential mocks base method.
-func (m *MockCredentialReader) ReadCredential(ctx context.Context, clientID, clientSecret string) (*ent.RelyingParty, error) {
+func (m *MockCredentialReader) ReadCredential(ctx context.Context, clientID, clientSecret string) (*entity.RelyingParty, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadCredential", ctx, clientID, clientSecret)
-	ret0, _ := ret[0].(*ent.RelyingParty)
+	ret0, _ := ret[0].(*entity.RelyingParty)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -520,10 +519,10 @@ func (m *MockAuthCodeCreator) EXPECT() *MockAuthCodeCreatorMockRecorder {
 }
 
 // CreateAuthCode mocks base method.
-func (m *MockAuthCodeCreator) CreateAuthCode(ctx context.Context, code, clientID string, userID typedef.UserID) (*ent.AuthCode, error) {
+func (m *MockAuthCodeCreator) CreateAuthCode(ctx context.Context, code, clientID string, userID typedef.UserID) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAuthCode", ctx, code, clientID, userID)
-	ret0, _ := ret[0].(*ent.AuthCode)
+	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -558,10 +557,10 @@ func (m *MockRedirectUriByRelyingPartyIDReader) EXPECT() *MockRedirectUriByRelyi
 }
 
 // ReadRedirectUriByClientID mocks base method.
-func (m *MockRedirectUriByRelyingPartyIDReader) ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*ent.RedirectURI, error) {
+func (m *MockRedirectUriByRelyingPartyIDReader) ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*entity.RedirectUri, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRedirectUriByClientID", ctx, clientID)
-	ret0, _ := ret[0].([]*ent.RedirectURI)
+	ret0, _ := ret[0].([]*entity.RedirectUri)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -596,10 +595,10 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // CreateAuthCode mocks base method.
-func (m *MockAuthorizer) CreateAuthCode(ctx context.Context, code, clientID string, userID typedef.UserID) (*ent.AuthCode, error) {
+func (m *MockAuthorizer) CreateAuthCode(ctx context.Context, code, clientID string, userID typedef.UserID) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAuthCode", ctx, code, clientID, userID)
-	ret0, _ := ret[0].(*ent.AuthCode)
+	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -611,10 +610,10 @@ func (mr *MockAuthorizerMockRecorder) CreateAuthCode(ctx, code, clientID, userID
 }
 
 // ReadRedirectUriByClientID mocks base method.
-func (m *MockAuthorizer) ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*ent.RedirectURI, error) {
+func (m *MockAuthorizer) ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*entity.RedirectUri, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRedirectUriByClientID", ctx, clientID)
-	ret0, _ := ret[0].([]*ent.RedirectURI)
+	ret0, _ := ret[0].([]*entity.RedirectUri)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -649,10 +648,10 @@ func (m *MockConsentCreator) EXPECT() *MockConsentCreatorMockRecorder {
 }
 
 // CreateConsent mocks base method.
-func (m *MockConsentCreator) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+func (m *MockConsentCreator) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateConsent", ctx, userID, clientID)
-	ret0, _ := ret[0].(*ent.Consent)
+	ret0, _ := ret[0].(*entity.Consent)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -687,10 +686,10 @@ func (m *MockAuthCodeReader) EXPECT() *MockAuthCodeReaderMockRecorder {
 }
 
 // ReadAuthCode mocks base method.
-func (m *MockAuthCodeReader) ReadAuthCode(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
+func (m *MockAuthCodeReader) ReadAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientId)
-	ret0, _ := ret[0].(*ent.AuthCode)
+	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -725,10 +724,10 @@ func (m *MockAuthCodeMarker) EXPECT() *MockAuthCodeMarkerMockRecorder {
 }
 
 // MarkAuthCodeUsed mocks base method.
-func (m *MockAuthCodeMarker) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
+func (m *MockAuthCodeMarker) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MarkAuthCodeUsed", ctx, code, clientId)
-	ret0, _ := ret[0].(*ent.AuthCode)
+	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -763,10 +762,10 @@ func (m *MockAuthCodeReadMarker) EXPECT() *MockAuthCodeReadMarkerMockRecorder {
 }
 
 // MarkAuthCodeUsed mocks base method.
-func (m *MockAuthCodeReadMarker) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
+func (m *MockAuthCodeReadMarker) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MarkAuthCodeUsed", ctx, code, clientId)
-	ret0, _ := ret[0].(*ent.AuthCode)
+	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -778,10 +777,10 @@ func (mr *MockAuthCodeReadMarkerMockRecorder) MarkAuthCodeUsed(ctx, code, client
 }
 
 // ReadAuthCode mocks base method.
-func (m *MockAuthCodeReadMarker) ReadAuthCode(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
+func (m *MockAuthCodeReadMarker) ReadAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientId)
-	ret0, _ := ret[0].(*ent.AuthCode)
+	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -816,16 +815,16 @@ func (m *MockRedirectUriReader) EXPECT() *MockRedirectUriReaderMockRecorder {
 }
 
 // ReadRedirectUri mocks base method.
-func (m *MockRedirectUriReader) ReadRedirectUri(ctx context.Context, uri, clientId string) (*ent.RedirectURI, error) {
+func (m *MockRedirectUriReader) ReadRedirectUri(ctx context.Context, clientId string) (*entity.RedirectUri, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, uri, clientId)
-	ret0, _ := ret[0].(*ent.RedirectURI)
+	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, clientId)
+	ret0, _ := ret[0].(*entity.RedirectUri)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReadRedirectUri indicates an expected call of ReadRedirectUri.
-func (mr *MockRedirectUriReaderMockRecorder) ReadRedirectUri(ctx, uri, clientId interface{}) *gomock.Call {
+func (mr *MockRedirectUriReaderMockRecorder) ReadRedirectUri(ctx, clientId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockRedirectUriReader)(nil).ReadRedirectUri), ctx, uri, clientId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockRedirectUriReader)(nil).ReadRedirectUri), ctx, clientId)
 }

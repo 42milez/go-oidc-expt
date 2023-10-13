@@ -32,8 +32,8 @@ type Client struct {
 	AuthCode *AuthCodeClient
 	// Consent is the client for interacting with the Consent builders.
 	Consent *ConsentClient
-	// RedirectURI is the client for interacting with the RedirectURI builders.
-	RedirectURI *RedirectURIClient
+	// RedirectUri is the client for interacting with the RedirectUri builders.
+	RedirectUri *RedirectUriClient
 	// RelyingParty is the client for interacting with the RelyingParty builders.
 	RelyingParty *RelyingPartyClient
 	// User is the client for interacting with the User builders.
@@ -53,7 +53,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AuthCode = NewAuthCodeClient(c.config)
 	c.Consent = NewConsentClient(c.config)
-	c.RedirectURI = NewRedirectURIClient(c.config)
+	c.RedirectUri = NewRedirectUriClient(c.config)
 	c.RelyingParty = NewRelyingPartyClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -143,7 +143,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:       cfg,
 		AuthCode:     NewAuthCodeClient(cfg),
 		Consent:      NewConsentClient(cfg),
-		RedirectURI:  NewRedirectURIClient(cfg),
+		RedirectUri:  NewRedirectUriClient(cfg),
 		RelyingParty: NewRelyingPartyClient(cfg),
 		User:         NewUserClient(cfg),
 	}, nil
@@ -167,7 +167,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:       cfg,
 		AuthCode:     NewAuthCodeClient(cfg),
 		Consent:      NewConsentClient(cfg),
-		RedirectURI:  NewRedirectURIClient(cfg),
+		RedirectUri:  NewRedirectUriClient(cfg),
 		RelyingParty: NewRelyingPartyClient(cfg),
 		User:         NewUserClient(cfg),
 	}, nil
@@ -200,7 +200,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.AuthCode.Use(hooks...)
 	c.Consent.Use(hooks...)
-	c.RedirectURI.Use(hooks...)
+	c.RedirectUri.Use(hooks...)
 	c.RelyingParty.Use(hooks...)
 	c.User.Use(hooks...)
 }
@@ -210,7 +210,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.AuthCode.Intercept(interceptors...)
 	c.Consent.Intercept(interceptors...)
-	c.RedirectURI.Intercept(interceptors...)
+	c.RedirectUri.Intercept(interceptors...)
 	c.RelyingParty.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
@@ -222,8 +222,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AuthCode.mutate(ctx, m)
 	case *ConsentMutation:
 		return c.Consent.mutate(ctx, m)
-	case *RedirectURIMutation:
-		return c.RedirectURI.mutate(ctx, m)
+	case *RedirectUriMutation:
+		return c.RedirectUri.mutate(ctx, m)
 	case *RelyingPartyMutation:
 		return c.RelyingParty.mutate(ctx, m)
 	case *UserMutation:
@@ -531,107 +531,107 @@ func (c *ConsentClient) mutate(ctx context.Context, m *ConsentMutation) (Value, 
 	}
 }
 
-// RedirectURIClient is a client for the RedirectURI schema.
-type RedirectURIClient struct {
+// RedirectUriClient is a client for the RedirectUri schema.
+type RedirectUriClient struct {
 	config
 }
 
-// NewRedirectURIClient returns a client for the RedirectURI from the given config.
-func NewRedirectURIClient(c config) *RedirectURIClient {
-	return &RedirectURIClient{config: c}
+// NewRedirectUriClient returns a client for the RedirectUri from the given config.
+func NewRedirectUriClient(c config) *RedirectUriClient {
+	return &RedirectUriClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
 // A call to `Use(f, g, h)` equals to `redirecturi.Hooks(f(g(h())))`.
-func (c *RedirectURIClient) Use(hooks ...Hook) {
-	c.hooks.RedirectURI = append(c.hooks.RedirectURI, hooks...)
+func (c *RedirectUriClient) Use(hooks ...Hook) {
+	c.hooks.RedirectUri = append(c.hooks.RedirectUri, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `redirecturi.Intercept(f(g(h())))`.
-func (c *RedirectURIClient) Intercept(interceptors ...Interceptor) {
-	c.inters.RedirectURI = append(c.inters.RedirectURI, interceptors...)
+func (c *RedirectUriClient) Intercept(interceptors ...Interceptor) {
+	c.inters.RedirectUri = append(c.inters.RedirectUri, interceptors...)
 }
 
-// Create returns a builder for creating a RedirectURI entity.
-func (c *RedirectURIClient) Create() *RedirectURICreate {
-	mutation := newRedirectURIMutation(c.config, OpCreate)
-	return &RedirectURICreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a RedirectUri entity.
+func (c *RedirectUriClient) Create() *RedirectUriCreate {
+	mutation := newRedirectUriMutation(c.config, OpCreate)
+	return &RedirectUriCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of RedirectURI entities.
-func (c *RedirectURIClient) CreateBulk(builders ...*RedirectURICreate) *RedirectURICreateBulk {
-	return &RedirectURICreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of RedirectUri entities.
+func (c *RedirectUriClient) CreateBulk(builders ...*RedirectUriCreate) *RedirectUriCreateBulk {
+	return &RedirectUriCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *RedirectURIClient) MapCreateBulk(slice any, setFunc func(*RedirectURICreate, int)) *RedirectURICreateBulk {
+func (c *RedirectUriClient) MapCreateBulk(slice any, setFunc func(*RedirectUriCreate, int)) *RedirectUriCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &RedirectURICreateBulk{err: fmt.Errorf("calling to RedirectURIClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &RedirectUriCreateBulk{err: fmt.Errorf("calling to RedirectUriClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*RedirectURICreate, rv.Len())
+	builders := make([]*RedirectUriCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &RedirectURICreateBulk{config: c.config, builders: builders}
+	return &RedirectUriCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for RedirectURI.
-func (c *RedirectURIClient) Update() *RedirectURIUpdate {
-	mutation := newRedirectURIMutation(c.config, OpUpdate)
-	return &RedirectURIUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for RedirectUri.
+func (c *RedirectUriClient) Update() *RedirectUriUpdate {
+	mutation := newRedirectUriMutation(c.config, OpUpdate)
+	return &RedirectUriUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *RedirectURIClient) UpdateOne(ru *RedirectURI) *RedirectURIUpdateOne {
-	mutation := newRedirectURIMutation(c.config, OpUpdateOne, withRedirectURI(ru))
-	return &RedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *RedirectUriClient) UpdateOne(ru *RedirectUri) *RedirectUriUpdateOne {
+	mutation := newRedirectUriMutation(c.config, OpUpdateOne, withRedirectUri(ru))
+	return &RedirectUriUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RedirectURIClient) UpdateOneID(id typedef.RedirectURIID) *RedirectURIUpdateOne {
-	mutation := newRedirectURIMutation(c.config, OpUpdateOne, withRedirectURIID(id))
-	return &RedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *RedirectUriClient) UpdateOneID(id typedef.RedirectUriID) *RedirectUriUpdateOne {
+	mutation := newRedirectUriMutation(c.config, OpUpdateOne, withRedirectUriID(id))
+	return &RedirectUriUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for RedirectURI.
-func (c *RedirectURIClient) Delete() *RedirectURIDelete {
-	mutation := newRedirectURIMutation(c.config, OpDelete)
-	return &RedirectURIDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for RedirectUri.
+func (c *RedirectUriClient) Delete() *RedirectUriDelete {
+	mutation := newRedirectUriMutation(c.config, OpDelete)
+	return &RedirectUriDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *RedirectURIClient) DeleteOne(ru *RedirectURI) *RedirectURIDeleteOne {
+func (c *RedirectUriClient) DeleteOne(ru *RedirectUri) *RedirectUriDeleteOne {
 	return c.DeleteOneID(ru.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RedirectURIClient) DeleteOneID(id typedef.RedirectURIID) *RedirectURIDeleteOne {
+func (c *RedirectUriClient) DeleteOneID(id typedef.RedirectUriID) *RedirectUriDeleteOne {
 	builder := c.Delete().Where(redirecturi.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &RedirectURIDeleteOne{builder}
+	return &RedirectUriDeleteOne{builder}
 }
 
-// Query returns a query builder for RedirectURI.
-func (c *RedirectURIClient) Query() *RedirectURIQuery {
-	return &RedirectURIQuery{
+// Query returns a query builder for RedirectUri.
+func (c *RedirectUriClient) Query() *RedirectUriQuery {
+	return &RedirectUriQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeRedirectURI},
+		ctx:    &QueryContext{Type: TypeRedirectUri},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a RedirectURI entity by its id.
-func (c *RedirectURIClient) Get(ctx context.Context, id typedef.RedirectURIID) (*RedirectURI, error) {
+// Get returns a RedirectUri entity by its id.
+func (c *RedirectUriClient) Get(ctx context.Context, id typedef.RedirectUriID) (*RedirectUri, error) {
 	return c.Query().Where(redirecturi.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RedirectURIClient) GetX(ctx context.Context, id typedef.RedirectURIID) *RedirectURI {
+func (c *RedirectUriClient) GetX(ctx context.Context, id typedef.RedirectUriID) *RedirectUri {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -639,8 +639,8 @@ func (c *RedirectURIClient) GetX(ctx context.Context, id typedef.RedirectURIID) 
 	return obj
 }
 
-// QueryRelyingParty queries the relying_party edge of a RedirectURI.
-func (c *RedirectURIClient) QueryRelyingParty(ru *RedirectURI) *RelyingPartyQuery {
+// QueryRelyingParty queries the relying_party edge of a RedirectUri.
+func (c *RedirectUriClient) QueryRelyingParty(ru *RedirectUri) *RelyingPartyQuery {
 	query := (&RelyingPartyClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ru.ID
@@ -656,27 +656,27 @@ func (c *RedirectURIClient) QueryRelyingParty(ru *RedirectURI) *RelyingPartyQuer
 }
 
 // Hooks returns the client hooks.
-func (c *RedirectURIClient) Hooks() []Hook {
-	return c.hooks.RedirectURI
+func (c *RedirectUriClient) Hooks() []Hook {
+	return c.hooks.RedirectUri
 }
 
 // Interceptors returns the client interceptors.
-func (c *RedirectURIClient) Interceptors() []Interceptor {
-	return c.inters.RedirectURI
+func (c *RedirectUriClient) Interceptors() []Interceptor {
+	return c.inters.RedirectUri
 }
 
-func (c *RedirectURIClient) mutate(ctx context.Context, m *RedirectURIMutation) (Value, error) {
+func (c *RedirectUriClient) mutate(ctx context.Context, m *RedirectUriMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&RedirectURICreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&RedirectUriCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&RedirectURIUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&RedirectUriUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&RedirectURIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&RedirectUriUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&RedirectURIDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&RedirectUriDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown RedirectURI mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown RedirectUri mutation op: %q", m.Op())
 	}
 }
 
@@ -805,8 +805,8 @@ func (c *RelyingPartyClient) QueryAuthCodes(rp *RelyingParty) *AuthCodeQuery {
 }
 
 // QueryRedirectUris queries the redirect_uris edge of a RelyingParty.
-func (c *RelyingPartyClient) QueryRedirectUris(rp *RelyingParty) *RedirectURIQuery {
-	query := (&RedirectURIClient{config: c.config}).Query()
+func (c *RelyingPartyClient) QueryRedirectUris(rp *RelyingParty) *RedirectUriQuery {
+	query := (&RedirectUriClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := rp.ID
 		step := sqlgraph.NewStep(
@@ -998,9 +998,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AuthCode, Consent, RedirectURI, RelyingParty, User []ent.Hook
+		AuthCode, Consent, RedirectUri, RelyingParty, User []ent.Hook
 	}
 	inters struct {
-		AuthCode, Consent, RedirectURI, RelyingParty, User []ent.Interceptor
+		AuthCode, Consent, RedirectUri, RelyingParty, User []ent.Interceptor
 	}
 )

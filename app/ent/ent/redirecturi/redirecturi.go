@@ -65,7 +65,7 @@ var (
 	UpdateDefaultModifiedAt func() time.Time
 )
 
-// OrderOption defines the ordering options for the RedirectURI queries.
+// OrderOption defines the ordering options for the RedirectUri queries.
 type OrderOption func(*sql.Selector)
 
 // ByID orders the results by the id field.

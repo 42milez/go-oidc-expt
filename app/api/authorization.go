@@ -6,8 +6,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
 
-	"github.com/42milez/go-oidc-server/app/api/oapigen"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/go-playground/validator/v10"
@@ -34,7 +32,7 @@ type AuthorizeGetHdlr struct {
 
 func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
-	q := &oapigen.AuthorizeParams{}
+	q := &AuthorizeParams{}
 
 	if err := decoder.Decode(q, r.URL.Query()); err != nil {
 		RespondJSON500(w, r, err)
@@ -52,7 +50,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	location, err := a.service.Authorize(r.Context(), q.ClientId, q.RedirectUri, q.State)
+	location, err := a.service.Authorize(r.Context(), q.ClientID, q.RedirectUri, q.State)
 
 	if err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
@@ -75,9 +73,9 @@ func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// NOT IMPLEMENTED YET
 }
 
-func parseAuthorizeParam(r *http.Request, v *validator.Validate) (*oapigen.AuthorizeParams, error) {
+func parseAuthorizeParam(r *http.Request, v *validator.Validate) (*AuthorizeParams, error) {
 	decoder := schema.NewDecoder()
-	ret := &oapigen.AuthorizeParams{}
+	ret := &AuthorizeParams{}
 
 	if err := decoder.Decode(ret, r.URL.Query()); err != nil {
 		return nil, err

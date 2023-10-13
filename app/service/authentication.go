@@ -36,7 +36,6 @@ func (a *Authenticate) VerifyConsent(ctx context.Context, userID typedef.UserID,
 
 func (a *Authenticate) VerifyPassword(ctx context.Context, name, pw string) (typedef.UserID, error) {
 	user, err := a.repo.ReadUserByName(ctx, name)
-
 	if err != nil {
 		if errors.Is(err, xerr.UserNotFound) {
 			return 0, xerr.UserNotFound
@@ -45,15 +44,13 @@ func (a *Authenticate) VerifyPassword(ctx context.Context, name, pw string) (typ
 		}
 	}
 
-	ok, err := xargon2.ComparePassword(pw, user.Password)
-
+	ok, err := xargon2.ComparePassword(pw, user.Password())
 	if err != nil {
 		return 0, err
 	}
-
 	if !ok {
 		return 0, xerr.PasswordNotMatched
 	}
 
-	return user.ID, nil
+	return user.ID(), nil
 }

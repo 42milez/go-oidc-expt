@@ -108,7 +108,7 @@ paths:
       tags:
         - Authorization
       parameters:
-        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/ClientID'
         - $ref: '#/components/parameters/Nonce'
         - $ref: '#/components/parameters/RedirectUri'
         - $ref: '#/components/parameters/ResponseType'
@@ -251,7 +251,7 @@ components:
       x-go-json-ignore: true
       x-oapi-codegen-extra-tags:
         url: sid
-    ClientId:
+    ClientID:
       name: client_id
       in: query
       description: represents "client_id" parameter
@@ -259,6 +259,7 @@ components:
       schema:
         type: string
       example: ''
+      x-go-name: ClientID
       x-oapi-codegen-extra-tags:
         schema: client_id
         url: client_id
@@ -440,6 +441,7 @@ components:
               type: integer
               format: uint64
               example: 479552814176534893
+              x-go-name: ID
               x-go-type: typedef.UserID
               x-oapi-codegen-extra-tags:
                 validate: required

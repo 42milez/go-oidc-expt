@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/api"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/google/go-querystring/query"
@@ -19,7 +21,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 
-	"github.com/42milez/go-oidc-server/app/api/oapigen"
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
@@ -56,8 +57,8 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		state, err := xrandom.MakeCryptoRandomString(stateLength)
 		xtestutil.ExitOnError(t, err)
 
-		authoParam := &oapigen.AuthorizeParams{
-			ClientId:     clientId,
+		authoParam := &api.AuthorizeParams{
+			ClientID:     clientId,
 			Display:      "page",
 			MaxAge:       86400,
 			Nonce:        nonce,
@@ -77,10 +78,10 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	}
 
 	registerRelyingParty := func() *entity.RelyingParty {
-		clientId, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIdLength)
+		clientId, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
-		clientSecret, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIdLength)
+		clientSecret, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
 		rp, err := db.Client.RelyingParty.Create().SetClientID(clientId).SetClientSecret(clientSecret).Save(ctx)
@@ -91,7 +92,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 			xtestutil.ExitOnError(t, err)
 		})
 
-		_, err = db.Client.RedirectURI.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
+		_, err = db.Client.RedirectUri.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
 		xtestutil.ExitOnError(t, err)
 
 		return entity.NewRelyingParty(rp)
@@ -105,7 +106,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		username := fmt.Sprintf("user%d", rand.Uint64())
 		password := "password"
 
-		regReqBody := &oapigen.RegisterJSONRequestBody{
+		regReqBody := &api.RegisterJSONRequestBody{
 			Name:     username,
 			Password: password,
 		}
@@ -122,7 +123,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		}
 
 		var regRespBody []byte
-		var u oapigen.User
+		var u api.User
 
 		regRespBody, err = io.ReadAll(regResp.Body)
 		xtestutil.ExitOnError(t, err)
@@ -131,7 +132,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		xtestutil.ExitOnError(t, err)
 
 		t.Cleanup(func() {
-			_, err = db.Client.User.Delete().Where(user.ID(u.Id)).Exec(ctx)
+			_, err = db.Client.User.Delete().Where(user.ID(u.ID)).Exec(ctx)
 			xtestutil.ExitOnError(t, err)
 		})
 
@@ -145,7 +146,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		autheUrl, err := url.Parse(fmt.Sprintf("%s?%s", authenticationEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
-		autheReqBody := &oapigen.AuthenticateJSONRequestBody{
+		autheReqBody := &api.AuthenticateJSONRequestBody{
 			Name:     u.Name(),
 			Password: u.Password(),
 		}

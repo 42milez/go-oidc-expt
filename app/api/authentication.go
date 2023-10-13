@@ -10,8 +10,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 
-	"github.com/42milez/go-oidc-server/app/api/oapigen"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/config"
@@ -44,8 +42,8 @@ func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {
 func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var q *oapigen.AuthorizeParams
-	var reqBody *oapigen.AuthenticateJSONRequestBody
+	var q *AuthorizeParams
+	var reqBody *AuthenticateJSONRequestBody
 	var err error
 
 	if q, err = parseAuthorizeParam(r, a.validator); err != nil {
@@ -81,7 +79,7 @@ func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	var isConsented bool
 
-	if isConsented, err = a.service.VerifyConsent(ctx, userID, q.ClientId); err != nil {
+	if isConsented, err = a.service.VerifyConsent(ctx, userID, q.ClientID); err != nil {
 		a.respondError(w, r, err)
 		return
 	}
@@ -94,8 +92,8 @@ func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
 }
 
-func (a *AuthenticateHdlr) parseRequestBody(r *http.Request) (*oapigen.AuthenticateJSONRequestBody, error) {
-	var ret *oapigen.AuthenticateJSONRequestBody
+func (a *AuthenticateHdlr) parseRequestBody(r *http.Request) (*AuthenticateJSONRequestBody, error) {
+	var ret *AuthenticateJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&ret); err != nil {
 		return nil, err

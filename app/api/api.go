@@ -12,7 +12,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config oapigen/config.yml -o oapigen/api.gen.go spec/spec.yml
+//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config gen/config.yml -o api_gen.go spec/spec.yml
 
 //go:embed secret/key/block.key
 var rawBlockKey []byte

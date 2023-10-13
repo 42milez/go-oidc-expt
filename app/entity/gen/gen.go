@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -10,6 +12,7 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/Masterminds/sprig"
@@ -17,18 +20,36 @@ import (
 
 const templateFile = "entity.gotmpl"
 
-type EntField struct {
+type entField struct {
 	Name string
 	Type string
 }
 
-type EntParam struct {
+type entParam struct {
 	SchemaName string
-	Fields     []*EntField
+	Fields     []*entField
 }
 
-func IsPublicField(f string) bool {
-	re, err := regexp.Compile(`^[A-Z]`)
+func shortenByCapitalLetter(s string) string {
+	var v []rune
+	for _, r := range s {
+		if unicode.IsUpper(r) {
+			v = append(v, r)
+		}
+	}
+	return strings.ToLower(string(v))
+}
+
+func isEdgeField(f string) bool {
+	re, err := regexp.Compile(`^Edges$`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return re.MatchString(f)
+}
+
+func isPrivateField(f string) bool {
+	re, err := regexp.Compile(`^[a-z]`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,23 +58,28 @@ func IsPublicField(f string) bool {
 
 func main() {
 	targets := []any{
+		ent.AuthCode{},
+		ent.Consent{},
+		ent.RedirectUri{},
 		ent.RelyingParty{},
 		ent.User{},
 	}
 
 	funcMap := template.FuncMap{
-		"IsPublicField": IsPublicField,
+		"isEdgeField":            isEdgeField,
+		"isPrivateField":         isPrivateField,
+		"shortenByCapitalLetter": shortenByCapitalLetter,
 	}
 
 	for _, v := range targets {
 		tgt := reflect.TypeOf(v)
 
-		param := &EntParam{
+		param := &entParam{
 			SchemaName: tgt.Name(),
 		}
 
 		for i := 0; i < tgt.NumField(); i++ {
-			param.Fields = append(param.Fields, &EntField{
+			param.Fields = append(param.Fields, &entField{
 				Name: tgt.Field(i).Name,
 				Type: tgt.Field(i).Type.String(),
 			})
@@ -61,7 +87,7 @@ func main() {
 
 		var buf bytes.Buffer
 		t := template.Must(template.New(templateFile).Funcs(funcMap).Funcs(sprig.FuncMap()).
-			ParseFiles(fmt.Sprintf("gen/%s", templateFile)))
+			ParseFiles(fmt.Sprintf("gen/templates/%s", templateFile)))
 		if err := t.Execute(&buf, param); err != nil {
 			log.Fatal(err)
 		}

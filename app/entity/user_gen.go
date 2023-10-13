@@ -17,30 +17,26 @@ type User struct {
 	entity *ent.User
 }
 
-func (r *User) ID() typedef.UserID {
-	return r.entity.ID
+func (u *User) ID() typedef.UserID {
+	return u.entity.ID
 }
 
-func (r *User) Name() string {
-	return r.entity.Name
+func (u *User) Name() string {
+	return u.entity.Name
 }
 
-func (r *User) Password() string {
-	return r.entity.Password
+func (u *User) Password() string {
+	return u.entity.Password
 }
 
-func (r *User) TotpSecret() string {
-	return r.entity.TotpSecret
+func (u *User) TotpSecret() string {
+	return u.entity.TotpSecret
 }
 
-func (r *User) CreatedAt() time.Time {
-	return r.entity.CreatedAt
+func (u *User) CreatedAt() time.Time {
+	return u.entity.CreatedAt
 }
 
-func (r *User) ModifiedAt() time.Time {
-	return r.entity.ModifiedAt
-}
-
-func (r *User) Edges() ent.UserEdges {
-	return r.entity.Edges
+func (u *User) ModifiedAt() time.Time {
+	return u.entity.ModifiedAt
 }

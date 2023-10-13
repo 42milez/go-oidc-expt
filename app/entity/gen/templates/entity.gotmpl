@@ -5,6 +5,7 @@ import (
 )
 
 {{$schemaName := .SchemaName}}
+{{$receiverName := shortenByCapitalLetter $schemaName}}
 
 func New{{.SchemaName}}(entity *ent.{{.SchemaName}}) *{{.SchemaName}} {
     return &{{.SchemaName}}{
@@ -17,9 +18,13 @@ type {{.SchemaName}} struct {
 }
 
 {{range $field := .Fields}}
-{{if IsPublicField $field.Name}}
-func (r *{{$schemaName}}) {{$field.Name}}() {{$field.Type}} {
-    return r.entity.{{$field.Name}}
-}
+{{if isEdgeField $field.Name}}
+    {{continue}}
 {{end}}
+{{if isPrivateField $field.Name}}
+    {{continue}}
+{{end}}
+func ({{$receiverName}} *{{$schemaName}}) {{$field.Name}}() {{$field.Type}} {
+    return {{$receiverName}}.entity.{{$field.Name}}
+}
 {{end}}
