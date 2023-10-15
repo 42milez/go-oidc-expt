@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
-set -eu
+set -e
+
+if [[ -z "${SCRIPT_DIR}" ]]; then
+  readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+  . "${SCRIPT_DIR}/waiter.sh"
+fi
 
 readonly DB_HOST="127.0.0.1"
 readonly DB_PORT=13306
