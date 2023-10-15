@@ -15,25 +15,25 @@
 ### Install required packages
 
 ```
-./script/bootstrap/brew.sh
+./scripts/bootstrap/brew.sh
 ```
 
 ### Enable docker-buildx
 
 ```
-./script/bootstrap/docker-buildx.sh
+./scripts/bootstrap/docker-buildx.sh
 ```
 
 ### Generate key pair for signing access token
 
 ```
-./script/bootstrap/keypair.sh
+./scripts/bootstrap/keypair.sh
 ```
 
 ### Generate keys for encrypting/decrypting cookie
 
 ```
-./script/bootstrap/key.sh
+./scripts/bootstrap/key.sh
 ```
 
 The script creates a key pair in `app/pkg/xjwt/cert`.
@@ -75,7 +75,7 @@ The containers:
 ### Apply migrations
 
 ```
-./script/atlas/migrate-apply.sh
+./scripts/atlas/migrate-apply.sh
 ```
 
 ## Commands and scripts

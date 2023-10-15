@@ -23,8 +23,8 @@ services:
         source: app_build_cache
         target: /root/.cache/go-build
       - type: volume
-        source: app_mod_cache
-        target: /go/pkg/mod
+        source: app_pkg_cache
+        target: /go/pkg
     environment:
       DB_HOST: db
       REDIS_HOST: cache
@@ -73,8 +73,8 @@ services:
         source: ci_app_build_cache
         target: /root/.cache/go-build
       - type: volume
-        source: ci_app_mod_cache
-        target: /go/pkg/mod
+        source: ci_app_pkg_cache
+        target: /go/pkg
     environment:
       DB_HOST: db
       DB_USER: idp_test
@@ -234,7 +234,7 @@ networks:
 volumes:
   app_build_cache:
     driver: local
-  app_mod_cache:
+  app_pkg_cache:
     driver: local
   db_data:
     driver: local
@@ -244,5 +244,5 @@ volumes:
     driver: local
   ci_app_build_cache:
     driver: local
-  ci_app_mod_cache:
+  ci_app_pkg_cache:
     driver: local

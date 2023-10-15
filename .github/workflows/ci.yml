@@ -22,8 +22,8 @@ jobs:
           check-latest: false
       - name: Generate secrets
         run: |
-          ./script/bootstrap/key.sh
-          ./script/bootstrap/keypair.sh
+          ./scripts/bootstrap/key.sh
+          ./scripts/bootstrap/keypair.sh
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
@@ -55,8 +55,8 @@ jobs:
           restore-keys: ${{ matrix.os }}-go${{ matrix.go-version }}-${{ github.job }}-
       - name: Generate secrets
         run: |
-          ./script/bootstrap/key.sh
-          ./script/bootstrap/keypair.sh
+          ./scripts/bootstrap/key.sh
+          ./scripts/bootstrap/keypair.sh
       #  Build images
       # --------------------------------------------------
       - uses: docker/setup-buildx-action@v3
@@ -94,7 +94,7 @@ jobs:
       - name: Start datastore
         run: docker-compose up -d cache db
       - name: Wait for database to be available
-        run: .github/scripts/waiter/db.sh
+        run: scripts/waiter/db.sh
       - name: Apply migrations
         run: make migrate-apply DB_NAMES=idp_test
       #  Start application
