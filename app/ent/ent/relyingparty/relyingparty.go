@@ -64,6 +64,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
+	ClientIDValidator func(string) error
 	// ClientSecretValidator is a validator for the "client_secret" field. It is called by the builders before save.
 	ClientSecretValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

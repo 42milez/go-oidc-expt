@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/config"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/google/uuid"
@@ -13,7 +15,6 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
 
-const issuer = "github.com/42milez/go-oidc-server"
 const accessTokenSubject = "access_token"
 const nameKey = "name"
 
@@ -69,7 +70,7 @@ func (j *JWT) GenerateToken(name string) ([]byte, error) {
 	var token jwt.Token
 	var err error
 
-	if token, err = jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(issuer).Subject(accessTokenSubject).
+	if token, err = jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).Subject(accessTokenSubject).
 		IssuedAt(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, name).Build(); err != nil {
 		return nil, err
 	}

@@ -2,9 +2,10 @@ package schema
 
 import (
 	"fmt"
-	"github.com/42milez/go-oidc-server/app/config"
 	"regexp"
 	"time"
+
+	"github.com/42milez/go-oidc-server/app/config"
 
 	"entgo.io/ent/schema/index"
 

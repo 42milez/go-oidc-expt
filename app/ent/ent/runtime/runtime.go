@@ -75,10 +75,28 @@ func init() {
 	redirecturi.UpdateDefaultModifiedAt = redirecturiDescModifiedAt.UpdateDefault.(func() time.Time)
 	relyingpartyFields := schema.RelyingParty{}.Fields()
 	_ = relyingpartyFields
+	// relyingpartyDescClientID is the schema descriptor for client_id field.
+	relyingpartyDescClientID := relyingpartyFields[1].Descriptor()
+	// relyingparty.ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
+	relyingparty.ClientIDValidator = relyingpartyDescClientID.Validators[0].(func(string) error)
 	// relyingpartyDescClientSecret is the schema descriptor for client_secret field.
 	relyingpartyDescClientSecret := relyingpartyFields[2].Descriptor()
 	// relyingparty.ClientSecretValidator is a validator for the "client_secret" field. It is called by the builders before save.
-	relyingparty.ClientSecretValidator = relyingpartyDescClientSecret.Validators[0].(func(string) error)
+	relyingparty.ClientSecretValidator = func() func(string) error {
+		validators := relyingpartyDescClientSecret.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(client_secret string) error {
+			for _, fn := range fns {
+				if err := fn(client_secret); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// relyingpartyDescCreatedAt is the schema descriptor for created_at field.
 	relyingpartyDescCreatedAt := relyingpartyFields[3].Descriptor()
 	// relyingparty.DefaultCreatedAt holds the default value on creation for the created_at field.

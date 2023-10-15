@@ -79,6 +79,10 @@ const (
 // --------------------------------------------------
 
 const (
+	Issuer = "42milez.dev"
+)
+
+const (
 	AuthenticationPath = "/authenticate"
 	AuthorizationPath  = "/authorize"
 	ConsentPath        = "/consent"

@@ -149,6 +149,11 @@ func (rpc *RelyingPartyCreate) check() error {
 	if _, ok := rpc.mutation.ClientID(); !ok {
 		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "RelyingParty.client_id"`)}
 	}
+	if v, ok := rpc.mutation.ClientID(); ok {
+		if err := relyingparty.ClientIDValidator(v); err != nil {
+			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "RelyingParty.client_id": %w`, err)}
+		}
+	}
 	if _, ok := rpc.mutation.ClientSecret(); !ok {
 		return &ValidationError{Name: "client_secret", err: errors.New(`ent: missing required field "RelyingParty.client_secret"`)}
 	}
