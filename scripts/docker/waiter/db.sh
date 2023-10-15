@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-if [[ -z "${SCRIPT_DIR}" ]]; then
-  readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
-  . "${SCRIPT_DIR}/waiter.sh"
-fi
+readonly DB_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+. "${DB_SCRIPT_DIR}/waiter.sh"
 
 readonly DB_HOST="127.0.0.1"
 readonly DB_PORT=13306
