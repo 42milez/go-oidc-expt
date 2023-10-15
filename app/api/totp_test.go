@@ -11,7 +11,7 @@ import (
 func Test_SecretKey(t *testing.T) {
 	t.Parallel()
 	email := fmt.Sprintf("test@%s", config.Issuer)
-	want := regexp.MustCompile(fmt.Sprintf(`otpauth://totp/%s:%s?secret=[A-Z2-7]+&issuer=%s`, config.Issuer, email, config.Issuer))
+	want := regexp.MustCompile(fmt.Sprintf("otpauth://totp/%s:%s?secret=[A-Z2-7]+&issuer=%s", config.Issuer, email, config.Issuer))
 	got, err := SecretKey(email)
 	if err != nil {
 		t.Fatal(err)
