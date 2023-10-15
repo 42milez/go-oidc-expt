@@ -94,7 +94,7 @@ jobs:
       - name: Start datastore
         run: docker-compose up -d cache db
       - name: Wait for database to be available
-        run: scripts/waiter/db.sh
+        run: scripts/docker/waiter/db.sh
       - name: Apply migrations
         run: make migrate-apply DB_NAMES=idp_test
       #  Start application
