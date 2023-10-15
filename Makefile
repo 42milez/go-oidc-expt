@@ -2,8 +2,6 @@ PROJECT_NAME := go-oidc-server
 VERSION := $(shell git tag --sort=-v:refname | head -n 1)
 GITHUB_ID := 42milez
 
-export CI_APP_BUILD_TARGET := dev
-
 .PHONY: $(shell cat $(MAKEFILE_LIST) | awk -F':' '/^[a-z0-9_-]+:/ {print $$1}')
 
 help: Makefile
