@@ -52,7 +52,7 @@ func dt(input []byte) string {
 	return result
 }
 
-const secretLength = 16
+const secretLength = 30
 const t0 = 0
 const timeStep = 30
 
