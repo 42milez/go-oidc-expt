@@ -286,7 +286,7 @@ components:
       x-oapi-codegen-extra-tags:
         schema: display
         url: display
-        validate: required
+        validate: required,display-validator
     GrantType:
       name: grant_type
       in: query
@@ -310,7 +310,7 @@ components:
       x-oapi-codegen-extra-tags:
         schema: max_age
         url: max_age
-        validate: required
+        validate: required,numeric
     Nonce:
       name: nonce
       in: query
@@ -322,7 +322,7 @@ components:
       x-oapi-codegen-extra-tags:
         schema: nonce
         url: nonce
-        validate: required,ascii
+        validate: required,alphanum
     Prompt:
       name: prompt
       in: query
@@ -334,7 +334,7 @@ components:
       x-oapi-codegen-extra-tags:
         schema: prompt
         url: prompt
-        validate: required
+        validate: required,prompt-validator
     RedirectUri:
       name: redirect_uri
       in: query
@@ -346,7 +346,7 @@ components:
       x-oapi-codegen-extra-tags:
         schema: redirect_uri
         url: redirect_uri
-        validate: required,printascii
+        validate: required,url_encoded
     ResponseType:
       name: response_type
       in: query
