@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	totpSecretLength = 160
 	nameMaxLength           = 30
 	nameMinLength           = 6
 	hashedPasswordLength    = 300
+	encodedTotpSecretLength = 100
 )
 
 // User holds the schema definition for the User entity.
@@ -51,7 +51,7 @@ func (User) Fields() []ent.Field {
 				dialect.MySQL: TotpSecretSchemaType(),
 			}).
 			Optional().
-			Match(regexp.MustCompile(fmt.Sprintf("^[A-Z2-7=]{%d}$", totpSecretLength))),
+			Match(regexp.MustCompile(fmt.Sprintf("^[A-Z2-7=]{%d}$", encodedTotpSecretLength))),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),
@@ -74,5 +74,5 @@ func PasswordSchemaType() string {
 }
 
 func TotpSecretSchemaType() string {
-	return fmt.Sprintf("CHAR(%d)", totpSecretLength)
+	return fmt.Sprintf("CHAR(%d)", encodedTotpSecretLength)
 }
