@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	nameMaxLength    = 30
-	nameMinLength    = 6
-	passwordLength   = 284
 	totpSecretLength = 160
+	nameMaxLength           = 30
+	nameMinLength           = 6
+	hashedPasswordLength    = 300
 )
 
 // User holds the schema definition for the User entity.
@@ -70,7 +70,7 @@ func (User) Edges() []ent.Edge {
 }
 
 func PasswordSchemaType() string {
-	return fmt.Sprintf("VARCHAR(%d)", passwordLength)
+	return fmt.Sprintf("VARCHAR(%d)", hashedPasswordLength)
 }
 
 func TotpSecretSchemaType() string {
