@@ -297,7 +297,7 @@ components:
       example: ''
       x-oapi-codegen-extra-tags:
         schema: grant_type
-        validate: required
+        validate: required,grant-type-validator
     MaxAge:
       name: max_age
       in: query

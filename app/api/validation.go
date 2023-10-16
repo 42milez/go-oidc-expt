@@ -16,6 +16,10 @@ func NewAuthorizeParamValidator() (*validator.Validate, error) {
 		return nil, err
 	}
 
+	if err := ret.RegisterValidation("grant-type-validator", validateGrantType); err != nil {
+		return nil, err
+	}
+
 	if err := ret.RegisterValidation("prompt-validator", validatePrompt); err != nil {
 		return nil, err
 	}
@@ -40,6 +44,17 @@ func validateDisplay(fl validator.FieldLevel) bool {
 	case "touch":
 		return true
 	case "wap":
+		return true
+	default:
+		return false
+	}
+}
+
+func validateGrantType(fl validator.FieldLevel) bool {
+	switch fl.Field().String() {
+	case "authorization_code":
+		return true
+	case "refresh_token":
 		return true
 	default:
 		return false
