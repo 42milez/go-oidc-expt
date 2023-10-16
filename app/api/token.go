@@ -51,6 +51,9 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: Validate token request
+	// ...
+
 	if grantType == config.AuthorizationCodeGrantType {
 		t.handleAuthCodeGrantType(w, r, params, clientId)
 		return
