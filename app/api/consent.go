@@ -3,6 +3,10 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/entity"
+	"github.com/42milez/go-oidc-server/app/httpstore"
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/repository"
 
 	"github.com/42milez/go-oidc-server/app/service"
@@ -18,12 +22,14 @@ var consentHdlr *ConsentHdlr
 func NewConsentHdlr(option *HandlerOption) (*ConsentHdlr, error) {
 	return &ConsentHdlr{
 		service:   service.NewConsent(repository.NewUser(option.db, option.idGenerator)),
+		rCtx:      &httpstore.ReadContext{},
 		validator: option.validator,
 	}, nil
 }
 
 type ConsentHdlr struct {
 	service   ConsentAcceptor
+	rCtx      ContextReader
 	validator *validator.Validate
 }
 
@@ -43,7 +49,7 @@ func (c *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sess, ok := service.GetSession(ctx)
+	sess, ok := c.rCtx.Read(ctx, typedef.SessionKey{}).(*entity.Session)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return

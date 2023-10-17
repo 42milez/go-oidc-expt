@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/httpstore"
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -17,11 +20,13 @@ import (
 func NewAuthorize(repo Authorizer) *Authorize {
 	return &Authorize{
 		repo: repo,
+		rCtx: &httpstore.ReadContext{},
 	}
 }
 
 type Authorize struct {
 	repo Authorizer
+	rCtx ContextReader
 }
 
 func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state string) (string, error) {
@@ -30,7 +35,7 @@ func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state 
 		return "", err
 	}
 
-	sess, ok := GetSession(ctx)
+	sess, ok := a.rCtx.Read(ctx, typedef.SessionKey{}).(*entity.Session)
 	if !ok {
 		return "", xerr.SessionNotFound
 	}

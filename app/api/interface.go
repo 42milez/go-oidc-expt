@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/service"
+
 	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -52,6 +54,13 @@ type DBStatusChecker interface {
 type HealthChecker interface {
 	CacheStatusChecker
 	DBStatusChecker
+}
+
+//  HTTP
+// --------------------------------------------------
+
+type ContextReader interface {
+	Read(ctx context.Context, key any) any
 }
 
 //  AUTHENTICATION
@@ -113,22 +122,12 @@ type AuthCodeRevoker interface {
 	RevokeAuthCode(ctx context.Context, code, clientId string) error
 }
 
-type AccessTokenGenerator interface {
-	GenerateAccessToken() (string, error)
-}
-
-type RefreshTokenGenerator interface {
-	GenerateRefreshToken() (string, error)
-}
-
-type IdTokenGenerator interface {
-	GenerateIdToken() (string, error)
+type TokenSetCreator interface {
+	CreateTokenSet(uid typedef.UserID) (*service.TokenSet, error)
 }
 
 type TokenRequestAcceptor interface {
 	TokenRequestValidator
 	AuthCodeRevoker
-	AccessTokenGenerator
-	RefreshTokenGenerator
-	IdTokenGenerator
+	TokenSetCreator
 }

@@ -7,7 +7,8 @@ import (
 )
 
 type Session struct {
-	UserID typedef.UserID
+	RedirectUri string
+	UserID      typedef.UserID
 }
 
 func (s *Session) MarshalBinary() ([]byte, error) {

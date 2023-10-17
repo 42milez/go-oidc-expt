@@ -4,6 +4,8 @@ import (
 	_ "embed"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/httpstore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
@@ -52,9 +54,10 @@ type HandlerOption struct {
 	cookie          *service.Cookie
 	db              *datastore.Database
 	idGenerator     *xid.UniqueID
-	sessionCreator  *service.CreateSession
-	sessionRestorer *service.RestoreSession
-	sessionUpdater  *service.UpdateSession
+	sessionCreator  *httpstore.CreateSession
+	sessionReader   *httpstore.ReadSession
+	sessionRestorer *httpstore.RestoreSession
+	sessionUpdater  *httpstore.UpdateSession
 	tokenGenerator  *JWT
 	validator       *validator.Validate
 }

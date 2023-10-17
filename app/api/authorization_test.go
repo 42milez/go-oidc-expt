@@ -12,7 +12,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
-	"github.com/42milez/go-oidc-server/app/service"
 	"github.com/42milez/go-oidc-server/app/typedef"
 	"github.com/golang/mock/gomock"
 )
@@ -67,19 +66,22 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				nil,
 			)
 			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
-			r = r.Clone(context.WithValue(r.Context(), service.SessionKey{}, &entity.Session{
+			r = r.Clone(context.WithValue(r.Context(), typedef.SessionKey{}, &entity.Session{
 				UserID: userID,
 			}))
 
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
-			svcMock.
-				EXPECT().
-				Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(tt.resp.location, nil).
-				AnyTimes()
+			svcMock.EXPECT().Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
+				Return(tt.resp.location, nil).AnyTimes()
+
+			rCtxMock := NewMockContextReader(gomock.NewController(t))
+			rCtxMock.EXPECT().Read(gomock.Any(), typedef.SessionIDKey{}).Return(typedef.SessionID("")).AnyTimes()
+			rCtxMock.EXPECT().Read(gomock.Any(), typedef.SessionKey{}).Return(&entity.Session{}).AnyTimes()
+
+			sessMock := NewMockSessionUpdater(gomock.NewController(t))
+			sessMock.EXPECT().Update(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
-
 			if err != nil {
 				t.Error(xerr.FailedToInitialize)
 			}
@@ -87,6 +89,8 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			hdlr := &AuthorizeGetHdlr{
 				service:   svcMock,
 				validator: v,
+				rCtx:      rCtxMock,
+				session:   sessMock,
 			}
 			hdlr.ServeHTTP(w, r)
 			resp := w.Result()

@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/httpstore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5/middleware"
@@ -234,7 +236,9 @@ func ConfigureHandler(option *HandlerOption) error {
 }
 
 func ConfigureService(option *HandlerOption) {
-	option.sessionCreator = service.NewCreateSession(repository.NewSession(option.cache))
-	option.sessionRestorer = service.NewRestoreSession(repository.NewSession(option.cache))
-	option.sessionUpdater = service.NewUpdateSession(repository.NewSession(option.cache))
+	cache := repository.NewSession(option.cache)
+	option.sessionCreator = httpstore.NewCreateSession(cache)
+	option.sessionReader = httpstore.NewReadSession(cache)
+	option.sessionRestorer = httpstore.NewRestoreSession(cache)
+	option.sessionUpdater = httpstore.NewUpdateSession(cache)
 }

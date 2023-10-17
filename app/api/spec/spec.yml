@@ -373,7 +373,7 @@ components:
                 example: EYdxIU30xstnWZKxgA54RJMz1YUR0J
                 x-oapi-codegen-extra-tags:
                   schema: code
-                  validate: alphanum
+                  validate: omitempty,alphanum
               redirect_uri:
                 description: represents "redirect_uri" parameter
                 type: string
@@ -381,7 +381,7 @@ components:
                 example: https%3A%2F%2Fexample.com%2Fcb
                 x-oapi-codegen-extra-tags:
                   schema: redirect_uri
-                  validate: url_encoded
+                  validate: omitempty,url_encoded
               refresh_token:
                 description: represents "refresh_token" parameter
                 type: string
@@ -389,7 +389,7 @@ components:
                 example: 8xLOxBtZp8
                 x-oapi-codegen-extra-tags:
                   schema: refresh_token
-                  validate: alphanum
+                  validate: omitempty,alphanum
           examples:
             new:
               summary: Issue Access Token

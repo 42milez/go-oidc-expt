@@ -17,21 +17,6 @@ type TokenGenerator interface {
 	GenerateToken(name string) ([]byte, error)
 }
 
-//  SESSION
-// --------------------------------------------------
-
-type SessionCreator interface {
-	Create(ctx context.Context, sid typedef.SessionID, sess *entity.Session) (bool, error)
-}
-
-type SessionReader interface {
-	Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error)
-}
-
-type SessionUpdater interface {
-	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) (string, error)
-}
-
 //  HEALTH CHECK
 // --------------------------------------------------
 
@@ -46,6 +31,17 @@ type DatabasePingSender interface {
 type HealthChecker interface {
 	CachePingSender
 	DatabasePingSender
+}
+
+//  HTTP
+// --------------------------------------------------
+
+type ContextReader interface {
+	Read(ctx context.Context, key any) any
+}
+
+type SessionReader interface {
+	Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error)
 }
 
 //  AUTHENTICATION

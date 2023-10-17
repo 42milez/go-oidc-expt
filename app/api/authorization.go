@@ -3,6 +3,10 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/entity"
+	"github.com/42milez/go-oidc-server/app/httpstore"
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
 
@@ -22,12 +26,16 @@ func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
 	return &AuthorizeGetHdlr{
 		service:   service.NewAuthorize(repository.NewRelyingParty(option.db)),
 		validator: v,
+		rCtx:      &httpstore.ReadContext{},
+		session:   option.sessionUpdater,
 	}, nil
 }
 
 type AuthorizeGetHdlr struct {
 	service   Authorizer
 	validator *validator.Validate
+	rCtx      ContextReader
+	session   SessionUpdater
 }
 
 func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +62,27 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		return
+	}
+
+	ctx := r.Context()
+
+	sid, ok := a.rCtx.Read(ctx, typedef.SessionIDKey{}).(typedef.SessionID)
+	if !ok {
+		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+		return
+	}
+
+	sess, ok := a.rCtx.Read(ctx, typedef.SessionKey{}).(*entity.Session)
+	if !ok {
+		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+		return
+	}
+
+	sess.RedirectUri = q.RedirectUri
+
+	if err = a.session.Update(ctx, sid, sess); err != nil {
+		RespondJSON500(w, r, err)
 		return
 	}
 

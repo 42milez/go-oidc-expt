@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/42milez/go-oidc-server/app/httpstore"
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/go-playground/validator/v10"
 
 	"github.com/42milez/go-oidc-server/app/config"
@@ -19,16 +22,16 @@ var tokenHdlr *TokenHdlr
 
 func NewTokenHdlr(option *HandlerOption) *TokenHdlr {
 	return &TokenHdlr{
-		svc:       service.NewToken(option.db, option.clock),
-		tokenGen:  option.tokenGenerator,
-		validator: option.validator,
+		svc: service.NewToken(option.db, option.clock, option.sessionReader, option.tokenGenerator),
+		cr:  &httpstore.ReadContext{},
+		v:   option.validator,
 	}
 }
 
 type TokenHdlr struct {
-	svc       TokenRequestAcceptor
-	tokenGen  service.TokenGenerator
-	validator *validator.Validate
+	svc TokenRequestAcceptor
+	cr  ContextReader
+	v   *validator.Validate
 }
 
 func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -49,13 +52,10 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = t.validator.Struct(param); err != nil {
+	if err = t.v.Struct(param); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
-
-	// TODO: Validate token request
-	// ...
 
 	if param.GrantType == config.AuthorizationCodeGrantType {
 		t.handleAuthCodeGrantType(w, r, param, clientId)
@@ -73,7 +73,7 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	ctx := r.Context()
 
-	if xutil.IsEmpty(*param.Code) {
+	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectUri) {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, nil)
 		return
 	}
@@ -88,13 +88,8 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if xutil.IsEmpty(*param.RedirectUri) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, nil)
-		return
-	}
-
 	if err := t.svc.ValidateRedirectUri(ctx, *param.RedirectUri, clientId); err != nil {
-		if errors.Is(err, xerr.RedirectUriNotFound) {
+		if errors.Is(err, xerr.RedirectUriNotFound) || errors.Is(err, xerr.RedirectUriNotMatched) {
 			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		} else {
 			RespondJSON500(w, r, err)
@@ -102,28 +97,22 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	accessToken, err := t.tokenGen.GenerateToken("")
-	if err != nil {
-		RespondJSON500(w, r, err)
+	uid, ok := t.cr.Read(ctx, typedef.UserIDKey{}).(typedef.UserID)
+	if !ok {
+		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
-	refreshToken, err := t.tokenGen.GenerateToken("")
-	if err != nil {
-		RespondJSON500(w, r, err)
-		return
-	}
-
-	idToken, err := t.tokenGen.GenerateToken("")
+	tokenSet, err := t.svc.CreateTokenSet(uid)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
 	resp := &TokenResponse{
-		AccessToken:  string(accessToken),
-		RefreshToken: string(refreshToken),
-		IdToken:      string(idToken),
+		AccessToken:  tokenSet.AccessToken,
+		RefreshToken: tokenSet.RefreshToken,
+		IdToken:      tokenSet.IdToken,
 		TokenType:    config.BearerTokenType,
 		ExpiresIn:    3600,
 	}
@@ -163,10 +152,21 @@ func (t *TokenHdlr) parseForm(r *http.Request) (*TokenFormdataBody, error) {
 	redirectUri := params.Get("redirect_uri")
 	refreshToken := params.Get("refresh_token")
 
-	return &TokenFormdataBody{
-		Code:         &code,
-		GrantType:    grantType,
-		RedirectUri:  &redirectUri,
-		RefreshToken: &refreshToken,
-	}, nil
+	ret := &TokenFormdataBody{
+		GrantType: grantType,
+	}
+
+	if !xutil.IsEmpty(code) {
+		ret.Code = &code
+	}
+
+	if !xutil.IsEmpty(redirectUri) {
+		ret.RedirectUri = &redirectUri
+	}
+
+	if !xutil.IsEmpty(refreshToken) {
+		ret.RefreshToken = &refreshToken
+	}
+
+	return ret, nil
 }
