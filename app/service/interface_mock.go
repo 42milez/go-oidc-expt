@@ -51,6 +51,95 @@ func (mr *MockTokenGeneratorMockRecorder) GenerateToken(name interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateToken), name)
 }
 
+// MockTokenValidator is a mock of TokenValidator interface.
+type MockTokenValidator struct {
+	ctrl     *gomock.Controller
+	recorder *MockTokenValidatorMockRecorder
+}
+
+// MockTokenValidatorMockRecorder is the mock recorder for MockTokenValidator.
+type MockTokenValidatorMockRecorder struct {
+	mock *MockTokenValidator
+}
+
+// NewMockTokenValidator creates a new mock instance.
+func NewMockTokenValidator(ctrl *gomock.Controller) *MockTokenValidator {
+	mock := &MockTokenValidator{ctrl: ctrl}
+	mock.recorder = &MockTokenValidatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTokenValidator) EXPECT() *MockTokenValidatorMockRecorder {
+	return m.recorder
+}
+
+// Validate mocks base method.
+func (m *MockTokenValidator) Validate(name *string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Validate", name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Validate indicates an expected call of Validate.
+func (mr *MockTokenValidatorMockRecorder) Validate(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockTokenValidator)(nil).Validate), name)
+}
+
+// MockTokenGenerateValidator is a mock of TokenGenerateValidator interface.
+type MockTokenGenerateValidator struct {
+	ctrl     *gomock.Controller
+	recorder *MockTokenGenerateValidatorMockRecorder
+}
+
+// MockTokenGenerateValidatorMockRecorder is the mock recorder for MockTokenGenerateValidator.
+type MockTokenGenerateValidatorMockRecorder struct {
+	mock *MockTokenGenerateValidator
+}
+
+// NewMockTokenGenerateValidator creates a new mock instance.
+func NewMockTokenGenerateValidator(ctrl *gomock.Controller) *MockTokenGenerateValidator {
+	mock := &MockTokenGenerateValidator{ctrl: ctrl}
+	mock.recorder = &MockTokenGenerateValidatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTokenGenerateValidator) EXPECT() *MockTokenGenerateValidatorMockRecorder {
+	return m.recorder
+}
+
+// GenerateToken mocks base method.
+func (m *MockTokenGenerateValidator) GenerateToken(name string) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateToken", name)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateToken indicates an expected call of GenerateToken.
+func (mr *MockTokenGenerateValidatorMockRecorder) GenerateToken(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateToken), name)
+}
+
+// Validate mocks base method.
+func (m *MockTokenGenerateValidator) Validate(name *string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Validate", name)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Validate indicates an expected call of Validate.
+func (mr *MockTokenGenerateValidatorMockRecorder) Validate(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockTokenGenerateValidator)(nil).Validate), name)
+}
+
 // MockCachePingSender is a mock of CachePingSender interface.
 type MockCachePingSender struct {
 	ctrl     *gomock.Controller

@@ -14,24 +14,24 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewToken(db *datastore.Database, c xtime.Clocker, sess SessionReader, tokenGen TokenGenerator) *Token {
+func NewToken(db *datastore.Database, c xtime.Clocker, sess SessionReader, token TokenGenerateValidator) *Token {
 	return &Token{
-		acRepo:   repository.NewAuthCode(db),
-		ruRepo:   repository.NewRedirectUri(db),
-		cr:       &httpstore.ReadContext{},
-		sess:     sess,
-		tokenGen: tokenGen,
-		clock:    c,
+		acRepo: repository.NewAuthCode(db),
+		ruRepo: repository.NewRedirectUri(db),
+		cr:     &httpstore.ReadContext{},
+		sess:   sess,
+		token:  token,
+		clock:  c,
 	}
 }
 
 type Token struct {
-	acRepo   AuthCodeReadMarker
-	ruRepo   RedirectUriReader
-	cr       ContextReader
-	sess     SessionReader
-	tokenGen TokenGenerator
-	clock    xtime.Clocker
+	acRepo AuthCodeReadMarker
+	ruRepo RedirectUriReader
+	cr     ContextReader
+	sess   SessionReader
+	token  TokenGenerateValidator
+	clock  xtime.Clocker
 }
 
 func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) error {
@@ -90,17 +90,17 @@ type TokenSet struct {
 
 func (t *Token) CreateTokenSet(uid typedef.UserID) (*TokenSet, error) {
 	uidConverted := strconv.FormatUint(uint64(uid), 10)
-	accessToken, err := t.tokenGen.GenerateToken(uidConverted)
+	accessToken, err := t.token.GenerateToken(uidConverted)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := t.tokenGen.GenerateToken(uidConverted)
+	refreshToken, err := t.token.GenerateToken(uidConverted)
 	if err != nil {
 		return nil, err
 	}
 
-	idToken, err := t.tokenGen.GenerateToken(uidConverted)
+	idToken, err := t.token.GenerateToken(uidConverted)
 	if err != nil {
 		return nil, err
 	}
@@ -110,4 +110,11 @@ func (t *Token) CreateTokenSet(uid typedef.UserID) (*TokenSet, error) {
 		RefreshToken: string(refreshToken),
 		IdToken:      string(idToken),
 	}, nil
+}
+
+func (t *Token) ValidateRefreshToken(token *string) error {
+	if err := t.token.Validate(token); err != nil {
+		return xerr.InvalidToken
+	}
+	return nil
 }

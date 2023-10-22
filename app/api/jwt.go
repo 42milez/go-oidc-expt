@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
+
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
@@ -90,4 +92,12 @@ func (j *JWT) parseRequest(r *http.Request) (jwt.Token, error) {
 
 func (j *JWT) validate(token jwt.Token) error {
 	return jwt.Validate(token, jwt.WithClock(j.clock))
+}
+
+func (j *JWT) Validate(token *string) error {
+	t, err := jwt.ParseString(*token)
+	if err != nil {
+		return xerr.InvalidToken
+	}
+	return j.validate(t)
 }

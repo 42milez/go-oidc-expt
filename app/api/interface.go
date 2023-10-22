@@ -113,9 +113,14 @@ type RedirectUriValidator interface {
 	ValidateRedirectUri(ctx context.Context, uri, clientId string) error
 }
 
+type RefreshTokenValidator interface {
+	ValidateRefreshToken(token *string) error
+}
+
 type TokenRequestValidator interface {
 	AuthCodeValidator
 	RedirectUriValidator
+	RefreshTokenValidator
 }
 
 type AuthCodeRevoker interface {

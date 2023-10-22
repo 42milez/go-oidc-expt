@@ -61,8 +61,7 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		t.handleAuthCodeGrantType(w, r, param, clientId)
 		return
 	} else if param.GrantType == config.RefreshTokenGrantType {
-		// TODO: Generate Access Token if grant_type is refresh_token.
-		t.handleRefreshTokenGrantType()
+		t.handleRefreshTokenGrantType(w, r, param)
 		return
 	} else {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
@@ -132,8 +131,16 @@ func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request,
 	}
 }
 
-func (t *TokenHdlr) handleRefreshTokenGrantType() {
+func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody) {
+	if err := t.svc.ValidateRefreshToken(param.RefreshToken); err != nil {
+		if errors.Is(err, xerr.InvalidToken) {
+			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		}
+		return
+	}
 
+	// TODO: Return access token
+	// ...
 }
 
 func (t *TokenHdlr) parseForm(r *http.Request) (*TokenFormdataBody, error) {

@@ -22,6 +22,7 @@ var (
 	ConsentNotFound          InternalErr = "consent not found"
 	ContextValueNotFound     InternalErr = "context value not found"
 	RedirectUriNotMatched    InternalErr = "redirect uri not matched"
+	InvalidToken             InternalErr = "invalid refresh token"
 )
 
 var (

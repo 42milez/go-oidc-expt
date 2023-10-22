@@ -17,6 +17,15 @@ type TokenGenerator interface {
 	GenerateToken(name string) ([]byte, error)
 }
 
+type TokenValidator interface {
+	Validate(name *string) error
+}
+
+type TokenGenerateValidator interface {
+	TokenGenerator
+	TokenValidator
+}
+
 //  HEALTH CHECK
 // --------------------------------------------------
 
