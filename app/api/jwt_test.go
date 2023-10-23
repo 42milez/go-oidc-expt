@@ -46,7 +46,7 @@ func TestJWT_MakeAccessToken(t *testing.T) {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 	}
 
-	got, err := j.GenerateToken("test_user")
+	got, err := j.GenerateAccessToken("test_user")
 
 	if err != nil {
 		t.Fatal(err)

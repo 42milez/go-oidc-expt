@@ -209,7 +209,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		return cbUrl
 	}
 
-	requestToken := func(rp *entity.RelyingParty, cookies []*http.Cookie, authoParam string, cbUrl *url.URL) {
+	initialRequestToken := func(rp *entity.RelyingParty, cookies []*http.Cookie, authoParam string, cbUrl *url.URL) {
 		tokenUrl, err := url.Parse(fmt.Sprintf("%s?%s", tokenEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
@@ -246,5 +246,5 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	cookies := authenticate(registeredUser, authoParam)
 	consent(cookies, authoParam)
 	callbackUrl := authorize(cookies, authoParam)
-	requestToken(registeredRp, cookies, authoParam, callbackUrl)
+	initialRequestToken(registeredRp, cookies, authoParam, callbackUrl)
 }

@@ -493,7 +493,6 @@ components:
         required:
           - access_token
           - refresh_token
-          - id_token
           - token_type
           - expires_in
         properties:

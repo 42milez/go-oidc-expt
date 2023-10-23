@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/service"
-
 	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -127,12 +125,22 @@ type AuthCodeRevoker interface {
 	RevokeAuthCode(ctx context.Context, code, clientId string) error
 }
 
-type TokenSetCreator interface {
-	CreateTokenSet(uid typedef.UserID) (*service.TokenSet, error)
+type AccessTokenGenerator interface {
+	GenerateAccessToken(uid typedef.UserID) (string, error)
+}
+
+type RefreshTokenGenerator interface {
+	GenerateRefreshToken(uid typedef.UserID) (string, error)
+}
+
+type IdTokenGenerator interface {
+	GenerateIdToken(uid typedef.UserID) (string, error)
 }
 
 type TokenRequestAcceptor interface {
 	TokenRequestValidator
 	AuthCodeRevoker
-	TokenSetCreator
+	AccessTokenGenerator
+	RefreshTokenGenerator
+	IdTokenGenerator
 }

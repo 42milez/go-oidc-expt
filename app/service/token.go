@@ -82,39 +82,36 @@ func (t *Token) ValidateRedirectUri(ctx context.Context, uri, clientId string) e
 	return nil
 }
 
-type TokenSet struct {
-	AccessToken  string
-	RefreshToken string
-	IdToken      string
-}
-
-func (t *Token) CreateTokenSet(uid typedef.UserID) (*TokenSet, error) {
-	uidConverted := strconv.FormatUint(uint64(uid), 10)
-	accessToken, err := t.token.GenerateToken(uidConverted)
-	if err != nil {
-		return nil, err
-	}
-
-	refreshToken, err := t.token.GenerateToken(uidConverted)
-	if err != nil {
-		return nil, err
-	}
-
-	idToken, err := t.token.GenerateToken(uidConverted)
-	if err != nil {
-		return nil, err
-	}
-
-	return &TokenSet{
-		AccessToken:  string(accessToken),
-		RefreshToken: string(refreshToken),
-		IdToken:      string(idToken),
-	}, nil
-}
-
 func (t *Token) ValidateRefreshToken(token *string) error {
 	if err := t.token.Validate(token); err != nil {
 		return xerr.InvalidToken
 	}
 	return nil
+}
+
+func (t *Token) GenerateAccessToken(uid typedef.UserID) (string, error) {
+	uidConverted := strconv.FormatUint(uint64(uid), 10)
+	accessToken, err := t.token.GenerateAccessToken(uidConverted)
+	if err != nil {
+		return "", err
+	}
+	return string(accessToken), nil
+}
+
+func (t *Token) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+	uidConverted := strconv.FormatUint(uint64(uid), 10)
+	refreshToken, err := t.token.GenerateRefreshToken(uidConverted)
+	if err != nil {
+		return "", err
+	}
+	return string(refreshToken), nil
+}
+
+func (t *Token) GenerateIdToken(uid typedef.UserID) (string, error) {
+	uidConverted := strconv.FormatUint(uint64(uid), 10)
+	idToken, err := t.token.GenerateIdToken(uidConverted)
+	if err != nil {
+		return "", err
+	}
+	return string(idToken), nil
 }

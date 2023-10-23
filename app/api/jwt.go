@@ -53,45 +53,36 @@ type JWT struct {
 	clock                 xtime.Clocker
 }
 
-func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
-	var ret jwt.Token
-	var err error
-
-	if ret, err = j.parseRequest(r); err != nil {
+func (j *JWT) GenerateAccessToken(name string) ([]byte, error) {
+	token, err := jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).Subject(accessTokenSubject).
+		IssuedAt(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, name).Build()
+	if err != nil {
 		return nil, err
 	}
+	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
+	if err != nil {
+		return nil, err
+	}
+	return ret, nil
+}
 
+func (j *JWT) GenerateRefreshToken(name string) ([]byte, error) {
+	return j.GenerateAccessToken(name)
+}
+
+func (j *JWT) GenerateIdToken(name string) ([]byte, error) {
+	return j.GenerateAccessToken(name)
+}
+
+func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
+	ret, err := j.parseRequest(r)
+	if err != nil {
+		return nil, err
+	}
 	if err = j.validate(ret); err != nil {
 		return nil, err
 	}
-
 	return ret, nil
-}
-
-func (j *JWT) GenerateToken(name string) ([]byte, error) {
-	var token jwt.Token
-	var err error
-
-	if token, err = jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).Subject(accessTokenSubject).
-		IssuedAt(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, name).Build(); err != nil {
-		return nil, err
-	}
-
-	var ret []byte
-
-	if ret, err = jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey)); err != nil {
-		return nil, err
-	}
-
-	return ret, nil
-}
-
-func (j *JWT) parseRequest(r *http.Request) (jwt.Token, error) {
-	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, j.publicKey), jwt.WithValidate(false))
-}
-
-func (j *JWT) validate(token jwt.Token) error {
-	return jwt.Validate(token, jwt.WithClock(j.clock))
 }
 
 func (j *JWT) Validate(token *string) error {
@@ -100,4 +91,12 @@ func (j *JWT) Validate(token *string) error {
 		return xerr.InvalidToken
 	}
 	return j.validate(t)
+}
+
+func (j *JWT) parseRequest(r *http.Request) (jwt.Token, error) {
+	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, j.publicKey), jwt.WithValidate(false))
+}
+
+func (j *JWT) validate(token jwt.Token) error {
+	return jwt.Validate(token, jwt.WithClock(j.clock))
 }

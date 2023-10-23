@@ -13,8 +13,22 @@ import (
 //  JWT
 // --------------------------------------------------
 
+type AccessTokenGenerator interface {
+	GenerateAccessToken(name string) ([]byte, error)
+}
+
+type RefreshTokenGenerator interface {
+	GenerateRefreshToken(name string) ([]byte, error)
+}
+
+type IdTokenGenerator interface {
+	GenerateIdToken(name string) ([]byte, error)
+}
+
 type TokenGenerator interface {
-	GenerateToken(name string) ([]byte, error)
+	AccessTokenGenerator
+	RefreshTokenGenerator
+	IdTokenGenerator
 }
 
 type TokenValidator interface {

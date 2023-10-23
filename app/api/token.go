@@ -102,21 +102,44 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	tokenSet, err := t.svc.CreateTokenSet(uid)
+	tokens, err := t.generateToken(uid)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
 	resp := &TokenResponse{
-		AccessToken:  tokenSet.AccessToken,
-		RefreshToken: tokenSet.RefreshToken,
-		IdToken:      tokenSet.IdToken,
+		AccessToken:  *tokens["AccessToken"],
+		RefreshToken: *tokens["RefreshToken"],
+		IdToken:      tokens["IdToken"],
 		TokenType:    config.BearerTokenType,
 		ExpiresIn:    3600,
 	}
 
 	RespondJSON(w, r, http.StatusOK, resp)
+}
+
+func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error) {
+	accessToken, err := t.svc.GenerateAccessToken(uid)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := t.svc.GenerateRefreshToken(uid)
+	if err != nil {
+		return nil, err
+	}
+
+	idToken, err := t.svc.GenerateIdToken(uid)
+	if err != nil {
+		return nil, err
+	}
+
+	return map[string]*string{
+		"AccessToken":  &accessToken,
+		"RefreshToken": &refreshToken,
+		"IdToken":      &idToken,
+	}, nil
 }
 
 func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request, err error) {
@@ -139,8 +162,32 @@ func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	// TODO: Return access token
-	// ...
+	uid, ok := t.cr.Read(r.Context(), typedef.UserIDKey{}).(typedef.UserID)
+	if !ok {
+		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
+		return
+	}
+
+	accessToken, err := t.svc.GenerateAccessToken(uid)
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	refreshToken, err := t.svc.GenerateRefreshToken(uid)
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	resp := &TokenResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		TokenType:    config.BearerTokenType,
+		ExpiresIn:    3600,
+	}
+
+	RespondJSON(w, r, http.StatusOK, resp)
 }
 
 func (t *TokenHdlr) parseForm(r *http.Request) (*TokenFormdataBody, error) {
