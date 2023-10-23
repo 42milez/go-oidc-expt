@@ -209,13 +209,13 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		return cbUrl
 	}
 
-	initialRequestToken := func(rp *entity.RelyingParty, cookies []*http.Cookie, authoParam string, cbUrl *url.URL) {
+	initialRequestToken := func(rp *entity.RelyingParty, cookies []*http.Cookie, authoParam string, cbUrl *url.URL) string {
 		tokenUrl, err := url.Parse(fmt.Sprintf("%s?%s", tokenEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
 		credential := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", rp.ClientID(), rp.ClientSecret())))
 
-		tokenReqParam := &xtestutil.RequestParam{
+		reqParam := &xtestutil.RequestParam{
 			Headers: map[string]string{
 				"Authorization": fmt.Sprintf("Basic %s", credential),
 				"Content-Type":  "application/x-www-form-urlencoded",
@@ -225,18 +225,59 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 
 		cbQuery := cbUrl.Query()
 
-		tokenParam := url.Values{}
-		tokenParam.Add("grant_type", "authorization_code")
-		tokenParam.Add("code", cbQuery.Get("code"))
-		tokenParam.Add("redirect_uri", redirectUri)
-		tokenReqBody := []byte(tokenParam.Encode())
+		param := url.Values{}
+		param.Add("grant_type", "authorization_code")
+		param.Add("code", cbQuery.Get("code"))
+		param.Add("redirect_uri", redirectUri)
+		reqBody := []byte(param.Encode())
 
-		tokenResp, err := xtestutil.Request(t, httpClient, http.MethodPost, tokenUrl, tokenReqParam, tokenReqBody)
-		defer xtestutil.CloseResponseBody(t, tokenResp)
+		resp, err := xtestutil.Request(t, httpClient, http.MethodPost, tokenUrl, reqParam, reqBody)
+		defer xtestutil.CloseResponseBody(t, resp)
 		xtestutil.ExitOnError(t, err)
 
-		if tokenResp.StatusCode != http.StatusOK {
-			t.Fatalf("POST /token failed: want = %d; got = %d", http.StatusOK, tokenResp.StatusCode)
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("POST /token failed: want = %d; got = %d", http.StatusOK, resp.StatusCode)
+		}
+
+		respBody, err := io.ReadAll(resp.Body)
+		xtestutil.ExitOnError(t, err)
+
+		var tokenResp api.TokenResponse
+
+		err = json.Unmarshal(respBody, &tokenResp)
+		xtestutil.ExitOnError(t, err)
+
+		return tokenResp.RefreshToken
+	}
+
+	requestToken := func(rp *entity.RelyingParty, cookies []*http.Cookie, refreshToken string) {
+		tokenUrl, err := url.Parse(fmt.Sprintf("%s", tokenEndpoint))
+		xtestutil.ExitOnError(t, err)
+
+		credential := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", rp.ClientID(), rp.ClientSecret())))
+
+		reqParam := &xtestutil.RequestParam{
+			Headers: map[string]string{
+				"Authorization": fmt.Sprintf("Basic %s", credential),
+				"Content-Type":  "application/x-www-form-urlencoded",
+			},
+			Cookies: cookies,
+		}
+
+		param := url.Values{}
+		param.Add("client_id", rp.ClientID())
+		param.Add("client_secret", rp.ClientSecret())
+		param.Add("grant_type", "refresh_token")
+		param.Add("refresh_token", refreshToken)
+		param.Add("scope", "openid profile")
+		reqBody := []byte(param.Encode())
+
+		resp, err := xtestutil.Request(t, httpClient, http.MethodPost, tokenUrl, reqParam, reqBody)
+		defer xtestutil.CloseResponseBody(t, resp)
+		xtestutil.ExitOnError(t, err)
+
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("POST /token failed: want = %d; got = %d", http.StatusOK, resp.StatusCode)
 		}
 	}
 
@@ -246,5 +287,6 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	cookies := authenticate(registeredUser, authoParam)
 	consent(cookies, authoParam)
 	callbackUrl := authorize(cookies, authoParam)
-	initialRequestToken(registeredRp, cookies, authoParam, callbackUrl)
+	refreshToken := initialRequestToken(registeredRp, cookies, authoParam, callbackUrl)
+	requestToken(registeredRp, cookies, refreshToken)
 }

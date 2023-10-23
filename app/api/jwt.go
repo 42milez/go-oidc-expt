@@ -55,7 +55,7 @@ type JWT struct {
 
 func (j *JWT) GenerateAccessToken(name string) ([]byte, error) {
 	token, err := jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).Subject(accessTokenSubject).
-		IssuedAt(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, name).Build()
+		IssuedAt(j.clock.Now()).Expiration(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, name).Build()
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
 }
 
 func (j *JWT) Validate(token *string) error {
-	t, err := jwt.ParseString(*token)
+	t, err := jwt.ParseString(*token, jwt.WithKey(jwa.ES256, j.publicKey))
 	if err != nil {
 		return xerr.InvalidToken
 	}
