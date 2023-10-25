@@ -7,11 +7,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/httpstore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/42milez/go-oidc-server/app/api/oapigen"
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
@@ -78,7 +79,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 
 	var swag *openapi3.T
 
-	if swag, err = oapigen.GetSwagger(); err != nil {
+	if swag, err = GetSwagger(); err != nil {
 		return nil, nil, err
 	}
 
@@ -93,12 +94,12 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 
 	// Middleware Configuration on Each Handler
 
-	mw := oapigen.NewMiddlewareFuncMap()
+	mw := NewMiddlewareFuncMap()
 	rs := RestoreSession(option)
 
 	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs).SetTokenMW(rs)
 
-	mux = oapigen.MuxWithOptions(&HandlerImpl{}, &oapigen.ChiServerOptions{
+	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,
 		Middlewares: mw,
 	})
@@ -122,7 +123,6 @@ func oapiBasicAuthenticate(ctx context.Context, input *openapi3filter.Authentica
 	}
 
 	credentials, err := extractCredential(input.RequestValidationInput.Request)
-
 	if err != nil {
 		return err
 	}
@@ -147,7 +147,6 @@ func extractCredential(r *http.Request) ([]string, error) {
 
 	credentialBase64 := strings.Replace(authHdr, "Basic ", "", -1)
 	credentialDecoded, err := base64.StdEncoding.DecodeString(credentialBase64)
-
 	if err != nil {
 		return nil, xerr.UnexpectedErrorOccurred
 	}
@@ -237,7 +236,9 @@ func ConfigureHandler(option *HandlerOption) error {
 }
 
 func ConfigureService(option *HandlerOption) {
-	option.sessionCreator = service.NewCreateSession(repository.NewSession(option.cache))
-	option.sessionRestorer = service.NewRestoreSession(repository.NewSession(option.cache))
-	option.sessionUpdater = service.NewUpdateSession(repository.NewSession(option.cache))
+	cache := repository.NewSession(option.cache)
+	option.sessionCreator = httpstore.NewCreateSession(cache)
+	option.sessionReader = httpstore.NewReadSession(cache)
+	option.sessionRestorer = httpstore.NewRestoreSession(cache)
+	option.sessionUpdater = httpstore.NewUpdateSession(cache)
 }

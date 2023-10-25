@@ -24,9 +24,6 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 		return nil, err
 	}
 
-	//ctx, cancel := context.WithTimeout(ctx, pingCtxTimeout*time.Second)
-	//defer cancel()
-
 	pingOp := func() error {
 		return db.PingContext(ctx)
 	}

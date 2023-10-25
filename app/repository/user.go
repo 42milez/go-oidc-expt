@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/entity"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
 
-	"github.com/42milez/go-oidc-server/app/ent/ent"
 	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 )
@@ -27,25 +28,26 @@ type User struct {
 	idGen IDGenerator
 }
 
-func (u *User) CreateUser(ctx context.Context, name string, pw string) (*ent.User, error) {
-	return u.db.Client.User.Create().SetName(name).SetPassword(pw).Save(ctx)
+func (u *User) CreateUser(ctx context.Context, name string, pw string) (*entity.User, error) {
+	v, err := u.db.Client.User.Create().SetName(name).SetPassword(pw).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return entity.NewUser(v), nil
 }
 
-func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
+func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
 	tx, err := u.db.Client.Tx(ctx)
-
 	if err != nil {
 		return nil, rollback(tx, err)
 	}
 
 	targetUser, err := tx.User.Query().Where(user.ID(userID)).ForShare().Only(ctx)
-
 	if err != nil {
 		return nil, rollback(tx, err)
 	}
 
 	c, err := tx.Consent.Create().SetUser(targetUser).SetClientID(clientID).Save(ctx)
-
 	if err != nil {
 		return nil, rollback(tx, err)
 	}
@@ -54,11 +56,11 @@ func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientI
 		return nil, rollback(tx, err)
 	}
 
-	return c, nil
+	return entity.NewConsent(c), nil
 }
 
-func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*ent.Consent, error) {
-	ret, err := u.db.Client.Consent.Query().Where(consent.UserID(userID), consent.ClientID(clientID)).Only(ctx)
+func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
+	c, err := u.db.Client.Consent.Query().Where(consent.UserID(userID), consent.ClientID(clientID)).Only(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {
 			return nil, xerr.ConsentNotFound
@@ -66,16 +68,16 @@ func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID 
 			return nil, err
 		}
 	}
-	return ret, nil
+	return entity.NewConsent(c), nil
 }
 
-func (u *User) ReadUserByName(ctx context.Context, name string) (*ent.User, error) {
-	ret, err := u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
+func (u *User) ReadUserByName(ctx context.Context, name string) (*entity.User, error) {
+	v, err := u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {
 			return nil, xerr.UserNotFound
 		}
 		return nil, err
 	}
-	return ret, err
+	return entity.NewUser(v), err
 }

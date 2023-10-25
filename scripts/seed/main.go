@@ -59,7 +59,7 @@ func run(ctx context.Context, db *datastore.Database) error {
 	// --------------------------------------------------
 
 	var authCodes []*ent.AuthCode
-	var redirectURIs []*ent.RedirectURI
+	var redirectURIs []*ent.RedirectUri
 	var consents []*ent.Consent
 
 	if authCodes, err = InsertAuthCodes(ctx, db, relyingParties, users, nAuthCodeByRelyingParty); err != nil {
@@ -68,7 +68,7 @@ func run(ctx context.Context, db *datastore.Database) error {
 
 	printSeeds(authCodes)
 
-	if redirectURIs, err = InsertRedirectURIs(ctx, db, relyingParties, nRedirectUriByRelyingParty); err != nil {
+	if redirectURIs, err = InsertRedirectUris(ctx, db, relyingParties, nRedirectUriByRelyingParty); err != nil {
 		return err
 	}
 

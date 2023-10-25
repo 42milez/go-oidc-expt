@@ -37,7 +37,7 @@ type RelyingPartyEdges struct {
 	// AuthCodes holds the value of the auth_codes edge.
 	AuthCodes []*AuthCode `json:"auth_codes,omitempty"`
 	// RedirectUris holds the value of the redirect_uris edge.
-	RedirectUris []*RedirectURI `json:"redirect_uris,omitempty"`
+	RedirectUris []*RedirectUri `json:"redirect_uris,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -54,7 +54,7 @@ func (e RelyingPartyEdges) AuthCodesOrErr() ([]*AuthCode, error) {
 
 // RedirectUrisOrErr returns the RedirectUris value or an error if the edge
 // was not loaded in eager-loading.
-func (e RelyingPartyEdges) RedirectUrisOrErr() ([]*RedirectURI, error) {
+func (e RelyingPartyEdges) RedirectUrisOrErr() ([]*RedirectUri, error) {
 	if e.loadedTypes[1] {
 		return e.RedirectUris, nil
 	}
@@ -136,7 +136,7 @@ func (rp *RelyingParty) QueryAuthCodes() *AuthCodeQuery {
 }
 
 // QueryRedirectUris queries the "redirect_uris" edge of the RelyingParty entity.
-func (rp *RelyingParty) QueryRedirectUris() *RedirectURIQuery {
+func (rp *RelyingParty) QueryRedirectUris() *RedirectUriQuery {
 	return NewRelyingPartyClient(rp.config).QueryRedirectUris(rp)
 }
 

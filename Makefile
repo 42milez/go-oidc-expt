@@ -2,8 +2,6 @@ PROJECT_NAME := go-oidc-server
 VERSION := $(shell git tag --sort=-v:refname | head -n 1)
 GITHUB_ID := 42milez
 
-export CI_BUILD_TARGET := dev
-
 .PHONY: $(shell cat $(MAKEFILE_LIST) | awk -F':' '/^[a-z0-9_-]+:/ {print $$1}')
 
 help: Makefile
@@ -62,22 +60,22 @@ gen:
 ## lint: Run linters
 lint:
 	@go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run -v --fix
-	@vacuum lint -r vacuum-ignore-rules.yml -d app/api/spec/spec.yml
+	@vacuum lint -r .vacuum.yml -d app/api/spec/spec.yml
 
 ## migrate-apply: Apply migrations
 migrate-apply:
-	@./script/atlas/migrate-apply.sh ${DB_NAMES}
+	@./scripts/atlas/migrate-apply.sh ${DB_NAMES}
 
 ## migrate-diff: Generate migrations
 migrate-diff:
 ifndef MIGRATION_NAME
 	$(error MIGRATION_NAME is required; e.g. make MIGRATION_NAME=xxx migrate-diff)
 endif
-	@./script/atlas/migrate-diff.sh ${MIGRATION_NAME}
+	@./scripts/atlas/migrate-diff.sh ${MIGRATION_NAME}
 
 ## migrate-lint: Run analysis on the migration directory
 migrate-lint:
-	@./script/atlas/migrate-lint.sh ${N_LATEST}
+	@./scripts/atlas/migrate-lint.sh ${N_LATEST}
 
 ## resolve: Resolve dependencies
 resolve:
@@ -85,7 +83,7 @@ resolve:
 
 ## seed: Seeding database
 seed:
-	@go run ./script/seed/*.go
+	@go run ./scripts/seed/*.go
 
 ## test: Run all tests
 test:
@@ -113,7 +111,7 @@ lc-delete:
 
 ## up: Create and start containers
 up:
-	@docker-compose up -d app cache db log ci-app
+	@./scripts/docker/up.sh
 
 ## down: Stop and remove containers
 down:

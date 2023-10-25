@@ -1,7 +1,7 @@
 #  deploy-builder
 # --------------------------------------------------
 
-FROM golang:1.21.0 as deploy-builder
+FROM golang:1.21.1 as deploy-builder
 
 ENV CGO_ENABLED 0
 
@@ -33,11 +33,11 @@ CMD [ "./app" ]
 #  dev
 # --------------------------------------------------
 
-FROM golang:1.21.0 as dev
+FROM golang:1.21.1 as dev
 
 WORKDIR /workspace
 
-RUN go install github.com/go-delve/delve/cmd/dlv@v1.21.0
+RUN go install github.com/go-delve/delve/cmd/dlv@v1.21.1
 RUN go install github.com/cosmtrek/air@v1.45.0
 
 CMD [ "air", "-c", ".air.toml" ]

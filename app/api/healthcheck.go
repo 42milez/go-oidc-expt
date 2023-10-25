@@ -23,6 +23,7 @@ func (c *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	errResp := func(err error) {
 		RespondJSON503(w, r, err)
 	}
+
 	ctx := r.Context()
 
 	if err := c.service.CheckCacheStatus(ctx); err != nil {

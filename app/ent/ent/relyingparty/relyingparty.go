@@ -37,7 +37,7 @@ const (
 	AuthCodesColumn = "relying_party_id"
 	// RedirectUrisTable is the table that holds the redirect_uris relation/edge.
 	RedirectUrisTable = "redirect_uris"
-	// RedirectUrisInverseTable is the table name for the RedirectURI entity.
+	// RedirectUrisInverseTable is the table name for the RedirectUri entity.
 	// It exists in this package in order to avoid circular dependency with the "redirecturi" package.
 	RedirectUrisInverseTable = "redirect_uris"
 	// RedirectUrisColumn is the table column denoting the redirect_uris relation/edge.
@@ -64,6 +64,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
+	ClientIDValidator func(string) error
 	// ClientSecretValidator is a validator for the "client_secret" field. It is called by the builders before save.
 	ClientSecretValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.

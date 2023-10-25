@@ -5,6 +5,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/entity"
+
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/ent/ent/authcode"
@@ -22,20 +24,20 @@ type AuthCode struct {
 	db *datastore.Database
 }
 
-func (a *AuthCode) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
-	tx, err := a.db.Client.Tx(ctx)
+func (ac *AuthCode) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+	tx, err := ac.db.Client.Tx(ctx)
 	if err != nil {
 		return nil, rollback(tx, err)
 	}
 
-	ac, err := tx.AuthCode.Query().Where(authcode.Code(code)).WithRelyingParty(func(q *ent.RelyingPartyQuery) {
+	v, err := tx.AuthCode.Query().Where(authcode.Code(code)).WithRelyingParty(func(q *ent.RelyingPartyQuery) {
 		q.Where(relyingparty.ClientID(clientId))
 	}).ForShare().Only(ctx)
 	if err != nil {
 		return nil, rollback(tx, err)
 	}
 
-	ac, err = ac.Update().SetUsedAt(time.Now()).Save(ctx)
+	v, err = v.Update().SetUsedAt(time.Now()).Save(ctx)
 	if err != nil {
 		return nil, rollback(tx, err)
 	}
@@ -44,11 +46,11 @@ func (a *AuthCode) MarkAuthCodeUsed(ctx context.Context, code, clientId string) 
 		return nil, rollback(tx, err)
 	}
 
-	return ac, nil
+	return entity.NewAuthCode(v), nil
 }
 
-func (a *AuthCode) ReadAuthCode(ctx context.Context, code, clientId string) (*ent.AuthCode, error) {
-	ret, err := a.db.Client.AuthCode.Query().Where(authcode.Code(code)).WithRelyingParty(func(q *ent.RelyingPartyQuery) {
+func (ac *AuthCode) ReadAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+	v, err := ac.db.Client.AuthCode.Query().Where(authcode.Code(code)).WithRelyingParty(func(q *ent.RelyingPartyQuery) {
 		q.Where(relyingparty.ClientID(clientId))
 	}).Only(ctx)
 
@@ -60,5 +62,5 @@ func (a *AuthCode) ReadAuthCode(ctx context.Context, code, clientId string) (*en
 		}
 	}
 
-	return ret, nil
+	return entity.NewAuthCode(v), nil
 }

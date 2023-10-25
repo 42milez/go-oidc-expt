@@ -11,7 +11,6 @@ import (
 
 	"github.com/rs/zerolog"
 
-	"github.com/42milez/go-oidc-server/app/api/oapigen"
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -56,7 +55,7 @@ func AccessLogger(next http.Handler) http.Handler {
 	})
 }
 
-func RestoreSession(option *HandlerOption) oapigen.MiddlewareFunc {
+func RestoreSession(option *HandlerOption) MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			sid, err := option.cookie.Read(r, config.SessionIDCookieName)
