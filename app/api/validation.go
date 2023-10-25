@@ -12,33 +12,68 @@ import (
 func NewAuthorizeParamValidator() (*validator.Validate, error) {
 	ret := validator.New()
 
-	if err := ret.RegisterValidation("scope-validator", validateScope); err != nil {
-		return nil, xerr.FailedToInitialize
+	if err := ret.RegisterValidation("display-validator", validateDisplay); err != nil {
+		return nil, err
+	}
+
+	if err := ret.RegisterValidation("grant-type-validator", validateGrantType); err != nil {
+		return nil, err
+	}
+
+	if err := ret.RegisterValidation("prompt-validator", validatePrompt); err != nil {
+		return nil, err
 	}
 
 	if err := ret.RegisterValidation("response-type-validator", validateResponseType); err != nil {
-		return nil, xerr.FailedToInitialize
+		return nil, err
+	}
+
+	if err := ret.RegisterValidation("scope-validator", validateScope); err != nil {
+		return nil, err
 	}
 
 	return ret, nil
 }
 
-var validScopes = []string{
-	"openid",
-	"profile",
-	"email",
+func validateDisplay(fl validator.FieldLevel) bool {
+	switch fl.Field().String() {
+	case "page":
+		return true
+	case "popup":
+		return true
+	case "touch":
+		return true
+	case "wap":
+		return true
+	default:
+		return false
+	}
 }
 
-func validateScope(fl validator.FieldLevel) bool {
-	scopes := strings.Split(fl.Field().String(), " ")
-
-	for _, v := range scopes {
-		if !slices.Contains(validScopes, v) {
-			return false
-		}
+func validateGrantType(fl validator.FieldLevel) bool {
+	switch fl.Field().String() {
+	case "authorization_code":
+		return true
+	case "refresh_token":
+		return true
+	default:
+		return false
 	}
+}
 
-	return true
+func validatePrompt(fl validator.FieldLevel) bool {
+	switch fl.Field().String() {
+	case "none":
+		return true
+	case "login":
+		return true
+	case "consent":
+		return true
+	case "select_account":
+		return true
+	default:
+		return false
+	}
 }
 
 type responseTypeNumber uint64
@@ -88,6 +123,24 @@ func validateResponseType(fl validator.FieldLevel) bool {
 
 	if !slices.Contains(validResponseTypeCombinations, respTypeComb) {
 		return false
+	}
+
+	return true
+}
+
+var validScopes = []string{
+	"openid",
+	"profile",
+	"email",
+}
+
+func validateScope(fl validator.FieldLevel) bool {
+	scopes := strings.Split(fl.Field().String(), " ")
+
+	for _, v := range scopes {
+		if !slices.Contains(validScopes, v) {
+			return false
+		}
 	}
 
 	return true

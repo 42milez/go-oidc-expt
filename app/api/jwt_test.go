@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/config"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
@@ -44,7 +46,7 @@ func TestJWT_MakeAccessToken(t *testing.T) {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 	}
 
-	got, err := j.GenerateToken("test_user")
+	got, err := j.GenerateAccessToken("test_user")
 
 	if err != nil {
 		t.Fatal(err)
@@ -61,7 +63,7 @@ func TestJWT_ExtractAccessToken(t *testing.T) {
 	clock := xtestutil.FixedClocker{}
 	want, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
-		Issuer(issuer).
+		Issuer(config.Issuer).
 		Subject(accessTokenSubject).
 		IssuedAt(clock.Now()).
 		Expiration(clock.Now().Add(30*time.Minute)).

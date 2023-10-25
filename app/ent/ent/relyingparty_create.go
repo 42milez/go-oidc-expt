@@ -84,15 +84,15 @@ func (rpc *RelyingPartyCreate) AddAuthCodes(a ...*AuthCode) *RelyingPartyCreate 
 	return rpc.AddAuthCodeIDs(ids...)
 }
 
-// AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectURI entity by IDs.
-func (rpc *RelyingPartyCreate) AddRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyCreate {
+// AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectUri entity by IDs.
+func (rpc *RelyingPartyCreate) AddRedirectURIIDs(ids ...typedef.RedirectUriID) *RelyingPartyCreate {
 	rpc.mutation.AddRedirectURIIDs(ids...)
 	return rpc
 }
 
-// AddRedirectUris adds the "redirect_uris" edges to the RedirectURI entity.
-func (rpc *RelyingPartyCreate) AddRedirectUris(r ...*RedirectURI) *RelyingPartyCreate {
-	ids := make([]typedef.RedirectURIID, len(r))
+// AddRedirectUris adds the "redirect_uris" edges to the RedirectUri entity.
+func (rpc *RelyingPartyCreate) AddRedirectUris(r ...*RedirectUri) *RelyingPartyCreate {
+	ids := make([]typedef.RedirectUriID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -148,6 +148,11 @@ func (rpc *RelyingPartyCreate) defaults() {
 func (rpc *RelyingPartyCreate) check() error {
 	if _, ok := rpc.mutation.ClientID(); !ok {
 		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "RelyingParty.client_id"`)}
+	}
+	if v, ok := rpc.mutation.ClientID(); ok {
+		if err := relyingparty.ClientIDValidator(v); err != nil {
+			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "RelyingParty.client_id": %w`, err)}
+		}
 	}
 	if _, ok := rpc.mutation.ClientSecret(); !ok {
 		return &ValidationError{Name: "client_secret", err: errors.New(`ent: missing required field "RelyingParty.client_secret"`)}

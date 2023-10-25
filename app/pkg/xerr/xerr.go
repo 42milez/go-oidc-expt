@@ -9,7 +9,6 @@ var (
 	FailedToInitialize       InternalErr = "failed to initialize"
 	FailedToReadResponseBody InternalErr = "failed to read response body"
 	FailedToValidate         InternalErr = "failed to validate"
-	NotFound                 InternalErr = "not found"
 	OIDCInvalidResponseType  InternalErr = "invalid response type"
 	PasswordNotMatched       InternalErr = "password not matched"
 	SessionNotFound          InternalErr = "session not found"
@@ -21,6 +20,9 @@ var (
 	MalformedFormParameter   InternalErr = "malformed form parameter"
 	RedirectUriNotFound      InternalErr = "redirect uri not found"
 	ConsentNotFound          InternalErr = "consent not found"
+	ContextValueNotFound     InternalErr = "context value not found"
+	RedirectUriNotMatched    InternalErr = "redirect uri not matched"
+	InvalidToken             InternalErr = "invalid refresh token"
 )
 
 var (

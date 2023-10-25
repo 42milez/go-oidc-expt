@@ -10,30 +10,30 @@ import (
 
 const nRedirectUriMin = 1
 
-type RedirectURI struct {
+type RedirectUri struct {
 	URI          string
 	RelyingParty *ent.RelyingParty
 }
 
-func InsertRedirectURIs(ctx context.Context, db *datastore.Database, relyingParties []*ent.RelyingParty, nRedirectURI int) ([]*ent.RedirectURI, error) {
-	if nRedirectURI < nRedirectUriMin {
+func InsertRedirectUris(ctx context.Context, db *datastore.Database, relyingParties []*ent.RelyingParty, nRedirectUri int) ([]*ent.RedirectUri, error) {
+	if nRedirectUri < nRedirectUriMin {
 		return nil, fmt.Errorf("the number of redirect uris must be greater than or equal to %d", nRedirectUriMin)
 	}
 
 	nRelyingParty := len(relyingParties)
 
-	params := make([]RedirectURI, nRedirectURI*nRelyingParty)
+	params := make([]RedirectUri, nRedirectUri*nRelyingParty)
 
 	for i := range params {
 		params[i].URI = fmt.Sprintf("https://example.com/cb%d", i)
 		params[i].RelyingParty = relyingParties[i%nRelyingParty]
 	}
 
-	builders := make([]*ent.RedirectURICreate, len(params))
+	builders := make([]*ent.RedirectUriCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = db.Client.RedirectURI.Create().SetURI(v.URI).SetRelyingParty(v.RelyingParty)
+		builders[i] = db.Client.RedirectUri.Create().SetURI(v.URI).SetRelyingParty(v.RelyingParty)
 	}
 
-	return db.Client.RedirectURI.CreateBulk(builders...).Save(ctx)
+	return db.Client.RedirectUri.CreateBulk(builders...).Save(ctx)
 }

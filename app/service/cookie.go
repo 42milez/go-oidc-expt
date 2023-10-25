@@ -23,7 +23,6 @@ type Cookie struct {
 
 func (c *Cookie) Read(r *http.Request, name string) (string, error) {
 	cookie, err := r.Cookie(name)
-
 	if err != nil {
 		return "", err
 	}
@@ -39,7 +38,6 @@ func (c *Cookie) Read(r *http.Request, name string) (string, error) {
 
 func (c *Cookie) Write(w http.ResponseWriter, name, val string, ttl time.Duration) error {
 	encoded, err := c.sc.Encode(name, val)
-
 	if err != nil {
 		return err
 	}

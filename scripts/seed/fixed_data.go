@@ -37,7 +37,7 @@ func insertFixedData(ctx context.Context, db *datastore.Database) error {
 
 	uri := "https://swagger.example.com/cb"
 
-	if _, err = insertRedirectURI(ctx, db, uri, relyingParty.ID); err != nil {
+	if _, err = insertRedirectUri(ctx, db, uri, relyingParty.ID); err != nil {
 		return err
 	}
 
@@ -62,6 +62,6 @@ func insertAuthCode(ctx context.Context, db *datastore.Database, code string, us
 	return db.Client.AuthCode.Create().SetCode(code).SetUserID(userID).SetRelyingPartyID(relyingPartyID).Save(ctx)
 }
 
-func insertRedirectURI(ctx context.Context, db *datastore.Database, uri string, rpID typedef.RelyingPartyID) (*ent.RedirectURI, error) {
-	return db.Client.RedirectURI.Create().SetURI(uri).SetRelyingPartyID(rpID).Save(ctx)
+func insertRedirectUri(ctx context.Context, db *datastore.Database, uri string, rpID typedef.RelyingPartyID) (*ent.RedirectUri, error) {
+	return db.Client.RedirectUri.Create().SetURI(uri).SetRelyingPartyID(rpID).Save(ctx)
 }

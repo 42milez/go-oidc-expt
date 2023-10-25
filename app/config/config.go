@@ -79,6 +79,10 @@ const (
 // --------------------------------------------------
 
 const (
+	Issuer = "42milez.dev"
+)
+
+const (
 	AuthenticationPath = "/authenticate"
 	AuthorizationPath  = "/authorize"
 	ConsentPath        = "/consent"
@@ -91,7 +95,7 @@ const (
 )
 
 const (
-	ClientIdLength     = 30
+	ClientIDLength     = 30
 	ClientSecretLength = 30
 )
 

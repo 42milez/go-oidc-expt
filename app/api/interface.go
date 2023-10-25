@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -55,6 +54,13 @@ type HealthChecker interface {
 	DBStatusChecker
 }
 
+//  HTTP
+// --------------------------------------------------
+
+type ContextReader interface {
+	Read(ctx context.Context, key any) any
+}
+
 //  AUTHENTICATION
 // --------------------------------------------------
 
@@ -72,11 +78,11 @@ type Authenticator interface {
 }
 
 type UserCreator interface {
-	CreateUser(ctx context.Context, name, pw string) (*ent.User, error)
+	CreateUser(ctx context.Context, name, pw string) (*entity.User, error)
 }
 
 type UserReader interface {
-	SelectUser(ctx context.Context) (*ent.User, error)
+	SelectUser(ctx context.Context) (*entity.User, error)
 }
 
 //  OIDC: AUTHORIZATION
@@ -105,9 +111,14 @@ type RedirectUriValidator interface {
 	ValidateRedirectUri(ctx context.Context, uri, clientId string) error
 }
 
+type RefreshTokenValidator interface {
+	ValidateRefreshToken(token *string) error
+}
+
 type TokenRequestValidator interface {
 	AuthCodeValidator
 	RedirectUriValidator
+	RefreshTokenValidator
 }
 
 type AuthCodeRevoker interface {
@@ -115,15 +126,15 @@ type AuthCodeRevoker interface {
 }
 
 type AccessTokenGenerator interface {
-	GenerateAccessToken() (string, error)
+	GenerateAccessToken(uid typedef.UserID) (string, error)
 }
 
 type RefreshTokenGenerator interface {
-	GenerateRefreshToken() (string, error)
+	GenerateRefreshToken(uid typedef.UserID) (string, error)
 }
 
 type IdTokenGenerator interface {
-	GenerateIdToken() (string, error)
+	GenerateIdToken(uid typedef.UserID) (string, error)
 }
 
 type TokenRequestAcceptor interface {

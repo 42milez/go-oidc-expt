@@ -13,13 +13,13 @@ import (
 	"entgo.io/ent/schema/index"
 )
 
-// RedirectURI holds the schema definition for the RedirectURI entity.
-type RedirectURI struct {
+// RedirectUri holds the schema definition for the RedirectUri entity.
+type RedirectUri struct {
 	ent.Schema
 }
 
-// Annotations of the RedirectURI.
-func (RedirectURI) Annotations() []schema.Annotation {
+// Annotations of the RedirectUri.
+func (RedirectUri) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{
 			Table: "redirect_uris",
@@ -27,11 +27,11 @@ func (RedirectURI) Annotations() []schema.Annotation {
 	}
 }
 
-// Fields of the RedirectURI.
-func (RedirectURI) Fields() []ent.Field {
+// Fields of the RedirectUri.
+func (RedirectUri) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("id").
-			GoType(typedef.RedirectURIID(0)).
+			GoType(typedef.RedirectUriID(0)).
 			Immutable(),
 		field.String("uri").
 			NotEmpty(),
@@ -47,8 +47,8 @@ func (RedirectURI) Fields() []ent.Field {
 	}
 }
 
-// Edges of the RedirectURI.
-func (RedirectURI) Edges() []ent.Edge {
+// Edges of the RedirectUri.
+func (RedirectUri) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("relying_party", RelyingParty.Type).
 			Ref("redirect_uris").
@@ -59,8 +59,8 @@ func (RedirectURI) Edges() []ent.Edge {
 	}
 }
 
-// Indexes of the RedirectURI.
-func (RedirectURI) Indexes() []ent.Index {
+// Indexes of the RedirectUri.
+func (RedirectUri) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("relying_party_id", "uri").
 			Unique(),

@@ -15,27 +15,27 @@ import (
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
-// RedirectURICreate is the builder for creating a RedirectURI entity.
-type RedirectURICreate struct {
+// RedirectUriCreate is the builder for creating a RedirectUri entity.
+type RedirectUriCreate struct {
 	config
-	mutation *RedirectURIMutation
+	mutation *RedirectUriMutation
 	hooks    []Hook
 }
 
 // SetURI sets the "uri" field.
-func (ruc *RedirectURICreate) SetURI(s string) *RedirectURICreate {
+func (ruc *RedirectUriCreate) SetURI(s string) *RedirectUriCreate {
 	ruc.mutation.SetURI(s)
 	return ruc
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (ruc *RedirectURICreate) SetCreatedAt(t time.Time) *RedirectURICreate {
+func (ruc *RedirectUriCreate) SetCreatedAt(t time.Time) *RedirectUriCreate {
 	ruc.mutation.SetCreatedAt(t)
 	return ruc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ruc *RedirectURICreate) SetNillableCreatedAt(t *time.Time) *RedirectURICreate {
+func (ruc *RedirectUriCreate) SetNillableCreatedAt(t *time.Time) *RedirectUriCreate {
 	if t != nil {
 		ruc.SetCreatedAt(*t)
 	}
@@ -43,13 +43,13 @@ func (ruc *RedirectURICreate) SetNillableCreatedAt(t *time.Time) *RedirectURICre
 }
 
 // SetModifiedAt sets the "modified_at" field.
-func (ruc *RedirectURICreate) SetModifiedAt(t time.Time) *RedirectURICreate {
+func (ruc *RedirectUriCreate) SetModifiedAt(t time.Time) *RedirectUriCreate {
 	ruc.mutation.SetModifiedAt(t)
 	return ruc
 }
 
 // SetNillableModifiedAt sets the "modified_at" field if the given value is not nil.
-func (ruc *RedirectURICreate) SetNillableModifiedAt(t *time.Time) *RedirectURICreate {
+func (ruc *RedirectUriCreate) SetNillableModifiedAt(t *time.Time) *RedirectUriCreate {
 	if t != nil {
 		ruc.SetModifiedAt(*t)
 	}
@@ -57,35 +57,35 @@ func (ruc *RedirectURICreate) SetNillableModifiedAt(t *time.Time) *RedirectURICr
 }
 
 // SetRelyingPartyID sets the "relying_party_id" field.
-func (ruc *RedirectURICreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *RedirectURICreate {
+func (ruc *RedirectUriCreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *RedirectUriCreate {
 	ruc.mutation.SetRelyingPartyID(tpi)
 	return ruc
 }
 
 // SetID sets the "id" field.
-func (ruc *RedirectURICreate) SetID(tu typedef.RedirectURIID) *RedirectURICreate {
-	ruc.mutation.SetID(tu)
+func (ruc *RedirectUriCreate) SetID(tui typedef.RedirectUriID) *RedirectUriCreate {
+	ruc.mutation.SetID(tui)
 	return ruc
 }
 
 // SetRelyingParty sets the "relying_party" edge to the RelyingParty entity.
-func (ruc *RedirectURICreate) SetRelyingParty(r *RelyingParty) *RedirectURICreate {
+func (ruc *RedirectUriCreate) SetRelyingParty(r *RelyingParty) *RedirectUriCreate {
 	return ruc.SetRelyingPartyID(r.ID)
 }
 
-// Mutation returns the RedirectURIMutation object of the builder.
-func (ruc *RedirectURICreate) Mutation() *RedirectURIMutation {
+// Mutation returns the RedirectUriMutation object of the builder.
+func (ruc *RedirectUriCreate) Mutation() *RedirectUriMutation {
 	return ruc.mutation
 }
 
-// Save creates the RedirectURI in the database.
-func (ruc *RedirectURICreate) Save(ctx context.Context) (*RedirectURI, error) {
+// Save creates the RedirectUri in the database.
+func (ruc *RedirectUriCreate) Save(ctx context.Context) (*RedirectUri, error) {
 	ruc.defaults()
 	return withHooks(ctx, ruc.sqlSave, ruc.mutation, ruc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ruc *RedirectURICreate) SaveX(ctx context.Context) *RedirectURI {
+func (ruc *RedirectUriCreate) SaveX(ctx context.Context) *RedirectUri {
 	v, err := ruc.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -94,20 +94,20 @@ func (ruc *RedirectURICreate) SaveX(ctx context.Context) *RedirectURI {
 }
 
 // Exec executes the query.
-func (ruc *RedirectURICreate) Exec(ctx context.Context) error {
+func (ruc *RedirectUriCreate) Exec(ctx context.Context) error {
 	_, err := ruc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ruc *RedirectURICreate) ExecX(ctx context.Context) {
+func (ruc *RedirectUriCreate) ExecX(ctx context.Context) {
 	if err := ruc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ruc *RedirectURICreate) defaults() {
+func (ruc *RedirectUriCreate) defaults() {
 	if _, ok := ruc.mutation.CreatedAt(); !ok {
 		v := redirecturi.DefaultCreatedAt()
 		ruc.mutation.SetCreatedAt(v)
@@ -119,31 +119,31 @@ func (ruc *RedirectURICreate) defaults() {
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ruc *RedirectURICreate) check() error {
+func (ruc *RedirectUriCreate) check() error {
 	if _, ok := ruc.mutation.URI(); !ok {
-		return &ValidationError{Name: "uri", err: errors.New(`ent: missing required field "RedirectURI.uri"`)}
+		return &ValidationError{Name: "uri", err: errors.New(`ent: missing required field "RedirectUri.uri"`)}
 	}
 	if v, ok := ruc.mutation.URI(); ok {
 		if err := redirecturi.URIValidator(v); err != nil {
-			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectURI.uri": %w`, err)}
+			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectUri.uri": %w`, err)}
 		}
 	}
 	if _, ok := ruc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "RedirectURI.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "RedirectUri.created_at"`)}
 	}
 	if _, ok := ruc.mutation.ModifiedAt(); !ok {
-		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "RedirectURI.modified_at"`)}
+		return &ValidationError{Name: "modified_at", err: errors.New(`ent: missing required field "RedirectUri.modified_at"`)}
 	}
 	if _, ok := ruc.mutation.RelyingPartyID(); !ok {
-		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "RedirectURI.relying_party_id"`)}
+		return &ValidationError{Name: "relying_party_id", err: errors.New(`ent: missing required field "RedirectUri.relying_party_id"`)}
 	}
 	if _, ok := ruc.mutation.RelyingPartyID(); !ok {
-		return &ValidationError{Name: "relying_party", err: errors.New(`ent: missing required edge "RedirectURI.relying_party"`)}
+		return &ValidationError{Name: "relying_party", err: errors.New(`ent: missing required edge "RedirectUri.relying_party"`)}
 	}
 	return nil
 }
 
-func (ruc *RedirectURICreate) sqlSave(ctx context.Context) (*RedirectURI, error) {
+func (ruc *RedirectUriCreate) sqlSave(ctx context.Context) (*RedirectUri, error) {
 	if err := ruc.check(); err != nil {
 		return nil, err
 	}
@@ -156,16 +156,16 @@ func (ruc *RedirectURICreate) sqlSave(ctx context.Context) (*RedirectURI, error)
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = typedef.RedirectURIID(id)
+		_node.ID = typedef.RedirectUriID(id)
 	}
 	ruc.mutation.id = &_node.ID
 	ruc.mutation.done = true
 	return _node, nil
 }
 
-func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) {
+func (ruc *RedirectUriCreate) createSpec() (*RedirectUri, *sqlgraph.CreateSpec) {
 	var (
-		_node = &RedirectURI{config: ruc.config}
+		_node = &RedirectUri{config: ruc.config}
 		_spec = sqlgraph.NewCreateSpec(redirecturi.Table, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	)
 	if id, ok := ruc.mutation.ID(); ok {
@@ -204,27 +204,27 @@ func (ruc *RedirectURICreate) createSpec() (*RedirectURI, *sqlgraph.CreateSpec) 
 	return _node, _spec
 }
 
-// RedirectURICreateBulk is the builder for creating many RedirectURI entities in bulk.
-type RedirectURICreateBulk struct {
+// RedirectUriCreateBulk is the builder for creating many RedirectUri entities in bulk.
+type RedirectUriCreateBulk struct {
 	config
 	err      error
-	builders []*RedirectURICreate
+	builders []*RedirectUriCreate
 }
 
-// Save creates the RedirectURI entities in the database.
-func (rucb *RedirectURICreateBulk) Save(ctx context.Context) ([]*RedirectURI, error) {
+// Save creates the RedirectUri entities in the database.
+func (rucb *RedirectUriCreateBulk) Save(ctx context.Context) ([]*RedirectUri, error) {
 	if rucb.err != nil {
 		return nil, rucb.err
 	}
 	specs := make([]*sqlgraph.CreateSpec, len(rucb.builders))
-	nodes := make([]*RedirectURI, len(rucb.builders))
+	nodes := make([]*RedirectUri, len(rucb.builders))
 	mutators := make([]Mutator, len(rucb.builders))
 	for i := range rucb.builders {
 		func(i int, root context.Context) {
 			builder := rucb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*RedirectURIMutation)
+				mutation, ok := m.(*RedirectUriMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -251,7 +251,7 @@ func (rucb *RedirectURICreateBulk) Save(ctx context.Context) ([]*RedirectURI, er
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = typedef.RedirectURIID(id)
+					nodes[i].ID = typedef.RedirectUriID(id)
 				}
 				mutation.done = true
 				return nodes[i], nil
@@ -271,7 +271,7 @@ func (rucb *RedirectURICreateBulk) Save(ctx context.Context) ([]*RedirectURI, er
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rucb *RedirectURICreateBulk) SaveX(ctx context.Context) []*RedirectURI {
+func (rucb *RedirectUriCreateBulk) SaveX(ctx context.Context) []*RedirectUri {
 	v, err := rucb.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -280,13 +280,13 @@ func (rucb *RedirectURICreateBulk) SaveX(ctx context.Context) []*RedirectURI {
 }
 
 // Exec executes the query.
-func (rucb *RedirectURICreateBulk) Exec(ctx context.Context) error {
+func (rucb *RedirectUriCreateBulk) Exec(ctx context.Context) error {
 	_, err := rucb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rucb *RedirectURICreateBulk) ExecX(ctx context.Context) {
+func (rucb *RedirectUriCreateBulk) ExecX(ctx context.Context) {
 	if err := rucb.Exec(ctx); err != nil {
 		panic(err)
 	}

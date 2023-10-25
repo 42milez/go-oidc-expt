@@ -74,7 +74,7 @@ paths:
               schema:
                 type: string
                 format: url
-              example: http://localhost:8080/consent?&client_id=y6WKGu1WjDOFXhpMXDC1kGnOC4DElz&display=page&max_age=86400&nonce=NqaIIfMi9LAZiGgHn8hBAzfR4lWePLzFM4h83j9SoKXaJV6u3EWCJcy1MOPOOkYE&prompt=consent&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcb&response_type=code&scope=openid%20profile%20email&state=xw3dP7pYkyD3j5wBfENPjbdarNxIB9KNpvmaunO4xAHcHzrIYLaRQgHNxDBnmm1x
+              example: http://localhost:8080/consent?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
         '400':
           $ref: '#/components/responses/InvalidRequest'
         '401':
@@ -98,7 +98,7 @@ paths:
               schema:
                 type: string
                 format: url
-              example: http://localhost:8080/consent?&client_id=y6WKGu1WjDOFXhpMXDC1kGnOC4DElz&display=page&max_age=86400&nonce=NqaIIfMi9LAZiGgHn8hBAzfR4lWePLzFM4h83j9SoKXaJV6u3EWCJcy1MOPOOkYE&prompt=consent&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcb&response_type=code&scope=openid%20profile%20email&state=xw3dP7pYkyD3j5wBfENPjbdarNxIB9KNpvmaunO4xAHcHzrIYLaRQgHNxDBnmm1x
+              example: http://localhost:8080/authorize?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
         '500':
           $ref: '#/components/responses/InternalServerError'
   /authorize:
@@ -108,7 +108,7 @@ paths:
       tags:
         - Authorization
       parameters:
-        - $ref: '#/components/parameters/ClientId'
+        - $ref: '#/components/parameters/ClientID'
         - $ref: '#/components/parameters/Nonce'
         - $ref: '#/components/parameters/RedirectUri'
         - $ref: '#/components/parameters/ResponseType'
@@ -144,42 +144,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/SessionId'
       requestBody:
-        description: Issues a new access token if grant_type is authorization_code, and reissues access token if grant_type is refresh_token.
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                grant_type:
-                  type: string
-                  example: authorization_code
-                code:
-                  type: string
-                  nullable: true
-                  example: EYdxIU30xstnWZKxgA54RJMz1YUR0J
-                redirect_uri:
-                  type: string
-                  nullable: true
-                  example: http%3A%2F%2Flocalhost%3A8080%2Fcb
-                refresh_token:
-                  type: string
-                  nullable: true
-                  example: 8xLOxBtZp8
-              required:
-                - grant_type
-            examples:
-              new:
-                summary: Issue Access Token
-                value:
-                  grant_type: authorization_code
-                  code: SplxlOBeZQQYbYS6WxSbIA
-                  redirect_uri: http%3A%2F%2Flocalhost%3A8080%2Fcb
-              refresh:
-                summary: Reissue Access Token
-                value:
-                  grant_type: refresh_token
-                  refresh_token: 8xLOxBtZp8
+        $ref: '#/components/requestBodies/TokenRequest'
       responses:
         '200':
           description: Successfully accepted.
@@ -249,25 +214,29 @@ components:
         type: string
       example: MTY5NDA4Nzc4MnxNNjBEOHUwTUxMLThObHBKajA2bkxkRFZJZC1kZnROc21WZjZFbFEtaVpmaHF4YkVvRk5uak9WYkdtRVM3eXctS1l4Q0FHeldab2M9fHDaZZGFzG1bSJdDRhgWPmMCQPuuFWg1h3VSE1WzOL8q
       x-go-json-ignore: true
-    ClientId:
+      x-oapi-codegen-extra-tags:
+        url: sid
+    ClientID:
       name: client_id
       in: query
       description: represents "client_id" parameter
       required: true
       schema:
         type: string
-      example: ''
+      example: WDAVqWSJzs78oZE8JXmVfq0j1NhJvb
+      x-go-name: ClientID
       x-oapi-codegen-extra-tags:
         schema: client_id
+        url: client_id
         validate: required,alphanum
     Code:
       name: code
       in: query
-      description: represents "code" parameter described in
+      description: represents "code" parameter
       required: true
       schema:
         type: string
-      example: ''
+      example: ov32fxNbOTNlyTEOSDVlb0qPz7qR7G
       x-oapi-codegen-extra-tags:
         schema: code
         validate: required,alphanum
@@ -278,10 +247,11 @@ components:
       required: true
       schema:
         type: string
-      example: ''
+      example: page
       x-oapi-codegen-extra-tags:
         schema: display
-        validate: required
+        url: display
+        validate: required,display-validator
     GrantType:
       name: grant_type
       in: query
@@ -289,10 +259,10 @@ components:
       required: true
       schema:
         type: string
-      example: ''
+      example: authorization_code
       x-oapi-codegen-extra-tags:
         schema: grant_type
-        validate: required
+        validate: required,grant-type-validator
     MaxAge:
       name: max_age
       in: query
@@ -301,10 +271,11 @@ components:
       schema:
         type: integer
         format: uint64
-      example: 0
+      example: 86400
       x-oapi-codegen-extra-tags:
         schema: max_age
-        validate: required
+        url: max_age
+        validate: required,numeric
     Nonce:
       name: nonce
       in: query
@@ -312,10 +283,11 @@ components:
       required: true
       schema:
         type: string
-      example: ''
+      example: GFpkQE1azrQtQ6DYLj1KSVENVYU69k
       x-oapi-codegen-extra-tags:
         schema: nonce
-        validate: required,ascii
+        url: nonce
+        validate: required,alphanum
     Prompt:
       name: prompt
       in: query
@@ -323,10 +295,11 @@ components:
       required: true
       schema:
         type: string
-      example: ''
+      example: consent
       x-oapi-codegen-extra-tags:
         schema: prompt
-        validate: required
+        url: prompt
+        validate: required,prompt-validator
     RedirectUri:
       name: redirect_uri
       in: query
@@ -334,10 +307,11 @@ components:
       required: true
       schema:
         type: string
-      example: ''
+      example: https%3A%2F%2Fexample.com%2Fcb
       x-oapi-codegen-extra-tags:
         schema: redirect_uri
-        validate: required,printascii
+        url: redirect_uri
+        validate: required,url_encoded
     ResponseType:
       name: response_type
       in: query
@@ -345,9 +319,10 @@ components:
       required: true
       schema:
         type: string
-      example: ''
+      example: code
       x-oapi-codegen-extra-tags:
         schema: response_type
+        url: response_type
         validate: required,response-type-validator
     Scope:
       name: scope
@@ -356,9 +331,10 @@ components:
       required: true
       schema:
         type: string
-      example: ''
+      example: openid profile email
       x-oapi-codegen-extra-tags:
         schema: scope
+        url: scope
         validate: required,scope-validator
     State:
       name: state
@@ -367,10 +343,65 @@ components:
       required: true
       schema:
         type: string
-      example: ''
+      example: IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
       x-oapi-codegen-extra-tags:
         schema: state
+        url: state
         validate: required,alphanum
+  requestBodies:
+    TokenRequest:
+      description: Issues a new access token if grant_type is authorization_code, and reissues access token if grant_type is refresh_token.
+      required: true
+      content:
+        application/x-www-form-urlencoded:
+          schema:
+            type: object
+            required:
+              - grant_type
+            properties:
+              grant_type:
+                description: represents "grant_type" parameter
+                type: string
+                example: authorization_code
+                x-oapi-codegen-extra-tags:
+                  schema: grant_type
+                  validate: required,grant-type-validator
+              code:
+                description: represents "code" parameter
+                type: string
+                nullable: true
+                example: EYdxIU30xstnWZKxgA54RJMz1YUR0J
+                x-oapi-codegen-extra-tags:
+                  schema: code
+                  validate: omitempty,alphanum
+              redirect_uri:
+                description: represents "redirect_uri" parameter
+                type: string
+                nullable: true
+                example: https%3A%2F%2Fexample.com%2Fcb
+                x-oapi-codegen-extra-tags:
+                  schema: redirect_uri
+                  validate: omitempty,url_encoded
+              refresh_token:
+                description: represents "refresh_token" parameter
+                type: string
+                nullable: true
+                example: 8xLOxBtZp8
+                x-oapi-codegen-extra-tags:
+                  schema: refresh_token
+                  validate: omitempty,jwt
+          examples:
+            new:
+              summary: Issue Access Token
+              value:
+                grant_type: authorization_code
+                code: SplxlOBeZQQYbYS6WxSbIA
+                redirect_uri: https%3A%2F%2Fexample.com%2Fcb
+            refresh:
+              summary: Reissue Access Token
+              value:
+                grant_type: refresh_token
+                refresh_token: 8xLOxBtZp8
   responses:
     InternalServerError:
       description: Operation failed due to unexpected error.
@@ -429,6 +460,7 @@ components:
               type: integer
               format: uint64
               example: 479552814176534893
+              x-go-name: ID
               x-go-type: typedef.UserID
               x-oapi-codegen-extra-tags:
                 validate: required
@@ -461,7 +493,6 @@ components:
         required:
           - access_token
           - refresh_token
-          - id_token
           - token_type
           - expires_in
         properties:

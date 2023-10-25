@@ -4,6 +4,8 @@ import (
 	_ "embed"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/httpstore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
@@ -12,7 +14,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config oapigen/config.yml -o oapigen/api.gen.go spec/spec.yml
+//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config gen/config.yml -o api_gen.go spec/spec.yml
 
 //go:embed secret/key/block.key
 var rawBlockKey []byte
@@ -52,9 +54,10 @@ type HandlerOption struct {
 	cookie          *service.Cookie
 	db              *datastore.Database
 	idGenerator     *xid.UniqueID
-	sessionCreator  *service.CreateSession
-	sessionRestorer *service.RestoreSession
-	sessionUpdater  *service.UpdateSession
+	sessionCreator  *httpstore.CreateSession
+	sessionReader   *httpstore.ReadSession
+	sessionRestorer *httpstore.RestoreSession
+	sessionUpdater  *httpstore.UpdateSession
 	tokenGenerator  *JWT
 	validator       *validator.Validate
 }

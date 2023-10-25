@@ -16,8 +16,8 @@ type Tx struct {
 	AuthCode *AuthCodeClient
 	// Consent is the client for interacting with the Consent builders.
 	Consent *ConsentClient
-	// RedirectURI is the client for interacting with the RedirectURI builders.
-	RedirectURI *RedirectURIClient
+	// RedirectUri is the client for interacting with the RedirectUri builders.
+	RedirectUri *RedirectUriClient
 	// RelyingParty is the client for interacting with the RelyingParty builders.
 	RelyingParty *RelyingPartyClient
 	// User is the client for interacting with the User builders.
@@ -155,7 +155,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.AuthCode = NewAuthCodeClient(tx.config)
 	tx.Consent = NewConsentClient(tx.config)
-	tx.RedirectURI = NewRedirectURIClient(tx.config)
+	tx.RedirectUri = NewRedirectUriClient(tx.config)
 	tx.RelyingParty = NewRelyingPartyClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
