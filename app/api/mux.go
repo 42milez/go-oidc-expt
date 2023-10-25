@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
+
 	"github.com/42milez/go-oidc-server/app/httpstore"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -20,7 +22,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
-	chimw "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog"
@@ -85,7 +86,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 
 	swag.Servers = nil
 
-	mux.Use(chimw.OapiRequestValidatorWithOptions(swag, &chimw.Options{
+	mux.Use(nethttpmiddleware.OapiRequestValidatorWithOptions(swag, &nethttpmiddleware.Options{
 		Options: openapi3filter.Options{
 			AuthenticationFunc: NewOapiAuthentication(option.db),
 		},
@@ -156,7 +157,7 @@ func extractCredential(r *http.Request) ([]string, error) {
 	return credentials, nil
 }
 
-func NewOapiErrorHandler() chimw.ErrorHandler {
+func NewOapiErrorHandler() nethttpmiddleware.ErrorHandler {
 	return func(w http.ResponseWriter, message string, statusCode int) {
 		switch statusCode {
 		case http.StatusBadRequest:
