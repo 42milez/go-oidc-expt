@@ -3,7 +3,7 @@ module github.com/42milez/go-oidc-server
 go 1.21
 
 require (
-	ariga.io/atlas v0.14.2
+	ariga.io/atlas v0.15.0
 	entgo.io/ent v0.12.4
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/cenkalti/backoff/v4 v4.2.1
