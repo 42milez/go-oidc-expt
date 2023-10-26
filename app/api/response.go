@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
 
@@ -88,7 +89,8 @@ func RespondJSON404(w http.ResponseWriter) {
 
 func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {
 	if err != nil {
-		appLogger.Error().Err(err).Send()
+		e := errors.WithStack(err)
+		appLogger.Error().Stack().Err(e).Send()
 	}
 	RespondJSON(w, r, http.StatusInternalServerError, &Response{
 		Status:  http.StatusInternalServerError,
