@@ -18,7 +18,7 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 )
 
 func TestAuthentication_ServeHTTP(t *testing.T) {

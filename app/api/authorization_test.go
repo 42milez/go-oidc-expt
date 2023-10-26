@@ -11,7 +11,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/app/typedef"
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 )
 
 const (

@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
+
 type SessionReader interface {
 	Read(ctx context.Context, key string) (string, error)
 }

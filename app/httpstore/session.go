@@ -69,9 +69,9 @@ type WriteSession struct {
 	idGen IdGenerator
 }
 
-func (ss *WriteSession) WriteRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
+func (ws *WriteSession) WriteRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
 	key := redirectUriSessionKeySchema(sid)
-	ok, err := ss.repo.Write(ctx, key, uri, config.SessionTTL)
+	ok, err := ws.repo.Write(ctx, key, uri, config.SessionTTL)
 	if err != nil {
 		return err
 	}
@@ -81,17 +81,17 @@ func (ss *WriteSession) WriteRedirectUri(ctx context.Context, sid typedef.Sessio
 	return nil
 }
 
-func (ss *WriteSession) WriteUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
+func (ws *WriteSession) WriteUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
 	var sid uint64
 	var ok bool
 	var err error
 
 	for i := 0; i < nRetryWriteSession; i++ {
-		if sid, err = ss.idGen.NextID(); err != nil {
+		if sid, err = ws.idGen.NextID(); err != nil {
 			return 0, err
 		}
 		key := userIdSessionKeySchema(typedef.SessionID(sid))
-		if ok, err = ss.repo.Write(ctx, key, userId, config.SessionTTL); err != nil {
+		if ok, err = ws.repo.Write(ctx, key, userId, config.SessionTTL); err != nil {
 			return 0, err
 		}
 		if ok {

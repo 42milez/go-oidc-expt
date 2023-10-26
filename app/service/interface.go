@@ -8,7 +8,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
-//go:generate go run -mod=mod github.com/golang/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
 
 //  JWT
 // --------------------------------------------------

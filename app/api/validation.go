@@ -107,7 +107,7 @@ func convertResponseTypeToNumber(respTypes []string) (responseTypeNumber, error)
 		case "token":
 			ret |= rtToken
 		default:
-			return 0, xerr.OIDCInvalidResponseType
+			return 0, xerr.InvalidResponseType
 		}
 	}
 	return ret, nil
