@@ -5,24 +5,24 @@ import (
 )
 
 var (
-	FailedToSaveSession      InternalErr = "session id already exists"
+	AuthCodeExpired          InternalErr = "auth code expired"
+	AuthCodeNotFound         InternalErr = "auth code not found"
+	AuthCodeUsed             InternalErr = "auth code used"
+	ConsentNotFound          InternalErr = "consent not found"
+	ContextValueNotFound     InternalErr = "context value not found"
 	FailedToInitialize       InternalErr = "failed to initialize"
 	FailedToReadResponseBody InternalErr = "failed to read response body"
 	FailedToValidate         InternalErr = "failed to validate"
+	FailedToWriteSession     InternalErr = "session id already exists"
+	InvalidToken             InternalErr = "invalid refresh token"
+	MalformedFormParameter   InternalErr = "malformed form parameter"
 	OIDCInvalidResponseType  InternalErr = "invalid response type"
 	PasswordNotMatched       InternalErr = "password not matched"
+	RedirectUriNotFound      InternalErr = "redirect uri not found"
+	RedirectUriNotMatched    InternalErr = "redirect uri not matched"
 	SessionNotFound          InternalErr = "session not found"
 	UnknownSecurityScheme    InternalErr = "unknown security scheme"
 	UserNotFound             InternalErr = "user not found"
-	AuthCodeNotFound         InternalErr = "auth code not found"
-	AuthCodeExpired          InternalErr = "auth code expired"
-	AuthCodeUsed             InternalErr = "auth code used"
-	MalformedFormParameter   InternalErr = "malformed form parameter"
-	RedirectUriNotFound      InternalErr = "redirect uri not found"
-	ConsentNotFound          InternalErr = "consent not found"
-	ContextValueNotFound     InternalErr = "context value not found"
-	RedirectUriNotMatched    InternalErr = "redirect uri not matched"
-	InvalidToken             InternalErr = "invalid refresh token"
 )
 
 var (

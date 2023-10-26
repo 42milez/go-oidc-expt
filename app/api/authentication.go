@@ -64,7 +64,7 @@ func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	var sid typedef.SessionID
 
-	if sid, err = a.sess.SaveUserId(ctx, userID); err != nil {
+	if sid, err = a.sess.WriteUserId(ctx, userID); err != nil {
 		a.respondError(w, r, err)
 		return
 	}

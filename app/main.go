@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog/pkgerrors"
 	"log"
 	"net"
 	"net/http"
 	"os"
+
+	"github.com/rs/zerolog/pkgerrors"
 
 	"github.com/rs/zerolog"
 

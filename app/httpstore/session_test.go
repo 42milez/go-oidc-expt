@@ -2,7 +2,7 @@ package httpstore
 
 import "testing"
 
-func TestCreateSession_Create(t *testing.T) {
+func TestReadSession_ReadRedirectUri(t *testing.T) {
 	// NOT IMPLEMENTED
 }
 
@@ -10,14 +10,10 @@ func TestRestoreSession_Restore(t *testing.T) {
 	// NOT IMPLEMENTED
 }
 
-func TestUpdateSession_Update(t *testing.T) {
+func TestWriteSession_WriteRedirectUri(t *testing.T) {
 	// NOT IMPLEMENTED
 }
 
-func TestGetSession(t *testing.T) {
-	// NOT IMPLEMENTED
-}
-
-func TestGetSessionID(t *testing.T) {
+func TestWriteSession_WriteUserId(t *testing.T) {
 	// NOT IMPLEMENTED
 }

@@ -3,9 +3,10 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
 	"net/http"
 	"net/url"
+
+	"github.com/pkg/errors"
 
 	"github.com/42milez/go-oidc-server/app/config"
 

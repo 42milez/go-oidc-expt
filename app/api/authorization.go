@@ -72,7 +72,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = a.sess.SaveRedirectUri(ctx, sid, q.RedirectUri); err != nil {
+	if err = a.sess.WriteRedirectUri(ctx, sid, q.RedirectUri); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

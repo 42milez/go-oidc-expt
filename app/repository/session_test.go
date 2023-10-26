@@ -33,7 +33,7 @@ func TestSession_Write(t *testing.T) {
 	}
 
 	if !ok {
-		t.Error(xerr.FailedToSaveSession)
+		t.Error(xerr.FailedToWriteSession)
 	}
 }
 

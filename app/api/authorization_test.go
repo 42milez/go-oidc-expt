@@ -74,7 +74,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			rCtxMock.EXPECT().Read(gomock.Any(), typedef.SessionIdKey{}).Return(typedef.SessionID(0)).AnyTimes()
 
 			sessMock := NewMockSessionWriter(gomock.NewController(t))
-			sessMock.EXPECT().SaveRedirectUri(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+			sessMock.EXPECT().WriteRedirectUri(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
 			if err != nil {

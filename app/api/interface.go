@@ -27,11 +27,11 @@ type CookieWriter interface {
 // --------------------------------------------------
 
 type RedirectUriSessionWriter interface {
-	SaveRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error
+	WriteRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error
 }
 
 type UserIdSessionWriter interface {
-	SaveUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error)
+	WriteUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error)
 }
 
 type SessionWriter interface {

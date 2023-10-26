@@ -129,7 +129,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			reqParamFile: td200ReqParam,
 			respSessMock: sessionMockResp{
 				sessionID: 0,
-				err:       xerr.FailedToSaveSession,
+				err:       xerr.FailedToWriteSession,
 			},
 			respVPMock: verifyPasswordMockResp{
 				userID: userID,
@@ -170,7 +170,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				AnyTimes()
 
 			sessMock := NewMockSessionWriter(gomock.NewController(t))
-			sessMock.EXPECT().SaveUserId(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
+			sessMock.EXPECT().WriteUserId(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
 

@@ -113,18 +113,18 @@ func (m *MockRedirectUriSessionWriter) EXPECT() *MockRedirectUriSessionWriterMoc
 	return m.recorder
 }
 
-// SaveRedirectUri mocks base method.
-func (m *MockRedirectUriSessionWriter) SaveRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
+// WriteRedirectUri mocks base method.
+func (m *MockRedirectUriSessionWriter) WriteRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRedirectUri", ctx, sid, uri)
+	ret := m.ctrl.Call(m, "WriteRedirectUri", ctx, sid, uri)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SaveRedirectUri indicates an expected call of SaveRedirectUri.
-func (mr *MockRedirectUriSessionWriterMockRecorder) SaveRedirectUri(ctx, sid, uri interface{}) *gomock.Call {
+// WriteRedirectUri indicates an expected call of WriteRedirectUri.
+func (mr *MockRedirectUriSessionWriterMockRecorder) WriteRedirectUri(ctx, sid, uri interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRedirectUri", reflect.TypeOf((*MockRedirectUriSessionWriter)(nil).SaveRedirectUri), ctx, sid, uri)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteRedirectUri", reflect.TypeOf((*MockRedirectUriSessionWriter)(nil).WriteRedirectUri), ctx, sid, uri)
 }
 
 // MockUserIdSessionWriter is a mock of UserIdSessionWriter interface.
@@ -150,19 +150,19 @@ func (m *MockUserIdSessionWriter) EXPECT() *MockUserIdSessionWriterMockRecorder 
 	return m.recorder
 }
 
-// SaveUserId mocks base method.
-func (m *MockUserIdSessionWriter) SaveUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
+// WriteUserId mocks base method.
+func (m *MockUserIdSessionWriter) WriteUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveUserId", ctx, userId)
+	ret := m.ctrl.Call(m, "WriteUserId", ctx, userId)
 	ret0, _ := ret[0].(typedef.SessionID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SaveUserId indicates an expected call of SaveUserId.
-func (mr *MockUserIdSessionWriterMockRecorder) SaveUserId(ctx, userId interface{}) *gomock.Call {
+// WriteUserId indicates an expected call of WriteUserId.
+func (mr *MockUserIdSessionWriterMockRecorder) WriteUserId(ctx, userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUserId", reflect.TypeOf((*MockUserIdSessionWriter)(nil).SaveUserId), ctx, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteUserId", reflect.TypeOf((*MockUserIdSessionWriter)(nil).WriteUserId), ctx, userId)
 }
 
 // MockSessionWriter is a mock of SessionWriter interface.
@@ -188,33 +188,33 @@ func (m *MockSessionWriter) EXPECT() *MockSessionWriterMockRecorder {
 	return m.recorder
 }
 
-// SaveRedirectUri mocks base method.
-func (m *MockSessionWriter) SaveRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
+// WriteRedirectUri mocks base method.
+func (m *MockSessionWriter) WriteRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRedirectUri", ctx, sid, uri)
+	ret := m.ctrl.Call(m, "WriteRedirectUri", ctx, sid, uri)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SaveRedirectUri indicates an expected call of SaveRedirectUri.
-func (mr *MockSessionWriterMockRecorder) SaveRedirectUri(ctx, sid, uri interface{}) *gomock.Call {
+// WriteRedirectUri indicates an expected call of WriteRedirectUri.
+func (mr *MockSessionWriterMockRecorder) WriteRedirectUri(ctx, sid, uri interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRedirectUri", reflect.TypeOf((*MockSessionWriter)(nil).SaveRedirectUri), ctx, sid, uri)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteRedirectUri", reflect.TypeOf((*MockSessionWriter)(nil).WriteRedirectUri), ctx, sid, uri)
 }
 
-// SaveUserId mocks base method.
-func (m *MockSessionWriter) SaveUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
+// WriteUserId mocks base method.
+func (m *MockSessionWriter) WriteUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveUserId", ctx, userId)
+	ret := m.ctrl.Call(m, "WriteUserId", ctx, userId)
 	ret0, _ := ret[0].(typedef.SessionID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SaveUserId indicates an expected call of SaveUserId.
-func (mr *MockSessionWriterMockRecorder) SaveUserId(ctx, userId interface{}) *gomock.Call {
+// WriteUserId indicates an expected call of WriteUserId.
+func (mr *MockSessionWriterMockRecorder) WriteUserId(ctx, userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUserId", reflect.TypeOf((*MockSessionWriter)(nil).SaveUserId), ctx, userId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteUserId", reflect.TypeOf((*MockSessionWriter)(nil).WriteUserId), ctx, userId)
 }
 
 // MockSessionRestorer is a mock of SessionRestorer interface.
