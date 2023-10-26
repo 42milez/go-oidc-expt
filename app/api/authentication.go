@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
@@ -13,8 +14,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/config"
-
-	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -26,7 +25,7 @@ var authenticateUserHdlr *AuthenticateHdlr
 type AuthenticateHdlr struct {
 	service   Authenticator
 	cookie    CookieWriter
-	session   SessionCreator
+	sess      UserIdSessionWriter
 	validator *validator.Validate
 }
 
@@ -34,7 +33,7 @@ func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {
 	return &AuthenticateHdlr{
 		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.tokenGenerator),
 		cookie:    option.cookie,
-		session:   option.sessionCreator,
+		sess:      option.SessionWriter,
 		validator: option.validator,
 	}, nil
 }
@@ -63,16 +62,14 @@ func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var sessionID string
+	var sid typedef.SessionID
 
-	if sessionID, err = a.session.Create(ctx, &entity.Session{
-		UserID: userID,
-	}); err != nil {
+	if sid, err = a.sess.SaveUserId(ctx, userID); err != nil {
 		a.respondError(w, r, err)
 		return
 	}
 
-	if err = a.cookie.Write(w, sessionIDCookieName, sessionID, config.SessionIDCookieTTL); err != nil {
+	if err = a.cookie.Write(w, sessionIDCookieName, strconv.FormatUint(uint64(sid), 10), config.SessionIDCookieTTL); err != nil {
 		a.respondError(w, r, err)
 		return
 	}

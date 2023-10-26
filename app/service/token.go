@@ -14,12 +14,12 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewToken(db *datastore.Database, c xtime.Clocker, sess SessionReader, token TokenGenerateValidator) *Token {
+func NewToken(db *datastore.Database, cache *datastore.Cache, c xtime.Clocker, token TokenGenerateValidator) *Token {
 	return &Token{
 		acRepo: repository.NewAuthCode(db),
 		ruRepo: repository.NewRedirectUri(db),
 		cr:     &httpstore.ReadContext{},
-		sess:   sess,
+		sess:   httpstore.NewReadSession(repository.NewSession(cache)),
 		token:  token,
 		clock:  c,
 	}
@@ -29,7 +29,7 @@ type Token struct {
 	acRepo AuthCodeReadMarker
 	ruRepo RedirectUriReader
 	cr     ContextReader
-	sess   SessionReader
+	sess   RedirectUriSessionReader
 	token  TokenGenerateValidator
 	clock  xtime.Clocker
 }
@@ -65,17 +65,17 @@ func (t *Token) ValidateRedirectUri(ctx context.Context, uri, clientId string) e
 		return err
 	}
 
-	sid, ok := t.cr.Read(ctx, typedef.SessionIDKey{}).(typedef.SessionID)
+	sid, ok := t.cr.Read(ctx, typedef.SessionIdKey{}).(typedef.SessionID)
 	if !ok {
 		return xerr.ContextValueNotFound
 	}
 
-	sess, err := t.sess.Read(ctx, sid)
+	ruri, err := t.sess.ReadRedirectUri(ctx, sid)
 	if err != nil {
 		return err
 	}
 
-	if sess.RedirectUri != uri {
+	if ruri != uri {
 		return xerr.RedirectUriNotMatched
 	}
 

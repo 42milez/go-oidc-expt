@@ -26,16 +26,21 @@ type CookieWriter interface {
 //  SESSION
 // --------------------------------------------------
 
-type SessionCreator interface {
-	Create(ctx context.Context, sess *entity.Session) (string, error)
+type RedirectUriSessionWriter interface {
+	SaveRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error
+}
+
+type UserIdSessionWriter interface {
+	SaveUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error)
+}
+
+type SessionWriter interface {
+	RedirectUriSessionWriter
+	UserIdSessionWriter
 }
 
 type SessionRestorer interface {
 	Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error)
-}
-
-type SessionUpdater interface {
-	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error
 }
 
 //  HEALTH CHECK

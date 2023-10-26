@@ -2,37 +2,48 @@ package httpstore
 
 import (
 	"context"
-	"net/http"
-
-	"github.com/42milez/go-oidc-server/app/entity"
+	"fmt"
+	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/typedef"
-	"github.com/google/uuid"
+	"net/http"
+	"strconv"
 )
 
-const nRetrySaveSession = 3
+const nRetryWriteSession = 3
 
-func NewCreateSession(repo SessionCreator) *CreateSession {
-	return &CreateSession{
-		repo: repo,
+func userIdSessionKeySchema(sid typedef.SessionID) string {
+	return fmt.Sprintf("session:userid:%d", sid)
+}
+
+func redirectUriSessionKeySchema(sid typedef.SessionID) string {
+	return fmt.Sprintf("session:redirecturi:%d", sid)
+}
+
+func NewWriteSession(repo SessionWriter, idGen IdGenerator) *WriteSession {
+	return &WriteSession{
+		repo:  repo,
+		idGen: idGen,
 	}
 }
 
-type CreateSession struct {
-	repo SessionCreator
+type WriteSession struct {
+	repo  SessionWriter
+	idGen IdGenerator
 }
 
-func (cs *CreateSession) Create(ctx context.Context, sess *entity.Session) (string, error) {
-	var id uuid.UUID
+func (ss *WriteSession) SaveUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
+	var sid uint64
 	var ok bool
 	var err error
 
-	for i := 0; i < nRetrySaveSession; i++ {
-		if id, err = uuid.NewRandom(); err != nil {
-			return "", err
+	for i := 0; i < nRetryWriteSession; i++ {
+		if sid, err = ss.idGen.NextID(); err != nil {
+			return 0, err
 		}
-		if ok, err = cs.repo.Create(ctx, typedef.SessionID(id.String()), sess); err != nil {
-			return "", err
+		key := userIdSessionKeySchema(typedef.SessionID(sid))
+		if ok, err = ss.repo.Write(ctx, key, userId, config.SessionTTL); err != nil {
+			return 0, err
 		}
 		if ok {
 			break
@@ -40,10 +51,22 @@ func (cs *CreateSession) Create(ctx context.Context, sess *entity.Session) (stri
 	}
 
 	if !ok {
-		return "", xerr.FailedToCreateSession
+		return 0, xerr.FailedToSaveSession
 	}
 
-	return id.String(), nil
+	return typedef.SessionID(sid), nil
+}
+
+func (ss *WriteSession) SaveRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
+	key := redirectUriSessionKeySchema(sid)
+	ok, err := ss.repo.Write(ctx, key, uri, config.SessionTTL)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return xerr.FailedToSaveSession
+	}
+	return nil
 }
 
 func NewReadSession(repo SessionReader) *ReadSession {
@@ -56,8 +79,9 @@ type ReadSession struct {
 	repo SessionReader
 }
 
-func (rs *ReadSession) Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error) {
-	return rs.repo.Read(ctx, sid)
+func (rs *ReadSession) ReadRedirectUri(ctx context.Context, sid typedef.SessionID) (string, error) {
+	key := redirectUriSessionKeySchema(sid)
+	return rs.repo.Read(ctx, key)
 }
 
 func NewRestoreSession(repo SessionReader) *RestoreSession {
@@ -71,34 +95,21 @@ type RestoreSession struct {
 }
 
 func (rs *RestoreSession) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
-	sess, err := rs.repo.Read(r.Context(), sid)
+	ctx := r.Context()
 
+	key := userIdSessionKeySchema(sid)
+	uid, err := rs.repo.Read(ctx, key)
 	if err != nil {
 		return nil, err
 	}
 
-	ctx := r.Context()
-	ctx = context.WithValue(ctx, typedef.SessionIDKey{}, sid)
-	ctx = context.WithValue(ctx, typedef.SessionKey{}, sess)
-	ctx = context.WithValue(ctx, typedef.UserIDKey{}, sess.UserID)
+	ctx = context.WithValue(ctx, typedef.SessionIdKey{}, sid)
+
+	uidUint64, err := strconv.ParseUint(uid, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	ctx = context.WithValue(ctx, typedef.UserIdKey{}, typedef.UserID(uidUint64))
 
 	return r.Clone(ctx), nil
-}
-
-func NewUpdateSession(repo SessionUpdater) *UpdateSession {
-	return &UpdateSession{
-		repo: repo,
-	}
-}
-
-type UpdateSession struct {
-	repo SessionUpdater
-}
-
-func (us *UpdateSession) Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error {
-	_, err := us.repo.Update(ctx, sid, sess)
-	if err != nil {
-		return err
-	}
-	return nil
 }

@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	FailedToCreateSession    InternalErr = "session id already exists"
+	FailedToSaveSession      InternalErr = "session id already exists"
 	FailedToInitialize       InternalErr = "failed to initialize"
 	FailedToReadResponseBody InternalErr = "failed to read response body"
 	FailedToValidate         InternalErr = "failed to validate"

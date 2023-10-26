@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
@@ -33,7 +32,7 @@ type ConsentHdlr struct {
 	validator *validator.Validate
 }
 
-func (c *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	decoder := schema.NewDecoder()
@@ -44,18 +43,18 @@ func (c *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := c.validator.Struct(q); err != nil {
+	if err := ch.validator.Struct(q); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
-	sess, ok := c.rCtx.Read(ctx, typedef.SessionKey{}).(*entity.Session)
+	uid, ok := ch.rCtx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
-	if err := c.service.AcceptConsent(ctx, sess.UserID, q.ClientID); err != nil {
+	if err := ch.service.AcceptConsent(ctx, uid, q.ClientID); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

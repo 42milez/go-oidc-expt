@@ -22,7 +22,7 @@ var tokenHdlr *TokenHdlr
 
 func NewTokenHdlr(option *HandlerOption) *TokenHdlr {
 	return &TokenHdlr{
-		svc: service.NewToken(option.db, option.clock, option.sessionReader, option.tokenGenerator),
+		svc: service.NewToken(option.db, option.cache, option.clock, option.tokenGenerator),
 		cr:  &httpstore.ReadContext{},
 		v:   option.validator,
 	}
@@ -96,7 +96,7 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	uid, ok := t.cr.Read(ctx, typedef.UserIDKey{}).(typedef.UserID)
+	uid, ok := t.cr.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
@@ -162,7 +162,7 @@ func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	uid, ok := t.cr.Read(r.Context(), typedef.UserIDKey{}).(typedef.UserID)
+	uid, ok := t.cr.Read(r.Context(), typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return

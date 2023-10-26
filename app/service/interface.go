@@ -63,8 +63,12 @@ type ContextReader interface {
 	Read(ctx context.Context, key any) any
 }
 
+type RedirectUriSessionReader interface {
+	ReadRedirectUri(ctx context.Context, sid typedef.SessionID) (string, error)
+}
+
 type SessionReader interface {
-	Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error)
+	RedirectUriSessionReader
 }
 
 //  AUTHENTICATION

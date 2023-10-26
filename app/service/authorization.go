@@ -35,12 +35,12 @@ func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state 
 		return "", err
 	}
 
-	sess, ok := a.rCtx.Read(ctx, typedef.SessionKey{}).(*entity.Session)
+	uid, ok := a.rCtx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		return "", xerr.SessionNotFound
 	}
 
-	if _, err = a.repo.CreateAuthCode(ctx, code, clientID, sess.UserID); err != nil {
+	if _, err = a.repo.CreateAuthCode(ctx, code, clientID, uid); err != nil {
 		return "", err
 	}
 

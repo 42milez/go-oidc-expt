@@ -238,8 +238,6 @@ func ConfigureHandler(option *HandlerOption) error {
 
 func ConfigureService(option *HandlerOption) {
 	cache := repository.NewSession(option.cache)
-	option.sessionCreator = httpstore.NewCreateSession(cache)
-	option.sessionReader = httpstore.NewReadSession(cache)
-	option.sessionRestorer = httpstore.NewRestoreSession(cache)
-	option.sessionUpdater = httpstore.NewUpdateSession(cache)
+	option.SessionWriter = httpstore.NewWriteSession(cache, option.idGenerator)
+	option.SessionRestorer = httpstore.NewRestoreSession(cache)
 }

@@ -16,7 +16,7 @@ var registerUserHdlr *RegisterHdlr
 func NewRegisterHdlr(option *HandlerOption) (*RegisterHdlr, error) {
 	return &RegisterHdlr{
 		service:   service.NewCreateUser(repository.NewUser(option.db, option.idGenerator)),
-		session:   option.sessionRestorer,
+		session:   option.SessionRestorer,
 		validator: option.validator,
 	}, nil
 }

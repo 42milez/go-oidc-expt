@@ -476,6 +476,44 @@ func (mr *MockContextReaderMockRecorder) Read(ctx, key interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockContextReader)(nil).Read), ctx, key)
 }
 
+// MockRedirectUriSessionReader is a mock of RedirectUriSessionReader interface.
+type MockRedirectUriSessionReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockRedirectUriSessionReaderMockRecorder
+}
+
+// MockRedirectUriSessionReaderMockRecorder is the mock recorder for MockRedirectUriSessionReader.
+type MockRedirectUriSessionReaderMockRecorder struct {
+	mock *MockRedirectUriSessionReader
+}
+
+// NewMockRedirectUriSessionReader creates a new mock instance.
+func NewMockRedirectUriSessionReader(ctrl *gomock.Controller) *MockRedirectUriSessionReader {
+	mock := &MockRedirectUriSessionReader{ctrl: ctrl}
+	mock.recorder = &MockRedirectUriSessionReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRedirectUriSessionReader) EXPECT() *MockRedirectUriSessionReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadRedirectUri mocks base method.
+func (m *MockRedirectUriSessionReader) ReadRedirectUri(ctx context.Context, sid typedef.SessionID) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, sid)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadRedirectUri indicates an expected call of ReadRedirectUri.
+func (mr *MockRedirectUriSessionReaderMockRecorder) ReadRedirectUri(ctx, sid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockRedirectUriSessionReader)(nil).ReadRedirectUri), ctx, sid)
+}
+
 // MockSessionReader is a mock of SessionReader interface.
 type MockSessionReader struct {
 	ctrl     *gomock.Controller
@@ -499,19 +537,19 @@ func (m *MockSessionReader) EXPECT() *MockSessionReaderMockRecorder {
 	return m.recorder
 }
 
-// Read mocks base method.
-func (m *MockSessionReader) Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error) {
+// ReadRedirectUri mocks base method.
+func (m *MockSessionReader) ReadRedirectUri(ctx context.Context, sid typedef.SessionID) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, sid)
-	ret0, _ := ret[0].(*entity.Session)
+	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, sid)
+	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Read indicates an expected call of Read.
-func (mr *MockSessionReaderMockRecorder) Read(ctx, sid interface{}) *gomock.Call {
+// ReadRedirectUri indicates an expected call of ReadRedirectUri.
+func (mr *MockSessionReaderMockRecorder) ReadRedirectUri(ctx, sid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockSessionReader)(nil).Read), ctx, sid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockSessionReader)(nil).ReadRedirectUri), ctx, sid)
 }
 
 // MockConsentReader is a mock of ConsentReader interface.

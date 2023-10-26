@@ -2,19 +2,17 @@ package httpstore
 
 import (
 	"context"
-
-	"github.com/42milez/go-oidc-server/app/entity"
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"time"
 )
 
-type SessionCreator interface {
-	Create(ctx context.Context, sid typedef.SessionID, sess *entity.Session) (bool, error)
-}
-
 type SessionReader interface {
-	Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error)
+	Read(ctx context.Context, key string) (string, error)
 }
 
-type SessionUpdater interface {
-	Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) (string, error)
+type SessionWriter interface {
+	Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error)
+}
+
+type IdGenerator interface {
+	NextID() (uint64, error)
 }

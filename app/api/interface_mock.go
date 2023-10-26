@@ -90,42 +90,131 @@ func (mr *MockCookieWriterMockRecorder) Write(w, name, val, ttl interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockCookieWriter)(nil).Write), w, name, val, ttl)
 }
 
-// MockSessionCreator is a mock of SessionCreator interface.
-type MockSessionCreator struct {
+// MockRedirectUriSessionWriter is a mock of RedirectUriSessionWriter interface.
+type MockRedirectUriSessionWriter struct {
 	ctrl     *gomock.Controller
-	recorder *MockSessionCreatorMockRecorder
+	recorder *MockRedirectUriSessionWriterMockRecorder
 }
 
-// MockSessionCreatorMockRecorder is the mock recorder for MockSessionCreator.
-type MockSessionCreatorMockRecorder struct {
-	mock *MockSessionCreator
+// MockRedirectUriSessionWriterMockRecorder is the mock recorder for MockRedirectUriSessionWriter.
+type MockRedirectUriSessionWriterMockRecorder struct {
+	mock *MockRedirectUriSessionWriter
 }
 
-// NewMockSessionCreator creates a new mock instance.
-func NewMockSessionCreator(ctrl *gomock.Controller) *MockSessionCreator {
-	mock := &MockSessionCreator{ctrl: ctrl}
-	mock.recorder = &MockSessionCreatorMockRecorder{mock}
+// NewMockRedirectUriSessionWriter creates a new mock instance.
+func NewMockRedirectUriSessionWriter(ctrl *gomock.Controller) *MockRedirectUriSessionWriter {
+	mock := &MockRedirectUriSessionWriter{ctrl: ctrl}
+	mock.recorder = &MockRedirectUriSessionWriterMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionCreator) EXPECT() *MockSessionCreatorMockRecorder {
+func (m *MockRedirectUriSessionWriter) EXPECT() *MockRedirectUriSessionWriterMockRecorder {
 	return m.recorder
 }
 
-// Create mocks base method.
-func (m *MockSessionCreator) Create(ctx context.Context, sess *entity.Session) (string, error) {
+// SaveRedirectUri mocks base method.
+func (m *MockRedirectUriSessionWriter) SaveRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, sess)
-	ret0, _ := ret[0].(string)
+	ret := m.ctrl.Call(m, "SaveRedirectUri", ctx, sid, uri)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveRedirectUri indicates an expected call of SaveRedirectUri.
+func (mr *MockRedirectUriSessionWriterMockRecorder) SaveRedirectUri(ctx, sid, uri interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRedirectUri", reflect.TypeOf((*MockRedirectUriSessionWriter)(nil).SaveRedirectUri), ctx, sid, uri)
+}
+
+// MockUserIdSessionWriter is a mock of UserIdSessionWriter interface.
+type MockUserIdSessionWriter struct {
+	ctrl     *gomock.Controller
+	recorder *MockUserIdSessionWriterMockRecorder
+}
+
+// MockUserIdSessionWriterMockRecorder is the mock recorder for MockUserIdSessionWriter.
+type MockUserIdSessionWriterMockRecorder struct {
+	mock *MockUserIdSessionWriter
+}
+
+// NewMockUserIdSessionWriter creates a new mock instance.
+func NewMockUserIdSessionWriter(ctrl *gomock.Controller) *MockUserIdSessionWriter {
+	mock := &MockUserIdSessionWriter{ctrl: ctrl}
+	mock.recorder = &MockUserIdSessionWriterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserIdSessionWriter) EXPECT() *MockUserIdSessionWriterMockRecorder {
+	return m.recorder
+}
+
+// SaveUserId mocks base method.
+func (m *MockUserIdSessionWriter) SaveUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveUserId", ctx, userId)
+	ret0, _ := ret[0].(typedef.SessionID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Create indicates an expected call of Create.
-func (mr *MockSessionCreatorMockRecorder) Create(ctx, sess interface{}) *gomock.Call {
+// SaveUserId indicates an expected call of SaveUserId.
+func (mr *MockUserIdSessionWriterMockRecorder) SaveUserId(ctx, userId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockSessionCreator)(nil).Create), ctx, sess)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUserId", reflect.TypeOf((*MockUserIdSessionWriter)(nil).SaveUserId), ctx, userId)
+}
+
+// MockSessionWriter is a mock of SessionWriter interface.
+type MockSessionWriter struct {
+	ctrl     *gomock.Controller
+	recorder *MockSessionWriterMockRecorder
+}
+
+// MockSessionWriterMockRecorder is the mock recorder for MockSessionWriter.
+type MockSessionWriterMockRecorder struct {
+	mock *MockSessionWriter
+}
+
+// NewMockSessionWriter creates a new mock instance.
+func NewMockSessionWriter(ctrl *gomock.Controller) *MockSessionWriter {
+	mock := &MockSessionWriter{ctrl: ctrl}
+	mock.recorder = &MockSessionWriterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSessionWriter) EXPECT() *MockSessionWriterMockRecorder {
+	return m.recorder
+}
+
+// SaveRedirectUri mocks base method.
+func (m *MockSessionWriter) SaveRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveRedirectUri", ctx, sid, uri)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveRedirectUri indicates an expected call of SaveRedirectUri.
+func (mr *MockSessionWriterMockRecorder) SaveRedirectUri(ctx, sid, uri interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRedirectUri", reflect.TypeOf((*MockSessionWriter)(nil).SaveRedirectUri), ctx, sid, uri)
+}
+
+// SaveUserId mocks base method.
+func (m *MockSessionWriter) SaveUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveUserId", ctx, userId)
+	ret0, _ := ret[0].(typedef.SessionID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SaveUserId indicates an expected call of SaveUserId.
+func (mr *MockSessionWriterMockRecorder) SaveUserId(ctx, userId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUserId", reflect.TypeOf((*MockSessionWriter)(nil).SaveUserId), ctx, userId)
 }
 
 // MockSessionRestorer is a mock of SessionRestorer interface.
@@ -164,43 +253,6 @@ func (m *MockSessionRestorer) Restore(r *http.Request, sid typedef.SessionID) (*
 func (mr *MockSessionRestorerMockRecorder) Restore(r, sid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Restore", reflect.TypeOf((*MockSessionRestorer)(nil).Restore), r, sid)
-}
-
-// MockSessionUpdater is a mock of SessionUpdater interface.
-type MockSessionUpdater struct {
-	ctrl     *gomock.Controller
-	recorder *MockSessionUpdaterMockRecorder
-}
-
-// MockSessionUpdaterMockRecorder is the mock recorder for MockSessionUpdater.
-type MockSessionUpdaterMockRecorder struct {
-	mock *MockSessionUpdater
-}
-
-// NewMockSessionUpdater creates a new mock instance.
-func NewMockSessionUpdater(ctrl *gomock.Controller) *MockSessionUpdater {
-	mock := &MockSessionUpdater{ctrl: ctrl}
-	mock.recorder = &MockSessionUpdaterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionUpdater) EXPECT() *MockSessionUpdaterMockRecorder {
-	return m.recorder
-}
-
-// Update mocks base method.
-func (m *MockSessionUpdater) Update(ctx context.Context, sid typedef.SessionID, sess *entity.Session) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, sid, sess)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Update indicates an expected call of Update.
-func (mr *MockSessionUpdaterMockRecorder) Update(ctx, sid, sess interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockSessionUpdater)(nil).Update), ctx, sid, sess)
 }
 
 // MockCacheStatusChecker is a mock of CacheStatusChecker interface.

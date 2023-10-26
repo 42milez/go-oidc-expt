@@ -3,7 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/entity"
 	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
@@ -27,7 +26,7 @@ func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
 		service:   service.NewAuthorize(repository.NewRelyingParty(option.db)),
 		validator: v,
 		rCtx:      &httpstore.ReadContext{},
-		session:   option.sessionUpdater,
+		sess:      option.SessionWriter,
 	}, nil
 }
 
@@ -35,7 +34,7 @@ type AuthorizeGetHdlr struct {
 	service   Authorizer
 	validator *validator.Validate
 	rCtx      ContextReader
-	session   SessionUpdater
+	sess      RedirectUriSessionWriter
 }
 
 func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -67,21 +66,13 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	sid, ok := a.rCtx.Read(ctx, typedef.SessionIDKey{}).(typedef.SessionID)
+	sid, ok := a.rCtx.Read(ctx, typedef.SessionIdKey{}).(typedef.SessionID)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
 		return
 	}
 
-	sess, ok := a.rCtx.Read(ctx, typedef.SessionKey{}).(*entity.Session)
-	if !ok {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
-		return
-	}
-
-	sess.RedirectUri = q.RedirectUri
-
-	if err = a.session.Update(ctx, sid, sess); err != nil {
+	if err = a.sess.SaveRedirectUri(ctx, sid, q.RedirectUri); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
