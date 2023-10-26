@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/iface"
+
 	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
@@ -12,7 +14,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
 
@@ -20,16 +21,16 @@ var consentHdlr *ConsentHdlr
 
 func NewConsentHdlr(option *HandlerOption) (*ConsentHdlr, error) {
 	return &ConsentHdlr{
-		service:   service.NewConsent(repository.NewUser(option.db, option.idGenerator)),
-		rCtx:      &httpstore.ReadContext{},
-		validator: option.validator,
+		svc: service.NewConsent(repository.NewUser(option.db, option.idGenerator)),
+		ctx: &httpstore.Context{},
+		v:   option.validator,
 	}, nil
 }
 
 type ConsentHdlr struct {
-	service   ConsentAcceptor
-	rCtx      ContextReader
-	validator *validator.Validate
+	svc ConsentAcceptor
+	ctx iface.ContextReader
+	v   iface.StructValidator
 }
 
 func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -43,18 +44,18 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ch.validator.Struct(q); err != nil {
+	if err := ch.v.Struct(q); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
-	uid, ok := ch.rCtx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
+	uid, ok := ch.ctx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
-	if err := ch.service.AcceptConsent(ctx, uid, q.ClientID); err != nil {
+	if err := ch.svc.AcceptConsent(ctx, uid, q.ClientID); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

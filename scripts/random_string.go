@@ -19,7 +19,7 @@ func main() {
 		log.Fatal("length must be greater than 0")
 	}
 
-	ret, err := xrandom.MakeCryptoRandomString(*lenFlag)
+	ret, err := xrandom.GenerateCryptoRandomString(*lenFlag)
 
 	if err != nil {
 		log.Fatal(err)

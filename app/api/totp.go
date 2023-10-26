@@ -64,7 +64,7 @@ func SecretKey(email string) (string, error) {
 	var secret string
 	var e error
 
-	if secret, e = xrandom.MakeCryptoRandomString(secretLength); e != nil {
+	if secret, e = xrandom.GenerateCryptoRandomString(secretLength); e != nil {
 		return "", e
 	}
 

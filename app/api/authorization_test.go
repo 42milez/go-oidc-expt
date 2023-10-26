@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/iface"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
@@ -68,13 +70,14 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.EXPECT().Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(tt.resp.location, nil).AnyTimes()
+				Return(tt.resp.location, "", nil).AnyTimes()
 
-			rCtxMock := NewMockContextReader(gomock.NewController(t))
+			rCtxMock := iface.NewMockContextReader(gomock.NewController(t))
 			rCtxMock.EXPECT().Read(gomock.Any(), typedef.SessionIdKey{}).Return(typedef.SessionID(0)).AnyTimes()
 
-			sessMock := NewMockSessionWriter(gomock.NewController(t))
-			sessMock.EXPECT().WriteRedirectUri(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+			sessMock := iface.NewMockRedirectUriSessionWriter(gomock.NewController(t))
+			sessMock.EXPECT().WriteRedirectUriAssociation(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+				Return(nil).AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
 			if err != nil {
@@ -82,10 +85,9 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			}
 
 			hdlr := &AuthorizeGetHdlr{
-				service:   svcMock,
-				validator: v,
-				rCtx:      rCtxMock,
-				sess:      sessMock,
+				svc:  svcMock,
+				v:    v,
+				sess: sessMock,
 			}
 			hdlr.ServeHTTP(w, r)
 			resp := w.Result()

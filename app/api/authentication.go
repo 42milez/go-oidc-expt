@@ -6,6 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/42milez/go-oidc-server/app/iface"
+
+	"github.com/42milez/go-oidc-server/app/httpstore"
+
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
 
@@ -14,8 +18,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/config"
-
-	"github.com/go-playground/validator/v10"
 )
 
 const sessionIDCookieName = config.SessionIDCookieName
@@ -23,61 +25,61 @@ const sessionIDCookieName = config.SessionIDCookieName
 var authenticateUserHdlr *AuthenticateHdlr
 
 type AuthenticateHdlr struct {
-	service   Authenticator
-	cookie    CookieWriter
-	sess      UserIdSessionWriter
-	validator *validator.Validate
+	svc  Authenticator
+	ck   iface.CookieWriter
+	sess iface.UserIdSessionWriter
+	v    iface.StructValidator
 }
 
 func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {
 	return &AuthenticateHdlr{
-		service:   service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.tokenGenerator),
-		cookie:    option.cookie,
-		sess:      option.SessionWriter,
-		validator: option.validator,
+		svc:  service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.tokenGenerator),
+		ck:   option.cookie,
+		sess: httpstore.NewWriteSession(repository.NewSession(option.cache), &httpstore.Context{}, option.idGenerator),
+		v:    option.validator,
 	}, nil
 }
 
-func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var q *AuthorizeParams
 	var reqBody *AuthenticateJSONRequestBody
 	var err error
 
-	if q, err = parseAuthorizeParam(r, a.validator); err != nil {
-		a.respondError(w, r, err)
+	if q, err = parseAuthorizeParam(r, ah.v); err != nil {
+		ah.respondError(w, r, err)
 		return
 	}
 
-	if reqBody, err = a.parseRequestBody(r); err != nil {
-		a.respondError(w, r, err)
+	if reqBody, err = ah.parseRequestBody(r); err != nil {
+		ah.respondError(w, r, err)
 		return
 	}
 
 	var userID typedef.UserID
 
-	if userID, err = a.service.VerifyPassword(ctx, reqBody.Name, reqBody.Password); err != nil {
-		a.respondError(w, r, err)
+	if userID, err = ah.svc.VerifyPassword(ctx, reqBody.Name, reqBody.Password); err != nil {
+		ah.respondError(w, r, err)
 		return
 	}
 
 	var sid typedef.SessionID
 
-	if sid, err = a.sess.WriteUserId(ctx, userID); err != nil {
-		a.respondError(w, r, err)
+	if sid, err = ah.sess.WriteUserId(ctx, userID); err != nil {
+		ah.respondError(w, r, err)
 		return
 	}
 
-	if err = a.cookie.Write(w, sessionIDCookieName, strconv.FormatUint(uint64(sid), 10), config.SessionIDCookieTTL); err != nil {
-		a.respondError(w, r, err)
+	if err = ah.ck.Write(w, sessionIDCookieName, strconv.FormatUint(uint64(sid), 10), config.SessionIDCookieTTL); err != nil {
+		ah.respondError(w, r, err)
 		return
 	}
 
 	var isConsented bool
 
-	if isConsented, err = a.service.VerifyConsent(ctx, userID, q.ClientID); err != nil {
-		a.respondError(w, r, err)
+	if isConsented, err = ah.svc.VerifyConsent(ctx, userID, q.ClientID); err != nil {
+		ah.respondError(w, r, err)
 		return
 	}
 
@@ -89,21 +91,21 @@ func (a *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
 }
 
-func (a *AuthenticateHdlr) parseRequestBody(r *http.Request) (*AuthenticateJSONRequestBody, error) {
+func (ah *AuthenticateHdlr) parseRequestBody(r *http.Request) (*AuthenticateJSONRequestBody, error) {
 	var ret *AuthenticateJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&ret); err != nil {
 		return nil, err
 	}
 
-	if err := a.validator.Struct(ret); err != nil {
+	if err := ah.v.Struct(ret); err != nil {
 		return nil, xerr.FailedToValidate.Wrap(err)
 	}
 
 	return ret, nil
 }
 
-func (a *AuthenticateHdlr) respondError(w http.ResponseWriter, r *http.Request, err error) {
+func (ah *AuthenticateHdlr) respondError(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, xerr.FailedToValidate) {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return

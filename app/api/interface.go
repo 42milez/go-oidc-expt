@@ -2,48 +2,16 @@ package api
 
 import (
 	"context"
-	"net/http"
-	"time"
+
+	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/entity"
-
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 //go:generate go run -mod=mod go.uber.org/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
 
-//  COOKIE
-// --------------------------------------------------
-
-type CookieReader interface {
-	Read(r *http.Request, name string) (string, error)
-}
-
-type CookieWriter interface {
-	Write(w http.ResponseWriter, name, val string, ttl time.Duration) error
-}
-
-//  SESSION
-// --------------------------------------------------
-
-type RedirectUriSessionWriter interface {
-	WriteRedirectUri(ctx context.Context, sid typedef.SessionID, uri string) error
-}
-
-type UserIdSessionWriter interface {
-	WriteUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error)
-}
-
-type SessionWriter interface {
-	RedirectUriSessionWriter
-	UserIdSessionWriter
-}
-
-type SessionRestorer interface {
-	Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error)
-}
-
-//  HEALTH CHECK
+//  Health Check
 // --------------------------------------------------
 
 type CacheStatusChecker interface {
@@ -59,14 +27,7 @@ type HealthChecker interface {
 	DBStatusChecker
 }
 
-//  HTTP
-// --------------------------------------------------
-
-type ContextReader interface {
-	Read(ctx context.Context, key any) any
-}
-
-//  AUTHENTICATION
+//  Authentication
 // --------------------------------------------------
 
 type ConsentVerifier interface {
@@ -82,26 +43,22 @@ type Authenticator interface {
 	PasswordVerifier
 }
 
-type UserCreator interface {
-	CreateUser(ctx context.Context, name, pw string) (*entity.User, error)
+type UserRegisterer interface {
+	RegisterUser(ctx context.Context, name, pw string) (*entity.User, error)
 }
 
-type UserReader interface {
-	SelectUser(ctx context.Context) (*entity.User, error)
-}
-
-//  OIDC: AUTHORIZATION
+//  Authorization
 // --------------------------------------------------
 
 type Authorizer interface {
-	Authorize(ctx context.Context, clientID, redirectURI, state string) (string, error)
+	Authorize(ctx context.Context, clientID, redirectURI, state string) (string, string, error)
 }
 
 type ConsentAcceptor interface {
 	AcceptConsent(ctx context.Context, userID typedef.UserID, clientID string) error
 }
 
-// OIDC: Token
+//  Token
 // --------------------------------------------------
 
 type CredentialValidator interface {
@@ -113,7 +70,7 @@ type AuthCodeValidator interface {
 }
 
 type RedirectUriValidator interface {
-	ValidateRedirectUri(ctx context.Context, uri, clientId string) error
+	ValidateRedirectUri(ctx context.Context, uri, clientId, authCode string) error
 }
 
 type RefreshTokenValidator interface {
@@ -130,22 +87,10 @@ type AuthCodeRevoker interface {
 	RevokeAuthCode(ctx context.Context, code, clientId string) error
 }
 
-type AccessTokenGenerator interface {
-	GenerateAccessToken(uid typedef.UserID) (string, error)
-}
-
-type RefreshTokenGenerator interface {
-	GenerateRefreshToken(uid typedef.UserID) (string, error)
-}
-
-type IdTokenGenerator interface {
-	GenerateIdToken(uid typedef.UserID) (string, error)
-}
-
 type TokenRequestAcceptor interface {
 	TokenRequestValidator
 	AuthCodeRevoker
-	AccessTokenGenerator
-	RefreshTokenGenerator
-	IdTokenGenerator
+	iface.AccessTokenGenerator
+	iface.RefreshTokenGenerator
+	iface.IdTokenGenerator
 }

@@ -24,7 +24,7 @@ type AuthCode struct {
 	db *datastore.Database
 }
 
-func (ac *AuthCode) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+func (ac *AuthCode) RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
 	tx, err := ac.db.Client.Tx(ctx)
 	if err != nil {
 		return nil, rollback(tx, err)

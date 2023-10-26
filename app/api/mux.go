@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
-
 	"github.com/42milez/go-oidc-server/app/httpstore"
+
+	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/getkin/kin-openapi/openapi3filter"
@@ -51,11 +51,6 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	if err = ConfigureDatastore(ctx, cfg, option); err != nil {
 		return nil, nil, err
 	}
-
-	//  SERVICE
-	// --------------------------------------------------
-
-	ConfigureService(option)
 
 	//  HANDLER
 	// --------------------------------------------------
@@ -182,7 +177,7 @@ func NewHandlerOption() (*HandlerOption, error) {
 
 	option := &HandlerOption{
 		clock:       &xtime.RealClocker{},
-		cookie:      service.NewCookie(rawHashKey, rawBlockKey, xtime.RealClocker{}),
+		cookie:      httpstore.NewCookie(rawHashKey, rawBlockKey, xtime.RealClocker{}),
 		idGenerator: idGen,
 	}
 
@@ -234,10 +229,4 @@ func ConfigureHandler(option *HandlerOption) error {
 	}
 
 	return nil
-}
-
-func ConfigureService(option *HandlerOption) {
-	cache := repository.NewSession(option.cache)
-	option.SessionWriter = httpstore.NewWriteSession(cache, option.idGenerator)
-	option.SessionRestorer = httpstore.NewRestoreSession(cache)
 }

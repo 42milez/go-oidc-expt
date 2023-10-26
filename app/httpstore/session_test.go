@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/iface"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/typedef"
 	"go.uber.org/mock/gomock"
@@ -20,9 +22,10 @@ func TestReadSession_ReadRedirectUri(t *testing.T) {
 	sessReaderMock.EXPECT().Read(gomock.Any(), gomock.Any()).Return(wantRedirectUri, nil).AnyTimes()
 
 	rs := NewReadSession(sessReaderMock)
-	sid := typedef.SessionID(484493848622399853)
+	clientId := "CDcp9v3Nn4i70FqWig5AuohmorD6MG"
+	authCode := "EYdxIU30xstnWZKxgA54RJMz1YUR0J"
 
-	gotRedirectUri, err := rs.ReadRedirectUri(context.Background(), sid)
+	gotRedirectUri, err := rs.ReadRedirectUri(context.Background(), clientId, authCode)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,20 +71,24 @@ func TestRestoreSession_Restore(t *testing.T) {
 	}
 }
 
-func TestWriteSession_WriteRedirectUri(t *testing.T) {
+func TestWriteSession_WriteRedirectUriAssociation(t *testing.T) {
 	t.Parallel()
+
+	clientId := "oKOhD9oEdztNOiZ1n0WmsQ2NnylaYa"
+	authCode := "LkQvn1FxZdqxFl9XYMOAjUqIlXI9IC"
+	uri := "https://example.com/cb"
 
 	ctrl := gomock.NewController(t)
 	sessWriterMock := NewMockSessionWriter(ctrl)
 	sessWriterMock.EXPECT().Write(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
 	idGenMock := NewMockIdGenerator(ctrl)
 	idGenMock.EXPECT().NextID().Return(uint64(0), nil).AnyTimes()
+	ctxReaderMock := iface.NewMockContextReader(ctrl)
+	ctxReaderMock.EXPECT().Read(gomock.Any(), gomock.Any()).Return(typedef.SessionID(0)).AnyTimes()
 
-	sid := typedef.SessionID(484493849344016749)
-	uri := "https://example.com/cb"
-	ws := NewWriteSession(sessWriterMock, idGenMock)
+	ws := NewWriteSession(sessWriterMock, ctxReaderMock, idGenMock)
 
-	if err := ws.WriteRedirectUri(context.Background(), sid, uri); err != nil {
+	if err := ws.WriteRedirectUriAssociation(context.Background(), uri, clientId, authCode); err != nil {
 		t.Error(err)
 	}
 }
@@ -89,16 +96,20 @@ func TestWriteSession_WriteRedirectUri(t *testing.T) {
 func TestWriteSession_WriteUserId(t *testing.T) {
 	t.Parallel()
 
-	wantSid := typedef.SessionID(484493849344016749)
+	sid := typedef.SessionID(484493849344016749)
+	uid := typedef.UserID(484493849344082285)
+
+	wantSid := sid
 
 	ctrl := gomock.NewController(t)
 	sessWriterMock := NewMockSessionWriter(ctrl)
 	sessWriterMock.EXPECT().Write(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
 	idGenMock := NewMockIdGenerator(ctrl)
 	idGenMock.EXPECT().NextID().Return(uint64(wantSid), nil).AnyTimes()
+	ctxReaderMock := iface.NewMockContextReader(ctrl)
+	ctxReaderMock.EXPECT().Read(gomock.Any(), gomock.Any()).Return(wantSid).AnyTimes()
 
-	uid := typedef.UserID(484493849344082285)
-	ws := NewWriteSession(sessWriterMock, idGenMock)
+	ws := NewWriteSession(sessWriterMock, ctxReaderMock, idGenMock)
 
 	gotSid, err := ws.WriteUserId(context.Background(), uid)
 	if err != nil {

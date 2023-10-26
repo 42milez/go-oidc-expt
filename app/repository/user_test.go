@@ -10,7 +10,7 @@ func TestUser_CreateUser(t *testing.T) {
 	// NOT IMPLEMENTED
 }
 
-func TestUser_ReadUserByName(t *testing.T) {
+func TestUser_ReadUser(t *testing.T) {
 	// NOT IMPLEMENTED
 }
 

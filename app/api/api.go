@@ -4,11 +4,12 @@ import (
 	_ "embed"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/httpstore"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
-	"github.com/42milez/go-oidc-server/app/service"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -47,13 +48,11 @@ func (_ *HandlerImpl) Token(w http.ResponseWriter, r *http.Request) {
 }
 
 type HandlerOption struct {
-	cache           *datastore.Cache
-	clock           xtime.Clocker
-	cookie          *service.Cookie
-	db              *datastore.Database
-	idGenerator     *xid.UniqueID
-	SessionWriter   SessionWriter
-	SessionRestorer SessionRestorer
-	tokenGenerator  *JWT
-	validator       *validator.Validate
+	cache          *datastore.Cache
+	clock          xtime.Clocker
+	cookie         *httpstore.Cookie
+	db             *datastore.Database
+	idGenerator    *xid.UniqueID
+	tokenGenerator *JWT
+	validator      *validator.Validate
 }

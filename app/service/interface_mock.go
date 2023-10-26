@@ -17,307 +17,6 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockAccessTokenGenerator is a mock of AccessTokenGenerator interface.
-type MockAccessTokenGenerator struct {
-	ctrl     *gomock.Controller
-	recorder *MockAccessTokenGeneratorMockRecorder
-}
-
-// MockAccessTokenGeneratorMockRecorder is the mock recorder for MockAccessTokenGenerator.
-type MockAccessTokenGeneratorMockRecorder struct {
-	mock *MockAccessTokenGenerator
-}
-
-// NewMockAccessTokenGenerator creates a new mock instance.
-func NewMockAccessTokenGenerator(ctrl *gomock.Controller) *MockAccessTokenGenerator {
-	mock := &MockAccessTokenGenerator{ctrl: ctrl}
-	mock.recorder = &MockAccessTokenGeneratorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAccessTokenGenerator) EXPECT() *MockAccessTokenGeneratorMockRecorder {
-	return m.recorder
-}
-
-// GenerateAccessToken mocks base method.
-func (m *MockAccessTokenGenerator) GenerateAccessToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockAccessTokenGeneratorMockRecorder) GenerateAccessToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockAccessTokenGenerator)(nil).GenerateAccessToken), name)
-}
-
-// MockRefreshTokenGenerator is a mock of RefreshTokenGenerator interface.
-type MockRefreshTokenGenerator struct {
-	ctrl     *gomock.Controller
-	recorder *MockRefreshTokenGeneratorMockRecorder
-}
-
-// MockRefreshTokenGeneratorMockRecorder is the mock recorder for MockRefreshTokenGenerator.
-type MockRefreshTokenGeneratorMockRecorder struct {
-	mock *MockRefreshTokenGenerator
-}
-
-// NewMockRefreshTokenGenerator creates a new mock instance.
-func NewMockRefreshTokenGenerator(ctrl *gomock.Controller) *MockRefreshTokenGenerator {
-	mock := &MockRefreshTokenGenerator{ctrl: ctrl}
-	mock.recorder = &MockRefreshTokenGeneratorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRefreshTokenGenerator) EXPECT() *MockRefreshTokenGeneratorMockRecorder {
-	return m.recorder
-}
-
-// GenerateRefreshToken mocks base method.
-func (m *MockRefreshTokenGenerator) GenerateRefreshToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateRefreshToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
-func (mr *MockRefreshTokenGeneratorMockRecorder) GenerateRefreshToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockRefreshTokenGenerator)(nil).GenerateRefreshToken), name)
-}
-
-// MockIdTokenGenerator is a mock of IdTokenGenerator interface.
-type MockIdTokenGenerator struct {
-	ctrl     *gomock.Controller
-	recorder *MockIdTokenGeneratorMockRecorder
-}
-
-// MockIdTokenGeneratorMockRecorder is the mock recorder for MockIdTokenGenerator.
-type MockIdTokenGeneratorMockRecorder struct {
-	mock *MockIdTokenGenerator
-}
-
-// NewMockIdTokenGenerator creates a new mock instance.
-func NewMockIdTokenGenerator(ctrl *gomock.Controller) *MockIdTokenGenerator {
-	mock := &MockIdTokenGenerator{ctrl: ctrl}
-	mock.recorder = &MockIdTokenGeneratorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockIdTokenGenerator) EXPECT() *MockIdTokenGeneratorMockRecorder {
-	return m.recorder
-}
-
-// GenerateIdToken mocks base method.
-func (m *MockIdTokenGenerator) GenerateIdToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateIdToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockIdTokenGeneratorMockRecorder) GenerateIdToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockIdTokenGenerator)(nil).GenerateIdToken), name)
-}
-
-// MockTokenGenerator is a mock of TokenGenerator interface.
-type MockTokenGenerator struct {
-	ctrl     *gomock.Controller
-	recorder *MockTokenGeneratorMockRecorder
-}
-
-// MockTokenGeneratorMockRecorder is the mock recorder for MockTokenGenerator.
-type MockTokenGeneratorMockRecorder struct {
-	mock *MockTokenGenerator
-}
-
-// NewMockTokenGenerator creates a new mock instance.
-func NewMockTokenGenerator(ctrl *gomock.Controller) *MockTokenGenerator {
-	mock := &MockTokenGenerator{ctrl: ctrl}
-	mock.recorder = &MockTokenGeneratorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenGenerator) EXPECT() *MockTokenGeneratorMockRecorder {
-	return m.recorder
-}
-
-// GenerateAccessToken mocks base method.
-func (m *MockTokenGenerator) GenerateAccessToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockTokenGeneratorMockRecorder) GenerateAccessToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateAccessToken), name)
-}
-
-// GenerateIdToken mocks base method.
-func (m *MockTokenGenerator) GenerateIdToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateIdToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockTokenGeneratorMockRecorder) GenerateIdToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateIdToken), name)
-}
-
-// GenerateRefreshToken mocks base method.
-func (m *MockTokenGenerator) GenerateRefreshToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateRefreshToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
-func (mr *MockTokenGeneratorMockRecorder) GenerateRefreshToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateRefreshToken), name)
-}
-
-// MockTokenValidator is a mock of TokenValidator interface.
-type MockTokenValidator struct {
-	ctrl     *gomock.Controller
-	recorder *MockTokenValidatorMockRecorder
-}
-
-// MockTokenValidatorMockRecorder is the mock recorder for MockTokenValidator.
-type MockTokenValidatorMockRecorder struct {
-	mock *MockTokenValidator
-}
-
-// NewMockTokenValidator creates a new mock instance.
-func NewMockTokenValidator(ctrl *gomock.Controller) *MockTokenValidator {
-	mock := &MockTokenValidator{ctrl: ctrl}
-	mock.recorder = &MockTokenValidatorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenValidator) EXPECT() *MockTokenValidatorMockRecorder {
-	return m.recorder
-}
-
-// Validate mocks base method.
-func (m *MockTokenValidator) Validate(name *string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Validate", name)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Validate indicates an expected call of Validate.
-func (mr *MockTokenValidatorMockRecorder) Validate(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockTokenValidator)(nil).Validate), name)
-}
-
-// MockTokenGenerateValidator is a mock of TokenGenerateValidator interface.
-type MockTokenGenerateValidator struct {
-	ctrl     *gomock.Controller
-	recorder *MockTokenGenerateValidatorMockRecorder
-}
-
-// MockTokenGenerateValidatorMockRecorder is the mock recorder for MockTokenGenerateValidator.
-type MockTokenGenerateValidatorMockRecorder struct {
-	mock *MockTokenGenerateValidator
-}
-
-// NewMockTokenGenerateValidator creates a new mock instance.
-func NewMockTokenGenerateValidator(ctrl *gomock.Controller) *MockTokenGenerateValidator {
-	mock := &MockTokenGenerateValidator{ctrl: ctrl}
-	mock.recorder = &MockTokenGenerateValidatorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenGenerateValidator) EXPECT() *MockTokenGenerateValidatorMockRecorder {
-	return m.recorder
-}
-
-// GenerateAccessToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateAccessToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateAccessToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateAccessToken), name)
-}
-
-// GenerateIdToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateIdToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateIdToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateIdToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateIdToken), name)
-}
-
-// GenerateRefreshToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateRefreshToken(name string) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateRefreshToken", name)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateRefreshToken(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateRefreshToken), name)
-}
-
-// Validate mocks base method.
-func (m *MockTokenGenerateValidator) Validate(name *string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Validate", name)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Validate indicates an expected call of Validate.
-func (mr *MockTokenGenerateValidatorMockRecorder) Validate(name any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockTokenGenerateValidator)(nil).Validate), name)
-}
-
 // MockCachePingSender is a mock of CachePingSender interface.
 type MockCachePingSender struct {
 	ctrl     *gomock.Controller
@@ -392,31 +91,31 @@ func (mr *MockDatabasePingSenderMockRecorder) PingDatabase(ctx any) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingDatabase", reflect.TypeOf((*MockDatabasePingSender)(nil).PingDatabase), ctx)
 }
 
-// MockHealthChecker is a mock of HealthChecker interface.
-type MockHealthChecker struct {
+// MockPingSender is a mock of PingSender interface.
+type MockPingSender struct {
 	ctrl     *gomock.Controller
-	recorder *MockHealthCheckerMockRecorder
+	recorder *MockPingSenderMockRecorder
 }
 
-// MockHealthCheckerMockRecorder is the mock recorder for MockHealthChecker.
-type MockHealthCheckerMockRecorder struct {
-	mock *MockHealthChecker
+// MockPingSenderMockRecorder is the mock recorder for MockPingSender.
+type MockPingSenderMockRecorder struct {
+	mock *MockPingSender
 }
 
-// NewMockHealthChecker creates a new mock instance.
-func NewMockHealthChecker(ctrl *gomock.Controller) *MockHealthChecker {
-	mock := &MockHealthChecker{ctrl: ctrl}
-	mock.recorder = &MockHealthCheckerMockRecorder{mock}
+// NewMockPingSender creates a new mock instance.
+func NewMockPingSender(ctrl *gomock.Controller) *MockPingSender {
+	mock := &MockPingSender{ctrl: ctrl}
+	mock.recorder = &MockPingSenderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockHealthChecker) EXPECT() *MockHealthCheckerMockRecorder {
+func (m *MockPingSender) EXPECT() *MockPingSenderMockRecorder {
 	return m.recorder
 }
 
 // PingCache mocks base method.
-func (m *MockHealthChecker) PingCache(ctx context.Context) error {
+func (m *MockPingSender) PingCache(ctx context.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PingCache", ctx)
 	ret0, _ := ret[0].(error)
@@ -424,13 +123,13 @@ func (m *MockHealthChecker) PingCache(ctx context.Context) error {
 }
 
 // PingCache indicates an expected call of PingCache.
-func (mr *MockHealthCheckerMockRecorder) PingCache(ctx any) *gomock.Call {
+func (mr *MockPingSenderMockRecorder) PingCache(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingCache", reflect.TypeOf((*MockHealthChecker)(nil).PingCache), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingCache", reflect.TypeOf((*MockPingSender)(nil).PingCache), ctx)
 }
 
 // PingDatabase mocks base method.
-func (m *MockHealthChecker) PingDatabase(ctx context.Context) error {
+func (m *MockPingSender) PingDatabase(ctx context.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PingDatabase", ctx)
 	ret0, _ := ret[0].(error)
@@ -438,160 +137,9 @@ func (m *MockHealthChecker) PingDatabase(ctx context.Context) error {
 }
 
 // PingDatabase indicates an expected call of PingDatabase.
-func (mr *MockHealthCheckerMockRecorder) PingDatabase(ctx any) *gomock.Call {
+func (mr *MockPingSenderMockRecorder) PingDatabase(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingDatabase", reflect.TypeOf((*MockHealthChecker)(nil).PingDatabase), ctx)
-}
-
-// MockContextReader is a mock of ContextReader interface.
-type MockContextReader struct {
-	ctrl     *gomock.Controller
-	recorder *MockContextReaderMockRecorder
-}
-
-// MockContextReaderMockRecorder is the mock recorder for MockContextReader.
-type MockContextReaderMockRecorder struct {
-	mock *MockContextReader
-}
-
-// NewMockContextReader creates a new mock instance.
-func NewMockContextReader(ctrl *gomock.Controller) *MockContextReader {
-	mock := &MockContextReader{ctrl: ctrl}
-	mock.recorder = &MockContextReaderMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockContextReader) EXPECT() *MockContextReaderMockRecorder {
-	return m.recorder
-}
-
-// Read mocks base method.
-func (m *MockContextReader) Read(ctx context.Context, key any) any {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, key)
-	ret0, _ := ret[0].(any)
-	return ret0
-}
-
-// Read indicates an expected call of Read.
-func (mr *MockContextReaderMockRecorder) Read(ctx, key any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockContextReader)(nil).Read), ctx, key)
-}
-
-// MockRedirectUriSessionReader is a mock of RedirectUriSessionReader interface.
-type MockRedirectUriSessionReader struct {
-	ctrl     *gomock.Controller
-	recorder *MockRedirectUriSessionReaderMockRecorder
-}
-
-// MockRedirectUriSessionReaderMockRecorder is the mock recorder for MockRedirectUriSessionReader.
-type MockRedirectUriSessionReaderMockRecorder struct {
-	mock *MockRedirectUriSessionReader
-}
-
-// NewMockRedirectUriSessionReader creates a new mock instance.
-func NewMockRedirectUriSessionReader(ctrl *gomock.Controller) *MockRedirectUriSessionReader {
-	mock := &MockRedirectUriSessionReader{ctrl: ctrl}
-	mock.recorder = &MockRedirectUriSessionReaderMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRedirectUriSessionReader) EXPECT() *MockRedirectUriSessionReaderMockRecorder {
-	return m.recorder
-}
-
-// ReadRedirectUri mocks base method.
-func (m *MockRedirectUriSessionReader) ReadRedirectUri(ctx context.Context, sid typedef.SessionID) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, sid)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadRedirectUri indicates an expected call of ReadRedirectUri.
-func (mr *MockRedirectUriSessionReaderMockRecorder) ReadRedirectUri(ctx, sid any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockRedirectUriSessionReader)(nil).ReadRedirectUri), ctx, sid)
-}
-
-// MockSessionReader is a mock of SessionReader interface.
-type MockSessionReader struct {
-	ctrl     *gomock.Controller
-	recorder *MockSessionReaderMockRecorder
-}
-
-// MockSessionReaderMockRecorder is the mock recorder for MockSessionReader.
-type MockSessionReaderMockRecorder struct {
-	mock *MockSessionReader
-}
-
-// NewMockSessionReader creates a new mock instance.
-func NewMockSessionReader(ctrl *gomock.Controller) *MockSessionReader {
-	mock := &MockSessionReader{ctrl: ctrl}
-	mock.recorder = &MockSessionReaderMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionReader) EXPECT() *MockSessionReaderMockRecorder {
-	return m.recorder
-}
-
-// ReadRedirectUri mocks base method.
-func (m *MockSessionReader) ReadRedirectUri(ctx context.Context, sid typedef.SessionID) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, sid)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadRedirectUri indicates an expected call of ReadRedirectUri.
-func (mr *MockSessionReaderMockRecorder) ReadRedirectUri(ctx, sid any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockSessionReader)(nil).ReadRedirectUri), ctx, sid)
-}
-
-// MockConsentReader is a mock of ConsentReader interface.
-type MockConsentReader struct {
-	ctrl     *gomock.Controller
-	recorder *MockConsentReaderMockRecorder
-}
-
-// MockConsentReaderMockRecorder is the mock recorder for MockConsentReader.
-type MockConsentReaderMockRecorder struct {
-	mock *MockConsentReader
-}
-
-// NewMockConsentReader creates a new mock instance.
-func NewMockConsentReader(ctrl *gomock.Controller) *MockConsentReader {
-	mock := &MockConsentReader{ctrl: ctrl}
-	mock.recorder = &MockConsentReaderMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockConsentReader) EXPECT() *MockConsentReaderMockRecorder {
-	return m.recorder
-}
-
-// ReadConsent mocks base method.
-func (m *MockConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadConsent", ctx, userID, clientID)
-	ret0, _ := ret[0].(*entity.Consent)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadConsent indicates an expected call of ReadConsent.
-func (mr *MockConsentReaderMockRecorder) ReadConsent(ctx, userID, clientID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadConsent", reflect.TypeOf((*MockConsentReader)(nil).ReadConsent), ctx, userID, clientID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PingDatabase", reflect.TypeOf((*MockPingSender)(nil).PingDatabase), ctx)
 }
 
 // MockUserCreator is a mock of UserCreator interface.
@@ -632,42 +180,80 @@ func (mr *MockUserCreatorMockRecorder) CreateUser(ctx, name, pw any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUserCreator)(nil).CreateUser), ctx, name, pw)
 }
 
-// MockUserByNameReader is a mock of UserByNameReader interface.
-type MockUserByNameReader struct {
+// MockConsentReader is a mock of ConsentReader interface.
+type MockConsentReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockUserByNameReaderMockRecorder
+	recorder *MockConsentReaderMockRecorder
 }
 
-// MockUserByNameReaderMockRecorder is the mock recorder for MockUserByNameReader.
-type MockUserByNameReaderMockRecorder struct {
-	mock *MockUserByNameReader
+// MockConsentReaderMockRecorder is the mock recorder for MockConsentReader.
+type MockConsentReaderMockRecorder struct {
+	mock *MockConsentReader
 }
 
-// NewMockUserByNameReader creates a new mock instance.
-func NewMockUserByNameReader(ctrl *gomock.Controller) *MockUserByNameReader {
-	mock := &MockUserByNameReader{ctrl: ctrl}
-	mock.recorder = &MockUserByNameReaderMockRecorder{mock}
+// NewMockConsentReader creates a new mock instance.
+func NewMockConsentReader(ctrl *gomock.Controller) *MockConsentReader {
+	mock := &MockConsentReader{ctrl: ctrl}
+	mock.recorder = &MockConsentReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUserByNameReader) EXPECT() *MockUserByNameReaderMockRecorder {
+func (m *MockConsentReader) EXPECT() *MockConsentReaderMockRecorder {
 	return m.recorder
 }
 
-// ReadUserByName mocks base method.
-func (m *MockUserByNameReader) ReadUserByName(ctx context.Context, name string) (*entity.User, error) {
+// ReadConsent mocks base method.
+func (m *MockConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadUserByName", ctx, name)
+	ret := m.ctrl.Call(m, "ReadConsent", ctx, userID, clientID)
+	ret0, _ := ret[0].(*entity.Consent)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadConsent indicates an expected call of ReadConsent.
+func (mr *MockConsentReaderMockRecorder) ReadConsent(ctx, userID, clientID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadConsent", reflect.TypeOf((*MockConsentReader)(nil).ReadConsent), ctx, userID, clientID)
+}
+
+// MockUserReader is a mock of UserReader interface.
+type MockUserReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockUserReaderMockRecorder
+}
+
+// MockUserReaderMockRecorder is the mock recorder for MockUserReader.
+type MockUserReaderMockRecorder struct {
+	mock *MockUserReader
+}
+
+// NewMockUserReader creates a new mock instance.
+func NewMockUserReader(ctrl *gomock.Controller) *MockUserReader {
+	mock := &MockUserReader{ctrl: ctrl}
+	mock.recorder = &MockUserReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserReader) EXPECT() *MockUserReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadUser mocks base method.
+func (m *MockUserReader) ReadUser(ctx context.Context, name string) (*entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadUser", ctx, name)
 	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadUserByName indicates an expected call of ReadUserByName.
-func (mr *MockUserByNameReaderMockRecorder) ReadUserByName(ctx, name any) *gomock.Call {
+// ReadUser indicates an expected call of ReadUser.
+func (mr *MockUserReaderMockRecorder) ReadUser(ctx, name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUserByName", reflect.TypeOf((*MockUserByNameReader)(nil).ReadUserByName), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUser", reflect.TypeOf((*MockUserReader)(nil).ReadUser), ctx, name)
 }
 
 // MockUserConsentReader is a mock of UserConsentReader interface.
@@ -708,19 +294,19 @@ func (mr *MockUserConsentReaderMockRecorder) ReadConsent(ctx, userID, clientID a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadConsent", reflect.TypeOf((*MockUserConsentReader)(nil).ReadConsent), ctx, userID, clientID)
 }
 
-// ReadUserByName mocks base method.
-func (m *MockUserConsentReader) ReadUserByName(ctx context.Context, name string) (*entity.User, error) {
+// ReadUser mocks base method.
+func (m *MockUserConsentReader) ReadUser(ctx context.Context, name string) (*entity.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadUserByName", ctx, name)
+	ret := m.ctrl.Call(m, "ReadUser", ctx, name)
 	ret0, _ := ret[0].(*entity.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadUserByName indicates an expected call of ReadUserByName.
-func (mr *MockUserConsentReaderMockRecorder) ReadUserByName(ctx, name any) *gomock.Call {
+// ReadUser indicates an expected call of ReadUser.
+func (mr *MockUserConsentReaderMockRecorder) ReadUser(ctx, name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUserByName", reflect.TypeOf((*MockUserConsentReader)(nil).ReadUserByName), ctx, name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUser", reflect.TypeOf((*MockUserConsentReader)(nil).ReadUser), ctx, name)
 }
 
 // MockCredentialReader is a mock of CredentialReader interface.
@@ -799,42 +385,42 @@ func (mr *MockAuthCodeCreatorMockRecorder) CreateAuthCode(ctx, code, clientID, u
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAuthCode", reflect.TypeOf((*MockAuthCodeCreator)(nil).CreateAuthCode), ctx, code, clientID, userID)
 }
 
-// MockRedirectUriByRelyingPartyIDReader is a mock of RedirectUriByRelyingPartyIDReader interface.
-type MockRedirectUriByRelyingPartyIDReader struct {
+// MockRedirectUrisReader is a mock of RedirectUrisReader interface.
+type MockRedirectUrisReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockRedirectUriByRelyingPartyIDReaderMockRecorder
+	recorder *MockRedirectUrisReaderMockRecorder
 }
 
-// MockRedirectUriByRelyingPartyIDReaderMockRecorder is the mock recorder for MockRedirectUriByRelyingPartyIDReader.
-type MockRedirectUriByRelyingPartyIDReaderMockRecorder struct {
-	mock *MockRedirectUriByRelyingPartyIDReader
+// MockRedirectUrisReaderMockRecorder is the mock recorder for MockRedirectUrisReader.
+type MockRedirectUrisReaderMockRecorder struct {
+	mock *MockRedirectUrisReader
 }
 
-// NewMockRedirectUriByRelyingPartyIDReader creates a new mock instance.
-func NewMockRedirectUriByRelyingPartyIDReader(ctrl *gomock.Controller) *MockRedirectUriByRelyingPartyIDReader {
-	mock := &MockRedirectUriByRelyingPartyIDReader{ctrl: ctrl}
-	mock.recorder = &MockRedirectUriByRelyingPartyIDReaderMockRecorder{mock}
+// NewMockRedirectUrisReader creates a new mock instance.
+func NewMockRedirectUrisReader(ctrl *gomock.Controller) *MockRedirectUrisReader {
+	mock := &MockRedirectUrisReader{ctrl: ctrl}
+	mock.recorder = &MockRedirectUrisReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRedirectUriByRelyingPartyIDReader) EXPECT() *MockRedirectUriByRelyingPartyIDReaderMockRecorder {
+func (m *MockRedirectUrisReader) EXPECT() *MockRedirectUrisReaderMockRecorder {
 	return m.recorder
 }
 
-// ReadRedirectUriByClientID mocks base method.
-func (m *MockRedirectUriByRelyingPartyIDReader) ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*entity.RedirectUri, error) {
+// ReadRedirectUris mocks base method.
+func (m *MockRedirectUrisReader) ReadRedirectUris(ctx context.Context, clientID string) ([]*entity.RedirectUri, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRedirectUriByClientID", ctx, clientID)
+	ret := m.ctrl.Call(m, "ReadRedirectUris", ctx, clientID)
 	ret0, _ := ret[0].([]*entity.RedirectUri)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadRedirectUriByClientID indicates an expected call of ReadRedirectUriByClientID.
-func (mr *MockRedirectUriByRelyingPartyIDReaderMockRecorder) ReadRedirectUriByClientID(ctx, clientID any) *gomock.Call {
+// ReadRedirectUris indicates an expected call of ReadRedirectUris.
+func (mr *MockRedirectUrisReaderMockRecorder) ReadRedirectUris(ctx, clientID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUriByClientID", reflect.TypeOf((*MockRedirectUriByRelyingPartyIDReader)(nil).ReadRedirectUriByClientID), ctx, clientID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUris", reflect.TypeOf((*MockRedirectUrisReader)(nil).ReadRedirectUris), ctx, clientID)
 }
 
 // MockAuthorizer is a mock of Authorizer interface.
@@ -875,19 +461,19 @@ func (mr *MockAuthorizerMockRecorder) CreateAuthCode(ctx, code, clientID, userID
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAuthCode", reflect.TypeOf((*MockAuthorizer)(nil).CreateAuthCode), ctx, code, clientID, userID)
 }
 
-// ReadRedirectUriByClientID mocks base method.
-func (m *MockAuthorizer) ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*entity.RedirectUri, error) {
+// ReadRedirectUris mocks base method.
+func (m *MockAuthorizer) ReadRedirectUris(ctx context.Context, clientID string) ([]*entity.RedirectUri, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRedirectUriByClientID", ctx, clientID)
+	ret := m.ctrl.Call(m, "ReadRedirectUris", ctx, clientID)
 	ret0, _ := ret[0].([]*entity.RedirectUri)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadRedirectUriByClientID indicates an expected call of ReadRedirectUriByClientID.
-func (mr *MockAuthorizerMockRecorder) ReadRedirectUriByClientID(ctx, clientID any) *gomock.Call {
+// ReadRedirectUris indicates an expected call of ReadRedirectUris.
+func (mr *MockAuthorizerMockRecorder) ReadRedirectUris(ctx, clientID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUriByClientID", reflect.TypeOf((*MockAuthorizer)(nil).ReadRedirectUriByClientID), ctx, clientID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUris", reflect.TypeOf((*MockAuthorizer)(nil).ReadRedirectUris), ctx, clientID)
 }
 
 // MockConsentCreator is a mock of ConsentCreator interface.
@@ -966,84 +552,69 @@ func (mr *MockAuthCodeReaderMockRecorder) ReadAuthCode(ctx, code, clientId any) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReader)(nil).ReadAuthCode), ctx, code, clientId)
 }
 
-// MockAuthCodeMarker is a mock of AuthCodeMarker interface.
-type MockAuthCodeMarker struct {
+// MockAuthCodeRevoker is a mock of AuthCodeRevoker interface.
+type MockAuthCodeRevoker struct {
 	ctrl     *gomock.Controller
-	recorder *MockAuthCodeMarkerMockRecorder
+	recorder *MockAuthCodeRevokerMockRecorder
 }
 
-// MockAuthCodeMarkerMockRecorder is the mock recorder for MockAuthCodeMarker.
-type MockAuthCodeMarkerMockRecorder struct {
-	mock *MockAuthCodeMarker
+// MockAuthCodeRevokerMockRecorder is the mock recorder for MockAuthCodeRevoker.
+type MockAuthCodeRevokerMockRecorder struct {
+	mock *MockAuthCodeRevoker
 }
 
-// NewMockAuthCodeMarker creates a new mock instance.
-func NewMockAuthCodeMarker(ctrl *gomock.Controller) *MockAuthCodeMarker {
-	mock := &MockAuthCodeMarker{ctrl: ctrl}
-	mock.recorder = &MockAuthCodeMarkerMockRecorder{mock}
+// NewMockAuthCodeRevoker creates a new mock instance.
+func NewMockAuthCodeRevoker(ctrl *gomock.Controller) *MockAuthCodeRevoker {
+	mock := &MockAuthCodeRevoker{ctrl: ctrl}
+	mock.recorder = &MockAuthCodeRevokerMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAuthCodeMarker) EXPECT() *MockAuthCodeMarkerMockRecorder {
+func (m *MockAuthCodeRevoker) EXPECT() *MockAuthCodeRevokerMockRecorder {
 	return m.recorder
 }
 
-// MarkAuthCodeUsed mocks base method.
-func (m *MockAuthCodeMarker) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+// RevokeAuthCode mocks base method.
+func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MarkAuthCodeUsed", ctx, code, clientId)
+	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientId)
 	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// MarkAuthCodeUsed indicates an expected call of MarkAuthCodeUsed.
-func (mr *MockAuthCodeMarkerMockRecorder) MarkAuthCodeUsed(ctx, code, clientId any) *gomock.Call {
+// RevokeAuthCode indicates an expected call of RevokeAuthCode.
+func (mr *MockAuthCodeRevokerMockRecorder) RevokeAuthCode(ctx, code, clientId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MarkAuthCodeUsed", reflect.TypeOf((*MockAuthCodeMarker)(nil).MarkAuthCodeUsed), ctx, code, clientId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeRevoker)(nil).RevokeAuthCode), ctx, code, clientId)
 }
 
-// MockAuthCodeReadMarker is a mock of AuthCodeReadMarker interface.
-type MockAuthCodeReadMarker struct {
+// MockAuthCodeReadRevoker is a mock of AuthCodeReadRevoker interface.
+type MockAuthCodeReadRevoker struct {
 	ctrl     *gomock.Controller
-	recorder *MockAuthCodeReadMarkerMockRecorder
+	recorder *MockAuthCodeReadRevokerMockRecorder
 }
 
-// MockAuthCodeReadMarkerMockRecorder is the mock recorder for MockAuthCodeReadMarker.
-type MockAuthCodeReadMarkerMockRecorder struct {
-	mock *MockAuthCodeReadMarker
+// MockAuthCodeReadRevokerMockRecorder is the mock recorder for MockAuthCodeReadRevoker.
+type MockAuthCodeReadRevokerMockRecorder struct {
+	mock *MockAuthCodeReadRevoker
 }
 
-// NewMockAuthCodeReadMarker creates a new mock instance.
-func NewMockAuthCodeReadMarker(ctrl *gomock.Controller) *MockAuthCodeReadMarker {
-	mock := &MockAuthCodeReadMarker{ctrl: ctrl}
-	mock.recorder = &MockAuthCodeReadMarkerMockRecorder{mock}
+// NewMockAuthCodeReadRevoker creates a new mock instance.
+func NewMockAuthCodeReadRevoker(ctrl *gomock.Controller) *MockAuthCodeReadRevoker {
+	mock := &MockAuthCodeReadRevoker{ctrl: ctrl}
+	mock.recorder = &MockAuthCodeReadRevokerMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAuthCodeReadMarker) EXPECT() *MockAuthCodeReadMarkerMockRecorder {
+func (m *MockAuthCodeReadRevoker) EXPECT() *MockAuthCodeReadRevokerMockRecorder {
 	return m.recorder
-}
-
-// MarkAuthCodeUsed mocks base method.
-func (m *MockAuthCodeReadMarker) MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MarkAuthCodeUsed", ctx, code, clientId)
-	ret0, _ := ret[0].(*entity.AuthCode)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// MarkAuthCodeUsed indicates an expected call of MarkAuthCodeUsed.
-func (mr *MockAuthCodeReadMarkerMockRecorder) MarkAuthCodeUsed(ctx, code, clientId any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MarkAuthCodeUsed", reflect.TypeOf((*MockAuthCodeReadMarker)(nil).MarkAuthCodeUsed), ctx, code, clientId)
 }
 
 // ReadAuthCode mocks base method.
-func (m *MockAuthCodeReadMarker) ReadAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeReadRevoker) ReadAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientId)
 	ret0, _ := ret[0].(*entity.AuthCode)
@@ -1052,9 +623,24 @@ func (m *MockAuthCodeReadMarker) ReadAuthCode(ctx context.Context, code, clientI
 }
 
 // ReadAuthCode indicates an expected call of ReadAuthCode.
-func (mr *MockAuthCodeReadMarkerMockRecorder) ReadAuthCode(ctx, code, clientId any) *gomock.Call {
+func (mr *MockAuthCodeReadRevokerMockRecorder) ReadAuthCode(ctx, code, clientId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReadMarker)(nil).ReadAuthCode), ctx, code, clientId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReadRevoker)(nil).ReadAuthCode), ctx, code, clientId)
+}
+
+// RevokeAuthCode mocks base method.
+func (m *MockAuthCodeReadRevoker) RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientId)
+	ret0, _ := ret[0].(*entity.AuthCode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RevokeAuthCode indicates an expected call of RevokeAuthCode.
+func (mr *MockAuthCodeReadRevokerMockRecorder) RevokeAuthCode(ctx, code, clientId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeReadRevoker)(nil).RevokeAuthCode), ctx, code, clientId)
 }
 
 // MockRedirectUriReader is a mock of RedirectUriReader interface.
