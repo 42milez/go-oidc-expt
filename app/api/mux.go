@@ -93,7 +93,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	mw := NewMiddlewareFuncMap()
 	rs := RestoreSession(option)
 
-	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs).SetTokenMW(rs)
+	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs)
 
 	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,
