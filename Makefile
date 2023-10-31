@@ -87,6 +87,7 @@ seed:
 
 ## test: Run all tests
 test:
+	@go clean -testcache
 	@go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`
 
 # ==================================================

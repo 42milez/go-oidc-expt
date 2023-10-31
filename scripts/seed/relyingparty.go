@@ -25,12 +25,12 @@ func InsertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingP
 	params := make([]RelyingParty, nRelyingParty)
 
 	for i := 0; i < nRelyingParty; i++ {
-		v, err := xrandom.MakeCryptoRandomString(config.ClientIDLength)
+		v, err := xrandom.GenerateCryptoRandomString(config.ClientIDLength)
 		if err != nil {
 			return nil, err
 		}
 		params[i].ClientID = string(v)
-		v, err = xrandom.MakeCryptoRandomString(config.ClientSecretLength)
+		v, err = xrandom.GenerateCryptoRandomString(config.ClientSecretLength)
 		if err != nil {
 			return nil, err
 		}

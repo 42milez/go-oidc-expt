@@ -71,7 +71,7 @@ func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID 
 	return entity.NewConsent(c), nil
 }
 
-func (u *User) ReadUserByName(ctx context.Context, name string) (*entity.User, error) {
+func (u *User) ReadUser(ctx context.Context, name string) (*entity.User, error) {
 	v, err := u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {

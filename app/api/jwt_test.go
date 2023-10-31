@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -46,7 +48,7 @@ func TestJWT_MakeAccessToken(t *testing.T) {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 	}
 
-	got, err := j.GenerateAccessToken("test_user")
+	got, err := j.GenerateAccessToken(typedef.UserID(484493849344409965))
 
 	if err != nil {
 		t.Fatal(err)

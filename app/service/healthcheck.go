@@ -4,14 +4,14 @@ import (
 	"context"
 )
 
-func NewCheckHealth(repo HealthChecker) *CheckHealth {
+func NewCheckHealth(repo PingSender) *CheckHealth {
 	return &CheckHealth{
 		repo: repo,
 	}
 }
 
 type CheckHealth struct {
-	repo HealthChecker
+	repo PingSender
 }
 
 func (ch *CheckHealth) CheckCacheStatus(ctx context.Context) error {

@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/rs/zerolog/pkgerrors"
+
 	"github.com/rs/zerolog"
 
 	"github.com/42milez/go-oidc-server/app/api"
@@ -25,6 +27,7 @@ func NewServer(lis net.Listener, mux http.Handler) *Server {
 
 func NewBaseLogger(cfg *config.Config) *zerolog.Logger {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixNano
+	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	ret := zerolog.New(os.Stdout).Level(cfg.LogLevel).With().Timestamp().Str("env", cfg.Env).
 		Str("service", config.AppName).Logger()
 	return &ret

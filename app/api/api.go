@@ -10,7 +10,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
-	"github.com/42milez/go-oidc-server/app/service"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -49,15 +48,11 @@ func (_ *HandlerImpl) Token(w http.ResponseWriter, r *http.Request) {
 }
 
 type HandlerOption struct {
-	cache           *datastore.Cache
-	clock           xtime.Clocker
-	cookie          *service.Cookie
-	db              *datastore.Database
-	idGenerator     *xid.UniqueID
-	sessionCreator  *httpstore.CreateSession
-	sessionReader   *httpstore.ReadSession
-	sessionRestorer *httpstore.RestoreSession
-	sessionUpdater  *httpstore.UpdateSession
-	tokenGenerator  *JWT
-	validator       *validator.Validate
+	cache          *datastore.Cache
+	clock          xtime.Clocker
+	cookie         *httpstore.Cookie
+	db             *datastore.Database
+	idGenerator    *xid.UniqueID
+	tokenGenerator *JWT
+	validator      *validator.Validate
 }

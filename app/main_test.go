@@ -51,10 +51,10 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	}
 
 	newAuthorizeParam := func(clientId string) string {
-		nonce, err := xrandom.MakeCryptoRandomString(nonceLength)
+		nonce, err := xrandom.GenerateCryptoRandomString(nonceLength)
 		xtestutil.ExitOnError(t, err)
 
-		state, err := xrandom.MakeCryptoRandomString(stateLength)
+		state, err := xrandom.GenerateCryptoRandomString(stateLength)
 		xtestutil.ExitOnError(t, err)
 
 		authoParam := &api.AuthorizeParams{
@@ -78,10 +78,10 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	}
 
 	registerRelyingParty := func() *entity.RelyingParty {
-		clientId, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIDLength)
+		clientId, err := xrandom.GenerateCryptoRandomStringNoCache(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
-		clientSecret, err := xrandom.MakeCryptoRandomStringNoCache(config.ClientIDLength)
+		clientSecret, err := xrandom.GenerateCryptoRandomStringNoCache(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
 		rp, err := db.Client.RelyingParty.Create().SetClientID(clientId).SetClientSecret(clientSecret).Save(ctx)

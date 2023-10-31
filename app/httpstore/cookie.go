@@ -1,4 +1,4 @@
-package service
+package httpstore
 
 import (
 	"net/http"

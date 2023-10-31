@@ -11,12 +11,12 @@ var checkHealthHdlr *CheckHealthHdlr
 
 func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {
 	return &CheckHealthHdlr{
-		service: service.NewCheckHealth(repository.NewCheckHealth(option.db, option.cache)),
+		svc: service.NewCheckHealth(repository.NewCheckHealth(option.db, option.cache)),
 	}
 }
 
 type CheckHealthHdlr struct {
-	service HealthChecker
+	svc HealthChecker
 }
 
 func (c *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -26,12 +26,12 @@ func (c *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	if err := c.service.CheckCacheStatus(ctx); err != nil {
+	if err := c.svc.CheckCacheStatus(ctx); err != nil {
 		errResp(err)
 		return
 	}
 
-	if err := c.service.CheckDBStatus(ctx); err != nil {
+	if err := c.svc.CheckDBStatus(ctx); err != nil {
 		errResp(err)
 		return
 	}

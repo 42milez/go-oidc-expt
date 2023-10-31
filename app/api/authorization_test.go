@@ -7,13 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/entity"
+	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/app/typedef"
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 )
 
 const (
@@ -66,20 +66,18 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				nil,
 			)
 			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
-			r = r.Clone(context.WithValue(r.Context(), typedef.SessionKey{}, &entity.Session{
-				UserID: userID,
-			}))
+			r = r.Clone(context.WithValue(r.Context(), typedef.UserIdKey{}, userID))
 
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.EXPECT().Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(tt.resp.location, nil).AnyTimes()
+				Return(tt.resp.location, "", nil).AnyTimes()
 
-			rCtxMock := NewMockContextReader(gomock.NewController(t))
-			rCtxMock.EXPECT().Read(gomock.Any(), typedef.SessionIDKey{}).Return(typedef.SessionID("")).AnyTimes()
-			rCtxMock.EXPECT().Read(gomock.Any(), typedef.SessionKey{}).Return(&entity.Session{}).AnyTimes()
+			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
+			ctxMock.EXPECT().Read(gomock.Any(), typedef.UserIdKey{}).Return(typedef.UserID(0)).AnyTimes()
 
-			sessMock := NewMockSessionUpdater(gomock.NewController(t))
-			sessMock.EXPECT().Update(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+			sessMock := iface.NewMockAuthParamSessionWriter(gomock.NewController(t))
+			sessMock.EXPECT().WriteAuthParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
+				AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
 			if err != nil {
@@ -87,10 +85,10 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			}
 
 			hdlr := &AuthorizeGetHdlr{
-				service:   svcMock,
-				validator: v,
-				rCtx:      rCtxMock,
-				session:   sessMock,
+				svc:  svcMock,
+				ctx:  ctxMock,
+				sess: sessMock,
+				v:    v,
 			}
 			hdlr.ServeHTTP(w, r)
 			resp := w.Result()

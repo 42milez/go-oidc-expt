@@ -9,7 +9,7 @@ function WaitService() {
   local -r name="${1}"
   local -r cmd="${2}"
 
-  echo "[${name}] Wait for service to be available"
+  echo "[${name}] Wait for service to be available (Timeout: ${TIMEOUT}s)"
 
   while ! eval "${cmd}" >/dev/null 2>&1; do
     now=$(date +%s)

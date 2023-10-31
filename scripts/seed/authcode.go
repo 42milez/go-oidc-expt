@@ -31,7 +31,7 @@ func InsertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties
 	params := make([]AuthCode, nAuthCode*nRelyingParty)
 
 	for i := range params {
-		code, err := xrandom.MakeCryptoRandomString(config.AuthCodeLength)
+		code, err := xrandom.GenerateCryptoRandomString(config.AuthCodeLength)
 		if err != nil {
 			return nil, err
 		}

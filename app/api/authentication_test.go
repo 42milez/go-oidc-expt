@@ -7,18 +7,20 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/iface"
+
+	"github.com/42milez/go-oidc-server/app/httpstore"
+
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 
-	"github.com/42milez/go-oidc-server/app/service"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 )
 
 func TestAuthentication_ServeHTTP(t *testing.T) {
@@ -44,7 +46,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 	}
 
 	type sessionMockResp struct {
-		sessionID string
+		sessionID typedef.SessionID
 		err       error
 	}
 
@@ -54,7 +56,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 	}
 
 	const userID = 475924035230777348
-	const sessionID = "dd9a0158-092c-4dc2-b470-7e68c97bfdb0"
+	const sessionID = typedef.SessionID(484481116225536365)
 
 	tests := map[string]struct {
 		reqBodyFile  string
@@ -128,8 +130,8 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			reqBodyFile:  td200ReqBody,
 			reqParamFile: td200ReqParam,
 			respSessMock: sessionMockResp{
-				sessionID: "",
-				err:       xerr.FailedToCreateSession,
+				sessionID: 0,
+				err:       xerr.FailedToWriteSession,
 			},
 			respVPMock: verifyPasswordMockResp{
 				userID: userID,
@@ -169,8 +171,8 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				Return(tt.respVCMock.ok, tt.respVCMock.err).
 				AnyTimes()
 
-			sessMock := NewMockSessionCreator(gomock.NewController(t))
-			sessMock.EXPECT().Create(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
+			sessMock := iface.NewMockUserInfoSessionWriter(gomock.NewController(t))
+			sessMock.EXPECT().WriteUserInfo(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
 
@@ -179,10 +181,10 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			}
 
 			sut := AuthenticateHdlr{
-				service:   svcMock,
-				session:   sessMock,
-				cookie:    service.NewCookie(rawHashKey, rawBlockKey, xtestutil.FixedClocker{}),
-				validator: v,
+				svc:  svcMock,
+				sess: sessMock,
+				ck:   httpstore.NewCookie(rawHashKey, rawBlockKey, xtestutil.FixedClocker{}),
+				v:    v,
 			}
 			sut.ServeHTTP(w, r)
 

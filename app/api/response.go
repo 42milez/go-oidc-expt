@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/pkg/errors"
+
 	"github.com/42milez/go-oidc-server/app/config"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -88,7 +90,8 @@ func RespondJSON404(w http.ResponseWriter) {
 
 func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {
 	if err != nil {
-		appLogger.Error().Err(err).Send()
+		e := errors.WithStack(err)
+		appLogger.Error().Stack().Err(e).Send()
 	}
 	RespondJSON(w, r, http.StatusInternalServerError, &Response{
 		Status:  http.StatusInternalServerError,

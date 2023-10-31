@@ -8,7 +8,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
 )
 
-func NewCreateUser(repo UserCreator) *CreateUser {
+func NewRegisterUser(repo UserCreator) *CreateUser {
 	return &CreateUser{
 		repo: repo,
 	}
@@ -18,7 +18,7 @@ type CreateUser struct {
 	repo UserCreator
 }
 
-func (cu *CreateUser) CreateUser(ctx context.Context, name, pw string) (*entity.User, error) {
+func (cu *CreateUser) RegisterUser(ctx context.Context, name, pw string) (*entity.User, error) {
 	hash, err := xargon2.HashPassword(pw)
 
 	if err != nil {

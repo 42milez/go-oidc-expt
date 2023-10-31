@@ -8,39 +8,9 @@ import (
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
-//go:generate go run -mod=mod github.com/golang/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
+//go:generate go run -mod=mod go.uber.org/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
 
-//  JWT
-// --------------------------------------------------
-
-type AccessTokenGenerator interface {
-	GenerateAccessToken(name string) ([]byte, error)
-}
-
-type RefreshTokenGenerator interface {
-	GenerateRefreshToken(name string) ([]byte, error)
-}
-
-type IdTokenGenerator interface {
-	GenerateIdToken(name string) ([]byte, error)
-}
-
-type TokenGenerator interface {
-	AccessTokenGenerator
-	RefreshTokenGenerator
-	IdTokenGenerator
-}
-
-type TokenValidator interface {
-	Validate(name *string) error
-}
-
-type TokenGenerateValidator interface {
-	TokenGenerator
-	TokenValidator
-}
-
-//  HEALTH CHECK
+//  Health Check
 // --------------------------------------------------
 
 type CachePingSender interface {
@@ -51,83 +21,69 @@ type DatabasePingSender interface {
 	PingDatabase(ctx context.Context) error
 }
 
-type HealthChecker interface {
+type PingSender interface {
 	CachePingSender
 	DatabasePingSender
 }
 
-//  HTTP
+//  Authentication
 // --------------------------------------------------
-
-type ContextReader interface {
-	Read(ctx context.Context, key any) any
-}
-
-type SessionReader interface {
-	Read(ctx context.Context, sid typedef.SessionID) (*entity.Session, error)
-}
-
-//  AUTHENTICATION
-// --------------------------------------------------
-
-type ConsentReader interface {
-	ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error)
-}
 
 type UserCreator interface {
 	CreateUser(ctx context.Context, name string, pw string) (*entity.User, error)
 }
 
-type UserByNameReader interface {
-	ReadUserByName(ctx context.Context, name string) (*entity.User, error)
+type ConsentReader interface {
+	ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error)
+}
+
+type UserReader interface {
+	ReadUser(ctx context.Context, name string) (*entity.User, error)
 }
 
 type UserConsentReader interface {
 	ConsentReader
-	UserByNameReader
+	UserReader
 }
-
-//  OIDC: Authentication
-// --------------------------------------------------
 
 type CredentialReader interface {
 	ReadCredential(ctx context.Context, clientID, clientSecret string) (*entity.RelyingParty, error)
 }
 
-//  OIDC: AUTHORIZATION
+//  Authorization
 // --------------------------------------------------
 
 type AuthCodeCreator interface {
 	CreateAuthCode(ctx context.Context, code string, clientID string, userID typedef.UserID) (*entity.AuthCode, error)
 }
 
-type RedirectUriByRelyingPartyIDReader interface {
-	ReadRedirectUriByClientID(ctx context.Context, clientID string) ([]*entity.RedirectUri, error)
+type RedirectUrisReader interface {
+	ReadRedirectUris(ctx context.Context, clientID string) ([]*entity.RedirectUri, error)
 }
 
 type Authorizer interface {
 	AuthCodeCreator
-	RedirectUriByRelyingPartyIDReader
+	RedirectUrisReader
 }
 
 type ConsentCreator interface {
 	CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error)
 }
 
-//  OIDC: Token
+//  Token
 // --------------------------------------------------
 
 type AuthCodeReader interface {
 	ReadAuthCode(ctx context.Context, code string, clientId string) (*entity.AuthCode, error)
 }
 
-type AuthCodeMarker interface {
-	MarkAuthCodeUsed(ctx context.Context, code, clientId string) (*entity.AuthCode, error)
+type AuthCodeRevoker interface {
+	RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error)
 }
 
-type AuthCodeReadMarker interface {
+type AuthCodeReadRevoker interface {
 	AuthCodeReader
-	AuthCodeMarker
+	AuthCodeRevoker
 }
 
 type RedirectUriReader interface {

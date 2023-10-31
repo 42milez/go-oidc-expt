@@ -2,7 +2,8 @@ package service
 
 import (
 	"context"
-	"strconv"
+
+	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -14,24 +15,22 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewToken(db *datastore.Database, c xtime.Clocker, sess SessionReader, token TokenGenerateValidator) *Token {
+func NewToken(db *datastore.Database, cache *datastore.Cache, clock xtime.Clocker, token iface.TokenGenerateValidator) *Token {
 	return &Token{
 		acRepo: repository.NewAuthCode(db),
 		ruRepo: repository.NewRedirectUri(db),
-		cr:     &httpstore.ReadContext{},
-		sess:   sess,
+		clock:  clock,
+		ctx:    &httpstore.Context{},
 		token:  token,
-		clock:  c,
 	}
 }
 
 type Token struct {
-	acRepo AuthCodeReadMarker
+	acRepo AuthCodeReadRevoker
 	ruRepo RedirectUriReader
-	cr     ContextReader
-	sess   SessionReader
-	token  TokenGenerateValidator
 	clock  xtime.Clocker
+	ctx    iface.ContextReader
+	token  iface.TokenGenerateValidator
 }
 
 func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) error {
@@ -52,33 +51,10 @@ func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) err
 }
 
 func (t *Token) RevokeAuthCode(ctx context.Context, code, clientId string) error {
-	_, err := t.acRepo.MarkAuthCodeUsed(ctx, code, clientId)
+	_, err := t.acRepo.RevokeAuthCode(ctx, code, clientId)
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func (t *Token) ValidateRedirectUri(ctx context.Context, uri, clientId string) error {
-	_, err := t.ruRepo.ReadRedirectUri(ctx, clientId)
-	if err != nil {
-		return err
-	}
-
-	sid, ok := t.cr.Read(ctx, typedef.SessionIDKey{}).(typedef.SessionID)
-	if !ok {
-		return xerr.ContextValueNotFound
-	}
-
-	sess, err := t.sess.Read(ctx, sid)
-	if err != nil {
-		return err
-	}
-
-	if sess.RedirectUri != uri {
-		return xerr.RedirectUriNotMatched
-	}
-
 	return nil
 }
 
@@ -90,28 +66,25 @@ func (t *Token) ValidateRefreshToken(token *string) error {
 }
 
 func (t *Token) GenerateAccessToken(uid typedef.UserID) (string, error) {
-	uidConverted := strconv.FormatUint(uint64(uid), 10)
-	accessToken, err := t.token.GenerateAccessToken(uidConverted)
+	accessToken, err := t.token.GenerateAccessToken(uid)
 	if err != nil {
 		return "", err
 	}
-	return string(accessToken), nil
+	return accessToken, nil
 }
 
 func (t *Token) GenerateRefreshToken(uid typedef.UserID) (string, error) {
-	uidConverted := strconv.FormatUint(uint64(uid), 10)
-	refreshToken, err := t.token.GenerateRefreshToken(uidConverted)
+	refreshToken, err := t.token.GenerateRefreshToken(uid)
 	if err != nil {
 		return "", err
 	}
-	return string(refreshToken), nil
+	return refreshToken, nil
 }
 
 func (t *Token) GenerateIdToken(uid typedef.UserID) (string, error) {
-	uidConverted := strconv.FormatUint(uint64(uid), 10)
-	idToken, err := t.token.GenerateIdToken(uidConverted)
+	idToken, err := t.token.GenerateIdToken(uid)
 	if err != nil {
 		return "", err
 	}
-	return string(idToken), nil
+	return idToken, nil
 }

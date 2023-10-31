@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/typedef"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/config"
@@ -18,7 +20,7 @@ import (
 )
 
 const accessTokenSubject = "access_token"
-const nameKey = "name"
+const nameKey = "uid"
 
 //go:embed secret/keypair/private.pem
 var rawPrivateKey []byte
@@ -53,25 +55,25 @@ type JWT struct {
 	clock                 xtime.Clocker
 }
 
-func (j *JWT) GenerateAccessToken(name string) ([]byte, error) {
+func (j *JWT) GenerateAccessToken(uid typedef.UserID) (string, error) {
 	token, err := jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).Subject(accessTokenSubject).
-		IssuedAt(j.clock.Now()).Expiration(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, name).Build()
+		IssuedAt(j.clock.Now()).Expiration(j.clock.Now().Add(30*time.Minute)).Claim(nameKey, uid).Build()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return ret, nil
+	return string(ret), nil
 }
 
-func (j *JWT) GenerateRefreshToken(name string) ([]byte, error) {
-	return j.GenerateAccessToken(name)
+func (j *JWT) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+	return j.GenerateAccessToken(uid)
 }
 
-func (j *JWT) GenerateIdToken(name string) ([]byte, error) {
-	return j.GenerateAccessToken(name)
+func (j *JWT) GenerateIdToken(uid typedef.UserID) (string, error) {
+	return j.GenerateAccessToken(uid)
 }
 
 func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {

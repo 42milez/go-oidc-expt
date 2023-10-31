@@ -3,39 +3,35 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/entity"
-	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
+	"github.com/42milez/go-oidc-server/app/iface"
+
+	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
 
 var authorizeGetHdlr *AuthorizeGetHdlr
 
 func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
-	v, err := NewAuthorizeParamValidator()
-	if err != nil {
-		return nil, err
-	}
 	return &AuthorizeGetHdlr{
-		service:   service.NewAuthorize(repository.NewRelyingParty(option.db)),
-		validator: v,
-		rCtx:      &httpstore.ReadContext{},
-		session:   option.sessionUpdater,
+		svc:  service.NewAuthorize(repository.NewRelyingParty(option.db)),
+		ctx:  &httpstore.Context{},
+		sess: httpstore.NewWriteSession(repository.NewSession(option.cache), &httpstore.Context{}, option.idGenerator),
+		v:    option.validator,
 	}, nil
 }
 
 type AuthorizeGetHdlr struct {
-	service   Authorizer
-	validator *validator.Validate
-	rCtx      ContextReader
-	session   SessionUpdater
+	svc  Authorizer
+	ctx  iface.ContextReader
+	sess iface.AuthParamSessionWriter
+	v    iface.StructValidator
 }
 
 func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +43,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.validator.Struct(q); err != nil {
+	if err := a.v.Struct(q); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
@@ -58,8 +54,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	location, err := a.service.Authorize(r.Context(), q.ClientID, q.RedirectUri, q.State)
-
+	location, authCode, err := a.svc.Authorize(r.Context(), q.ClientID, q.RedirectUri, q.State)
 	if err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
@@ -67,21 +62,18 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	sid, ok := a.rCtx.Read(ctx, typedef.SessionIDKey{}).(typedef.SessionID)
+	uid, ok := a.ctx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
 		return
 	}
 
-	sess, ok := a.rCtx.Read(ctx, typedef.SessionKey{}).(*entity.Session)
-	if !ok {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
-		return
+	authParam := &typedef.AuthParam{
+		RedirectUri: q.RedirectUri,
+		UserId:      uid,
 	}
 
-	sess.RedirectUri = q.RedirectUri
-
-	if err = a.session.Update(ctx, sid, sess); err != nil {
+	if err = a.sess.WriteAuthParam(ctx, authParam, q.ClientID, authCode); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
@@ -90,19 +82,22 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewAuthorizePost() *AuthorizePost {
-	return &AuthorizePost{}
+	return &AuthorizePost{
+		svc: nil,
+		v:   nil,
+	}
 }
 
 type AuthorizePost struct {
-	Service   Authorizer
-	Validator *validator.Validate
+	svc Authorizer
+	v   iface.StructValidator
 }
 
 func (p *AuthorizePost) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// NOT IMPLEMENTED YET
+	// NOT IMPLEMENTED
 }
 
-func parseAuthorizeParam(r *http.Request, v *validator.Validate) (*AuthorizeParams, error) {
+func parseAuthorizeParam(r *http.Request, v iface.StructValidator) (*AuthorizeParams, error) {
 	decoder := schema.NewDecoder()
 	ret := &AuthorizeParams{}
 

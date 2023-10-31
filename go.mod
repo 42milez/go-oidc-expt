@@ -13,7 +13,6 @@ require (
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-playground/validator/v10 v10.15.5
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/golang/mock v1.6.0
 	github.com/golangci/golangci-lint v1.55.1
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-querystring v1.1.0
@@ -22,9 +21,11 @@ require (
 	github.com/gorilla/securecookie v1.1.1
 	github.com/lestrrat-go/jwx/v2 v2.0.15
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
+	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.2.1
 	github.com/rs/zerolog v1.31.0
 	github.com/sony/sonyflake v1.2.0
+	go.uber.org/mock v0.3.0
 	golang.org/x/crypto v0.14.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 	golang.org/x/sync v0.4.0
