@@ -21,7 +21,6 @@ func NewToken(db *datastore.Database, cache *datastore.Cache, clock xtime.Clocke
 		ruRepo: repository.NewRedirectUri(db),
 		clock:  clock,
 		ctx:    &httpstore.Context{},
-		sess:   httpstore.NewReadSession(repository.NewSession(cache)),
 		token:  token,
 	}
 }
@@ -31,7 +30,6 @@ type Token struct {
 	ruRepo RedirectUriReader
 	clock  xtime.Clocker
 	ctx    iface.ContextReader
-	sess   iface.RedirectUriSessionReader
 	token  iface.TokenGenerateValidator
 }
 
@@ -57,24 +55,6 @@ func (t *Token) RevokeAuthCode(ctx context.Context, code, clientId string) error
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func (t *Token) ValidateRedirectUri(ctx context.Context, uri, clientId, authCode string) error {
-	_, err := t.ruRepo.ReadRedirectUri(ctx, clientId)
-	if err != nil {
-		return err
-	}
-
-	ruri, err := t.sess.ReadRedirectUri(ctx, clientId, authCode)
-	if err != nil {
-		return err
-	}
-
-	if ruri != uri {
-		return xerr.RedirectUriNotMatched
-	}
-
 	return nil
 }
 

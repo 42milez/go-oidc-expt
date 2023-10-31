@@ -171,8 +171,8 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				Return(tt.respVCMock.ok, tt.respVCMock.err).
 				AnyTimes()
 
-			sessMock := iface.NewMockUserIdSessionWriter(gomock.NewController(t))
-			sessMock.EXPECT().WriteUserId(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
+			sessMock := iface.NewMockUserInfoSessionWriter(gomock.NewController(t))
+			sessMock.EXPECT().WriteUserInfo(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
 

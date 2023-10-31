@@ -27,7 +27,7 @@ var authenticateUserHdlr *AuthenticateHdlr
 type AuthenticateHdlr struct {
 	svc  Authenticator
 	ck   iface.CookieWriter
-	sess iface.UserIdSessionWriter
+	sess iface.UserInfoSessionWriter
 	v    iface.StructValidator
 }
 
@@ -66,7 +66,7 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	var sid typedef.SessionID
 
-	if sid, err = ah.sess.WriteUserId(ctx, userID); err != nil {
+	if sid, err = ah.sess.WriteUserInfo(ctx, userID); err != nil {
 		ah.respondError(w, r, err)
 		return
 	}

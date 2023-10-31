@@ -69,22 +69,22 @@ type AuthCodeValidator interface {
 	ValidateAuthCode(ctx context.Context, code, clientId string) error
 }
 
-type RedirectUriValidator interface {
-	ValidateRedirectUri(ctx context.Context, uri, clientId, authCode string) error
-}
-
 type RefreshTokenValidator interface {
 	ValidateRefreshToken(token *string) error
 }
 
 type TokenRequestValidator interface {
 	AuthCodeValidator
-	RedirectUriValidator
 	RefreshTokenValidator
 }
 
 type AuthCodeRevoker interface {
 	RevokeAuthCode(ctx context.Context, code, clientId string) error
+}
+
+type TokenSessionReader interface {
+	iface.AuthParamSessionReader
+	iface.RefreshTokenPermissionSessionReader
 }
 
 type TokenRequestAcceptor interface {

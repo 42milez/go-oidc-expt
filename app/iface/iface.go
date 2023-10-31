@@ -61,20 +61,24 @@ type TokenGenerateValidator interface {
 //  Session
 // --------------------------------------------------
 
-type RedirectUriSessionReader interface {
-	ReadRedirectUri(ctx context.Context, clientId, authCode string) (string, error)
+type AuthParamSessionReader interface {
+	ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error)
 }
 
-type RedirectUriSessionWriter interface {
-	WriteRedirectUriAssociation(ctx context.Context, uri, clientId, authCode string) error
+type AuthParamSessionWriter interface {
+	WriteAuthParam(ctx context.Context, param *typedef.AuthParam, clientId, authCode string) error
 }
 
-type RefreshTokenOwnerSessionWriter interface {
-	WriteRefreshTokenOwner(ctx context.Context, token, clientId string) error
+type RefreshTokenPermissionSessionReader interface {
+	ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error)
 }
 
-type UserIdSessionWriter interface {
-	WriteUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error)
+type RefreshTokenPermissionSessionWriter interface {
+	WriteRefreshTokenPermission(ctx context.Context, token, clientId string, uid typedef.UserID) error
+}
+
+type UserInfoSessionWriter interface {
+	WriteUserInfo(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error)
 }
 
 //  Validator

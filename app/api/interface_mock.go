@@ -459,43 +459,6 @@ func (mr *MockAuthCodeValidatorMockRecorder) ValidateAuthCode(ctx, code, clientI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockAuthCodeValidator)(nil).ValidateAuthCode), ctx, code, clientId)
 }
 
-// MockRedirectUriValidator is a mock of RedirectUriValidator interface.
-type MockRedirectUriValidator struct {
-	ctrl     *gomock.Controller
-	recorder *MockRedirectUriValidatorMockRecorder
-}
-
-// MockRedirectUriValidatorMockRecorder is the mock recorder for MockRedirectUriValidator.
-type MockRedirectUriValidatorMockRecorder struct {
-	mock *MockRedirectUriValidator
-}
-
-// NewMockRedirectUriValidator creates a new mock instance.
-func NewMockRedirectUriValidator(ctrl *gomock.Controller) *MockRedirectUriValidator {
-	mock := &MockRedirectUriValidator{ctrl: ctrl}
-	mock.recorder = &MockRedirectUriValidatorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRedirectUriValidator) EXPECT() *MockRedirectUriValidatorMockRecorder {
-	return m.recorder
-}
-
-// ValidateRedirectUri mocks base method.
-func (m *MockRedirectUriValidator) ValidateRedirectUri(ctx context.Context, uri, clientId, authCode string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateRedirectUri", ctx, uri, clientId, authCode)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ValidateRedirectUri indicates an expected call of ValidateRedirectUri.
-func (mr *MockRedirectUriValidatorMockRecorder) ValidateRedirectUri(ctx, uri, clientId, authCode any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRedirectUri", reflect.TypeOf((*MockRedirectUriValidator)(nil).ValidateRedirectUri), ctx, uri, clientId, authCode)
-}
-
 // MockRefreshTokenValidator is a mock of RefreshTokenValidator interface.
 type MockRefreshTokenValidator struct {
 	ctrl     *gomock.Controller
@@ -570,20 +533,6 @@ func (mr *MockTokenRequestValidatorMockRecorder) ValidateAuthCode(ctx, code, cli
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockTokenRequestValidator)(nil).ValidateAuthCode), ctx, code, clientId)
 }
 
-// ValidateRedirectUri mocks base method.
-func (m *MockTokenRequestValidator) ValidateRedirectUri(ctx context.Context, uri, clientId, authCode string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateRedirectUri", ctx, uri, clientId, authCode)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ValidateRedirectUri indicates an expected call of ValidateRedirectUri.
-func (mr *MockTokenRequestValidatorMockRecorder) ValidateRedirectUri(ctx, uri, clientId, authCode any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRedirectUri", reflect.TypeOf((*MockTokenRequestValidator)(nil).ValidateRedirectUri), ctx, uri, clientId, authCode)
-}
-
 // ValidateRefreshToken mocks base method.
 func (m *MockTokenRequestValidator) ValidateRefreshToken(token *string) error {
 	m.ctrl.T.Helper()
@@ -633,6 +582,59 @@ func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code, clientId
 func (mr *MockAuthCodeRevokerMockRecorder) RevokeAuthCode(ctx, code, clientId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeRevoker)(nil).RevokeAuthCode), ctx, code, clientId)
+}
+
+// MockTokenSessionReader is a mock of TokenSessionReader interface.
+type MockTokenSessionReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockTokenSessionReaderMockRecorder
+}
+
+// MockTokenSessionReaderMockRecorder is the mock recorder for MockTokenSessionReader.
+type MockTokenSessionReaderMockRecorder struct {
+	mock *MockTokenSessionReader
+}
+
+// NewMockTokenSessionReader creates a new mock instance.
+func NewMockTokenSessionReader(ctrl *gomock.Controller) *MockTokenSessionReader {
+	mock := &MockTokenSessionReader{ctrl: ctrl}
+	mock.recorder = &MockTokenSessionReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTokenSessionReader) EXPECT() *MockTokenSessionReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadAuthParam mocks base method.
+func (m *MockTokenSessionReader) ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadAuthParam", ctx, clientId, authCode)
+	ret0, _ := ret[0].(*typedef.AuthParam)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadAuthParam indicates an expected call of ReadAuthParam.
+func (mr *MockTokenSessionReaderMockRecorder) ReadAuthParam(ctx, clientId, authCode any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthParam", reflect.TypeOf((*MockTokenSessionReader)(nil).ReadAuthParam), ctx, clientId, authCode)
+}
+
+// ReadRefreshTokenPermission mocks base method.
+func (m *MockTokenSessionReader) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadRefreshTokenPermission", ctx, token)
+	ret0, _ := ret[0].(*typedef.AuthParam)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadRefreshTokenPermission indicates an expected call of ReadRefreshTokenPermission.
+func (mr *MockTokenSessionReaderMockRecorder) ReadRefreshTokenPermission(ctx, token any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRefreshTokenPermission", reflect.TypeOf((*MockTokenSessionReader)(nil).ReadRefreshTokenPermission), ctx, token)
 }
 
 // MockTokenRequestAcceptor is a mock of TokenRequestAcceptor interface.
@@ -729,20 +731,6 @@ func (m *MockTokenRequestAcceptor) ValidateAuthCode(ctx context.Context, code, c
 func (mr *MockTokenRequestAcceptorMockRecorder) ValidateAuthCode(ctx, code, clientId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).ValidateAuthCode), ctx, code, clientId)
-}
-
-// ValidateRedirectUri mocks base method.
-func (m *MockTokenRequestAcceptor) ValidateRedirectUri(ctx context.Context, uri, clientId, authCode string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateRedirectUri", ctx, uri, clientId, authCode)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ValidateRedirectUri indicates an expected call of ValidateRedirectUri.
-func (mr *MockTokenRequestAcceptorMockRecorder) ValidateRedirectUri(ctx, uri, clientId, authCode any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRedirectUri", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).ValidateRedirectUri), ctx, uri, clientId, authCode)
 }
 
 // ValidateRefreshToken mocks base method.

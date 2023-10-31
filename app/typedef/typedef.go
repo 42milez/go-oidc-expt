@@ -24,3 +24,8 @@ func (uid UserID) MarshalBinary() ([]byte, error) {
 func (uid UserID) String() string {
 	return strconv.FormatUint(uint64(uid), 10)
 }
+
+type AuthParam struct {
+	RedirectUri string
+	UserId      UserID
+}

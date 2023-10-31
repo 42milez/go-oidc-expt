@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/42milez/go-oidc-server/app/repository"
+
 	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
@@ -23,17 +25,21 @@ var tokenHdlr *TokenHdlr
 
 func NewTokenHdlr(option *HandlerOption) *TokenHdlr {
 	return &TokenHdlr{
-		svc: service.NewToken(option.db, option.cache, option.clock, option.tokenGenerator),
-		ctx: &httpstore.Context{},
-		v:   option.validator,
+		svc:        service.NewToken(option.db, option.cache, option.clock, option.tokenGenerator),
+		ctx:        &httpstore.Context{},
+		sessReader: httpstore.NewReadSession(repository.NewSession(option.cache)),
+		sessWriter: httpstore.NewWriteSession(repository.NewSession(option.cache), &httpstore.Context{},
+			option.idGenerator),
+		v: option.validator,
 	}
 }
 
 type TokenHdlr struct {
-	svc  TokenRequestAcceptor
-	ctx  iface.ContextReader
-	sess iface.RefreshTokenOwnerSessionWriter
-	v    iface.StructValidator
+	svc        TokenRequestAcceptor
+	ctx        iface.ContextReader
+	sessReader TokenSessionReader
+	sessWriter iface.RefreshTokenPermissionSessionWriter
+	v          iface.StructValidator
 }
 
 func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +69,7 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		t.handleAuthCodeGrantType(w, r, param, clientId)
 		return
 	} else if param.GrantType == config.RefreshTokenGrantType {
-		t.handleRefreshTokenGrantType(w, r, param)
+		t.handleRefreshTokenGrantType(w, r, param, clientId)
 		return
 	} else {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
@@ -94,28 +100,24 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err := t.svc.ValidateRedirectUri(ctx, *param.RedirectUri, clientId, *param.Code); err != nil {
-		if errors.Is(err, xerr.RedirectUriNotFound) || errors.Is(err, xerr.RedirectUriNotMatched) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-		} else {
-			RespondJSON500(w, r, err)
-		}
-		return
-	}
-
-	uid, ok := t.ctx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
-	if !ok {
+	authParam, err := t.sessReader.ReadAuthParam(ctx, clientId, *param.Code)
+	if err != nil {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
-	tokens, err := t.generateToken(uid)
+	if *param.RedirectUri != authParam.RedirectUri {
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		return
+	}
+
+	tokens, err := t.generateToken(authParam.UserId)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	if err = t.sess.WriteRefreshTokenOwner(ctx, *tokens["RefreshToken"], clientId); err != nil {
+	if err = t.sessWriter.WriteRefreshTokenPermission(ctx, *tokens["RefreshToken"], clientId, authParam.UserId); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
@@ -166,7 +168,7 @@ func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request,
 	}
 }
 
-func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody) {
+func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	if err := t.svc.ValidateRefreshToken(param.RefreshToken); err != nil {
 		if errors.Is(err, xerr.InvalidToken) {
 			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
@@ -174,19 +176,21 @@ func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	uid, ok := t.ctx.Read(r.Context(), typedef.UserIdKey{}).(typedef.UserID)
-	if !ok {
+	ctx := r.Context()
+
+	perm, err := t.sessReader.ReadRefreshTokenPermission(ctx, *param.RefreshToken)
+	if err != nil {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
 	}
 
-	accessToken, err := t.svc.GenerateAccessToken(uid)
+	accessToken, err := t.svc.GenerateAccessToken(perm.UserId)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	refreshToken, err := t.svc.GenerateRefreshToken(uid)
+	refreshToken, err := t.svc.GenerateRefreshToken(perm.UserId)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return

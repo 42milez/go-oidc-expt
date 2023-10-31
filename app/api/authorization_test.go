@@ -72,12 +72,12 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			svcMock.EXPECT().Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(tt.resp.location, "", nil).AnyTimes()
 
-			rCtxMock := iface.NewMockContextReader(gomock.NewController(t))
-			rCtxMock.EXPECT().Read(gomock.Any(), typedef.SessionIdKey{}).Return(typedef.SessionID(0)).AnyTimes()
+			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
+			ctxMock.EXPECT().Read(gomock.Any(), typedef.UserIdKey{}).Return(typedef.UserID(0)).AnyTimes()
 
-			sessMock := iface.NewMockRedirectUriSessionWriter(gomock.NewController(t))
-			sessMock.EXPECT().WriteRedirectUriAssociation(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(nil).AnyTimes()
+			sessMock := iface.NewMockAuthParamSessionWriter(gomock.NewController(t))
+			sessMock.EXPECT().WriteAuthParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
+				AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
 			if err != nil {
@@ -86,8 +86,9 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 
 			hdlr := &AuthorizeGetHdlr{
 				svc:  svcMock,
-				v:    v,
+				ctx:  ctxMock,
 				sess: sessMock,
+				v:    v,
 			}
 			hdlr.ServeHTTP(w, r)
 			resp := w.Result()

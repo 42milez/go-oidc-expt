@@ -1,8 +1,9 @@
 package api
 
 import (
-	"errors"
 	"net/http"
+
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/iface"
 
@@ -20,6 +21,7 @@ var authorizeGetHdlr *AuthorizeGetHdlr
 func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
 	return &AuthorizeGetHdlr{
 		svc:  service.NewAuthorize(repository.NewRelyingParty(option.db)),
+		ctx:  &httpstore.Context{},
 		sess: httpstore.NewWriteSession(repository.NewSession(option.cache), &httpstore.Context{}, option.idGenerator),
 		v:    option.validator,
 	}, nil
@@ -27,7 +29,8 @@ func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
 
 type AuthorizeGetHdlr struct {
 	svc  Authorizer
-	sess iface.RedirectUriSessionWriter
+	ctx  iface.ContextReader
+	sess iface.AuthParamSessionWriter
 	v    iface.StructValidator
 }
 
@@ -59,12 +62,19 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	if err = a.sess.WriteRedirectUriAssociation(ctx, q.RedirectUri, q.ClientID, authCode); err != nil {
-		if errors.Is(err, xerr.SessionIdNotFoundInContext) {
-			RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
-		} else {
-			RespondJSON500(w, r, err)
-		}
+	uid, ok := a.ctx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
+	if !ok {
+		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+		return
+	}
+
+	authParam := &typedef.AuthParam{
+		RedirectUri: q.RedirectUri,
+		UserId:      uid,
+	}
+
+	if err = a.sess.WriteAuthParam(ctx, authParam, q.ClientID, authCode); err != nil {
+		RespondJSON500(w, r, err)
 		return
 	}
 

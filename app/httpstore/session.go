@@ -2,7 +2,6 @@ package httpstore
 
 import (
 	"context"
-	"crypto/sha256"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -15,6 +14,9 @@ import (
 )
 
 const nRetryWriteSession = 3
+const clientIdFieldName = "ClientId"
+const redirectUriFieldName = "RedirectUri"
+const userIdFieldName = "UserId"
 
 func NewReadSession(repo SessionReader) *ReadSession {
 	return &ReadSession{
@@ -26,9 +28,50 @@ type ReadSession struct {
 	repo SessionReader
 }
 
-func (rs *ReadSession) ReadRedirectUri(ctx context.Context, clientId, authCode string) (string, error) {
-	key := redirectUriSessionKey(clientId, authCode)
-	return rs.repo.Read(ctx, key)
+func (rs *ReadSession) ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error) {
+	key := authParamSessionKey(clientId, authCode)
+
+	redirectUri, err := rs.repo.ReadHash(ctx, key, redirectUriFieldName)
+	if err != nil {
+		return nil, err
+	}
+
+	userId, err := rs.repo.ReadHash(ctx, key, userIdFieldName)
+	if err != nil {
+		return nil, err
+	}
+	userIdUint64, err := strconv.ParseUint(userId, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return &typedef.AuthParam{
+		RedirectUri: redirectUri,
+		UserId:      typedef.UserID(userIdUint64),
+	}, nil
+}
+
+func (rs *ReadSession) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error) {
+	key := refreshTokenPermissionSessionKey(token)
+
+	redirectUri, err := rs.repo.ReadHash(ctx, key, clientIdFieldName)
+	if err != nil {
+		return nil, err
+	}
+
+	userId, err := rs.repo.ReadHash(ctx, key, userIdFieldName)
+	if err != nil {
+		return nil, err
+	}
+	userIdUint64, err := strconv.ParseUint(userId, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return &typedef.AuthParam{
+		RedirectUri: redirectUri,
+		UserId:      typedef.UserID(userIdUint64),
+	}, nil
 }
 
 func NewRestoreSession(repo SessionReader) *RestoreSession {
@@ -44,7 +87,7 @@ type RestoreSession struct {
 func (rs *RestoreSession) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
 	ctx := r.Context()
 
-	key := userIdSessionKey(sid)
+	key := userInfoSessionKey(sid)
 	uid, err := rs.repo.Read(ctx, key)
 	if err != nil {
 		return nil, err
@@ -74,34 +117,40 @@ type WriteSession struct {
 	idGen IdGenerator
 }
 
-func (ws *WriteSession) WriteRedirectUriAssociation(ctx context.Context, uri, clientId, authCode string) error {
-	key := redirectUriSessionKey(clientId, authCode)
-	ok, err := ws.repo.Write(ctx, key, uri, config.SessionTTL)
+func (ws *WriteSession) WriteAuthParam(ctx context.Context, param *typedef.AuthParam, clientId, authCode string) error {
+	key := authParamSessionKey(clientId, authCode)
+	values := map[string]string{
+		redirectUriFieldName: param.RedirectUri,
+		userIdFieldName:      strconv.FormatUint(uint64(param.UserId), 10),
+	}
+	ok, err := ws.repo.WriteHash(ctx, key, values, config.SessionTTL)
 	if err != nil {
 		return err
 	}
 	if !ok {
-		return xerr.FailedToWriteSession
+		return xerr.CacheKeyDuplicated
+	}
+	return nil
+}
+
+func (ws *WriteSession) WriteRefreshTokenPermission(ctx context.Context, token, clientId string, uid typedef.UserID) error {
+	key := refreshTokenPermissionSessionKey(token)
+	values := map[string]string{
+		clientIdFieldName: clientId,
+		userIdFieldName:   strconv.FormatUint(uint64(uid), 10),
+	}
+	ok, err := ws.repo.WriteHash(ctx, key, values, config.SessionTTL)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return xerr.CacheKeyDuplicated
 	}
 
 	return nil
 }
 
-func (ws *WriteSession) WriteRefreshTokenOwner(ctx context.Context, token, clientId string) error {
-	hash := sha256.Sum256([]byte(token))
-	key := refreshTokenSessionKey(string(hash[:]))
-	ok, err := ws.repo.Write(ctx, key, clientId, config.SessionTTL)
-	if err != nil {
-		return err
-	}
-	if !ok {
-		return xerr.FailedToWriteSession
-	}
-
-	return nil
-}
-
-func (ws *WriteSession) WriteUserId(ctx context.Context, userId typedef.UserID) (typedef.SessionID, error) {
+func (ws *WriteSession) WriteUserInfo(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
 	var sid uint64
 	var ok bool
 	var err error
@@ -110,8 +159,8 @@ func (ws *WriteSession) WriteUserId(ctx context.Context, userId typedef.UserID) 
 		if sid, err = ws.idGen.NextID(); err != nil {
 			return 0, err
 		}
-		key := userIdSessionKey(typedef.SessionID(sid))
-		if ok, err = ws.repo.Write(ctx, key, userId, config.SessionTTL); err != nil {
+		key := userInfoSessionKey(typedef.SessionID(sid))
+		if ok, err = ws.repo.Write(ctx, key, uid, config.SessionTTL); err != nil {
 			return 0, err
 		}
 		if ok {
@@ -126,14 +175,14 @@ func (ws *WriteSession) WriteUserId(ctx context.Context, userId typedef.UserID) 
 	return typedef.SessionID(sid), nil
 }
 
-func redirectUriSessionKey(clientId, authCode string) string {
-	return fmt.Sprintf("session:redirecturi:%s.%s", clientId, authCode)
+func authParamSessionKey(clientId, authCode string) string {
+	return fmt.Sprintf("auth:param:%s.%s", clientId, authCode)
 }
 
-func refreshTokenSessionKey(token string) string {
-	return fmt.Sprintf("session:refreshtoken:%s", token)
+func refreshTokenPermissionSessionKey(token string) string {
+	return fmt.Sprintf("rp:refreshtoken:permission:%s", token)
 }
 
-func userIdSessionKey(sid typedef.SessionID) string {
-	return fmt.Sprintf("session:userid:%d", sid)
+func userInfoSessionKey(sid typedef.SessionID) string {
+	return fmt.Sprintf("idp:session:%d", sid)
 }
