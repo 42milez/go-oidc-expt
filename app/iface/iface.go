@@ -61,16 +61,16 @@ type TokenGenerateValidator interface {
 //  Session
 // --------------------------------------------------
 
-type AuthParamSessionReader interface {
-	ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error)
+type OpenIdParamSessionReader interface {
+	ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error)
 }
 
-type AuthParamSessionWriter interface {
-	WriteAuthParam(ctx context.Context, param *typedef.AuthParam, clientId, authCode string) error
+type OpenIdParamSessionWriter interface {
+	WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error
 }
 
 type RefreshTokenPermissionSessionReader interface {
-	ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error)
+	ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.OpenIdParam, error)
 }
 
 type RefreshTokenPermissionSessionWriter interface {

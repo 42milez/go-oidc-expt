@@ -75,8 +75,8 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.UserIdKey{}).Return(typedef.UserID(0)).AnyTimes()
 
-			sessMock := iface.NewMockAuthParamSessionWriter(gomock.NewController(t))
-			sessMock.EXPECT().WriteAuthParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
+			sessMock := iface.NewMockOpenIdParamSessionWriter(gomock.NewController(t))
+			sessMock.EXPECT().WriteOpenIdParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
 				AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()

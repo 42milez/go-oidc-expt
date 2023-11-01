@@ -100,7 +100,7 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	authParam, err := t.sessReader.ReadAuthParam(ctx, clientId, *param.Code)
+	authParam, err := t.sessReader.ReadOpenIdParam(ctx, clientId, *param.Code)
 	if err != nil {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return

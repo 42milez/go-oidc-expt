@@ -431,79 +431,79 @@ func (mr *MockTokenGenerateValidatorMockRecorder) Validate(name any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockTokenGenerateValidator)(nil).Validate), name)
 }
 
-// MockAuthParamSessionReader is a mock of AuthParamSessionReader interface.
-type MockAuthParamSessionReader struct {
+// MockOpenIdParamSessionReader is a mock of OpenIdParamSessionReader interface.
+type MockOpenIdParamSessionReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockAuthParamSessionReaderMockRecorder
+	recorder *MockOpenIdParamSessionReaderMockRecorder
 }
 
-// MockAuthParamSessionReaderMockRecorder is the mock recorder for MockAuthParamSessionReader.
-type MockAuthParamSessionReaderMockRecorder struct {
-	mock *MockAuthParamSessionReader
+// MockOpenIdParamSessionReaderMockRecorder is the mock recorder for MockOpenIdParamSessionReader.
+type MockOpenIdParamSessionReaderMockRecorder struct {
+	mock *MockOpenIdParamSessionReader
 }
 
-// NewMockAuthParamSessionReader creates a new mock instance.
-func NewMockAuthParamSessionReader(ctrl *gomock.Controller) *MockAuthParamSessionReader {
-	mock := &MockAuthParamSessionReader{ctrl: ctrl}
-	mock.recorder = &MockAuthParamSessionReaderMockRecorder{mock}
+// NewMockOpenIdParamSessionReader creates a new mock instance.
+func NewMockOpenIdParamSessionReader(ctrl *gomock.Controller) *MockOpenIdParamSessionReader {
+	mock := &MockOpenIdParamSessionReader{ctrl: ctrl}
+	mock.recorder = &MockOpenIdParamSessionReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAuthParamSessionReader) EXPECT() *MockAuthParamSessionReaderMockRecorder {
+func (m *MockOpenIdParamSessionReader) EXPECT() *MockOpenIdParamSessionReaderMockRecorder {
 	return m.recorder
 }
 
-// ReadAuthParam mocks base method.
-func (m *MockAuthParamSessionReader) ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error) {
+// ReadOpenIdParam mocks base method.
+func (m *MockOpenIdParamSessionReader) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadAuthParam", ctx, clientId, authCode)
-	ret0, _ := ret[0].(*typedef.AuthParam)
+	ret := m.ctrl.Call(m, "ReadOpenIdParam", ctx, clientId, authCode)
+	ret0, _ := ret[0].(*typedef.OpenIdParam)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadAuthParam indicates an expected call of ReadAuthParam.
-func (mr *MockAuthParamSessionReaderMockRecorder) ReadAuthParam(ctx, clientId, authCode any) *gomock.Call {
+// ReadOpenIdParam indicates an expected call of ReadOpenIdParam.
+func (mr *MockOpenIdParamSessionReaderMockRecorder) ReadOpenIdParam(ctx, clientId, authCode any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthParam", reflect.TypeOf((*MockAuthParamSessionReader)(nil).ReadAuthParam), ctx, clientId, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadOpenIdParam", reflect.TypeOf((*MockOpenIdParamSessionReader)(nil).ReadOpenIdParam), ctx, clientId, authCode)
 }
 
-// MockAuthParamSessionWriter is a mock of AuthParamSessionWriter interface.
-type MockAuthParamSessionWriter struct {
+// MockOpenIdParamSessionWriter is a mock of OpenIdParamSessionWriter interface.
+type MockOpenIdParamSessionWriter struct {
 	ctrl     *gomock.Controller
-	recorder *MockAuthParamSessionWriterMockRecorder
+	recorder *MockOpenIdParamSessionWriterMockRecorder
 }
 
-// MockAuthParamSessionWriterMockRecorder is the mock recorder for MockAuthParamSessionWriter.
-type MockAuthParamSessionWriterMockRecorder struct {
-	mock *MockAuthParamSessionWriter
+// MockOpenIdParamSessionWriterMockRecorder is the mock recorder for MockOpenIdParamSessionWriter.
+type MockOpenIdParamSessionWriterMockRecorder struct {
+	mock *MockOpenIdParamSessionWriter
 }
 
-// NewMockAuthParamSessionWriter creates a new mock instance.
-func NewMockAuthParamSessionWriter(ctrl *gomock.Controller) *MockAuthParamSessionWriter {
-	mock := &MockAuthParamSessionWriter{ctrl: ctrl}
-	mock.recorder = &MockAuthParamSessionWriterMockRecorder{mock}
+// NewMockOpenIdParamSessionWriter creates a new mock instance.
+func NewMockOpenIdParamSessionWriter(ctrl *gomock.Controller) *MockOpenIdParamSessionWriter {
+	mock := &MockOpenIdParamSessionWriter{ctrl: ctrl}
+	mock.recorder = &MockOpenIdParamSessionWriterMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAuthParamSessionWriter) EXPECT() *MockAuthParamSessionWriterMockRecorder {
+func (m *MockOpenIdParamSessionWriter) EXPECT() *MockOpenIdParamSessionWriterMockRecorder {
 	return m.recorder
 }
 
-// WriteAuthParam mocks base method.
-func (m *MockAuthParamSessionWriter) WriteAuthParam(ctx context.Context, param *typedef.AuthParam, clientId, authCode string) error {
+// WriteOpenIdParam mocks base method.
+func (m *MockOpenIdParamSessionWriter) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "WriteAuthParam", ctx, param, clientId, authCode)
+	ret := m.ctrl.Call(m, "WriteOpenIdParam", ctx, param, clientId, authCode)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// WriteAuthParam indicates an expected call of WriteAuthParam.
-func (mr *MockAuthParamSessionWriterMockRecorder) WriteAuthParam(ctx, param, clientId, authCode any) *gomock.Call {
+// WriteOpenIdParam indicates an expected call of WriteOpenIdParam.
+func (mr *MockOpenIdParamSessionWriterMockRecorder) WriteOpenIdParam(ctx, param, clientId, authCode any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteAuthParam", reflect.TypeOf((*MockAuthParamSessionWriter)(nil).WriteAuthParam), ctx, param, clientId, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteOpenIdParam", reflect.TypeOf((*MockOpenIdParamSessionWriter)(nil).WriteOpenIdParam), ctx, param, clientId, authCode)
 }
 
 // MockRefreshTokenPermissionSessionReader is a mock of RefreshTokenPermissionSessionReader interface.
@@ -530,10 +530,10 @@ func (m *MockRefreshTokenPermissionSessionReader) EXPECT() *MockRefreshTokenPerm
 }
 
 // ReadRefreshTokenPermission mocks base method.
-func (m *MockRefreshTokenPermissionSessionReader) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error) {
+func (m *MockRefreshTokenPermissionSessionReader) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.OpenIdParam, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRefreshTokenPermission", ctx, token)
-	ret0, _ := ret[0].(*typedef.AuthParam)
+	ret0, _ := ret[0].(*typedef.OpenIdParam)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

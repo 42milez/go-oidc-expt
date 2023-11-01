@@ -28,7 +28,7 @@ type ReadSession struct {
 	repo SessionReader
 }
 
-func (rs *ReadSession) ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error) {
+func (rs *ReadSession) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
 	key := openIdParamSessionKey(clientId, authCode)
 
 	redirectUri, err := rs.repo.ReadHash(ctx, key, redirectUriFieldName)
@@ -45,13 +45,13 @@ func (rs *ReadSession) ReadAuthParam(ctx context.Context, clientId, authCode str
 		return nil, err
 	}
 
-	return &typedef.AuthParam{
+	return &typedef.OpenIdParam{
 		RedirectUri: redirectUri,
 		UserId:      typedef.UserID(userIdUint64),
 	}, nil
 }
 
-func (rs *ReadSession) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error) {
+func (rs *ReadSession) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.OpenIdParam, error) {
 	key := refreshTokenPermissionSessionKey(token)
 
 	redirectUri, err := rs.repo.ReadHash(ctx, key, clientIdFieldName)
@@ -68,7 +68,7 @@ func (rs *ReadSession) ReadRefreshTokenPermission(ctx context.Context, token str
 		return nil, err
 	}
 
-	return &typedef.AuthParam{
+	return &typedef.OpenIdParam{
 		RedirectUri: redirectUri,
 		UserId:      typedef.UserID(userIdUint64),
 	}, nil
@@ -117,7 +117,7 @@ type WriteSession struct {
 	idGen IdGenerator
 }
 
-func (ws *WriteSession) WriteAuthParam(ctx context.Context, param *typedef.AuthParam, clientId, authCode string) error {
+func (ws *WriteSession) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error {
 	key := openIdParamSessionKey(clientId, authCode)
 	values := map[string]string{
 		redirectUriFieldName: param.RedirectUri,

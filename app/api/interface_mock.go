@@ -607,26 +607,26 @@ func (m *MockTokenSessionReader) EXPECT() *MockTokenSessionReaderMockRecorder {
 	return m.recorder
 }
 
-// ReadAuthParam mocks base method.
-func (m *MockTokenSessionReader) ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error) {
+// ReadOpenIdParam mocks base method.
+func (m *MockTokenSessionReader) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadAuthParam", ctx, clientId, authCode)
-	ret0, _ := ret[0].(*typedef.AuthParam)
+	ret := m.ctrl.Call(m, "ReadOpenIdParam", ctx, clientId, authCode)
+	ret0, _ := ret[0].(*typedef.OpenIdParam)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadAuthParam indicates an expected call of ReadAuthParam.
-func (mr *MockTokenSessionReaderMockRecorder) ReadAuthParam(ctx, clientId, authCode any) *gomock.Call {
+// ReadOpenIdParam indicates an expected call of ReadOpenIdParam.
+func (mr *MockTokenSessionReaderMockRecorder) ReadOpenIdParam(ctx, clientId, authCode any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthParam", reflect.TypeOf((*MockTokenSessionReader)(nil).ReadAuthParam), ctx, clientId, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadOpenIdParam", reflect.TypeOf((*MockTokenSessionReader)(nil).ReadOpenIdParam), ctx, clientId, authCode)
 }
 
 // ReadRefreshTokenPermission mocks base method.
-func (m *MockTokenSessionReader) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error) {
+func (m *MockTokenSessionReader) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.OpenIdParam, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRefreshTokenPermission", ctx, token)
-	ret0, _ := ret[0].(*typedef.AuthParam)
+	ret0, _ := ret[0].(*typedef.OpenIdParam)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

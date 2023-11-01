@@ -83,7 +83,7 @@ type AuthCodeRevoker interface {
 }
 
 type TokenSessionReader interface {
-	iface.AuthParamSessionReader
+	iface.OpenIdParamSessionReader
 	iface.RefreshTokenPermissionSessionReader
 }
 

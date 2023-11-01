@@ -30,7 +30,7 @@ func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
 type AuthorizeGetHdlr struct {
 	svc  Authorizer
 	ctx  iface.ContextReader
-	sess iface.AuthParamSessionWriter
+	sess iface.OpenIdParamSessionWriter
 	v    iface.StructValidator
 }
 
@@ -68,12 +68,12 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	authParam := &typedef.AuthParam{
+	authParam := &typedef.OpenIdParam{
 		RedirectUri: q.RedirectUri,
 		UserId:      uid,
 	}
 
-	if err = a.sess.WriteAuthParam(ctx, authParam, q.ClientID, authCode); err != nil {
+	if err = a.sess.WriteOpenIdParam(ctx, authParam, q.ClientID, authCode); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
