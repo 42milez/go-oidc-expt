@@ -29,7 +29,7 @@ type ReadSession struct {
 }
 
 func (rs *ReadSession) ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error) {
-	key := authParamSessionKey(clientId, authCode)
+	key := openIdParamSessionKey(clientId, authCode)
 
 	redirectUri, err := rs.repo.ReadHash(ctx, key, redirectUriFieldName)
 	if err != nil {
@@ -118,7 +118,7 @@ type WriteSession struct {
 }
 
 func (ws *WriteSession) WriteAuthParam(ctx context.Context, param *typedef.AuthParam, clientId, authCode string) error {
-	key := authParamSessionKey(clientId, authCode)
+	key := openIdParamSessionKey(clientId, authCode)
 	values := map[string]string{
 		redirectUriFieldName: param.RedirectUri,
 		userIdFieldName:      strconv.FormatUint(uint64(param.UserId), 10),
@@ -175,8 +175,8 @@ func (ws *WriteSession) WriteUserInfo(ctx context.Context, uid typedef.UserID) (
 	return typedef.SessionID(sid), nil
 }
 
-func authParamSessionKey(clientId, authCode string) string {
-	return fmt.Sprintf("auth:param:%s.%s", clientId, authCode)
+func openIdParamSessionKey(clientId, authCode string) string {
+	return fmt.Sprintf("idp:openid:param:%s.%s", clientId, authCode)
 }
 
 func refreshTokenPermissionSessionKey(token string) string {
