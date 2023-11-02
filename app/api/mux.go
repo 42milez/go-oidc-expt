@@ -9,6 +9,12 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
 
+	"github.com/42milez/go-oidc-server/app/security"
+
+	"github.com/42milez/go-oidc-server/app/option"
+	"github.com/42milez/go-oidc-server/app/pkg/xid"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+
 	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -17,8 +23,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/datastore"
-	"github.com/42milez/go-oidc-server/app/pkg/xid"
-	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
@@ -39,25 +43,23 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	//  HANDLER OPTION
 	// --------------------------------------------------
 
-	var option *HandlerOption
+	var opt *option.Option
 
-	if option, err = NewHandlerOption(); err != nil {
+	if opt, err = NewOption(); err != nil {
 		return nil, nil, err
 	}
 
 	//  DATASTORE
 	// --------------------------------------------------
 
-	if err = ConfigureDatastore(ctx, cfg, option); err != nil {
+	if err = ConfigureDatastore(ctx, cfg, opt); err != nil {
 		return nil, nil, err
 	}
 
 	//  HANDLER
 	// --------------------------------------------------
 
-	if err = ConfigureHandler(option); err != nil {
-		return nil, nil, err
-	}
+	ConfigureHandler(opt)
 
 	//  ROUTER
 	// --------------------------------------------------
@@ -83,7 +85,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 
 	mux.Use(nethttpmiddleware.OapiRequestValidatorWithOptions(swag, &nethttpmiddleware.Options{
 		Options: openapi3filter.Options{
-			AuthenticationFunc: NewOapiAuthentication(option.db),
+			AuthenticationFunc: NewOapiAuthentication(opt),
 		},
 		ErrorHandler: NewOapiErrorHandler(),
 	}))
@@ -91,7 +93,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	// Middleware Configuration on Each Handler
 
 	mw := NewMiddlewareFuncMap()
-	rs := RestoreSession(option)
+	rs := RestoreSession(opt)
 
 	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs)
 
@@ -101,13 +103,13 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	})
 
 	return mux, func() {
-		xutil.CloseConnection(option.db.Client)
-		xutil.CloseConnection(option.cache.Client)
+		xutil.CloseConnection(opt.DB.Client)
+		xutil.CloseConnection(opt.Cache.Client)
 	}, nil
 }
 
-func NewOapiAuthentication(db *datastore.Database) openapi3filter.AuthenticationFunc {
-	svc := service.NewOapiAuthenticate(repository.NewRelyingParty(db))
+func NewOapiAuthentication(opt *option.Option) openapi3filter.AuthenticationFunc {
+	svc := service.NewOapiAuthenticate(repository.NewRelyingParty(opt.DB))
 	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
 		return oapiBasicAuthenticate(ctx, input, svc)
 	}
@@ -167,66 +169,47 @@ func NewOapiErrorHandler() nethttpmiddleware.ErrorHandler {
 	}
 }
 
-func NewHandlerOption() (*HandlerOption, error) {
-	var idGen *xid.UniqueID
+func NewOption() (*option.Option, error) {
 	var err error
 
-	if idGen, err = xid.GetUniqueID(); err != nil {
+	opt := &option.Option{
+		Cookie: httpstore.NewCookie(security.RawCookieHashKey, security.RawCookieBlockKey, &xtime.RealClocker{}),
+	}
+
+	if opt.IdGen, err = xid.GetUniqueIDGenerator(); err != nil {
 		return nil, err
 	}
 
-	option := &HandlerOption{
-		clock:       &xtime.RealClocker{},
-		cookie:      httpstore.NewCookie(rawHashKey, rawBlockKey, xtime.RealClocker{}),
-		idGenerator: idGen,
-	}
-
-	if option.tokenGenerator, err = NewJWT(xtime.RealClocker{}); err != nil {
+	if opt.Token, err = security.NewJWT(xtime.RealClocker{}); err != nil {
 		return nil, err
 	}
 
-	if option.validator, err = NewAuthorizeParamValidator(); err != nil {
+	if opt.V, err = NewAuthorizeParamValidator(); err != nil {
 		return nil, err
 	}
 
-	return option, nil
+	return opt, nil
 }
 
-func ConfigureDatastore(ctx context.Context, cfg *config.Config, option *HandlerOption) error {
+func ConfigureDatastore(ctx context.Context, cfg *config.Config, opt *option.Option) error {
 	var err error
 
-	if option.db, err = datastore.NewDatabase(ctx, cfg); err != nil {
+	if opt.DB, err = datastore.NewMySQL(ctx, cfg); err != nil {
 		return err
 	}
 
-	if option.cache, err = datastore.NewCache(ctx, cfg); err != nil {
+	if opt.Cache, err = datastore.NewRedis(ctx, cfg); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func ConfigureHandler(option *HandlerOption) error {
-	var err error
-
-	checkHealthHdlr = NewCheckHealthHdlr(option)
-	tokenHdlr = NewTokenHdlr(option)
-
-	if authenticateUserHdlr, err = NewAuthenticateHdlr(option); err != nil {
-		return err
-	}
-
-	if authorizeGetHdlr, err = NewAuthorizeGetHdlr(option); err != nil {
-		return err
-	}
-
-	if consentHdlr, err = NewConsentHdlr(option); err != nil {
-		return err
-	}
-
-	if registerUserHdlr, err = NewRegisterHdlr(option); err != nil {
-		return err
-	}
-
-	return nil
+func ConfigureHandler(opt *option.Option) {
+	checkHealthHdlr = NewCheckHealthHdlr(opt)
+	registerUserHdlr = NewRegisterHdlr(opt)
+	authenticateUserHdlr = NewAuthenticateHdlr(opt)
+	consentHdlr = NewConsentHdlr(opt)
+	authorizeGetHdlr = NewAuthorizeGetHdlr(opt)
+	tokenHdlr = NewTokenHdlr(opt)
 }

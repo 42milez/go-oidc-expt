@@ -17,14 +17,14 @@ func TestNewCheckHealth(t *testing.T) {
 
 func TestNewSession(t *testing.T) {
 	t.Parallel()
-	if sess := NewSession(xtestutil.NewCache(t)); sess == nil {
+	if sess := NewCache(xtestutil.NewCache(t)); sess == nil {
 		t.Error(xerr.FailedToInitialize)
 	}
 }
 
 func TestNewUser(t *testing.T) {
 	t.Parallel()
-	idGen, err := xid.GetUniqueID()
+	idGen, err := xid.GetUniqueIDGenerator()
 	if err != nil {
 		t.Fatal(err)
 	}

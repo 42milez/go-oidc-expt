@@ -3,12 +3,15 @@ package service
 import (
 	"context"
 
+	"github.com/42milez/go-oidc-server/app/option"
+	"github.com/42milez/go-oidc-server/app/repository"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
-func NewConsent(repo ConsentCreator) *AcceptConsent {
+func NewConsent(opt *option.Option) *AcceptConsent {
 	return &AcceptConsent{
-		repo: repo,
+		repo: repository.NewUser(opt.DB, opt.IdGen),
 	}
 }
 

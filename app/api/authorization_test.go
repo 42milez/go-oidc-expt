@@ -75,7 +75,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.UserIdKey{}).Return(typedef.UserID(0)).AnyTimes()
 
-			sessMock := iface.NewMockOpenIdParamSessionWriter(gomock.NewController(t))
+			sessMock := iface.NewMockOpenIdParamWriter(gomock.NewController(t))
 			sessMock.EXPECT().WriteOpenIdParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
 				AnyTimes()
 
@@ -85,10 +85,10 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			}
 
 			hdlr := &AuthorizeGetHdlr{
-				svc:  svcMock,
-				ctx:  ctxMock,
-				sess: sessMock,
-				v:    v,
+				svc:     svcMock,
+				context: ctxMock,
+				cache:   sessMock,
+				v:       v,
 			}
 			hdlr.ServeHTTP(w, r)
 			resp := w.Result()

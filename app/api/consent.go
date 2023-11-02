@@ -3,14 +3,14 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/option"
+
+	"github.com/42milez/go-oidc-server/app/service"
+
 	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/app/repository"
-
-	"github.com/42milez/go-oidc-server/app/service"
 
 	"github.com/42milez/go-oidc-server/app/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -19,18 +19,18 @@ import (
 
 var consentHdlr *ConsentHdlr
 
-func NewConsentHdlr(option *HandlerOption) (*ConsentHdlr, error) {
+func NewConsentHdlr(opt *option.Option) *ConsentHdlr {
 	return &ConsentHdlr{
-		svc: service.NewConsent(repository.NewUser(option.db, option.idGenerator)),
-		ctx: &httpstore.Context{},
-		v:   option.validator,
-	}, nil
+		svc:     service.NewConsent(opt),
+		context: &httpstore.Context{},
+		v:       opt.V,
+	}
 }
 
 type ConsentHdlr struct {
-	svc ConsentAcceptor
-	ctx iface.ContextReader
-	v   iface.StructValidator
+	svc     ConsentAcceptor
+	context iface.ContextReader
+	v       iface.StructValidator
 }
 
 func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +49,7 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid, ok := ch.ctx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
+	uid, ok := ch.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return

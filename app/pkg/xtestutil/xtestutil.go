@@ -184,7 +184,7 @@ func NewDatabase(t *testing.T, c *config.Config) *datastore.Database {
 
 	var db *datastore.Database
 
-	if db, err = datastore.NewDatabase(context.Background(), cfg); err != nil {
+	if db, err = datastore.NewMySQL(context.Background(), cfg); err != nil {
 		t.Fatal(err)
 	}
 
@@ -219,7 +219,7 @@ func NewCache(t *testing.T) *datastore.Cache {
 
 	var cache *datastore.Cache
 
-	if cache, err = datastore.NewCache(context.Background(), cfg); err != nil {
+	if cache, err = datastore.NewRedis(context.Background(), cfg); err != nil {
 		t.Fatal(err)
 	}
 

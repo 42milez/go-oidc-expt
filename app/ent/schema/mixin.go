@@ -53,7 +53,7 @@ func IDHook() ent.Hook {
 				return nil, fmt.Errorf("unexpected mutation %T", m)
 			}
 
-			idGen, err := xid.GetUniqueID()
+			idGen, err := xid.GetUniqueIDGenerator()
 
 			if err != nil {
 				return nil, err

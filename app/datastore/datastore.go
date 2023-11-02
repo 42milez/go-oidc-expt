@@ -15,7 +15,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
+func NewMySQL(ctx context.Context, cfg *config.Config) (*Database, error) {
 	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 	db, err := sql.Open(dialect.MySQL, dataSrc)
 
@@ -49,7 +49,7 @@ func NewDatabase(ctx context.Context, cfg *config.Config) (*Database, error) {
 	}, nil
 }
 
-func NewCache(ctx context.Context, cfg *config.Config) (*Cache, error) {
+func NewRedis(ctx context.Context, cfg *config.Config) (*Cache, error) {
 	client := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", cfg.RedisHost, cfg.RedisPort),
 	})

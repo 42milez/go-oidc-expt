@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/option"
+	"github.com/42milez/go-oidc-server/app/repository"
+
 	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
@@ -19,16 +22,16 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func NewAuthorize(repo Authorizer) *Authorize {
+func NewAuthorize(opt *option.Option) *Authorize {
 	return &Authorize{
-		repo: repo,
-		ctx:  &httpstore.Context{},
+		repo:    repository.NewRelyingParty(opt.DB),
+		context: &httpstore.Context{},
 	}
 }
 
 type Authorize struct {
-	repo Authorizer
-	ctx  iface.ContextReader
+	context iface.ContextReader
+	repo    Authorizer
 }
 
 func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state string) (string, string, error) {
@@ -37,7 +40,7 @@ func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state 
 		return "", "", err
 	}
 
-	uid, ok := a.ctx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
+	uid, ok := a.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		return "", "", xerr.UserIdNotFoundInContext
 	}

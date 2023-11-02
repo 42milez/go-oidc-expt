@@ -389,7 +389,7 @@ components:
                 example: 8xLOxBtZp8
                 x-oapi-codegen-extra-tags:
                   schema: refresh_token
-                  validate: omitempty,jwt
+                  validate: omitempty,alphanum
           examples:
             new:
               summary: Issue Access Token

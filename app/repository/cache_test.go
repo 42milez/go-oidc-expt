@@ -17,7 +17,7 @@ func TestSession_Write(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	repo := Session{
+	repo := Cache{
 		cache: xtestutil.NewCache(t),
 	}
 	sid := "484481116225601901"
@@ -27,20 +27,20 @@ func TestSession_Write(t *testing.T) {
 		repo.cache.Client.Del(ctx, sid)
 	})
 
-	ok, err := repo.Write(ctx, sid, uid, config.SessionTTL)
+	ok, err := repo.Write(ctx, sid, uid, config.CacheTTL)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if !ok {
-		t.Error(xerr.FailedToWriteSession)
+		t.Error(xerr.FailedToWriteCache)
 	}
 }
 
 func TestSession_Read(t *testing.T) {
 	t.Parallel()
 
-	repo := Session{
+	repo := Cache{
 		cache: xtestutil.NewCache(t),
 	}
 
@@ -51,7 +51,7 @@ func TestSession_Read(t *testing.T) {
 		sid := "484481116225667437"
 		wantUserId := "475924035230777348"
 
-		if err := repo.cache.Client.SetNX(ctx, sid, wantUserId, config.SessionTTL).Err(); err != nil {
+		if err := repo.cache.Client.SetNX(ctx, sid, wantUserId, config.CacheTTL).Err(); err != nil {
 			t.Fatal(err)
 		}
 

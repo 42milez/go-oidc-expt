@@ -3,15 +3,17 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/option"
+
 	"github.com/42milez/go-oidc-server/app/repository"
 	"github.com/42milez/go-oidc-server/app/service"
 )
 
 var checkHealthHdlr *CheckHealthHdlr
 
-func NewCheckHealthHdlr(option *HandlerOption) *CheckHealthHdlr {
+func NewCheckHealthHdlr(opt *option.Option) *CheckHealthHdlr {
 	return &CheckHealthHdlr{
-		svc: service.NewCheckHealth(repository.NewCheckHealth(option.db, option.cache)),
+		svc: service.NewCheckHealth(repository.NewCheckHealth(opt.DB, opt.Cache)),
 	}
 }
 

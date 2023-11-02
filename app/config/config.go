@@ -14,7 +14,7 @@ const LoggerTagKey = "type"
 const AppLoggerTagValue = "app"
 const AccessLoggerTagValue = "access"
 
-//  ENVIRONMENT VARIABLE
+//  Environment Variable
 // --------------------------------------------------
 
 type Config struct {
@@ -46,26 +46,26 @@ func New() (*Config, error) {
 	return cfg, nil
 }
 
-//  APPLICATION
+//  Application
 // --------------------------------------------------
 
 const (
 	AppName = "idp"
 )
 
-//  COOKIE
+//  Cookie
 // --------------------------------------------------
 
 const (
 	SessionIDCookieName = "sid"
-	SessionIDCookieTTL  = SessionTTL
+	SessionIDCookieTTL  = CacheTTL
 )
 
-//  SESSION
+//  Cache
 // --------------------------------------------------
 
 const (
-	SessionTTL = 24 * time.Hour * 30 // 30 days
+	CacheTTL = 24 * time.Hour * 30 // 30 days
 )
 
 //  User
@@ -75,7 +75,7 @@ const (
 	RegisterPath = "/user/register"
 )
 
-//  OIDC
+//  OpenID Connect
 // --------------------------------------------------
 
 const (
@@ -90,8 +90,10 @@ const (
 )
 
 const (
-	AuthCodeLength   = 30
-	AuthCodeLifetime = 10 * time.Minute
+	AuthCodeLength     = 30
+	AuthCodeLifetime   = 10 * time.Minute
+	AccessTokenLength  = 30
+	RefreshTokenLength = 30
 )
 
 const (

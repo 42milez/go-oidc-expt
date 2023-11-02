@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/security"
+
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
 )
 
 const nUserMin = 1
@@ -28,7 +29,7 @@ func InsertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent
 	}
 
 	for i, v := range params {
-		pwHash, err := xargon2.HashPassword(v.Name)
+		pwHash, err := security.HashPassword(v.Name)
 		if err != nil {
 			return nil, err
 		}

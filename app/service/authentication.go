@@ -4,24 +4,28 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/security"
+
+	"github.com/42milez/go-oidc-server/app/option"
+	"github.com/42milez/go-oidc-server/app/repository"
+
 	"github.com/42milez/go-oidc-server/app/iface"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
-func NewAuthenticate(repo UserConsentReader, tokenGen iface.TokenGenerator) *Authenticate {
+func NewAuthenticate(opt *option.Option) *Authenticate {
 	return &Authenticate{
-		repo:     repo,
-		tokenGen: tokenGen,
+		repo:  repository.NewUser(opt.DB, opt.IdGen),
+		token: opt.Token,
 	}
 }
 
 type Authenticate struct {
-	repo     UserConsentReader
-	tokenGen iface.TokenGenerator
+	repo  UserConsentReader
+	token iface.TokenGenerator
 }
 
 func (a *Authenticate) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error) {
@@ -46,7 +50,7 @@ func (a *Authenticate) VerifyPassword(ctx context.Context, name, pw string) (typ
 		}
 	}
 
-	ok, err := xargon2.ComparePassword(pw, user.Password())
+	ok, err := security.ComparePassword(pw, user.Password())
 	if err != nil {
 		return 0, err
 	}

@@ -3,34 +3,37 @@ package service
 import (
 	"context"
 
+	"github.com/42milez/go-oidc-server/app/option"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
-	"github.com/42milez/go-oidc-server/app/datastore"
-	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 	"github.com/42milez/go-oidc-server/app/repository"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewToken(db *datastore.Database, cache *datastore.Cache, clock xtime.Clocker, token iface.TokenGenerateValidator) *Token {
+func NewToken(opt *option.Option) *Token {
 	return &Token{
-		acRepo: repository.NewAuthCode(db),
-		ruRepo: repository.NewRedirectUri(db),
-		clock:  clock,
-		ctx:    &httpstore.Context{},
-		token:  token,
+		acRepo:  repository.NewAuthCode(opt.DB),
+		ruRepo:  repository.NewRedirectUri(opt.DB),
+		cache:   httpstore.NewCache(opt),
+		clock:   &xtime.RealClocker{},
+		context: &httpstore.Context{},
+		token:   opt.Token,
 	}
 }
 
 type Token struct {
-	acRepo AuthCodeReadRevoker
-	ruRepo RedirectUriReader
-	clock  xtime.Clocker
-	ctx    iface.ContextReader
-	token  iface.TokenGenerateValidator
+	acRepo  AuthCodeReadRevoker
+	ruRepo  RedirectUriReader
+	cache   iface.RefreshTokenOwnerReader
+	clock   iface.Clocker
+	context iface.ContextReader
+	token   iface.TokenGenerateValidator
 }
 
 func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) error {
@@ -58,23 +61,27 @@ func (t *Token) RevokeAuthCode(ctx context.Context, code, clientId string) error
 	return nil
 }
 
-func (t *Token) ValidateRefreshToken(token *string) error {
-	if err := t.token.Validate(token); err != nil {
-		return xerr.InvalidToken
+func (t *Token) ValidateRefreshToken(ctx context.Context, token *string, clientId string) error {
+	ownerId, err := t.cache.ReadRefreshTokenOwner(ctx, *token)
+	if err != nil {
+		return err
+	}
+	if ownerId != clientId {
+		return xerr.RefreshTokenOwnerIdNotMatched
 	}
 	return nil
 }
 
-func (t *Token) GenerateAccessToken(uid typedef.UserID) (string, error) {
-	accessToken, err := t.token.GenerateAccessToken(uid)
+func (t *Token) GenerateAccessToken() (string, error) {
+	accessToken, err := t.token.GenerateAccessToken()
 	if err != nil {
 		return "", err
 	}
 	return accessToken, nil
 }
 
-func (t *Token) GenerateRefreshToken(uid typedef.UserID) (string, error) {
-	refreshToken, err := t.token.GenerateRefreshToken(uid)
+func (t *Token) GenerateRefreshToken() (string, error) {
+	refreshToken, err := t.token.GenerateRefreshToken()
 	if err != nil {
 		return "", err
 	}

@@ -3,9 +3,9 @@ set -eu
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 
-readonly KEY_DIR="app/api/secret/key"
-readonly HASH_KEY_FILE="app/api/secret/key/hash.key"
-readonly BLOCK_KEY_FILE="app/api/secret/key/block.key"
+readonly KEY_DIR="app/api/security/secret/key"
+readonly HASH_KEY_FILE="${KEY_DIR}/hash.key"
+readonly BLOCK_KEY_FILE="${KEY_DIR}/block.key"
 readonly HASH_KEY_LENGTH=64
 readonly BLOCK_KEY_LENGTH=32
 

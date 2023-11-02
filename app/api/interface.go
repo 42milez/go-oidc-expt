@@ -70,7 +70,7 @@ type AuthCodeValidator interface {
 }
 
 type RefreshTokenValidator interface {
-	ValidateRefreshToken(token *string) error
+	ValidateRefreshToken(ctx context.Context, token *string, clientId string) error
 }
 
 type TokenRequestValidator interface {
@@ -82,9 +82,10 @@ type AuthCodeRevoker interface {
 	RevokeAuthCode(ctx context.Context, code, clientId string) error
 }
 
-type TokenSessionReader interface {
-	iface.OpenIdParamSessionReader
-	iface.RefreshTokenPermissionSessionReader
+type TokenCacheReadWriter interface {
+	iface.OpenIdParamReader
+	iface.RefreshTokenOwnerReader
+	iface.RefreshTokenOwnerWriter
 }
 
 type TokenRequestAcceptor interface {

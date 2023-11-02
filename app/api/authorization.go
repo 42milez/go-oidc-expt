@@ -3,35 +3,35 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/option"
+
+	"github.com/42milez/go-oidc-server/app/service"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
-	"github.com/42milez/go-oidc-server/app/repository"
-	"github.com/42milez/go-oidc-server/app/service"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-
 	"github.com/gorilla/schema"
 )
 
 var authorizeGetHdlr *AuthorizeGetHdlr
 
-func NewAuthorizeGetHdlr(option *HandlerOption) (*AuthorizeGetHdlr, error) {
+func NewAuthorizeGetHdlr(opt *option.Option) *AuthorizeGetHdlr {
 	return &AuthorizeGetHdlr{
-		svc:  service.NewAuthorize(repository.NewRelyingParty(option.db)),
-		ctx:  &httpstore.Context{},
-		sess: httpstore.NewWriteSession(repository.NewSession(option.cache), &httpstore.Context{}, option.idGenerator),
-		v:    option.validator,
-	}, nil
+		svc:     service.NewAuthorize(opt),
+		cache:   httpstore.NewCache(opt),
+		context: &httpstore.Context{},
+		v:       opt.V,
+	}
 }
 
 type AuthorizeGetHdlr struct {
-	svc  Authorizer
-	ctx  iface.ContextReader
-	sess iface.OpenIdParamSessionWriter
-	v    iface.StructValidator
+	svc     Authorizer
+	cache   iface.OpenIdParamWriter
+	context iface.ContextReader
+	v       iface.StructValidator
 }
 
 func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +62,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	uid, ok := a.ctx.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
+	uid, ok := a.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
 		return
@@ -73,7 +73,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		UserId:      uid,
 	}
 
-	if err = a.sess.WriteOpenIdParam(ctx, authParam, q.ClientID, authCode); err != nil {
+	if err = a.cache.WriteOpenIdParam(ctx, authParam, q.ClientID, authCode); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

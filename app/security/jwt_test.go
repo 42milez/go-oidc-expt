@@ -1,4 +1,4 @@
-package api
+package security
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 
@@ -48,7 +49,7 @@ func TestJWT_MakeAccessToken(t *testing.T) {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 	}
 
-	got, err := j.GenerateAccessToken(typedef.UserID(484493849344409965))
+	got, err := j.GenerateAccessToken()
 
 	if err != nil {
 		t.Fatal(err)
@@ -62,14 +63,15 @@ func TestJWT_MakeAccessToken(t *testing.T) {
 func TestJWT_ExtractAccessToken(t *testing.T) {
 	t.Parallel()
 
+	uid := typedef.UserID(484493849344409965)
+
 	clock := xtestutil.FixedClocker{}
 	want, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
 		Issuer(config.Issuer).
-		Subject(accessTokenSubject).
+		Subject(strconv.FormatUint(uint64(uid), 10)).
 		IssuedAt(clock.Now()).
-		Expiration(clock.Now().Add(30*time.Minute)).
-		Claim(nameKey, "test_user").
+		Expiration(clock.Now().Add(30 * time.Minute)).
 		Build()
 
 	if err != nil {

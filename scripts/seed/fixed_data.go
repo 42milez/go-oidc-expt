@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 
+	"github.com/42milez/go-oidc-server/app/security"
+
 	"github.com/42milez/go-oidc-server/app/datastore"
 	"github.com/42milez/go-oidc-server/app/ent/ent"
-	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -45,7 +46,7 @@ func insertFixedData(ctx context.Context, db *datastore.Database) error {
 }
 
 func insertFixedUser(ctx context.Context, db *datastore.Database, username, password string) (*ent.User, error) {
-	hashedPassword, err := xargon2.HashPassword(username)
+	hashedPassword, err := security.HashPassword(username)
 
 	if err != nil {
 		return nil, err

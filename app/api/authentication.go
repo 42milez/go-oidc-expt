@@ -6,12 +6,13 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/42milez/go-oidc-server/app/option"
+
+	"github.com/42milez/go-oidc-server/app/service"
+
 	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
-
-	"github.com/42milez/go-oidc-server/app/repository"
-	"github.com/42milez/go-oidc-server/app/service"
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 
@@ -24,20 +25,20 @@ const sessionIDCookieName = config.SessionIDCookieName
 
 var authenticateUserHdlr *AuthenticateHdlr
 
-type AuthenticateHdlr struct {
-	svc  Authenticator
-	ck   iface.CookieWriter
-	sess iface.UserInfoSessionWriter
-	v    iface.StructValidator
+func NewAuthenticateHdlr(opt *option.Option) *AuthenticateHdlr {
+	return &AuthenticateHdlr{
+		svc:    service.NewAuthenticate(opt),
+		cache:  httpstore.NewCache(opt),
+		cookie: opt.Cookie,
+		v:      opt.V,
+	}
 }
 
-func NewAuthenticateHdlr(option *HandlerOption) (*AuthenticateHdlr, error) {
-	return &AuthenticateHdlr{
-		svc:  service.NewAuthenticate(repository.NewUser(option.db, option.idGenerator), option.tokenGenerator),
-		ck:   option.cookie,
-		sess: httpstore.NewWriteSession(repository.NewSession(option.cache), &httpstore.Context{}, option.idGenerator),
-		v:    option.validator,
-	}, nil
+type AuthenticateHdlr struct {
+	svc    Authenticator
+	cache  iface.UserInfoWriter
+	cookie iface.CookieWriter
+	v      iface.StructValidator
 }
 
 func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -66,12 +67,12 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	var sid typedef.SessionID
 
-	if sid, err = ah.sess.WriteUserInfo(ctx, userID); err != nil {
+	if sid, err = ah.cache.WriteUserInfo(ctx, userID); err != nil {
 		ah.respondError(w, r, err)
 		return
 	}
 
-	if err = ah.ck.Write(w, sessionIDCookieName, strconv.FormatUint(uint64(sid), 10), config.SessionIDCookieTTL); err != nil {
+	if err = ah.cookie.Write(w, sessionIDCookieName, strconv.FormatUint(uint64(sid), 10), config.SessionIDCookieTTL); err != nil {
 		ah.respondError(w, r, err)
 		return
 	}

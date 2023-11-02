@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/option"
+
 	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/repository"
@@ -14,11 +16,11 @@ import (
 
 var registerUserHdlr *RegisterHdlr
 
-func NewRegisterHdlr(option *HandlerOption) (*RegisterHdlr, error) {
+func NewRegisterHdlr(opt *option.Option) *RegisterHdlr {
 	return &RegisterHdlr{
-		svc: service.NewRegisterUser(repository.NewUser(option.db, option.idGenerator)),
-		v:   option.validator,
-	}, nil
+		svc: service.NewRegisterUser(repository.NewUser(opt.DB, opt.IdGen)),
+		v:   opt.V,
+	}
 }
 
 type RegisterHdlr struct {
