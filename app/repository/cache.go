@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -45,15 +44,11 @@ func (s *Cache) Write(ctx context.Context, key string, value any, ttl time.Durat
 }
 
 func (s *Cache) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) (bool, error) {
-	for field, value := range values {
-		ok, err := s.cache.Client.HSetNX(ctx, key, field, value).Result()
-		if err != nil {
-			return false, err
-		}
-		if !ok {
-			return false, fmt.Errorf("field already exists: %s", field)
-		}
+	_, err := s.cache.Client.HSet(ctx, key, values).Result()
+	if err != nil {
+		return false, err
 	}
+
 	ok, err := s.cache.Client.Expire(ctx, key, ttl).Result()
 	if err != nil {
 		return false, err
@@ -61,5 +56,6 @@ func (s *Cache) WriteHash(ctx context.Context, key string, values map[string]str
 	if !ok {
 		return false, xerr.FailedToSetTimeoutOnCacheKey
 	}
+
 	return true, nil
 }

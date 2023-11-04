@@ -33,9 +33,9 @@ func NewTokenHdlr(opt *option.Option) *TokenHdlr {
 }
 
 type TokenHdlr struct {
+	svc     TokenRequestAcceptor
 	cache   TokenCacheReadWriter
 	context iface.ContextReader
-	svc     TokenRequestAcceptor
 	v       iface.StructValidator
 }
 
@@ -114,7 +114,7 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err = t.cache.WriteRefreshTokenOwner(ctx, *tokens[refreshTokenKey], clientId); err != nil {
+	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, authParam.UserId); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
@@ -135,12 +135,12 @@ const refreshTokenKey = "RefreshToken"
 const idTokenKey = "IdToken"
 
 func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error) {
-	accessToken, err := t.svc.GenerateAccessToken()
+	accessToken, err := t.svc.GenerateAccessToken(uid)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := t.svc.GenerateRefreshToken()
+	refreshToken, err := t.svc.GenerateRefreshToken(uid)
 	if err != nil {
 		return nil, err
 	}
@@ -172,37 +172,30 @@ func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request,
 func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	ctx := r.Context()
 
-	if err := t.svc.ValidateRefreshToken(ctx, param.RefreshToken, clientId); err != nil {
-		if errors.Is(err, xerr.InvalidToken) {
+	perm, err := t.svc.ReadRefreshTokenPermission(ctx, *param.RefreshToken, clientId)
+	if err != nil {
+		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
 			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		} else if errors.Is(err, xerr.RefreshTokenPermissionNotFound) {
+			RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+		} else {
+			RespondJSON500(w, r, err)
 		}
-		return
 	}
 
-	tokenOwnerId, err := t.cache.ReadRefreshTokenOwner(ctx, *param.RefreshToken)
-	if err != nil {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
-		return
-	}
-
-	if clientId != tokenOwnerId {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-		return
-	}
-
-	accessToken, err := t.svc.GenerateAccessToken()
+	accessToken, err := t.svc.GenerateAccessToken(perm.UserId)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	refreshToken, err := t.svc.GenerateRefreshToken()
+	refreshToken, err := t.svc.GenerateRefreshToken(perm.UserId)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	if err = t.cache.WriteRefreshTokenOwner(ctx, refreshToken, clientId); err != nil {
+	if err = t.cache.WriteRefreshTokenPermission(ctx, refreshToken, clientId, perm.UserId); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

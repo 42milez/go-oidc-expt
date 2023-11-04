@@ -8,8 +8,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/iface"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
-
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -55,26 +53,31 @@ type JWT struct {
 	clock                 iface.Clocker
 }
 
-func (j *JWT) GenerateAccessToken() (string, error) {
-	return xrandom.GenerateCryptoRandomString(config.AccessTokenLength)
-}
-
-func (j *JWT) GenerateRefreshToken() (string, error) {
-	return xrandom.GenerateCryptoRandomString(config.RefreshTokenLength)
-}
-
-func (j *JWT) GenerateIdToken(uid typedef.UserID) (string, error) {
-	token, err := jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).
-		Subject(strconv.FormatUint(uint64(uid), 10)).IssuedAt(j.clock.Now()).Expiration(j.clock.Now().
-		Add(30 * time.Minute)).Build()
+func (j *JWT) generateToken(sub string, ttl time.Duration) (string, error) {
+	token, err := jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).Subject(sub).
+		IssuedAt(j.clock.Now()).Expiration(j.clock.Now().Add(ttl)).Build()
 	if err != nil {
 		return "", err
 	}
+
 	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
 	if err != nil {
 		return "", err
 	}
+
 	return string(ret), nil
+}
+
+func (j *JWT) GenerateAccessToken(uid typedef.UserID) (string, error) {
+	return j.generateToken(strconv.FormatUint(uint64(uid), 10), config.AccessTokenTTL)
+}
+
+func (j *JWT) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+	return j.generateToken(strconv.FormatUint(uint64(uid), 10), config.RefreshTokenTTL)
+}
+
+func (j *JWT) GenerateIdToken(uid typedef.UserID) (string, error) {
+	return j.generateToken(strconv.FormatUint(uint64(uid), 10), config.IDTokenTTL)
 }
 
 func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
@@ -88,8 +91,8 @@ func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
 	return ret, nil
 }
 
-func (j *JWT) Validate(token *string) error {
-	t, err := jwt.ParseString(*token, jwt.WithKey(jwa.ES256, j.publicKey))
+func (j *JWT) Validate(token string) error {
+	t, err := jwt.ParseString(token, jwt.WithKey(jwa.ES256, j.publicKey))
 	if err != nil {
 		return xerr.InvalidToken
 	}

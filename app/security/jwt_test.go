@@ -40,17 +40,17 @@ func TestJWT_Embed(t *testing.T) {
 	}
 }
 
-func TestJWT_MakeAccessToken(t *testing.T) {
+func TestJWT_GenerateAccessToken(t *testing.T) {
 	t.Parallel()
 
 	j, err := NewJWT(&xtime.RealClocker{})
-
 	if err != nil {
 		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
 	}
 
-	got, err := j.GenerateAccessToken()
+	uid := typedef.UserID(485911246986543469)
 
+	got, err := j.GenerateAccessToken(uid)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +64,6 @@ func TestJWT_ExtractAccessToken(t *testing.T) {
 	t.Parallel()
 
 	uid := typedef.UserID(484493849344409965)
-
 	clock := xtestutil.FixedClocker{}
 	want, err := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
@@ -73,25 +72,21 @@ func TestJWT_ExtractAccessToken(t *testing.T) {
 		IssuedAt(clock.Now()).
 		Expiration(clock.Now().Add(30 * time.Minute)).
 		Build()
-
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	privateKey, err := jwk.ParseKey(rawPrivateKey, jwk.WithPEM(true))
-
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	signed, err := jwt.Sign(want, jwt.WithKey(jwa.ES256, privateKey))
-
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	j, err := NewJWT(clock)
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,7 +95,6 @@ func TestJWT_ExtractAccessToken(t *testing.T) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", signed))
 
 	got, err := j.ExtractAccessToken(req)
-
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -92,6 +92,44 @@ func (mr *MockCacheHashReaderMockRecorder) ReadHash(ctx, key, field any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHash", reflect.TypeOf((*MockCacheHashReader)(nil).ReadHash), ctx, key, field)
 }
 
+// MockCacheHashAllReader is a mock of CacheHashAllReader interface.
+type MockCacheHashAllReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockCacheHashAllReaderMockRecorder
+}
+
+// MockCacheHashAllReaderMockRecorder is the mock recorder for MockCacheHashAllReader.
+type MockCacheHashAllReaderMockRecorder struct {
+	mock *MockCacheHashAllReader
+}
+
+// NewMockCacheHashAllReader creates a new mock instance.
+func NewMockCacheHashAllReader(ctrl *gomock.Controller) *MockCacheHashAllReader {
+	mock := &MockCacheHashAllReader{ctrl: ctrl}
+	mock.recorder = &MockCacheHashAllReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCacheHashAllReader) EXPECT() *MockCacheHashAllReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadHashAll mocks base method.
+func (m *MockCacheHashAllReader) ReadHashAll(ctx context.Context, key string) (map[string]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadHashAll", ctx, key)
+	ret0, _ := ret[0].(map[string]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadHashAll indicates an expected call of ReadHashAll.
+func (mr *MockCacheHashAllReaderMockRecorder) ReadHashAll(ctx, key any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHashAll", reflect.TypeOf((*MockCacheHashAllReader)(nil).ReadHashAll), ctx, key)
+}
+
 // MockCacheWriter is a mock of CacheWriter interface.
 type MockCacheWriter struct {
 	ctrl     *gomock.Controller
@@ -219,6 +257,21 @@ func (m *MockCacheReadWriter) ReadHash(ctx context.Context, key, field string) (
 func (mr *MockCacheReadWriterMockRecorder) ReadHash(ctx, key, field any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHash", reflect.TypeOf((*MockCacheReadWriter)(nil).ReadHash), ctx, key, field)
+}
+
+// ReadHashAll mocks base method.
+func (m *MockCacheReadWriter) ReadHashAll(ctx context.Context, key string) (map[string]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadHashAll", ctx, key)
+	ret0, _ := ret[0].(map[string]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadHashAll indicates an expected call of ReadHashAll.
+func (mr *MockCacheReadWriterMockRecorder) ReadHashAll(ctx, key any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHashAll", reflect.TypeOf((*MockCacheReadWriter)(nil).ReadHashAll), ctx, key)
 }
 
 // Write mocks base method.

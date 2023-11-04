@@ -29,3 +29,8 @@ type OpenIdParam struct {
 	RedirectUri string
 	UserId      UserID
 }
+
+type RefreshTokenPermission struct {
+	ClientId string
+	UserId   UserID
+}

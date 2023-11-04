@@ -39,7 +39,7 @@ func (AuthCode) Fields() []ent.Field {
 			Immutable(),
 		field.Time("expire_at").
 			Default(func() time.Time {
-				return time.Now().Add(config.AuthCodeLifetime)
+				return time.Now().Add(config.AuthCodeTTL)
 			}).
 			Immutable(),
 		field.Time("used_at").

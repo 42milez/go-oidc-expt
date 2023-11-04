@@ -53,33 +53,26 @@ const (
 	AppName = "idp"
 )
 
+//  Cache
+// --------------------------------------------------
+
+const (
+	SessionTTL = 24 * time.Hour * 30 // 30 days
+)
+
 //  Cookie
 // --------------------------------------------------
 
 const (
 	SessionIDCookieName = "sid"
-	SessionIDCookieTTL  = CacheTTL
+	SessionIDCookieTTL  = SessionTTL
 )
 
-//  Cache
-// --------------------------------------------------
-
-const (
-	CacheTTL = 24 * time.Hour * 30 // 30 days
-)
-
-//  User
+//  Identity Provider
 // --------------------------------------------------
 
 const (
 	RegisterPath = "/user/register"
-)
-
-//  OpenID Connect
-// --------------------------------------------------
-
-const (
-	Issuer = "42milez.dev"
 )
 
 const (
@@ -90,8 +83,12 @@ const (
 )
 
 const (
+	Issuer = "42milez.dev"
+)
+
+const (
 	AuthCodeLength     = 30
-	AuthCodeLifetime   = 10 * time.Minute
+	AuthCodeTTL        = 10 * time.Minute
 	AccessTokenLength  = 30
 	RefreshTokenLength = 30
 )
@@ -108,4 +105,10 @@ const (
 
 const (
 	BearerTokenType typedef.TokenType = "Bearer"
+)
+
+const (
+	AccessTokenTTL  = 30 * time.Minute
+	RefreshTokenTTL = SessionTTL
+	IDTokenTTL      = SessionTTL
 )

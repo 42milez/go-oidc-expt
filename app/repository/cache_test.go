@@ -27,7 +27,7 @@ func TestSession_Write(t *testing.T) {
 		repo.cache.Client.Del(ctx, sid)
 	})
 
-	ok, err := repo.Write(ctx, sid, uid, config.CacheTTL)
+	ok, err := repo.Write(ctx, sid, uid, config.SessionTTL)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func TestSession_Read(t *testing.T) {
 		sid := "484481116225667437"
 		wantUserId := "475924035230777348"
 
-		if err := repo.cache.Client.SetNX(ctx, sid, wantUserId, config.CacheTTL).Err(); err != nil {
+		if err := repo.cache.Client.SetNX(ctx, sid, wantUserId, config.SessionTTL).Err(); err != nil {
 			t.Fatal(err)
 		}
 

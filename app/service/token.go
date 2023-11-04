@@ -24,16 +24,35 @@ func NewToken(opt *option.Option) *Token {
 		clock:   &xtime.RealClocker{},
 		context: &httpstore.Context{},
 		token:   opt.Token,
+		v:       opt.V,
 	}
 }
 
 type Token struct {
 	acRepo  AuthCodeReadRevoker
 	ruRepo  RedirectUriReader
-	cache   iface.RefreshTokenOwnerReader
+	cache   iface.RefreshTokenPermissionReader
 	clock   iface.Clocker
 	context iface.ContextReader
 	token   iface.TokenGenerateValidator
+	v       iface.StructValidator
+}
+
+func (t *Token) ReadRefreshTokenPermission(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
+	if err := t.token.Validate(token); err != nil {
+		return nil, xerr.InvalidToken
+	}
+
+	perm, err := t.cache.ReadRefreshTokenPermission(ctx, token)
+	if err != nil {
+		return nil, xerr.RefreshTokenPermissionNotFound
+	}
+
+	if perm.ClientId != clientId {
+		return nil, xerr.ClientIdNotMatched
+	}
+
+	return perm, nil
 }
 
 func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) error {
@@ -61,27 +80,16 @@ func (t *Token) RevokeAuthCode(ctx context.Context, code, clientId string) error
 	return nil
 }
 
-func (t *Token) ValidateRefreshToken(ctx context.Context, token *string, clientId string) error {
-	ownerId, err := t.cache.ReadRefreshTokenOwner(ctx, *token)
-	if err != nil {
-		return err
-	}
-	if ownerId != clientId {
-		return xerr.RefreshTokenOwnerIdNotMatched
-	}
-	return nil
-}
-
-func (t *Token) GenerateAccessToken() (string, error) {
-	accessToken, err := t.token.GenerateAccessToken()
+func (t *Token) GenerateAccessToken(uid typedef.UserID) (string, error) {
+	accessToken, err := t.token.GenerateAccessToken(uid)
 	if err != nil {
 		return "", err
 	}
 	return accessToken, nil
 }
 
-func (t *Token) GenerateRefreshToken() (string, error) {
-	refreshToken, err := t.token.GenerateRefreshToken()
+func (t *Token) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+	refreshToken, err := t.token.GenerateRefreshToken(uid)
 	if err != nil {
 		return "", err
 	}

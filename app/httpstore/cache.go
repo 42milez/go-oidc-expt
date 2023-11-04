@@ -2,6 +2,7 @@ package httpstore
 
 import (
 	"context"
+	"crypto/sha256"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -16,6 +17,7 @@ import (
 )
 
 const nRetryWriteCache = 3
+const clientIdFieldName = "ClientId"
 const redirectUriFieldName = "RedirectUri"
 const userIdFieldName = "UserId"
 
@@ -54,9 +56,20 @@ func (c *Cache) ReadOpenIdParam(ctx context.Context, clientId, authCode string) 
 	}, nil
 }
 
-func (c *Cache) ReadRefreshTokenOwner(ctx context.Context, token string) (string, error) {
-	key := refreshTokenPermissionCacheKey(token)
-	return c.repo.Read(ctx, key)
+func (c *Cache) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error) {
+	key := refreshTokenPermissionCacheKey(hash(token))
+	perm, err := c.repo.ReadHashAll(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	userIdUint64, err := strconv.ParseUint(perm[userIdFieldName], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	return &typedef.RefreshTokenPermission{
+		ClientId: perm[clientIdFieldName],
+		UserId:   typedef.UserID(userIdUint64),
+	}, nil
 }
 
 func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
@@ -84,7 +97,7 @@ func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam
 		redirectUriFieldName: param.RedirectUri,
 		userIdFieldName:      strconv.FormatUint(uint64(param.UserId), 10),
 	}
-	ok, err := c.repo.WriteHash(ctx, key, values, config.CacheTTL)
+	ok, err := c.repo.WriteHash(ctx, key, values, config.AuthCodeTTL)
 	if err != nil {
 		return err
 	}
@@ -94,9 +107,13 @@ func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam
 	return nil
 }
 
-func (c *Cache) WriteRefreshTokenOwner(ctx context.Context, token, clientId string) error {
-	key := refreshTokenPermissionCacheKey(token)
-	ok, err := c.repo.Write(ctx, key, clientId, config.CacheTTL)
+func (c *Cache) WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error {
+	key := refreshTokenPermissionCacheKey(hash(token))
+	values := map[string]string{
+		clientIdFieldName: clientId,
+		userIdFieldName:   strconv.FormatUint(uint64(userId), 10),
+	}
+	ok, err := c.repo.WriteHash(ctx, key, values, config.RefreshTokenTTL)
 	if err != nil {
 		return err
 	}
@@ -119,7 +136,7 @@ func (c *Cache) WriteUserInfo(ctx context.Context, uid typedef.UserID) (typedef.
 		values := map[string]string{
 			userIdFieldName: strconv.FormatUint(uint64(uid), 10),
 		}
-		if ok, err = c.repo.WriteHash(ctx, key, values, config.CacheTTL); err != nil {
+		if ok, err = c.repo.WriteHash(ctx, key, values, config.SessionTTL); err != nil {
 			return 0, err
 		}
 		if ok {
@@ -144,4 +161,9 @@ func refreshTokenPermissionCacheKey(token string) string {
 
 func userInfoCacheKey(sid typedef.SessionID) string {
 	return fmt.Sprintf("idp:session:%d", sid)
+}
+
+func hash(s string) string {
+	h := sha256.Sum256([]byte(s))
+	return string(h[:])
 }

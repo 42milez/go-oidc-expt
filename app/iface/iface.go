@@ -44,11 +44,11 @@ type CookieReadWriter interface {
 // --------------------------------------------------
 
 type AccessTokenGenerator interface {
-	GenerateAccessToken() (string, error)
+	GenerateAccessToken(uid typedef.UserID) (string, error)
 }
 
 type RefreshTokenGenerator interface {
-	GenerateRefreshToken() (string, error)
+	GenerateRefreshToken(uid typedef.UserID) (string, error)
 }
 
 type IdTokenGenerator interface {
@@ -62,7 +62,7 @@ type TokenGenerator interface {
 }
 
 type TokenValidator interface {
-	Validate(name *string) error
+	Validate(name string) error
 }
 
 type TokenGenerateValidator interface {
@@ -81,12 +81,12 @@ type OpenIdParamWriter interface {
 	WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error
 }
 
-type RefreshTokenOwnerReader interface {
-	ReadRefreshTokenOwner(ctx context.Context, token string) (string, error)
+type RefreshTokenPermissionReader interface {
+	ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error)
 }
 
-type RefreshTokenOwnerWriter interface {
-	WriteRefreshTokenOwner(ctx context.Context, token, clientId string) error
+type RefreshTokenPermissionWriter interface {
+	WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error
 }
 
 type UserInfoWriter interface {
