@@ -15,6 +15,10 @@ type CacheHashReader interface {
 	ReadHash(ctx context.Context, key string, field string) (string, error)
 }
 
+type CacheHashAllReader interface {
+	ReadHashAll(ctx context.Context, key string) (map[string]string, error)
+}
+
 type CacheWriter interface {
 	Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error)
 }
@@ -26,6 +30,7 @@ type CacheHashWriter interface {
 type CacheReadWriter interface {
 	CacheReader
 	CacheHashReader
+	CacheHashAllReader
 	CacheWriter
 	CacheHashWriter
 }

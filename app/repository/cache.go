@@ -36,6 +36,10 @@ func (s *Cache) ReadHash(ctx context.Context, key string, field string) (string,
 	return s.cache.Client.HGet(ctx, key, field).Result()
 }
 
+func (s *Cache) ReadHashAll(ctx context.Context, key string) (map[string]string, error) {
+	return s.cache.Client.HGetAll(ctx, key).Result()
+}
+
 func (s *Cache) Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
 	return s.cache.Client.SetNX(ctx, key, value, ttl).Result()
 }
