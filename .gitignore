@@ -1,7 +1,4 @@
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
-# go-oidc-server
 *.key
+*.out
 *.pem
 cookie.txt
