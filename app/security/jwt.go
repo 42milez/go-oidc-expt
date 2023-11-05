@@ -2,7 +2,6 @@ package security
 
 import (
 	_ "embed"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -80,27 +79,12 @@ func (j *JWT) GenerateIdToken(uid typedef.UserID) (string, error) {
 	return j.generateToken(strconv.FormatUint(uint64(uid), 10), config.IDTokenTTL)
 }
 
-func (j *JWT) ExtractAccessToken(r *http.Request) (jwt.Token, error) {
-	ret, err := j.parseRequest(r)
-	if err != nil {
-		return nil, err
-	}
-	if err = j.validate(ret); err != nil {
-		return nil, err
-	}
-	return ret, nil
-}
-
 func (j *JWT) Validate(token string) error {
 	t, err := jwt.ParseString(token, jwt.WithKey(jwa.ES256, j.publicKey))
 	if err != nil {
 		return xerr.InvalidToken
 	}
 	return j.validate(t)
-}
-
-func (j *JWT) parseRequest(r *http.Request) (jwt.Token, error) {
-	return jwt.ParseRequest(r, jwt.WithKey(jwa.ES256, j.publicKey), jwt.WithValidate(false))
 }
 
 func (j *JWT) validate(token jwt.Token) error {
