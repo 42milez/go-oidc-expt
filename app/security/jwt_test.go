@@ -7,7 +7,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/typedef"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
 	"github.com/lestrrat-go/jwx/v2/jwa"
@@ -35,7 +34,7 @@ func TestJWT_GenerateToken(t *testing.T) {
 
 	j, err := NewJWT(&xtime.RealClocker{})
 	if err != nil {
-		t.Fatalf("%+v: %+v", xerr.FailedToInitialize, err)
+		t.Fatal(err)
 	}
 
 	wantUID := typedef.UserID(485911246986543469)
@@ -45,15 +44,15 @@ func TestJWT_GenerateToken(t *testing.T) {
 		Generator func(uid typedef.UserID) (string, error)
 		UserID    typedef.UserID
 	}{
-		"AccessToken": {
+		"AccessToken_OK": {
 			Generator: j.GenerateAccessToken,
 			UserID:    wantUID,
 		},
-		"RefreshToken": {
+		"RefreshToken_OK": {
 			Generator: j.GenerateRefreshToken,
 			UserID:    wantUID,
 		},
-		"IDToken": {
+		"IDToken_OK": {
 			Generator: j.GenerateIdToken,
 			UserID:    wantUID,
 		},
@@ -82,6 +81,52 @@ func TestJWT_GenerateToken(t *testing.T) {
 			gotUID := gotJWT.Subject()
 			if gotUID != wantUIDString {
 				t.Fatalf("want = %d; got = %s", wantUID, gotUID)
+			}
+		})
+	}
+}
+
+func TestJWT_Validate(t *testing.T) {
+	t.Parallel()
+
+	j, err := NewJWT(&xtime.RealClocker{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	uid := typedef.UserID(485911246986543469)
+
+	tests := map[string]struct {
+		Generator func(uid typedef.UserID) (string, error)
+		UserID    typedef.UserID
+	}{
+		"AccessToken_OK": {
+			Generator: j.GenerateAccessToken,
+			UserID:    uid,
+		},
+		"RefreshToken_OK": {
+			Generator: j.GenerateRefreshToken,
+			UserID:    uid,
+		},
+		"IDToken_OK": {
+			Generator: j.GenerateIdToken,
+			UserID:    uid,
+		},
+	}
+
+	for n, tt := range tests {
+		tt := tt
+
+		t.Run(n, func(t *testing.T) {
+			t.Parallel()
+
+			token, err := tt.Generator(tt.UserID)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if err := j.Validate(token); err != nil {
+				t.Error(err)
 			}
 		})
 	}

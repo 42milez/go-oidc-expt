@@ -9,7 +9,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/iface"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -81,7 +80,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 
 			v, err := NewAuthorizeParamValidator()
 			if err != nil {
-				t.Error(xerr.FailedToInitialize)
+				t.Fatal(err)
 			}
 
 			hdlr := &AuthorizeGetHdlr{
