@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/httpstore"
-	"github.com/42milez/go-oidc-server/app/repository"
+	"github.com/42milez/go-oidc-server/app/option"
 
+	"github.com/42milez/go-oidc-server/app/httpstore"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
@@ -59,11 +59,11 @@ func AccessLogger(next http.Handler) http.Handler {
 	})
 }
 
-func RestoreSession(option *HandlerOption) MiddlewareFunc {
-	rs := httpstore.NewRestoreSession(repository.NewSession(option.cache))
+func RestoreSession(opt *option.Option) MiddlewareFunc {
+	rs := httpstore.NewCache(opt)
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			sid, err := option.cookie.Read(r, config.SessionIDCookieName)
+			sid, err := opt.Cookie.Read(r, config.SessionIDCookieName)
 			if errors.Is(err, http.ErrNoCookie) {
 				next.ServeHTTP(w, r)
 				return

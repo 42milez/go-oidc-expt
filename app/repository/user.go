@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/iface"
+
 	"github.com/42milez/go-oidc-server/app/entity"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
@@ -16,7 +18,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 )
 
-func NewUser(db *datastore.Database, idGen IDGenerator) *User {
+func NewUser(db *datastore.Database, idGen iface.IdGenerator) *User {
 	return &User{
 		db:    db,
 		idGen: idGen,
@@ -25,7 +27,7 @@ func NewUser(db *datastore.Database, idGen IDGenerator) *User {
 
 type User struct {
 	db    *datastore.Database
-	idGen IDGenerator
+	idGen iface.IdGenerator
 }
 
 func (u *User) CreateUser(ctx context.Context, name string, pw string) (*entity.User, error) {

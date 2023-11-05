@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/app/entity"
+	"github.com/42milez/go-oidc-server/app/security"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xargon2"
+	"github.com/42milez/go-oidc-server/app/entity"
 )
 
 func NewRegisterUser(repo UserCreator) *CreateUser {
@@ -19,7 +19,7 @@ type CreateUser struct {
 }
 
 func (cu *CreateUser) RegisterUser(ctx context.Context, name, pw string) (*entity.User, error) {
-	hash, err := xargon2.HashPassword(pw)
+	hash, err := security.HashPassword(pw)
 
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package xargon2
+package security
 
 import (
 	"bytes"

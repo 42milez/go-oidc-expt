@@ -17,6 +17,13 @@ type ContextReader interface {
 	Read(ctx context.Context, key any) any
 }
 
+//  Time
+// --------------------------------------------------
+
+type Clocker interface {
+	Now() time.Time
+}
+
 //  Cookie
 // --------------------------------------------------
 
@@ -26,6 +33,11 @@ type CookieReader interface {
 
 type CookieWriter interface {
 	Write(w http.ResponseWriter, name, val string, ttl time.Duration) error
+}
+
+type CookieReadWriter interface {
+	CookieReader
+	CookieWriter
 }
 
 //  JWT
@@ -50,7 +62,7 @@ type TokenGenerator interface {
 }
 
 type TokenValidator interface {
-	Validate(name *string) error
+	Validate(name string) error
 }
 
 type TokenGenerateValidator interface {
@@ -58,26 +70,26 @@ type TokenGenerateValidator interface {
 	TokenValidator
 }
 
-//  Session
+//  Cache
 // --------------------------------------------------
 
-type AuthParamSessionReader interface {
-	ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error)
+type OpenIdParamReader interface {
+	ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error)
 }
 
-type AuthParamSessionWriter interface {
-	WriteAuthParam(ctx context.Context, param *typedef.AuthParam, clientId, authCode string) error
+type OpenIdParamWriter interface {
+	WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error
 }
 
-type RefreshTokenPermissionSessionReader interface {
-	ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error)
+type RefreshTokenPermissionReader interface {
+	ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error)
 }
 
-type RefreshTokenPermissionSessionWriter interface {
-	WriteRefreshTokenPermission(ctx context.Context, token, clientId string, uid typedef.UserID) error
+type RefreshTokenPermissionWriter interface {
+	WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error
 }
 
-type UserInfoSessionWriter interface {
+type UserInfoWriter interface {
 	WriteUserInfo(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error)
 }
 
@@ -86,4 +98,11 @@ type UserInfoSessionWriter interface {
 
 type StructValidator interface {
 	Struct(s any) error
+}
+
+//  ID Generator
+// --------------------------------------------------
+
+type IdGenerator interface {
+	NextID() (uint64, error)
 }

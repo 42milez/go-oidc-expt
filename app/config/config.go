@@ -14,7 +14,7 @@ const LoggerTagKey = "type"
 const AppLoggerTagValue = "app"
 const AccessLoggerTagValue = "access"
 
-//  ENVIRONMENT VARIABLE
+//  Environment Variable
 // --------------------------------------------------
 
 type Config struct {
@@ -46,14 +46,21 @@ func New() (*Config, error) {
 	return cfg, nil
 }
 
-//  APPLICATION
+//  Application
 // --------------------------------------------------
 
 const (
 	AppName = "idp"
 )
 
-//  COOKIE
+//  Cache
+// --------------------------------------------------
+
+const (
+	SessionTTL = 24 * time.Hour * 30 // 30 days
+)
+
+//  Cookie
 // --------------------------------------------------
 
 const (
@@ -61,25 +68,11 @@ const (
 	SessionIDCookieTTL  = SessionTTL
 )
 
-//  SESSION
-// --------------------------------------------------
-
-const (
-	SessionTTL = 24 * time.Hour * 30 // 30 days
-)
-
-//  User
+//  Identity Provider
 // --------------------------------------------------
 
 const (
 	RegisterPath = "/user/register"
-)
-
-//  OIDC
-// --------------------------------------------------
-
-const (
-	Issuer = "42milez.dev"
 )
 
 const (
@@ -90,8 +83,14 @@ const (
 )
 
 const (
-	AuthCodeLength   = 30
-	AuthCodeLifetime = 10 * time.Minute
+	Issuer = "42milez.dev"
+)
+
+const (
+	AuthCodeLength     = 30
+	AuthCodeTTL        = 10 * time.Minute
+	AccessTokenLength  = 30
+	RefreshTokenLength = 30
 )
 
 const (
@@ -106,4 +105,10 @@ const (
 
 const (
 	BearerTokenType typedef.TokenType = "Bearer"
+)
+
+const (
+	AccessTokenTTL  = 30 * time.Minute
+	RefreshTokenTTL = SessionTTL
+	IDTokenTTL      = SessionTTL
 )

@@ -9,7 +9,6 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/iface"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/app/typedef"
@@ -75,20 +74,20 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.UserIdKey{}).Return(typedef.UserID(0)).AnyTimes()
 
-			sessMock := iface.NewMockAuthParamSessionWriter(gomock.NewController(t))
-			sessMock.EXPECT().WriteAuthParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
+			sessMock := iface.NewMockOpenIdParamWriter(gomock.NewController(t))
+			sessMock.EXPECT().WriteOpenIdParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
 				AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
 			if err != nil {
-				t.Error(xerr.FailedToInitialize)
+				t.Fatal(err)
 			}
 
 			hdlr := &AuthorizeGetHdlr{
-				svc:  svcMock,
-				ctx:  ctxMock,
-				sess: sessMock,
-				v:    v,
+				svc:     svcMock,
+				context: ctxMock,
+				cache:   sessMock,
+				v:       v,
 			}
 			hdlr.ServeHTTP(w, r)
 			resp := w.Result()

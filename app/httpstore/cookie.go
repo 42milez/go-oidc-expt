@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/gorilla/securecookie"
 )
 
-func NewCookie(hashKey, blockKey []byte, clock xtime.Clocker) *Cookie {
+func NewCookie(hashKey, blockKey []byte, clock iface.Clocker) *Cookie {
 	return &Cookie{
 		clock: clock,
 		sc:    securecookie.New(hashKey, blockKey),
@@ -17,7 +17,7 @@ func NewCookie(hashKey, blockKey []byte, clock xtime.Clocker) *Cookie {
 }
 
 type Cookie struct {
-	clock xtime.Clocker
+	clock iface.Clocker
 	sc    *securecookie.SecureCookie
 }
 
@@ -46,7 +46,8 @@ func (c *Cookie) Write(w http.ResponseWriter, name, val string, ttl time.Duratio
 		Name:     name,
 		Value:    encoded,
 		Path:     "/",
-		MaxAge:   int(time.Now().Add(ttl).Unix()),
+		Expires:  time.Now().Add(ttl),
+		MaxAge:   int(ttl.Seconds()),
 		Secure:   true,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,

@@ -7,25 +7,26 @@ import (
 	"testing"
 
 	"github.com/42milez/go-oidc-server/app/iface"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/typedef"
 	"go.uber.org/mock/gomock"
 )
 
-func TestRestoreSession_Restore(t *testing.T) {
+func TestCache_Restore(t *testing.T) {
 	t.Parallel()
 
 	wantSid := typedef.SessionID(484493849343885677)
 	wantUserId := typedef.UserID(484493849343820141)
 
-	sessReaderMock := NewMockSessionReader(gomock.NewController(t))
-	sessReaderMock.EXPECT().Read(gomock.Any(), gomock.Any()).Return(wantUserId.String(), nil).AnyTimes()
+	cacheRWMock := NewMockCacheReadWriter(gomock.NewController(t))
+	cacheRWMock.EXPECT().ReadHash(gomock.Any(), gomock.Any(), gomock.Any()).Return(wantUserId.String(), nil).AnyTimes()
 
-	rs := NewRestoreSession(sessReaderMock)
+	cache := &Cache{
+		repo: cacheRWMock,
+	}
 	req := httptest.NewRequest(http.MethodGet, "https://example.com", nil)
 
-	gotReq, err := rs.Restore(req, wantSid)
+	gotReq, err := cache.Restore(req, wantSid)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -49,25 +50,27 @@ func TestRestoreSession_Restore(t *testing.T) {
 	}
 }
 
-func TestWriteSession_WriteUserInfo(t *testing.T) {
+func TestCache_WriteUserInfo(t *testing.T) {
 	t.Parallel()
 
-	sid := typedef.SessionID(484493849344016749)
+	wantSid := typedef.SessionID(484493849344016749)
 	uid := typedef.UserID(484493849344082285)
 
-	wantSid := sid
-
 	ctrl := gomock.NewController(t)
-	sessWriterMock := NewMockSessionWriter(ctrl)
-	sessWriterMock.EXPECT().Write(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
-	idGenMock := NewMockIdGenerator(ctrl)
+
+	cacheRWMock := NewMockCacheReadWriter(ctrl)
+	cacheRWMock.EXPECT().WriteHash(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
+
+	idGenMock := iface.NewMockIdGenerator(ctrl)
 	idGenMock.EXPECT().NextID().Return(uint64(wantSid), nil).AnyTimes()
-	ctxReaderMock := iface.NewMockContextReader(ctrl)
-	ctxReaderMock.EXPECT().Read(gomock.Any(), gomock.Any()).Return(wantSid).AnyTimes()
 
-	ws := NewWriteSession(sessWriterMock, ctxReaderMock, idGenMock)
+	cache := &Cache{
+		repo:  cacheRWMock,
+		idGen: idGenMock,
+	}
+	ctx := context.Background()
 
-	gotSid, err := ws.WriteUserInfo(context.Background(), uid)
+	gotSid, err := cache.WriteUserInfo(ctx, uid)
 	if err != nil {
 		t.Fatal(err)
 	}

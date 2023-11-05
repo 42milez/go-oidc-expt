@@ -6,7 +6,7 @@ import (
 
 var uid *UniqueID
 
-func GetUniqueID() (*UniqueID, error) {
+func GetUniqueIDGenerator() (*UniqueID, error) {
 	if uid != nil {
 		return uid, nil
 	}

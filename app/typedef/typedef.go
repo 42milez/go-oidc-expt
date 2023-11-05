@@ -25,7 +25,12 @@ func (uid UserID) String() string {
 	return strconv.FormatUint(uint64(uid), 10)
 }
 
-type AuthParam struct {
+type OpenIdParam struct {
 	RedirectUri string
 	UserId      UserID
+}
+
+type RefreshTokenPermission struct {
+	ClientId string
+	UserId   UserID
 }

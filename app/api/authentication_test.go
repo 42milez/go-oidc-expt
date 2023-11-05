@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/security"
+
 	"github.com/42milez/go-oidc-server/app/iface"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
@@ -131,7 +133,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			reqParamFile: td200ReqParam,
 			respSessMock: sessionMockResp{
 				sessionID: 0,
-				err:       xerr.FailedToWriteSession,
+				err:       xerr.FailedToWriteCache,
 			},
 			respVPMock: verifyPasswordMockResp{
 				userID: userID,
@@ -171,7 +173,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				Return(tt.respVCMock.ok, tt.respVCMock.err).
 				AnyTimes()
 
-			sessMock := iface.NewMockUserInfoSessionWriter(gomock.NewController(t))
+			sessMock := iface.NewMockUserInfoWriter(gomock.NewController(t))
 			sessMock.EXPECT().WriteUserInfo(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
 			v, err := NewAuthorizeParamValidator()
@@ -181,10 +183,10 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			}
 
 			sut := AuthenticateHdlr{
-				svc:  svcMock,
-				sess: sessMock,
-				ck:   httpstore.NewCookie(rawHashKey, rawBlockKey, xtestutil.FixedClocker{}),
-				v:    v,
+				svc:    svcMock,
+				cache:  sessMock,
+				cookie: httpstore.NewCookie(security.RawCookieHashKey, security.RawCookieBlockKey, &xtestutil.FixedClocker{}),
+				v:      v,
 			}
 			sut.ServeHTTP(w, r)
 

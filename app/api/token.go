@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/42milez/go-oidc-server/app/repository"
+	"github.com/42milez/go-oidc-server/app/option"
 
 	"github.com/42milez/go-oidc-server/app/iface"
 
@@ -23,23 +23,20 @@ import (
 
 var tokenHdlr *TokenHdlr
 
-func NewTokenHdlr(option *HandlerOption) *TokenHdlr {
+func NewTokenHdlr(opt *option.Option) *TokenHdlr {
 	return &TokenHdlr{
-		svc:        service.NewToken(option.db, option.cache, option.clock, option.tokenGenerator),
-		ctx:        &httpstore.Context{},
-		sessReader: httpstore.NewReadSession(repository.NewSession(option.cache)),
-		sessWriter: httpstore.NewWriteSession(repository.NewSession(option.cache), &httpstore.Context{},
-			option.idGenerator),
-		v: option.validator,
+		cache:   httpstore.NewCache(opt),
+		context: &httpstore.Context{},
+		svc:     service.NewToken(opt),
+		v:       opt.V,
 	}
 }
 
 type TokenHdlr struct {
-	svc        TokenRequestAcceptor
-	ctx        iface.ContextReader
-	sessReader TokenSessionReader
-	sessWriter iface.RefreshTokenPermissionSessionWriter
-	v          iface.StructValidator
+	svc     TokenRequestAcceptor
+	cache   TokenCacheReadWriter
+	context iface.ContextReader
+	v       iface.StructValidator
 }
 
 func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -100,7 +97,7 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	authParam, err := t.sessReader.ReadAuthParam(ctx, clientId, *param.Code)
+	authParam, err := t.cache.ReadOpenIdParam(ctx, clientId, *param.Code)
 	if err != nil {
 		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
 		return
@@ -117,21 +114,25 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err = t.sessWriter.WriteRefreshTokenPermission(ctx, *tokens["RefreshToken"], clientId, authParam.UserId); err != nil {
+	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, authParam.UserId); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
 	resp := &TokenResponse{
-		AccessToken:  *tokens["AccessToken"],
-		RefreshToken: *tokens["RefreshToken"],
-		IdToken:      tokens["IdToken"],
+		AccessToken:  *tokens[accessTokenKey],
+		RefreshToken: *tokens[refreshTokenKey],
+		IdToken:      tokens[idTokenKey],
 		TokenType:    config.BearerTokenType,
 		ExpiresIn:    3600,
 	}
 
 	RespondJSON(w, r, http.StatusOK, resp)
 }
+
+const accessTokenKey = "AccessToken"
+const refreshTokenKey = "RefreshToken"
+const idTokenKey = "IdToken"
 
 func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error) {
 	accessToken, err := t.svc.GenerateAccessToken(uid)
@@ -150,9 +151,9 @@ func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error
 	}
 
 	return map[string]*string{
-		"AccessToken":  &accessToken,
-		"RefreshToken": &refreshToken,
-		"IdToken":      &idToken,
+		accessTokenKey:  &accessToken,
+		refreshTokenKey: &refreshToken,
+		idTokenKey:      &idToken,
 	}, nil
 }
 
@@ -169,19 +170,17 @@ func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request,
 }
 
 func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
-	if err := t.svc.ValidateRefreshToken(param.RefreshToken); err != nil {
-		if errors.Is(err, xerr.InvalidToken) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-		}
-		return
-	}
-
 	ctx := r.Context()
 
-	perm, err := t.sessReader.ReadRefreshTokenPermission(ctx, *param.RefreshToken)
+	perm, err := t.svc.ReadRefreshTokenPermission(ctx, *param.RefreshToken, clientId)
 	if err != nil {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
-		return
+		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
+			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		} else if errors.Is(err, xerr.RefreshTokenPermissionNotFound) {
+			RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+		} else {
+			RespondJSON500(w, r, err)
+		}
 	}
 
 	accessToken, err := t.svc.GenerateAccessToken(perm.UserId)
@@ -192,6 +191,11 @@ func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.R
 
 	refreshToken, err := t.svc.GenerateRefreshToken(perm.UserId)
 	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	if err = t.cache.WriteRefreshTokenPermission(ctx, refreshToken, clientId, perm.UserId); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

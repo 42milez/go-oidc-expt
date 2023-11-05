@@ -16,31 +16,31 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockSessionBasicReader is a mock of SessionBasicReader interface.
-type MockSessionBasicReader struct {
+// MockCacheReader is a mock of CacheReader interface.
+type MockCacheReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockSessionBasicReaderMockRecorder
+	recorder *MockCacheReaderMockRecorder
 }
 
-// MockSessionBasicReaderMockRecorder is the mock recorder for MockSessionBasicReader.
-type MockSessionBasicReaderMockRecorder struct {
-	mock *MockSessionBasicReader
+// MockCacheReaderMockRecorder is the mock recorder for MockCacheReader.
+type MockCacheReaderMockRecorder struct {
+	mock *MockCacheReader
 }
 
-// NewMockSessionBasicReader creates a new mock instance.
-func NewMockSessionBasicReader(ctrl *gomock.Controller) *MockSessionBasicReader {
-	mock := &MockSessionBasicReader{ctrl: ctrl}
-	mock.recorder = &MockSessionBasicReaderMockRecorder{mock}
+// NewMockCacheReader creates a new mock instance.
+func NewMockCacheReader(ctrl *gomock.Controller) *MockCacheReader {
+	mock := &MockCacheReader{ctrl: ctrl}
+	mock.recorder = &MockCacheReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionBasicReader) EXPECT() *MockSessionBasicReaderMockRecorder {
+func (m *MockCacheReader) EXPECT() *MockCacheReaderMockRecorder {
 	return m.recorder
 }
 
 // Read mocks base method.
-func (m *MockSessionBasicReader) Read(ctx context.Context, key string) (string, error) {
+func (m *MockCacheReader) Read(ctx context.Context, key string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", ctx, key)
 	ret0, _ := ret[0].(string)
@@ -49,36 +49,36 @@ func (m *MockSessionBasicReader) Read(ctx context.Context, key string) (string, 
 }
 
 // Read indicates an expected call of Read.
-func (mr *MockSessionBasicReaderMockRecorder) Read(ctx, key any) *gomock.Call {
+func (mr *MockCacheReaderMockRecorder) Read(ctx, key any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockSessionBasicReader)(nil).Read), ctx, key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockCacheReader)(nil).Read), ctx, key)
 }
 
-// MockSessionHashReader is a mock of SessionHashReader interface.
-type MockSessionHashReader struct {
+// MockCacheHashReader is a mock of CacheHashReader interface.
+type MockCacheHashReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockSessionHashReaderMockRecorder
+	recorder *MockCacheHashReaderMockRecorder
 }
 
-// MockSessionHashReaderMockRecorder is the mock recorder for MockSessionHashReader.
-type MockSessionHashReaderMockRecorder struct {
-	mock *MockSessionHashReader
+// MockCacheHashReaderMockRecorder is the mock recorder for MockCacheHashReader.
+type MockCacheHashReaderMockRecorder struct {
+	mock *MockCacheHashReader
 }
 
-// NewMockSessionHashReader creates a new mock instance.
-func NewMockSessionHashReader(ctrl *gomock.Controller) *MockSessionHashReader {
-	mock := &MockSessionHashReader{ctrl: ctrl}
-	mock.recorder = &MockSessionHashReaderMockRecorder{mock}
+// NewMockCacheHashReader creates a new mock instance.
+func NewMockCacheHashReader(ctrl *gomock.Controller) *MockCacheHashReader {
+	mock := &MockCacheHashReader{ctrl: ctrl}
+	mock.recorder = &MockCacheHashReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionHashReader) EXPECT() *MockSessionHashReaderMockRecorder {
+func (m *MockCacheHashReader) EXPECT() *MockCacheHashReaderMockRecorder {
 	return m.recorder
 }
 
 // ReadHash mocks base method.
-func (m *MockSessionHashReader) ReadHash(ctx context.Context, key, field string) (string, error) {
+func (m *MockCacheHashReader) ReadHash(ctx context.Context, key, field string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadHash", ctx, key, field)
 	ret0, _ := ret[0].(string)
@@ -87,36 +87,150 @@ func (m *MockSessionHashReader) ReadHash(ctx context.Context, key, field string)
 }
 
 // ReadHash indicates an expected call of ReadHash.
-func (mr *MockSessionHashReaderMockRecorder) ReadHash(ctx, key, field any) *gomock.Call {
+func (mr *MockCacheHashReaderMockRecorder) ReadHash(ctx, key, field any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHash", reflect.TypeOf((*MockSessionHashReader)(nil).ReadHash), ctx, key, field)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHash", reflect.TypeOf((*MockCacheHashReader)(nil).ReadHash), ctx, key, field)
 }
 
-// MockSessionReader is a mock of SessionReader interface.
-type MockSessionReader struct {
+// MockCacheHashAllReader is a mock of CacheHashAllReader interface.
+type MockCacheHashAllReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockSessionReaderMockRecorder
+	recorder *MockCacheHashAllReaderMockRecorder
 }
 
-// MockSessionReaderMockRecorder is the mock recorder for MockSessionReader.
-type MockSessionReaderMockRecorder struct {
-	mock *MockSessionReader
+// MockCacheHashAllReaderMockRecorder is the mock recorder for MockCacheHashAllReader.
+type MockCacheHashAllReaderMockRecorder struct {
+	mock *MockCacheHashAllReader
 }
 
-// NewMockSessionReader creates a new mock instance.
-func NewMockSessionReader(ctrl *gomock.Controller) *MockSessionReader {
-	mock := &MockSessionReader{ctrl: ctrl}
-	mock.recorder = &MockSessionReaderMockRecorder{mock}
+// NewMockCacheHashAllReader creates a new mock instance.
+func NewMockCacheHashAllReader(ctrl *gomock.Controller) *MockCacheHashAllReader {
+	mock := &MockCacheHashAllReader{ctrl: ctrl}
+	mock.recorder = &MockCacheHashAllReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionReader) EXPECT() *MockSessionReaderMockRecorder {
+func (m *MockCacheHashAllReader) EXPECT() *MockCacheHashAllReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadHashAll mocks base method.
+func (m *MockCacheHashAllReader) ReadHashAll(ctx context.Context, key string) (map[string]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadHashAll", ctx, key)
+	ret0, _ := ret[0].(map[string]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadHashAll indicates an expected call of ReadHashAll.
+func (mr *MockCacheHashAllReaderMockRecorder) ReadHashAll(ctx, key any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHashAll", reflect.TypeOf((*MockCacheHashAllReader)(nil).ReadHashAll), ctx, key)
+}
+
+// MockCacheWriter is a mock of CacheWriter interface.
+type MockCacheWriter struct {
+	ctrl     *gomock.Controller
+	recorder *MockCacheWriterMockRecorder
+}
+
+// MockCacheWriterMockRecorder is the mock recorder for MockCacheWriter.
+type MockCacheWriterMockRecorder struct {
+	mock *MockCacheWriter
+}
+
+// NewMockCacheWriter creates a new mock instance.
+func NewMockCacheWriter(ctrl *gomock.Controller) *MockCacheWriter {
+	mock := &MockCacheWriter{ctrl: ctrl}
+	mock.recorder = &MockCacheWriterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCacheWriter) EXPECT() *MockCacheWriterMockRecorder {
+	return m.recorder
+}
+
+// Write mocks base method.
+func (m *MockCacheWriter) Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Write", ctx, key, value, ttl)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Write indicates an expected call of Write.
+func (mr *MockCacheWriterMockRecorder) Write(ctx, key, value, ttl any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockCacheWriter)(nil).Write), ctx, key, value, ttl)
+}
+
+// MockCacheHashWriter is a mock of CacheHashWriter interface.
+type MockCacheHashWriter struct {
+	ctrl     *gomock.Controller
+	recorder *MockCacheHashWriterMockRecorder
+}
+
+// MockCacheHashWriterMockRecorder is the mock recorder for MockCacheHashWriter.
+type MockCacheHashWriterMockRecorder struct {
+	mock *MockCacheHashWriter
+}
+
+// NewMockCacheHashWriter creates a new mock instance.
+func NewMockCacheHashWriter(ctrl *gomock.Controller) *MockCacheHashWriter {
+	mock := &MockCacheHashWriter{ctrl: ctrl}
+	mock.recorder = &MockCacheHashWriterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCacheHashWriter) EXPECT() *MockCacheHashWriterMockRecorder {
+	return m.recorder
+}
+
+// WriteHash mocks base method.
+func (m *MockCacheHashWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WriteHash", ctx, key, values, ttl)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// WriteHash indicates an expected call of WriteHash.
+func (mr *MockCacheHashWriterMockRecorder) WriteHash(ctx, key, values, ttl any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteHash", reflect.TypeOf((*MockCacheHashWriter)(nil).WriteHash), ctx, key, values, ttl)
+}
+
+// MockCacheReadWriter is a mock of CacheReadWriter interface.
+type MockCacheReadWriter struct {
+	ctrl     *gomock.Controller
+	recorder *MockCacheReadWriterMockRecorder
+}
+
+// MockCacheReadWriterMockRecorder is the mock recorder for MockCacheReadWriter.
+type MockCacheReadWriterMockRecorder struct {
+	mock *MockCacheReadWriter
+}
+
+// NewMockCacheReadWriter creates a new mock instance.
+func NewMockCacheReadWriter(ctrl *gomock.Controller) *MockCacheReadWriter {
+	mock := &MockCacheReadWriter{ctrl: ctrl}
+	mock.recorder = &MockCacheReadWriterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockCacheReadWriter) EXPECT() *MockCacheReadWriterMockRecorder {
 	return m.recorder
 }
 
 // Read mocks base method.
-func (m *MockSessionReader) Read(ctx context.Context, key string) (string, error) {
+func (m *MockCacheReadWriter) Read(ctx context.Context, key string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", ctx, key)
 	ret0, _ := ret[0].(string)
@@ -125,13 +239,13 @@ func (m *MockSessionReader) Read(ctx context.Context, key string) (string, error
 }
 
 // Read indicates an expected call of Read.
-func (mr *MockSessionReaderMockRecorder) Read(ctx, key any) *gomock.Call {
+func (mr *MockCacheReadWriterMockRecorder) Read(ctx, key any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockSessionReader)(nil).Read), ctx, key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockCacheReadWriter)(nil).Read), ctx, key)
 }
 
 // ReadHash mocks base method.
-func (m *MockSessionReader) ReadHash(ctx context.Context, key, field string) (string, error) {
+func (m *MockCacheReadWriter) ReadHash(ctx context.Context, key, field string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadHash", ctx, key, field)
 	ret0, _ := ret[0].(string)
@@ -140,36 +254,28 @@ func (m *MockSessionReader) ReadHash(ctx context.Context, key, field string) (st
 }
 
 // ReadHash indicates an expected call of ReadHash.
-func (mr *MockSessionReaderMockRecorder) ReadHash(ctx, key, field any) *gomock.Call {
+func (mr *MockCacheReadWriterMockRecorder) ReadHash(ctx, key, field any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHash", reflect.TypeOf((*MockSessionReader)(nil).ReadHash), ctx, key, field)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHash", reflect.TypeOf((*MockCacheReadWriter)(nil).ReadHash), ctx, key, field)
 }
 
-// MockSessionBasicWriter is a mock of SessionBasicWriter interface.
-type MockSessionBasicWriter struct {
-	ctrl     *gomock.Controller
-	recorder *MockSessionBasicWriterMockRecorder
+// ReadHashAll mocks base method.
+func (m *MockCacheReadWriter) ReadHashAll(ctx context.Context, key string) (map[string]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadHashAll", ctx, key)
+	ret0, _ := ret[0].(map[string]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// MockSessionBasicWriterMockRecorder is the mock recorder for MockSessionBasicWriter.
-type MockSessionBasicWriterMockRecorder struct {
-	mock *MockSessionBasicWriter
-}
-
-// NewMockSessionBasicWriter creates a new mock instance.
-func NewMockSessionBasicWriter(ctrl *gomock.Controller) *MockSessionBasicWriter {
-	mock := &MockSessionBasicWriter{ctrl: ctrl}
-	mock.recorder = &MockSessionBasicWriterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionBasicWriter) EXPECT() *MockSessionBasicWriterMockRecorder {
-	return m.recorder
+// ReadHashAll indicates an expected call of ReadHashAll.
+func (mr *MockCacheReadWriterMockRecorder) ReadHashAll(ctx, key any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadHashAll", reflect.TypeOf((*MockCacheReadWriter)(nil).ReadHashAll), ctx, key)
 }
 
 // Write mocks base method.
-func (m *MockSessionBasicWriter) Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
+func (m *MockCacheReadWriter) Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", ctx, key, value, ttl)
 	ret0, _ := ret[0].(bool)
@@ -178,36 +284,13 @@ func (m *MockSessionBasicWriter) Write(ctx context.Context, key string, value an
 }
 
 // Write indicates an expected call of Write.
-func (mr *MockSessionBasicWriterMockRecorder) Write(ctx, key, value, ttl any) *gomock.Call {
+func (mr *MockCacheReadWriterMockRecorder) Write(ctx, key, value, ttl any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockSessionBasicWriter)(nil).Write), ctx, key, value, ttl)
-}
-
-// MockSessionHashWriter is a mock of SessionHashWriter interface.
-type MockSessionHashWriter struct {
-	ctrl     *gomock.Controller
-	recorder *MockSessionHashWriterMockRecorder
-}
-
-// MockSessionHashWriterMockRecorder is the mock recorder for MockSessionHashWriter.
-type MockSessionHashWriterMockRecorder struct {
-	mock *MockSessionHashWriter
-}
-
-// NewMockSessionHashWriter creates a new mock instance.
-func NewMockSessionHashWriter(ctrl *gomock.Controller) *MockSessionHashWriter {
-	mock := &MockSessionHashWriter{ctrl: ctrl}
-	mock.recorder = &MockSessionHashWriterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionHashWriter) EXPECT() *MockSessionHashWriterMockRecorder {
-	return m.recorder
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockCacheReadWriter)(nil).Write), ctx, key, value, ttl)
 }
 
 // WriteHash mocks base method.
-func (m *MockSessionHashWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) (bool, error) {
+func (m *MockCacheReadWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteHash", ctx, key, values, ttl)
 	ret0, _ := ret[0].(bool)
@@ -216,98 +299,7 @@ func (m *MockSessionHashWriter) WriteHash(ctx context.Context, key string, value
 }
 
 // WriteHash indicates an expected call of WriteHash.
-func (mr *MockSessionHashWriterMockRecorder) WriteHash(ctx, key, values, ttl any) *gomock.Call {
+func (mr *MockCacheReadWriterMockRecorder) WriteHash(ctx, key, values, ttl any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteHash", reflect.TypeOf((*MockSessionHashWriter)(nil).WriteHash), ctx, key, values, ttl)
-}
-
-// MockSessionWriter is a mock of SessionWriter interface.
-type MockSessionWriter struct {
-	ctrl     *gomock.Controller
-	recorder *MockSessionWriterMockRecorder
-}
-
-// MockSessionWriterMockRecorder is the mock recorder for MockSessionWriter.
-type MockSessionWriterMockRecorder struct {
-	mock *MockSessionWriter
-}
-
-// NewMockSessionWriter creates a new mock instance.
-func NewMockSessionWriter(ctrl *gomock.Controller) *MockSessionWriter {
-	mock := &MockSessionWriter{ctrl: ctrl}
-	mock.recorder = &MockSessionWriterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionWriter) EXPECT() *MockSessionWriterMockRecorder {
-	return m.recorder
-}
-
-// Write mocks base method.
-func (m *MockSessionWriter) Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Write", ctx, key, value, ttl)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Write indicates an expected call of Write.
-func (mr *MockSessionWriterMockRecorder) Write(ctx, key, value, ttl any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockSessionWriter)(nil).Write), ctx, key, value, ttl)
-}
-
-// WriteHash mocks base method.
-func (m *MockSessionWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "WriteHash", ctx, key, values, ttl)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// WriteHash indicates an expected call of WriteHash.
-func (mr *MockSessionWriterMockRecorder) WriteHash(ctx, key, values, ttl any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteHash", reflect.TypeOf((*MockSessionWriter)(nil).WriteHash), ctx, key, values, ttl)
-}
-
-// MockIdGenerator is a mock of IdGenerator interface.
-type MockIdGenerator struct {
-	ctrl     *gomock.Controller
-	recorder *MockIdGeneratorMockRecorder
-}
-
-// MockIdGeneratorMockRecorder is the mock recorder for MockIdGenerator.
-type MockIdGeneratorMockRecorder struct {
-	mock *MockIdGenerator
-}
-
-// NewMockIdGenerator creates a new mock instance.
-func NewMockIdGenerator(ctrl *gomock.Controller) *MockIdGenerator {
-	mock := &MockIdGenerator{ctrl: ctrl}
-	mock.recorder = &MockIdGeneratorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockIdGenerator) EXPECT() *MockIdGeneratorMockRecorder {
-	return m.recorder
-}
-
-// NextID mocks base method.
-func (m *MockIdGenerator) NextID() (uint64, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "NextID")
-	ret0, _ := ret[0].(uint64)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// NextID indicates an expected call of NextID.
-func (mr *MockIdGeneratorMockRecorder) NextID() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "NextID", reflect.TypeOf((*MockIdGenerator)(nil).NextID))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteHash", reflect.TypeOf((*MockCacheReadWriter)(nil).WriteHash), ctx, key, values, ttl)
 }

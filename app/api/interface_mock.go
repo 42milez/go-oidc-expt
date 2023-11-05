@@ -459,92 +459,42 @@ func (mr *MockAuthCodeValidatorMockRecorder) ValidateAuthCode(ctx, code, clientI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockAuthCodeValidator)(nil).ValidateAuthCode), ctx, code, clientId)
 }
 
-// MockRefreshTokenValidator is a mock of RefreshTokenValidator interface.
-type MockRefreshTokenValidator struct {
+// MockRefreshTokenPermissionReader is a mock of RefreshTokenPermissionReader interface.
+type MockRefreshTokenPermissionReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockRefreshTokenValidatorMockRecorder
+	recorder *MockRefreshTokenPermissionReaderMockRecorder
 }
 
-// MockRefreshTokenValidatorMockRecorder is the mock recorder for MockRefreshTokenValidator.
-type MockRefreshTokenValidatorMockRecorder struct {
-	mock *MockRefreshTokenValidator
+// MockRefreshTokenPermissionReaderMockRecorder is the mock recorder for MockRefreshTokenPermissionReader.
+type MockRefreshTokenPermissionReaderMockRecorder struct {
+	mock *MockRefreshTokenPermissionReader
 }
 
-// NewMockRefreshTokenValidator creates a new mock instance.
-func NewMockRefreshTokenValidator(ctrl *gomock.Controller) *MockRefreshTokenValidator {
-	mock := &MockRefreshTokenValidator{ctrl: ctrl}
-	mock.recorder = &MockRefreshTokenValidatorMockRecorder{mock}
+// NewMockRefreshTokenPermissionReader creates a new mock instance.
+func NewMockRefreshTokenPermissionReader(ctrl *gomock.Controller) *MockRefreshTokenPermissionReader {
+	mock := &MockRefreshTokenPermissionReader{ctrl: ctrl}
+	mock.recorder = &MockRefreshTokenPermissionReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRefreshTokenValidator) EXPECT() *MockRefreshTokenValidatorMockRecorder {
+func (m *MockRefreshTokenPermissionReader) EXPECT() *MockRefreshTokenPermissionReaderMockRecorder {
 	return m.recorder
 }
 
-// ValidateRefreshToken mocks base method.
-func (m *MockRefreshTokenValidator) ValidateRefreshToken(token *string) error {
+// ReadRefreshTokenPermission mocks base method.
+func (m *MockRefreshTokenPermissionReader) ReadRefreshTokenPermission(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateRefreshToken", token)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "ReadRefreshTokenPermission", ctx, token, clientId)
+	ret0, _ := ret[0].(*typedef.RefreshTokenPermission)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// ValidateRefreshToken indicates an expected call of ValidateRefreshToken.
-func (mr *MockRefreshTokenValidatorMockRecorder) ValidateRefreshToken(token any) *gomock.Call {
+// ReadRefreshTokenPermission indicates an expected call of ReadRefreshTokenPermission.
+func (mr *MockRefreshTokenPermissionReaderMockRecorder) ReadRefreshTokenPermission(ctx, token, clientId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRefreshToken", reflect.TypeOf((*MockRefreshTokenValidator)(nil).ValidateRefreshToken), token)
-}
-
-// MockTokenRequestValidator is a mock of TokenRequestValidator interface.
-type MockTokenRequestValidator struct {
-	ctrl     *gomock.Controller
-	recorder *MockTokenRequestValidatorMockRecorder
-}
-
-// MockTokenRequestValidatorMockRecorder is the mock recorder for MockTokenRequestValidator.
-type MockTokenRequestValidatorMockRecorder struct {
-	mock *MockTokenRequestValidator
-}
-
-// NewMockTokenRequestValidator creates a new mock instance.
-func NewMockTokenRequestValidator(ctrl *gomock.Controller) *MockTokenRequestValidator {
-	mock := &MockTokenRequestValidator{ctrl: ctrl}
-	mock.recorder = &MockTokenRequestValidatorMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenRequestValidator) EXPECT() *MockTokenRequestValidatorMockRecorder {
-	return m.recorder
-}
-
-// ValidateAuthCode mocks base method.
-func (m *MockTokenRequestValidator) ValidateAuthCode(ctx context.Context, code, clientId string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateAuthCode", ctx, code, clientId)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ValidateAuthCode indicates an expected call of ValidateAuthCode.
-func (mr *MockTokenRequestValidatorMockRecorder) ValidateAuthCode(ctx, code, clientId any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockTokenRequestValidator)(nil).ValidateAuthCode), ctx, code, clientId)
-}
-
-// ValidateRefreshToken mocks base method.
-func (m *MockTokenRequestValidator) ValidateRefreshToken(token *string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateRefreshToken", token)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ValidateRefreshToken indicates an expected call of ValidateRefreshToken.
-func (mr *MockTokenRequestValidatorMockRecorder) ValidateRefreshToken(token any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRefreshToken", reflect.TypeOf((*MockTokenRequestValidator)(nil).ValidateRefreshToken), token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRefreshTokenPermission", reflect.TypeOf((*MockRefreshTokenPermissionReader)(nil).ReadRefreshTokenPermission), ctx, token, clientId)
 }
 
 // MockAuthCodeRevoker is a mock of AuthCodeRevoker interface.
@@ -584,57 +534,56 @@ func (mr *MockAuthCodeRevokerMockRecorder) RevokeAuthCode(ctx, code, clientId an
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeRevoker)(nil).RevokeAuthCode), ctx, code, clientId)
 }
 
-// MockTokenSessionReader is a mock of TokenSessionReader interface.
-type MockTokenSessionReader struct {
+// MockTokenCacheReadWriter is a mock of TokenCacheReadWriter interface.
+type MockTokenCacheReadWriter struct {
 	ctrl     *gomock.Controller
-	recorder *MockTokenSessionReaderMockRecorder
+	recorder *MockTokenCacheReadWriterMockRecorder
 }
 
-// MockTokenSessionReaderMockRecorder is the mock recorder for MockTokenSessionReader.
-type MockTokenSessionReaderMockRecorder struct {
-	mock *MockTokenSessionReader
+// MockTokenCacheReadWriterMockRecorder is the mock recorder for MockTokenCacheReadWriter.
+type MockTokenCacheReadWriterMockRecorder struct {
+	mock *MockTokenCacheReadWriter
 }
 
-// NewMockTokenSessionReader creates a new mock instance.
-func NewMockTokenSessionReader(ctrl *gomock.Controller) *MockTokenSessionReader {
-	mock := &MockTokenSessionReader{ctrl: ctrl}
-	mock.recorder = &MockTokenSessionReaderMockRecorder{mock}
+// NewMockTokenCacheReadWriter creates a new mock instance.
+func NewMockTokenCacheReadWriter(ctrl *gomock.Controller) *MockTokenCacheReadWriter {
+	mock := &MockTokenCacheReadWriter{ctrl: ctrl}
+	mock.recorder = &MockTokenCacheReadWriterMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenSessionReader) EXPECT() *MockTokenSessionReaderMockRecorder {
+func (m *MockTokenCacheReadWriter) EXPECT() *MockTokenCacheReadWriterMockRecorder {
 	return m.recorder
 }
 
-// ReadAuthParam mocks base method.
-func (m *MockTokenSessionReader) ReadAuthParam(ctx context.Context, clientId, authCode string) (*typedef.AuthParam, error) {
+// ReadOpenIdParam mocks base method.
+func (m *MockTokenCacheReadWriter) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadAuthParam", ctx, clientId, authCode)
-	ret0, _ := ret[0].(*typedef.AuthParam)
+	ret := m.ctrl.Call(m, "ReadOpenIdParam", ctx, clientId, authCode)
+	ret0, _ := ret[0].(*typedef.OpenIdParam)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadAuthParam indicates an expected call of ReadAuthParam.
-func (mr *MockTokenSessionReaderMockRecorder) ReadAuthParam(ctx, clientId, authCode any) *gomock.Call {
+// ReadOpenIdParam indicates an expected call of ReadOpenIdParam.
+func (mr *MockTokenCacheReadWriterMockRecorder) ReadOpenIdParam(ctx, clientId, authCode any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthParam", reflect.TypeOf((*MockTokenSessionReader)(nil).ReadAuthParam), ctx, clientId, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadOpenIdParam", reflect.TypeOf((*MockTokenCacheReadWriter)(nil).ReadOpenIdParam), ctx, clientId, authCode)
 }
 
-// ReadRefreshTokenPermission mocks base method.
-func (m *MockTokenSessionReader) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.AuthParam, error) {
+// WriteRefreshTokenPermission mocks base method.
+func (m *MockTokenCacheReadWriter) WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRefreshTokenPermission", ctx, token)
-	ret0, _ := ret[0].(*typedef.AuthParam)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "WriteRefreshTokenPermission", ctx, token, clientId, userId)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// ReadRefreshTokenPermission indicates an expected call of ReadRefreshTokenPermission.
-func (mr *MockTokenSessionReaderMockRecorder) ReadRefreshTokenPermission(ctx, token any) *gomock.Call {
+// WriteRefreshTokenPermission indicates an expected call of WriteRefreshTokenPermission.
+func (mr *MockTokenCacheReadWriterMockRecorder) WriteRefreshTokenPermission(ctx, token, clientId, userId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRefreshTokenPermission", reflect.TypeOf((*MockTokenSessionReader)(nil).ReadRefreshTokenPermission), ctx, token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteRefreshTokenPermission", reflect.TypeOf((*MockTokenCacheReadWriter)(nil).WriteRefreshTokenPermission), ctx, token, clientId, userId)
 }
 
 // MockTokenRequestAcceptor is a mock of TokenRequestAcceptor interface.
@@ -705,6 +654,21 @@ func (mr *MockTokenRequestAcceptorMockRecorder) GenerateRefreshToken(uid any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).GenerateRefreshToken), uid)
 }
 
+// ReadRefreshTokenPermission mocks base method.
+func (m *MockTokenRequestAcceptor) ReadRefreshTokenPermission(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadRefreshTokenPermission", ctx, token, clientId)
+	ret0, _ := ret[0].(*typedef.RefreshTokenPermission)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadRefreshTokenPermission indicates an expected call of ReadRefreshTokenPermission.
+func (mr *MockTokenRequestAcceptorMockRecorder) ReadRefreshTokenPermission(ctx, token, clientId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRefreshTokenPermission", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).ReadRefreshTokenPermission), ctx, token, clientId)
+}
+
 // RevokeAuthCode mocks base method.
 func (m *MockTokenRequestAcceptor) RevokeAuthCode(ctx context.Context, code, clientId string) error {
 	m.ctrl.T.Helper()
@@ -731,18 +695,4 @@ func (m *MockTokenRequestAcceptor) ValidateAuthCode(ctx context.Context, code, c
 func (mr *MockTokenRequestAcceptorMockRecorder) ValidateAuthCode(ctx, code, clientId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateAuthCode", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).ValidateAuthCode), ctx, code, clientId)
-}
-
-// ValidateRefreshToken mocks base method.
-func (m *MockTokenRequestAcceptor) ValidateRefreshToken(token *string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ValidateRefreshToken", token)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ValidateRefreshToken indicates an expected call of ValidateRefreshToken.
-func (mr *MockTokenRequestAcceptorMockRecorder) ValidateRefreshToken(token any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateRefreshToken", reflect.TypeOf((*MockTokenRequestAcceptor)(nil).ValidateRefreshToken), token)
 }

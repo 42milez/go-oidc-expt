@@ -17,7 +17,7 @@ func TestSession_Write(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-	repo := Session{
+	repo := Cache{
 		cache: xtestutil.NewCache(t),
 	}
 	sid := "484481116225601901"
@@ -33,14 +33,14 @@ func TestSession_Write(t *testing.T) {
 	}
 
 	if !ok {
-		t.Error(xerr.FailedToWriteSession)
+		t.Error(xerr.FailedToWriteCache)
 	}
 }
 
 func TestSession_Read(t *testing.T) {
 	t.Parallel()
 
-	repo := Session{
+	repo := Cache{
 		cache: xtestutil.NewCache(t),
 	}
 
