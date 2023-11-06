@@ -17,7 +17,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.4.0
-	github.com/gorilla/schema v1.2.0
+	github.com/gorilla/schema v1.2.1
 	github.com/gorilla/securecookie v1.1.1
 	github.com/lestrrat-go/jwx/v2 v2.0.16
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
