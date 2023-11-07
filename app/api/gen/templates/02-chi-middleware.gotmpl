@@ -128,11 +128,9 @@ func (hiw *HandlerInterfaceWrapper) {{ .OperationId }}RequestParser(w http.Respo
 
     {{ range .PathParams }}
     var {{ $varName := .GoVariableName }}{{ $varName }} {{ .TypeDef }}
-
     {{ if .IsPassThrough }}
     {{ $varName }} = chi.URLParam(r, "{{ .ParamName }}")
     {{ end }}
-
     {{ if .IsJson }}
     err = json.Unmarshal([]byte(chi.URLParam(r, "{{ .ParamName }}")), &{{ $varName }})
     if err != nil {
@@ -140,7 +138,6 @@ func (hiw *HandlerInterfaceWrapper) {{ .OperationId }}RequestParser(w http.Respo
         return
     }
     {{ end }}
-
     {{ if .IsStyled }}
     err = runtime.BindStyledParameterWithLocation("{{ .Style }}",{{ .Explode }}, "{{ .ParamName }}", runtime.ParamLocationPath, chi.URLParam(r, "{{ .ParamName }}"), &{{ $varName }})
     if err != nil {
