@@ -375,7 +375,8 @@ func (e *TooManyValuesForParamError) Error() string {
 	return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
 }
 
-func (hiw *HandlerInterfaceWrapper) AuthenticateRequestParser(w http.ResponseWriter, r *http.Request) {
+func UnmarshalAuthenticateParams(r *http.Request) error {
+
 	var err error
 
 	// ==================================================
@@ -389,24 +390,38 @@ func (hiw *HandlerInterfaceWrapper) AuthenticateRequestParser(w http.ResponseWri
 	var cookie *http.Cookie
 
 	if cookie, err = r.Cookie("sid"); err == nil {
+
 		var value SessionId
 		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
 		if err != nil {
-			hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sid", Err: err})
-			return
+			return &InvalidParamFormatError{ParamName: "sid", Err: err}
 		}
 		params.Sid = &value
+
 	}
 
 	// Cookie Parameter: END
 	// --------------------------------------------------
 
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return err
+	}
+
+	if err = v.Struct(params); err != nil {
+		return err
+	}
+
 	// Unmarshal Parameter: END
 	// ==================================================
+
+	return nil
 }
 
-func (hiw *HandlerInterfaceWrapper) AuthorizeRequestParser(w http.ResponseWriter, r *http.Request) {
+func UnmarshalAuthorizeParams(r *http.Request) error {
+
 	var ctx context.Context
+
 	var err error
 
 	// ==================================================
@@ -422,66 +437,66 @@ func (hiw *HandlerInterfaceWrapper) AuthorizeRequestParser(w http.ResponseWriter
 	}
 
 	// Required query parameter "client_id"
+
 	err = runtime.BindQueryParameter("form", true, true, "client_id", r.URL.Query(), &params.ClientID)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "client_id", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "client_id", Err: err}
 	}
 
 	// Required query parameter "nonce"
+
 	err = runtime.BindQueryParameter("form", true, true, "nonce", r.URL.Query(), &params.Nonce)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "nonce", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "nonce", Err: err}
 	}
 
 	// Required query parameter "redirect_uri"
+
 	err = runtime.BindQueryParameter("form", true, true, "redirect_uri", r.URL.Query(), &params.RedirectUri)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "redirect_uri", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "redirect_uri", Err: err}
 	}
 
 	// Required query parameter "response_type"
+
 	err = runtime.BindQueryParameter("form", true, true, "response_type", r.URL.Query(), &params.ResponseType)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "response_type", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "response_type", Err: err}
 	}
 
 	// Required query parameter "scope"
+
 	err = runtime.BindQueryParameter("form", true, true, "scope", r.URL.Query(), &params.Scope)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "scope", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "scope", Err: err}
 	}
 
 	// Required query parameter "state"
+
 	err = runtime.BindQueryParameter("form", true, true, "state", r.URL.Query(), &params.State)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "state", Err: err}
 	}
 
 	// Required query parameter "display"
+
 	err = runtime.BindQueryParameter("form", true, true, "display", r.URL.Query(), &params.Display)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "display", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "display", Err: err}
 	}
 
 	// Required query parameter "max_age"
+
 	err = runtime.BindQueryParameter("form", true, true, "max_age", r.URL.Query(), &params.MaxAge)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "max_age", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "max_age", Err: err}
 	}
 
 	// Required query parameter "prompt"
+
 	err = runtime.BindQueryParameter("form", true, true, "prompt", r.URL.Query(), &params.Prompt)
 	if err != nil {
-		hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "prompt", Err: err})
-		return
+		return &InvalidParamFormatError{ParamName: "prompt", Err: err}
 	}
 
 	//  Query Parameter: END
@@ -493,23 +508,36 @@ func (hiw *HandlerInterfaceWrapper) AuthorizeRequestParser(w http.ResponseWriter
 	var cookie *http.Cookie
 
 	if cookie, err = r.Cookie("sid"); err == nil {
+
 		var value SessionId
 		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
 		if err != nil {
-			hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sid", Err: err})
-			return
+			return &InvalidParamFormatError{ParamName: "sid", Err: err}
 		}
 		params.Sid = &value
+
 	}
 
 	// Cookie Parameter: END
 	// --------------------------------------------------
 
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return err
+	}
+
+	if err = v.Struct(params); err != nil {
+		return err
+	}
+
 	// Unmarshal Parameter: END
 	// ==================================================
+
+	return nil
 }
 
-func (hiw *HandlerInterfaceWrapper) ConsentRequestParser(w http.ResponseWriter, r *http.Request) {
+func UnmarshalConsentParams(r *http.Request) error {
+
 	var err error
 
 	// ==================================================
@@ -523,28 +551,43 @@ func (hiw *HandlerInterfaceWrapper) ConsentRequestParser(w http.ResponseWriter, 
 	var cookie *http.Cookie
 
 	if cookie, err = r.Cookie("sid"); err == nil {
+
 		var value SessionId
 		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
 		if err != nil {
-			hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sid", Err: err})
-			return
+			return &InvalidParamFormatError{ParamName: "sid", Err: err}
 		}
 		params.Sid = &value
+
 	}
 
 	// Cookie Parameter: END
 	// --------------------------------------------------
 
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return err
+	}
+
+	if err = v.Struct(params); err != nil {
+		return err
+	}
+
 	// Unmarshal Parameter: END
 	// ==================================================
+
+	return nil
 }
 
-func (hiw *HandlerInterfaceWrapper) CheckHealthRequestParser(w http.ResponseWriter, r *http.Request) {
+func UnmarshalCheckHealthParams(r *http.Request) error {
 
+	return nil
 }
 
-func (hiw *HandlerInterfaceWrapper) TokenRequestParser(w http.ResponseWriter, r *http.Request) {
+func UnmarshalTokenParams(r *http.Request) error {
+
 	var ctx context.Context
+
 	var err error
 
 	// ==================================================
@@ -570,24 +613,37 @@ func (hiw *HandlerInterfaceWrapper) TokenRequestParser(w http.ResponseWriter, r 
 	var cookie *http.Cookie
 
 	if cookie, err = r.Cookie("sid"); err == nil {
+
 		var value SessionId
 		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
 		if err != nil {
-			hiw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sid", Err: err})
-			return
+			return &InvalidParamFormatError{ParamName: "sid", Err: err}
 		}
 		params.Sid = &value
+
 	}
 
 	// Cookie Parameter: END
 	// --------------------------------------------------
 
+	v, err := NewAuthorizeParamValidator()
+	if err != nil {
+		return err
+	}
+
+	if err = v.Struct(params); err != nil {
+		return err
+	}
+
 	// Unmarshal Parameter: END
 	// ==================================================
+
+	return nil
 }
 
-func (hiw *HandlerInterfaceWrapper) RegisterRequestParser(w http.ResponseWriter, r *http.Request) {
+func UnmarshalRegisterParams(r *http.Request) error {
 
+	return nil
 }
 
 //  Handler and others
