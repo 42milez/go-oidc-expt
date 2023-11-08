@@ -375,13 +375,37 @@ func (e *TooManyValuesForParamError) Error() string {
 	return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
 }
 
-func UnmarshalAuthenticateParams(r *http.Request) error {
+func UnmarshalRequestParameter(r *http.Request) (*http.Request, error) {
+	switch r.URL.Path {
+	case "/authenticate":
+		return unmarshalAuthenticateParameter(r)
+	case "/authorize":
+		return unmarshalAuthorizeParameter(r)
+	case "/consent":
+		return unmarshalConsentParameter(r)
+	case "/health":
+		return unmarshalCheckHealthParameter(r)
+	case "/token":
+		return unmarshalTokenParameter(r)
+	case "/user/register":
+		return unmarshalRegisterParameter(r)
+	default:
+		return nil, xerr.InvalidPath
+	}
+}
+
+func unmarshalAuthenticateParameter(r *http.Request) (*http.Request, error) {
+	var ctx context.Context
 	var err error
 
 	// ==================================================
 	// Unmarshal Parameter: BEGIN
 
-	var params AuthenticateParams
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	params := &AuthenticateParams{}
 
 	// --------------------------------------------------
 	// Cookie Parameter: BEGIN
@@ -392,7 +416,7 @@ func UnmarshalAuthenticateParams(r *http.Request) error {
 		var value SessionId
 		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
 		if err != nil {
-			return &InvalidParamFormatError{ParamName: "sid", Err: err}
+			return nil, &InvalidParamFormatError{ParamName: "sid", Err: err}
 		}
 		params.Sid = &value
 	}
@@ -400,35 +424,26 @@ func UnmarshalAuthenticateParams(r *http.Request) error {
 	// Cookie Parameter: END
 	// --------------------------------------------------
 
-	// --------------------------------------------------
-	// Validation: BEGIN
-
-	v, err := NewAuthorizeParamValidator()
-	if err != nil {
-		return err
-	}
-
-	if err = v.Struct(params); err != nil {
-		return err
-	}
-
-	// Validation: END
-	// --------------------------------------------------
+	ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
 
 	// Unmarshal Parameter: END
 	// ==================================================
 
-	return nil
+	return r.Clone(ctx), nil
 }
 
-func UnmarshalAuthorizeParams(r *http.Request) error {
+func unmarshalAuthorizeParameter(r *http.Request) (*http.Request, error) {
 	var ctx context.Context
 	var err error
 
 	// ==================================================
 	// Unmarshal Parameter: BEGIN
 
-	var params AuthorizeParams
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	params := &AuthorizeParams{}
 
 	// --------------------------------------------------
 	//  Query Parameter: BEGIN
@@ -440,55 +455,55 @@ func UnmarshalAuthorizeParams(r *http.Request) error {
 	// Required query parameter "client_id"
 	err = runtime.BindQueryParameter("form", true, true, "client_id", r.URL.Query(), &params.ClientID)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "client_id", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "client_id", Err: err}
 	}
 
 	// Required query parameter "nonce"
 	err = runtime.BindQueryParameter("form", true, true, "nonce", r.URL.Query(), &params.Nonce)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "nonce", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "nonce", Err: err}
 	}
 
 	// Required query parameter "redirect_uri"
 	err = runtime.BindQueryParameter("form", true, true, "redirect_uri", r.URL.Query(), &params.RedirectUri)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "redirect_uri", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "redirect_uri", Err: err}
 	}
 
 	// Required query parameter "response_type"
 	err = runtime.BindQueryParameter("form", true, true, "response_type", r.URL.Query(), &params.ResponseType)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "response_type", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "response_type", Err: err}
 	}
 
 	// Required query parameter "scope"
 	err = runtime.BindQueryParameter("form", true, true, "scope", r.URL.Query(), &params.Scope)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "scope", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "scope", Err: err}
 	}
 
 	// Required query parameter "state"
 	err = runtime.BindQueryParameter("form", true, true, "state", r.URL.Query(), &params.State)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "state", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "state", Err: err}
 	}
 
 	// Required query parameter "display"
 	err = runtime.BindQueryParameter("form", true, true, "display", r.URL.Query(), &params.Display)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "display", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "display", Err: err}
 	}
 
 	// Required query parameter "max_age"
 	err = runtime.BindQueryParameter("form", true, true, "max_age", r.URL.Query(), &params.MaxAge)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "max_age", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "max_age", Err: err}
 	}
 
 	// Required query parameter "prompt"
 	err = runtime.BindQueryParameter("form", true, true, "prompt", r.URL.Query(), &params.Prompt)
 	if err != nil {
-		return &InvalidParamFormatError{ParamName: "prompt", Err: err}
+		return nil, &InvalidParamFormatError{ParamName: "prompt", Err: err}
 	}
 
 	//  Query Parameter: END
@@ -503,7 +518,7 @@ func UnmarshalAuthorizeParams(r *http.Request) error {
 		var value SessionId
 		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
 		if err != nil {
-			return &InvalidParamFormatError{ParamName: "sid", Err: err}
+			return nil, &InvalidParamFormatError{ParamName: "sid", Err: err}
 		}
 		params.Sid = &value
 	}
@@ -511,34 +526,26 @@ func UnmarshalAuthorizeParams(r *http.Request) error {
 	// Cookie Parameter: END
 	// --------------------------------------------------
 
-	// --------------------------------------------------
-	// Validation: BEGIN
-
-	v, err := NewAuthorizeParamValidator()
-	if err != nil {
-		return err
-	}
-
-	if err = v.Struct(params); err != nil {
-		return err
-	}
-
-	// Validation: END
-	// --------------------------------------------------
+	ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
 
 	// Unmarshal Parameter: END
 	// ==================================================
 
-	return nil
+	return r.Clone(ctx), nil
 }
 
-func UnmarshalConsentParams(r *http.Request) error {
+func unmarshalConsentParameter(r *http.Request) (*http.Request, error) {
+	var ctx context.Context
 	var err error
 
 	// ==================================================
 	// Unmarshal Parameter: BEGIN
 
-	var params ConsentParams
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	params := &ConsentParams{}
 
 	// --------------------------------------------------
 	// Cookie Parameter: BEGIN
@@ -549,7 +556,7 @@ func UnmarshalConsentParams(r *http.Request) error {
 		var value SessionId
 		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
 		if err != nil {
-			return &InvalidParamFormatError{ParamName: "sid", Err: err}
+			return nil, &InvalidParamFormatError{ParamName: "sid", Err: err}
 		}
 		params.Sid = &value
 	}
@@ -557,33 +564,19 @@ func UnmarshalConsentParams(r *http.Request) error {
 	// Cookie Parameter: END
 	// --------------------------------------------------
 
-	// --------------------------------------------------
-	// Validation: BEGIN
-
-	v, err := NewAuthorizeParamValidator()
-	if err != nil {
-		return err
-	}
-
-	if err = v.Struct(params); err != nil {
-		return err
-	}
-
-	// Validation: END
-	// --------------------------------------------------
+	ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
 
 	// Unmarshal Parameter: END
 	// ==================================================
 
-	return nil
+	return r.Clone(ctx), nil
 }
 
-func UnmarshalCheckHealthParams(r *http.Request) error {
-
-	return nil
+func unmarshalCheckHealthParameter(r *http.Request) (*http.Request, error) {
+	return r, nil
 }
 
-func UnmarshalTokenParams(r *http.Request) error {
+func unmarshalTokenParameter(r *http.Request) (*http.Request, error) {
 	var ctx context.Context
 	var err error
 
@@ -602,7 +595,11 @@ func UnmarshalTokenParams(r *http.Request) error {
 	// ==================================================
 	// Unmarshal Parameter: BEGIN
 
-	var params TokenParams
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	params := &TokenParams{}
 
 	// --------------------------------------------------
 	// Cookie Parameter: BEGIN
@@ -613,7 +610,7 @@ func UnmarshalTokenParams(r *http.Request) error {
 		var value SessionId
 		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
 		if err != nil {
-			return &InvalidParamFormatError{ParamName: "sid", Err: err}
+			return nil, &InvalidParamFormatError{ParamName: "sid", Err: err}
 		}
 		params.Sid = &value
 	}
@@ -621,30 +618,16 @@ func UnmarshalTokenParams(r *http.Request) error {
 	// Cookie Parameter: END
 	// --------------------------------------------------
 
-	// --------------------------------------------------
-	// Validation: BEGIN
-
-	v, err := NewAuthorizeParamValidator()
-	if err != nil {
-		return err
-	}
-
-	if err = v.Struct(params); err != nil {
-		return err
-	}
-
-	// Validation: END
-	// --------------------------------------------------
+	ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
 
 	// Unmarshal Parameter: END
 	// ==================================================
 
-	return nil
+	return r.Clone(ctx), nil
 }
 
-func UnmarshalRegisterParams(r *http.Request) error {
-
-	return nil
+func unmarshalRegisterParameter(r *http.Request) (*http.Request, error) {
+	return r, nil
 }
 
 //  Handler and others

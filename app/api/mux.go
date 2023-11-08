@@ -89,13 +89,15 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 		},
 		ErrorHandler: NewOapiErrorHandler(),
 	}))
+	mux.Use(InjectRequestParameter())
 
 	// Middleware Configuration on Each Handler
 
 	mw := NewMiddlewareFuncMap()
-	rs := RestoreSession(opt)
+	restoreSessMW := RestoreSession(opt)
 
-	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs)
+	mw.SetAuthenticateMW(restoreSessMW).SetAuthorizeMW(restoreSessMW).SetConsentMW(restoreSessMW).
+		SetRegisterMW(restoreSessMW)
 
 	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,
@@ -184,7 +186,7 @@ func NewOption() (*option.Option, error) {
 		return nil, err
 	}
 
-	if opt.V, err = NewAuthorizeParamValidator(); err != nil {
+	if opt.V, err = NewRequestParamValidator(); err != nil {
 		return nil, err
 	}
 

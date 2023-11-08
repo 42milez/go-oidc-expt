@@ -2,20 +2,28 @@ package typedef
 
 import "strconv"
 
+//  Entity
+// --------------------------------------------------
+
 type AuthCodeID uint64
 type ConsentID uint64
 type RedirectUriID uint64
 type RelyingPartyID uint64
 type SessionID uint64
-type TokenType string
 type UserID uint64
 
+//  Context
+// --------------------------------------------------
+
+type RequestParamKey struct{}
+
 type SessionIdKey struct{}
-type UserIdKey struct{}
 
 func (sid SessionID) String() string {
 	return strconv.FormatUint(uint64(sid), 10)
 }
+
+type UserIdKey struct{}
 
 func (uid UserID) MarshalBinary() ([]byte, error) {
 	return []byte(strconv.FormatUint(uint64(uid), 10)), nil
@@ -24,6 +32,9 @@ func (uid UserID) MarshalBinary() ([]byte, error) {
 func (uid UserID) String() string {
 	return strconv.FormatUint(uint64(uid), 10)
 }
+
+//  Cache
+// --------------------------------------------------
 
 type OpenIdParam struct {
 	RedirectUri string
@@ -34,3 +45,8 @@ type RefreshTokenPermission struct {
 	ClientId string
 	UserId   UserID
 }
+
+//  API
+// --------------------------------------------------
+
+type TokenType string

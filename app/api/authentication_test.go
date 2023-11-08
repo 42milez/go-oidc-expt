@@ -176,7 +176,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			sessMock := iface.NewMockUserInfoWriter(gomock.NewController(t))
 			sessMock.EXPECT().WriteUserInfo(gomock.Any(), gomock.Any()).Return(tt.respSessMock.sessionID, tt.respSessMock.err).AnyTimes()
 
-			v, err := NewAuthorizeParamValidator()
+			v, err := NewRequestParamValidator()
 
 			if err != nil {
 				t.Error(err)

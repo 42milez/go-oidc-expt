@@ -9,7 +9,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func NewAuthorizeParamValidator() (*validator.Validate, error) {
+func NewRequestParamValidator() (*validator.Validate, error) {
 	ret := validator.New()
 
 	if err := ret.RegisterValidation("display-validator", validateDisplay); err != nil {
