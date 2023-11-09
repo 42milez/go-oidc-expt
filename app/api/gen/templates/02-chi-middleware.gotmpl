@@ -113,7 +113,7 @@ func (e *TooManyValuesForParamError) Error() string {
     return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
 }
 
-func UnmarshalRequestParameter(r *http.Request) (*http.Request, error) {
+func injectRequestParameter(r *http.Request) (*http.Request, error) {
     switch r.URL.Path {
     {{- range . }}
     case "{{ .Path }}":
@@ -149,13 +149,19 @@ func unmarshal{{ .OperationId }}Parameter(r *http.Request) (*http.Request, error
     {{ if .IsJson }}
     err = json.Unmarshal([]byte(chi.URLParam(r, "{{ .ParamName }}")), &{{ $varName }})
     if err != nil {
-        return nil, &UnmarshalingParamError{ParamName: "{{ .ParamName }}", Err: err}
+        return nil, &UnmarshalingParamError{
+            ParamName: "{{ .ParamName }}",
+            Err:       err,
+        }
     }
     {{ end }}
     {{ if .IsStyled }}
     err = runtime.BindStyledParameterWithLocation("{{ .Style }}",{{ .Explode }}, "{{ .ParamName }}", runtime.ParamLocationPath, chi.URLParam(r, "{{ .ParamName }}"), &{{ $varName }})
     if err != nil {
-        return nil, &InvalidParamFormatError{ParamName: "{{ .ParamName }}", Err: err}
+        return nil, &InvalidParamFormatError{
+            ParamName: "{{ .ParamName }}",
+            Err:       err,
+        }
     }
     {{ end }}
     {{ end }}
@@ -205,7 +211,10 @@ func unmarshal{{ .OperationId }}Parameter(r *http.Request) (*http.Request, error
     {{ if .IsStyled }}
     err = runtime.BindQueryParameter("{{ .Style }}", {{ .Explode }}, {{ .Required }}, "{{ .ParamName }}", r.URL.Query(), &params.{{ .GoName }})
     if err != nil {
-        return nil, &InvalidParamFormatError{ParamName: "{{ .ParamName }}", Err: err}
+        return nil, &InvalidParamFormatError{
+            ParamName: "{{ .ParamName }}",
+            Err:       err,
+        }
     }
     {{ else }}
     if paramValue := r.URL.Query().Get("{{ .ParamName }}"); paramValue != "" {
@@ -216,12 +225,17 @@ func unmarshal{{ .OperationId }}Parameter(r *http.Request) (*http.Request, error
         var value {{ .TypeDef }}
         err = json.Unmarshal([]byte(paramValue), &value)
         if err != nil {
-            return nil, &UnmarshalingParamError{ParamName: "{{ .ParamName }}", Err: err}
+            return nil, &UnmarshalingParamError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
         }
         params.{{ .GoName }} = {{ if not .Required }}&{{ end }}value
     {{ end }}
     } {{ if .Required }} else {
-        return nil, &RequiredParamError{ParamName: "{{ .ParamName }}"}
+        return nil, &RequiredParamError{
+            ParamName: "{{ .ParamName }}",
+        }
     } {{ end }}
     {{ end }}
     {{ end }}
@@ -241,7 +255,10 @@ func unmarshal{{ .OperationId }}Parameter(r *http.Request) (*http.Request, error
         var {{ .GoName }} {{ .TypeDef }}
         n := len(valueList)
         if n != 1 {
-            return nil, &TooManyValuesForParamError{ParamName: "{{ .ParamName }}", Count: n}
+            return nil, &TooManyValuesForParamError{
+                ParamName: "{{ .ParamName }}",
+                Count:     n,
+            }
         }
     {{ if .IsPassThrough }}
         params.{{ .GoName }} = {{ if not .Required }}&{{ end }}valueList[0]
@@ -249,19 +266,28 @@ func unmarshal{{ .OperationId }}Parameter(r *http.Request) (*http.Request, error
     {{ if .IsJson }}
         err = json.Unmarshal([]byte(valueList[0]), &{{ .GoName }})
         if err != nil {
-            return nil, &UnmarshalingParamError{ParamName: "{{ .ParamName }}", Err: err}
+            return nil, &UnmarshalingParamError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
         }
     {{ end }}
     {{ if .IsStyled }}
         err = runtime.BindStyledParameterWithLocation("{{ .Style }}", {{ .Explode}}, "{{ .ParamName }}", runtime.ParamLocationHeader, valueList[0], &{{ .GoName }})
         if err != nil {
-            return nil, &InvalidParamFormatError{ParamName: "{{ .ParamName }}", Err: err}
+            return nil, &InvalidParamFormatError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
         }
     {{ end }}
         params.{{ .GoName }} = {{ if not .Required }}&{{ end }}{{ .GoName }}
     } {{ if .Required }} else {
         err := fmt.Errorf("Header parameter {{ .ParamName }} is required, but not found")
-        return nil, &RequiredHeaderError{ParamName: "{{ .ParamName }}", Err: err}
+        return nil, &RequiredHeaderError{
+            ParamName: "{{ .ParamName }}",
+            Err:       err,
+        }
     } {{ end }}
     {{ end }}
 
@@ -286,11 +312,17 @@ func unmarshal{{ .OperationId }}Parameter(r *http.Request) (*http.Request, error
         decoded, err := url.QueryUnescape(cookie.Value)
         if err != nil {
             err = fmt.Errorf("Error unescaping cookie parameter '{{ .ParamName }}'")
-            return nil, &UnescapedCookieParamError{ParamName: "{{ .ParamName }}", Err: err}
+            return nil, &UnescapedCookieParamError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
         }
         err = json.Unmarshal([]byte(decoded), &value)
         if err != nil {
-          return nil, &UnmarshalingParamError{ParamName: "{{ .ParamName }}", Err: err}
+            return nil, &UnmarshalingParamError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
         }
         params.{{ .GoName }} = {{ if not .Required }}&{{ end }}value
     {{- end -}}
@@ -298,12 +330,17 @@ func unmarshal{{ .OperationId }}Parameter(r *http.Request) (*http.Request, error
         var value {{ .TypeDef }}
         err = runtime.BindStyledParameter("simple", {{ .Explode }}, "{{ .ParamName}}", cookie.Value, &value)
         if err != nil {
-            return nil, &InvalidParamFormatError{ParamName: "{{ .ParamName }}", Err: err}
+            return nil, &InvalidParamFormatError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
         }
         params.{{ .GoName }} = {{ if not .Required }}&{{ end }}value
     {{- end -}}
     } {{ if .Required }} else {
-        return nil, &RequiredParamError{ParamName: "{{ .ParamName }}"}
+        return nil, &RequiredParamError{
+            ParamName: "{{ .ParamName }}",
+        }
     }
     {{ end }}
     {{ end }}

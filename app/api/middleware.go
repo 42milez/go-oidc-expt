@@ -86,7 +86,7 @@ func RestoreSession(opt *option.Option) MiddlewareFunc {
 func InjectRequestParameter() MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			req, err := UnmarshalRequestParameter(r)
+			req, err := injectRequestParameter(r)
 			if err != nil {
 				// TODO: Handle errors
 				RespondJSON500(w, r, err)
