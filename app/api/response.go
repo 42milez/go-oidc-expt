@@ -70,6 +70,15 @@ func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicE
 	RespondJSON(w, r, http.StatusBadRequest, body)
 }
 
+func RespondTokenRequestError(w http.ResponseWriter, err xerr.TokenRequestErr) {
+	body := &struct {
+		Error xerr.TokenRequestErr `json:"error,string"`
+	}{
+		Error: err,
+	}
+	RespondJSON(w, nil, http.StatusBadRequest, body)
+}
+
 func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
 	body := &Response{
 		Status:  http.StatusUnauthorized,

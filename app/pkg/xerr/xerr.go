@@ -39,6 +39,15 @@ var (
 )
 
 var (
+	InvalidClientTRE        TokenRequestErr = "invalid_client"
+	InvalidGrantTRE         TokenRequestErr = "invalid_grant"
+	InvalidRequestTRE       TokenRequestErr = "invalid_request"
+	InvalidScopeTRE         TokenRequestErr = "invalid_scope"
+	UnauthorizedClientTRE   TokenRequestErr = "unauthorized_client"
+	UnsupportedGrantTypeTRE TokenRequestErr = "unsupported_grant_type"
+)
+
+var (
 	TypeAssertionFailed TestErr = "type assertion failed"
 )
 
@@ -56,6 +65,12 @@ type PublicErr string
 
 func (pe PublicErr) Error() string {
 	return string(pe)
+}
+
+type TokenRequestErr string
+
+func (tre TokenRequestErr) Error() string {
+	return string(tre)
 }
 
 type TestErr string

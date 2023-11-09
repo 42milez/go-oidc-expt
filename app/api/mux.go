@@ -162,7 +162,7 @@ func NewOapiErrorHandler() nethttpmiddleware.ErrorHandler {
 		case http.StatusBadRequest:
 			RespondJSON400(w, nil, xerr.InvalidRequest, nil, nil)
 		case http.StatusUnauthorized:
-			RespondJSON401(w, nil, xerr.UnauthorizedRequest, nil, nil)
+			RespondTokenRequestError(w, xerr.InvalidClientTRE)
 		case http.StatusNotFound:
 			RespondJSON404(w)
 		default:
