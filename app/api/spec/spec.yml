@@ -557,7 +557,7 @@ components:
         summary:
           type: string
           example: unexpected error occurred
-          x-go-type: xerr.PublicErr
+          x-go-type: xerr.PublicError
           x-go-type-skip-optional-pointer: true
         details:
           type: array

@@ -42,7 +42,7 @@ type TokenHdlr struct {
 func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	credentials, err := extractCredential(r)
 	if err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 	}
 
 	clientId := credentials[0]
@@ -50,7 +50,7 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	param, err := t.parseForm(r)
 	if err != nil {
 		if errors.Is(err, xerr.MalformedFormParameter) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 			return
 		}
 		RespondJSON500(w, r, err)
@@ -58,7 +58,7 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = t.v.Struct(param); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 
@@ -69,7 +69,7 @@ func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		t.handleRefreshTokenGrantType(w, r, param, clientId)
 		return
 	} else {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 }
@@ -88,7 +88,7 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 	ctx := r.Context()
 
 	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectUri) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, nil)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, nil)
 		return
 	}
 
@@ -104,7 +104,7 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 	}
 
 	if *param.RedirectUri != authParam.RedirectUri {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 
@@ -159,11 +159,11 @@ func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error
 
 func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, xerr.AuthCodeNotFound) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 	} else if errors.Is(err, xerr.AuthCodeExpired) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 	} else if errors.Is(err, xerr.AuthCodeUsed) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 	} else {
 		RespondJSON500(w, r, err)
 	}
@@ -175,7 +175,7 @@ func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.R
 	perm, err := t.svc.ReadRefreshTokenPermission(ctx, *param.RefreshToken, clientId)
 	if err != nil {
 		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		} else if errors.Is(err, xerr.RefreshTokenPermissionNotFound) {
 			RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
 		} else {

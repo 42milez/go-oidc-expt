@@ -44,7 +44,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := a.v.Struct(q); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 
@@ -56,7 +56,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	location, authCode, err := a.svc.Authorize(r.Context(), q.ClientID, q.RedirectUri, q.State)
 	if err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 

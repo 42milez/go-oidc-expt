@@ -15,9 +15,9 @@ import (
 )
 
 type Response struct {
-	Status  int            `json:"status"`
-	Summary xerr.PublicErr `json:"summary"`
-	Details []string       `json:"details,omitempty"`
+	Status  int              `json:"status"`
+	Summary xerr.PublicError `json:"summary"`
+	Details []string         `json:"details,omitempty"`
 }
 
 func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body any) {
@@ -56,7 +56,7 @@ func RespondJSON200(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
+func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicError, details []string, err error) {
 	body := &Response{
 		Status:  http.StatusBadRequest,
 		Summary: summary,
@@ -70,16 +70,16 @@ func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicE
 	RespondJSON(w, r, http.StatusBadRequest, body)
 }
 
-func RespondTokenRequestError(w http.ResponseWriter, err xerr.TokenRequestErr) {
+func RespondTokenRequestError(w http.ResponseWriter, err xerr.OIDCError) {
 	body := &struct {
-		Error xerr.TokenRequestErr `json:"error,string"`
+		Error xerr.OIDCError `json:"error,string"`
 	}{
 		Error: err,
 	}
 	RespondJSON(w, nil, http.StatusBadRequest, body)
 }
 
-func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
+func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicError, details []string, err error) {
 	body := &Response{
 		Status:  http.StatusUnauthorized,
 		Summary: summary,

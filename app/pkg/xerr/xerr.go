@@ -5,76 +5,80 @@ import (
 )
 
 var (
-	AuthCodeExpired                InternalErr = "auth code expired"
-	AuthCodeNotFound               InternalErr = "auth code not found"
-	AuthCodeUsed                   InternalErr = "auth code used"
-	CacheKeyDuplicated             InternalErr = "cache key duplicated"
-	CacheKeyNotFound               InternalErr = "cache key not found"
-	ClientIdNotMatched             InternalErr = "client id not matched"
-	ConsentNotFound                InternalErr = "consent not found"
-	FailedToInitialize             InternalErr = "failed to initialize"
-	FailedToReadResponseBody       InternalErr = "failed to read response body"
-	FailedToSetTimeoutOnCacheKey   InternalErr = "failed to set timeout on cache key"
-	FailedToValidate               InternalErr = "failed to validate"
-	FailedToWriteCache             InternalErr = "failed to write cache"
-	InvalidPath                    InternalErr = "invalid path"
-	InvalidResponseType            InternalErr = "invalid response type"
-	InvalidToken                   InternalErr = "invalid token"
-	MalformedFormParameter         InternalErr = "malformed form parameter"
-	PasswordNotMatched             InternalErr = "password not matched"
-	RedirectUriNotFound            InternalErr = "redirect uri not found"
-	RefreshTokenPermissionNotFound InternalErr = "refresh token permission not found"
-	UnknownSecurityScheme          InternalErr = "unknown security scheme"
-	UserIdNotFoundInContext        InternalErr = "user id not found in context"
-	UserNotFound                   InternalErr = "user not found"
+	AuthCodeExpired                InternalError = "auth code expired"
+	AuthCodeNotFound               InternalError = "auth code not found"
+	AuthCodeUsed                   InternalError = "auth code used"
+	CacheKeyDuplicated             InternalError = "cache key duplicated"
+	CacheKeyNotFound               InternalError = "cache key not found"
+	ClientIdNotMatched             InternalError = "client id not matched"
+	ConsentNotFound                InternalError = "consent not found"
+	FailedToInitialize             InternalError = "failed to initialize"
+	FailedToReadResponseBody       InternalError = "failed to read response body"
+	FailedToSetTimeoutOnCacheKey   InternalError = "failed to set timeout on cache key"
+	FailedToValidate               InternalError = "failed to validate"
+	FailedToWriteCache             InternalError = "failed to write cache"
+	InvalidPath                    InternalError = "invalid path"
+	InvalidResponseType            InternalError = "invalid response type"
+	InvalidToken                   InternalError = "invalid token"
+	MalformedFormParameter         InternalError = "malformed form parameter"
+	PasswordNotMatched             InternalError = "password not matched"
+	RedirectUriNotFound            InternalError = "redirect uri not found"
+	RefreshTokenPermissionNotFound InternalError = "refresh token permission not found"
+	UnknownSecurityScheme          InternalError = "unknown security scheme"
+	UserIdNotFoundInContext        InternalError = "user id not found in context"
+	UserNotFound                   InternalError = "user not found"
 )
 
 var (
-	InvalidRequest              PublicErr = "invalid request"
-	InvalidUsernameOrPassword   PublicErr = "invalid username or password"
-	OK                          PublicErr = "ok"
-	ServiceTemporaryUnavailable PublicErr = "service temporary unavailable"
-	UnauthorizedRequest         PublicErr = "unauthorized request"
-	UnexpectedErrorOccurred     PublicErr = "unexpected error occurred"
+	InvalidRequest2             PublicError = "invalid request"
+	InvalidUsernameOrPassword   PublicError = "invalid username or password"
+	OK                          PublicError = "ok"
+	ServiceTemporaryUnavailable PublicError = "service temporary unavailable"
+	UnauthorizedRequest         PublicError = "unauthorized request"
+	UnexpectedErrorOccurred     PublicError = "unexpected error occurred"
 )
 
 var (
-	InvalidClientTRE        TokenRequestErr = "invalid_client"
-	InvalidGrantTRE         TokenRequestErr = "invalid_grant"
-	InvalidRequestTRE       TokenRequestErr = "invalid_request"
-	InvalidScopeTRE         TokenRequestErr = "invalid_scope"
-	UnauthorizedClientTRE   TokenRequestErr = "unauthorized_client"
-	UnsupportedGrantTypeTRE TokenRequestErr = "unsupported_grant_type"
+	AccessDenied            OIDCError = "access_denied"
+	InvalidClient           OIDCError = "invalid_client"
+	InvalidGrant            OIDCError = "invalid_grant"
+	InvalidRequest          OIDCError = "invalid_request"
+	InvalidScope            OIDCError = "invalid_scope"
+	ServerError             OIDCError = "server_error"
+	TemporaryUnavailable    OIDCError = "temporarily_unavailable"
+	UnauthorizedClient      OIDCError = "unauthorized_client"
+	UnsupportedGrantType    OIDCError = "unsupported_grant_type"
+	UnsupportedResponseType OIDCError = "unsupported_response_type"
 )
 
 var (
-	TypeAssertionFailed TestErr = "type assertion failed"
+	TypeAssertionFailed TestError = "type assertion failed"
 )
 
-type InternalErr string
+type InternalError string
 
-func (ie InternalErr) Error() string {
+func (ie InternalError) Error() string {
 	return string(ie)
 }
 
-func (ie InternalErr) Wrap(e error) error {
+func (ie InternalError) Wrap(e error) error {
 	return fmt.Errorf("%w ( %w )", ie, e)
 }
 
-type PublicErr string
+type PublicError string
 
-func (pe PublicErr) Error() string {
+func (pe PublicError) Error() string {
 	return string(pe)
 }
 
-type TokenRequestErr string
+type OIDCError string
 
-func (tre TokenRequestErr) Error() string {
-	return string(tre)
+func (oe OIDCError) Error() string {
+	return string(oe)
 }
 
-type TestErr string
+type TestError string
 
-func (te TestErr) Error() string {
+func (te TestError) Error() string {
 	return string(te)
 }
