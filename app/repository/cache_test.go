@@ -3,14 +3,13 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/google/go-cmp/cmp"
 	"testing"
+	"time"
+
+	"github.com/google/go-cmp/cmp"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
-	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/app/config"
 )
 
 func TestCache_Read(t *testing.T) {
@@ -26,8 +25,9 @@ func TestCache_Read(t *testing.T) {
 		ctx := context.Background()
 		key := "TestCache_Read_OK"
 		wantValue := key
+		ttl := 1 * time.Minute
 
-		if err := repo.cache.Client.SetNX(ctx, key, wantValue, config.SessionTTL).Err(); err != nil {
+		if err := repo.cache.Client.SetNX(ctx, key, wantValue, ttl).Err(); err != nil {
 			t.Fatal(err)
 		}
 		t.Cleanup(func() {
@@ -170,18 +170,48 @@ func TestCache_Write(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	sid := "TestCache_Write"
-	uid := typedef.UserID(475924035230777348)
+	key := "TestCache_Write"
+	value := "TestCache_Write_Value"
+	ttl := 1 * time.Minute
 
 	t.Cleanup(func() {
-		repo.cache.Client.Del(ctx, sid)
+		repo.cache.Client.Del(ctx, key)
 	})
 
-	ok, err := repo.Write(ctx, sid, uid, config.SessionTTL)
+	err := repo.Write(ctx, key, value, ttl)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !ok {
-		t.Fatal(xerr.FailedToWriteCache)
+}
+
+func TestCache_WriteHash(t *testing.T) {
+	t.Parallel()
+
+	repo := Cache{
+		cache: xtestutil.NewCache(t),
+	}
+
+	ctx := context.Background()
+	key := "TestCache_WriteHash"
+	want := map[string]string{
+		"value1": "TestCache_ReadHash_OK_Value1",
+		"value2": "TestCache_ReadHash_OK_Value2",
+	}
+	ttl := 1 * time.Minute
+
+	t.Cleanup(func() {
+		repo.cache.Client.Del(ctx, key)
+	})
+
+	if err := repo.WriteHash(ctx, key, want, ttl); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := repo.cache.Client.HGetAll(ctx, key).Result()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Fatalf("-want +got:\n%s", diff)
 	}
 }

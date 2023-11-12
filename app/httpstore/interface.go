@@ -20,11 +20,11 @@ type CacheHashAllReader interface {
 }
 
 type CacheWriter interface {
-	Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error)
+	Write(ctx context.Context, key string, value any, ttl time.Duration) error
 }
 
 type CacheHashWriter interface {
-	WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) (bool, error)
+	WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) error
 }
 
 type CacheReadWriter interface {

@@ -9,11 +9,14 @@ var (
 	AuthCodeNotFound               InternalError = "auth code not found"
 	AuthCodeUsed                   InternalError = "auth code used"
 	CacheKeyDuplicated             InternalError = "cache key duplicated"
+	CacheFieldDuplicated           InternalError = "cache field duplicated"
 	CacheKeyNotFound               InternalError = "cache key not found"
 	ClientIdNotMatched             InternalError = "client id not matched"
 	ConsentNotFound                InternalError = "consent not found"
+	CredentialNotFoundInHeader     InternalError = "credential not found in header"
 	FailedToInitialize             InternalError = "failed to initialize"
 	FailedToReadResponseBody       InternalError = "failed to read response body"
+	FailedToRevokeAuthCode         InternalError = "failed to revoke authorization code"
 	FailedToSetTimeoutOnCacheKey   InternalError = "failed to set timeout on cache key"
 	FailedToValidate               InternalError = "failed to validate"
 	FailedToWriteCache             InternalError = "failed to write cache"
@@ -21,18 +24,17 @@ var (
 	InvalidResponseType            InternalError = "invalid response type"
 	InvalidToken                   InternalError = "invalid token"
 	MalformedFormParameter         InternalError = "malformed form parameter"
+	ParameterNotFound              InternalError = "parameter not found"
 	PasswordNotMatched             InternalError = "password not matched"
+	RecordNotFound                 InternalError = "record not found"
+	RedirectURINotMatched          InternalError = "redirect uri not matched"
 	RedirectUriNotFound            InternalError = "redirect uri not found"
 	RefreshTokenPermissionNotFound InternalError = "refresh token permission not found"
+	UnauthorizedRequest            InternalError = "unauthorized request"
+	UnexpectedErrorOccurred        InternalError = "unexpected error occurred"
 	UnknownSecurityScheme          InternalError = "unknown security scheme"
 	UserIdNotFoundInContext        InternalError = "user id not found in context"
 	UserNotFound                   InternalError = "user not found"
-	CredentialNotFoundInHeader     InternalError = "credential not found in header"
-	UnauthorizedRequest            InternalError = "unauthorized request"
-	ParameterNotFound              InternalError = "parameter not found"
-	RedirectURINotMatched          InternalError = "redirect uri not matched"
-	RecordNotFound                 InternalError = "record not found"
-	FailedToRevokeAuthCode         InternalError = "failed to revoke authorization code"
 )
 
 var (
@@ -40,7 +42,7 @@ var (
 	InvalidUsernameOrPassword   PublicError = "invalid username or password"
 	OK                          PublicError = "ok"
 	ServiceTemporaryUnavailable PublicError = "service temporary unavailable"
-	UnexpectedErrorOccurred     PublicError = "unexpected error occurred"
+	UnexpectedErrorOccurred2    PublicError = "unexpected error occurred"
 )
 
 var (

@@ -17,7 +17,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
-const nRetryWriteCache = 3
 const clientIdFieldName = "ClientId"
 const redirectURIFieldName = "RedirectURI"
 const userIdFieldName = "UserId"
@@ -94,12 +93,8 @@ func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam
 		redirectURIFieldName: param.RedirectURI,
 		userIdFieldName:      strconv.FormatUint(uint64(param.UserId), 10),
 	}
-	ok, err := c.repo.WriteHash(ctx, key, values, config.AuthCodeTTL)
-	if err != nil {
+	if err := c.repo.WriteHash(ctx, key, values, config.AuthCodeTTL); err != nil {
 		return err
-	}
-	if !ok {
-		return xerr.CacheKeyDuplicated
 	}
 	return nil
 }
@@ -110,39 +105,24 @@ func (c *Cache) WriteRefreshTokenPermission(ctx context.Context, token, clientId
 		clientIdFieldName: clientId,
 		userIdFieldName:   strconv.FormatUint(uint64(userId), 10),
 	}
-	ok, err := c.repo.WriteHash(ctx, key, values, config.RefreshTokenTTL)
-	if err != nil {
+	if err := c.repo.WriteHash(ctx, key, values, config.RefreshTokenTTL); err != nil {
 		return err
-	}
-	if !ok {
-		return xerr.CacheKeyDuplicated
 	}
 	return nil
 }
 
 func (c *Cache) WriteUserInfo(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
-	var sid uint64
-	var ok bool
-	var err error
-
-	for i := 0; i < nRetryWriteCache; i++ {
-		if sid, err = c.idGen.NextID(); err != nil {
-			return 0, err
-		}
-		key := userInfoCacheKey(typedef.SessionID(sid))
-		values := map[string]string{
-			userIdFieldName: strconv.FormatUint(uint64(uid), 10),
-		}
-		if ok, err = c.repo.WriteHash(ctx, key, values, config.SessionTTL); err != nil {
-			return 0, err
-		}
-		if ok {
-			break
-		}
+	sid, err := c.idGen.NextID()
+	if err != nil {
+		return 0, err
 	}
 
-	if !ok {
-		return 0, xerr.FailedToWriteCache
+	key := userInfoCacheKey(typedef.SessionID(sid))
+	values := map[string]string{
+		userIdFieldName: strconv.FormatUint(uint64(uid), 10),
+	}
+	if err = c.repo.WriteHash(ctx, key, values, config.SessionTTL); err != nil {
+		return 0, err
 	}
 
 	return typedef.SessionID(sid), nil

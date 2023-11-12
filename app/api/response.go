@@ -32,7 +32,7 @@ func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body an
 
 		resp := Response{
 			Status:  http.StatusInternalServerError,
-			Summary: xerr.UnexpectedErrorOccurred,
+			Summary: xerr.UnexpectedErrorOccurred2,
 		}
 
 		if err = json.NewEncoder(w).Encode(resp); err != nil {
@@ -95,7 +95,7 @@ func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {
 	}
 	RespondJSON(w, r, http.StatusInternalServerError, &Response{
 		Status:  http.StatusInternalServerError,
-		Summary: xerr.UnexpectedErrorOccurred,
+		Summary: xerr.UnexpectedErrorOccurred2,
 	})
 }
 
