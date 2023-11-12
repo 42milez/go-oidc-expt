@@ -11,14 +11,14 @@ require (
 	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/getkin/kin-openapi v0.120.0
 	github.com/go-chi/chi/v5 v5.0.10
-	github.com/go-playground/validator/v10 v10.15.5
+	github.com/go-playground/validator/v10 v10.16.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golangci/golangci-lint v1.55.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.4.0
 	github.com/gorilla/schema v1.2.1
-	github.com/gorilla/securecookie v1.1.1
+	github.com/gorilla/securecookie v1.1.2
 	github.com/lestrrat-go/jwx/v2 v2.0.16
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
 	github.com/pkg/errors v0.9.1
@@ -26,9 +26,9 @@ require (
 	github.com/rs/zerolog v1.31.0
 	github.com/sony/sonyflake v1.2.0
 	go.uber.org/mock v0.3.0
-	golang.org/x/crypto v0.14.0
+	golang.org/x/crypto v0.15.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
-	golang.org/x/sync v0.4.0
+	golang.org/x/sync v0.5.0
 )
 
 require (
@@ -232,8 +232,8 @@ require (
 	golang.org/x/exp/typeparams v0.0.0-20230307190834-24139beb5833 // indirect
 	golang.org/x/mod v0.13.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.14.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
