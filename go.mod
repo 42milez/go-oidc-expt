@@ -11,7 +11,7 @@ require (
 	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/getkin/kin-openapi v0.120.0
 	github.com/go-chi/chi/v5 v5.0.10
-	github.com/go-playground/validator/v10 v10.15.5
+	github.com/go-playground/validator/v10 v10.16.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golangci/golangci-lint v1.55.2
 	github.com/google/go-cmp v0.6.0
