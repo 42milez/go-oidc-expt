@@ -94,15 +94,19 @@ test:
 #  Lima
 # ==================================================
 
+## lc-create: Create virtual machine with Lima
 lc-create:
 	@limactl create --tty=false --name=$(PROJECT_NAME) lima.yml
 
+## lc-start: Start virtual machine
 lc-start:
 	@limactl start $(PROJECT_NAME)
 
+## lc-stop: Stop virtual machine
 lc-stop:
 	@limactl stop $(PROJECT_NAME)
 
+## lc-delete: Delete virtual machine
 lc-delete:
 	@limactl delete $(PROJECT_NAME)
 
