@@ -7,10 +7,8 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-	"github.com/42milez/go-oidc-server/app/pkg/xutil"
-
 	"github.com/42milez/go-oidc-server/app/datastore"
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
 func NewCache(cache *datastore.Cache) *Cache {
@@ -26,10 +24,11 @@ type Cache struct {
 func (s *Cache) Read(ctx context.Context, key string) (string, error) {
 	v, err := s.cache.Client.Get(ctx, key).Result()
 	if err != nil {
-		return "", err
-	}
-	if xutil.IsEmpty(v) {
-		return "", xerr.CacheKeyNotFound
+		if errors.Is(err, redis.Nil) {
+			return "", xerr.CacheKeyNotFound
+		} else {
+			return "", err
+		}
 	}
 	return v, nil
 }
@@ -40,7 +39,7 @@ func (s *Cache) ReadHash(ctx context.Context, key string, field string) (string,
 		if errors.Is(err, redis.Nil) {
 			return "", xerr.CacheKeyNotFound
 		} else {
-			return "", xerr.UnexpectedErrorOccurred
+			return "", err
 		}
 	}
 	return ret, nil
@@ -52,7 +51,7 @@ func (s *Cache) ReadHashAll(ctx context.Context, key string) (map[string]string,
 		if errors.Is(err, redis.Nil) {
 			return nil, xerr.CacheKeyNotFound
 		} else {
-			return nil, xerr.UnexpectedErrorOccurred
+			return nil, err
 		}
 	}
 	return ret, nil

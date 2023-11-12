@@ -128,7 +128,7 @@ func (t *TokenHdlr) revokeAuthCode(ctx context.Context, code, clientId string) e
 
 const accessTokenKey = "AccessToken"
 const refreshTokenKey = "RefreshToken"
-const idTokenKey = "IdToken"
+const idTokenKey = "IDToken"
 
 func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error) {
 	accessToken, err := t.svc.GenerateAccessToken(uid)
