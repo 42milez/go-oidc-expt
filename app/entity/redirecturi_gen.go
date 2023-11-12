@@ -17,7 +17,7 @@ type RedirectUri struct {
 	entity *ent.RedirectUri
 }
 
-func (ru *RedirectUri) ID() typedef.RedirectUriID {
+func (ru *RedirectUri) ID() typedef.RedirectURIID {
 	return ru.entity.ID
 }
 

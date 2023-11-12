@@ -70,15 +70,6 @@ func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicE
 	RespondJSON(w, r, http.StatusBadRequest, body)
 }
 
-func RespondTokenRequestError(w http.ResponseWriter, err xerr.OIDCError) {
-	body := &struct {
-		Error xerr.OIDCError `json:"error,string"`
-	}{
-		Error: err,
-	}
-	RespondJSON(w, nil, http.StatusBadRequest, body)
-}
-
 func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicError, details []string, err error) {
 	body := &Response{
 		Status:  http.StatusUnauthorized,
@@ -141,4 +132,26 @@ func Redirect(w http.ResponseWriter, r *http.Request, path string, code int) {
 	}
 
 	http.Redirect(w, r, redirectURL.String(), code)
+}
+
+type OIDCError struct {
+	Error            xerr.OIDCError `json:"error,string"`
+	ErrorDescription string         `json:"error_description,omitempty"`
+	ErrorUri         string         `json:"error_uri,omitempty"`
+}
+
+func RespondTokenRequestError(w http.ResponseWriter, r *http.Request, err xerr.OIDCError) {
+	body := &OIDCError{
+		Error: err,
+	}
+	RespondJSON(w, r, http.StatusBadRequest, body)
+}
+
+func RespondServerError(w http.ResponseWriter, r *http.Request) {
+	body := &struct {
+		Error xerr.OIDCError `json:"error,string"`
+	}{
+		Error: xerr.ServerError,
+	}
+	RespondJSON(w, r, http.StatusInternalServerError, body)
 }

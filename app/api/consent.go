@@ -51,7 +51,7 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	uid, ok := ch.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
+		RespondJSON401(w, r, xerr.InvalidRequest2, nil, nil)
 		return
 	}
 

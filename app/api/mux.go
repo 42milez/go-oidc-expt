@@ -142,13 +142,13 @@ func extractCredential(r *http.Request) ([]string, error) {
 	authHdr := r.Header.Get("Authorization")
 
 	if xutil.IsEmpty(authHdr) {
-		return nil, xerr.UnauthorizedRequest
+		return nil, xerr.CredentialNotFoundInHeader
 	}
 
 	credentialBase64 := strings.Replace(authHdr, "Basic ", "", -1)
 	credentialDecoded, err := base64.StdEncoding.DecodeString(credentialBase64)
 	if err != nil {
-		return nil, xerr.UnexpectedErrorOccurred
+		return nil, err
 	}
 
 	credentials := strings.Split(string(credentialDecoded), ":")
@@ -162,7 +162,7 @@ func NewOapiErrorHandler() nethttpmiddleware.ErrorHandler {
 		case http.StatusBadRequest:
 			RespondJSON400(w, nil, xerr.InvalidRequest2, nil, nil)
 		case http.StatusUnauthorized:
-			RespondTokenRequestError(w, xerr.InvalidClient)
+			RespondTokenRequestError(w, nil, xerr.InvalidClient)
 		case http.StatusNotFound:
 			RespondJSON404(w)
 		default:

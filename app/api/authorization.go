@@ -64,12 +64,12 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	uid, ok := a.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+		RespondJSON401(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 
 	authParam := &typedef.OpenIdParam{
-		RedirectUri: q.RedirectUri,
+		RedirectURI: q.RedirectUri,
 		UserId:      uid,
 	}
 

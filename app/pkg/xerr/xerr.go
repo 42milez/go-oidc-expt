@@ -27,6 +27,8 @@ var (
 	UnknownSecurityScheme          InternalError = "unknown security scheme"
 	UserIdNotFoundInContext        InternalError = "user id not found in context"
 	UserNotFound                   InternalError = "user not found"
+	CredentialNotFoundInHeader     InternalError = "credential not found in header"
+	UnauthorizedRequest            InternalError = "unauthorized request"
 )
 
 var (
@@ -34,7 +36,6 @@ var (
 	InvalidUsernameOrPassword   PublicError = "invalid username or password"
 	OK                          PublicError = "ok"
 	ServiceTemporaryUnavailable PublicError = "service temporary unavailable"
-	UnauthorizedRequest         PublicError = "unauthorized request"
 	UnexpectedErrorOccurred     PublicError = "unexpected error occurred"
 )
 

@@ -42,53 +42,39 @@ type TokenHdlr struct {
 func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	credentials, err := extractCredential(r)
 	if err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+		RespondTokenRequestError(w, r, xerr.InvalidGrant)
+		return
 	}
-
 	clientId := credentials[0]
 
 	param, err := t.parseForm(r)
 	if err != nil {
-		if errors.Is(err, xerr.MalformedFormParameter) {
-			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
-			return
-		}
-		RespondJSON500(w, r, err)
+		RespondServerError(w, r)
 		return
 	}
 
 	if err = t.v.Struct(param); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+		RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		return
 	}
 
 	if param.GrantType == config.AuthorizationCodeGrantType {
-		t.handleAuthCodeGrantType(w, r, param, clientId)
+		t.handleAuthCodeGrant(w, r, param, clientId)
 		return
 	} else if param.GrantType == config.RefreshTokenGrantType {
-		t.handleRefreshTokenGrantType(w, r, param, clientId)
+		t.handleRefreshTokenGrant(w, r, param, clientId)
 		return
 	} else {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+		RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		return
 	}
 }
 
-func (t *TokenHdlr) revokeAuthCode(ctx context.Context, code, clientId string) error {
-	if err := t.svc.ValidateAuthCode(ctx, code, clientId); err != nil {
-		return err
-	}
-	if err := t.svc.RevokeAuthCode(ctx, code, clientId); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
+func (t *TokenHdlr) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	ctx := r.Context()
 
 	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectUri) {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, nil)
+		RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		return
 	}
 
@@ -99,23 +85,23 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 
 	authParam, err := t.cache.ReadOpenIdParam(ctx, clientId, *param.Code)
 	if err != nil {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
+		t.respondAuthCodeError(w, r, err)
 		return
 	}
 
-	if *param.RedirectUri != authParam.RedirectUri {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+	if *param.RedirectUri != authParam.RedirectURI {
+		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
 
 	tokens, err := t.generateToken(authParam.UserId)
 	if err != nil {
-		RespondJSON500(w, r, err)
+		RespondServerError(w, r)
 		return
 	}
 
 	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, authParam.UserId); err != nil {
-		RespondJSON500(w, r, err)
+		RespondServerError(w, r)
 		return
 	}
 
@@ -128,6 +114,16 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 	}
 
 	RespondJSON(w, r, http.StatusOK, resp)
+}
+
+func (t *TokenHdlr) revokeAuthCode(ctx context.Context, code, clientId string) error {
+	if err := t.svc.ValidateAuthCode(ctx, code, clientId); err != nil {
+		return err
+	}
+	if err := t.svc.RevokeAuthCode(ctx, code, clientId); err != nil {
+		return err
+	}
+	return nil
 }
 
 const accessTokenKey = "AccessToken"
@@ -158,18 +154,21 @@ func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error
 }
 
 func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request, err error) {
-	if errors.Is(err, xerr.AuthCodeNotFound) {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
-	} else if errors.Is(err, xerr.AuthCodeExpired) {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
-	} else if errors.Is(err, xerr.AuthCodeUsed) {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
-	} else {
-		RespondJSON500(w, r, err)
+	invalidGrant := errors.Is(err, xerr.AuthCodeNotFound) || errors.Is(err, xerr.AuthCodeExpired) ||
+		errors.Is(err, xerr.AuthCodeUsed)
+	if invalidGrant {
+		RespondTokenRequestError(w, r, xerr.InvalidGrant)
+		return
 	}
+
+	if errors.Is(err, xerr.UnauthorizedRequest) {
+		RespondTokenRequestError(w, r, xerr.InvalidRequest)
+	}
+
+	RespondServerError(w, r)
 }
 
-func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
+func (t *TokenHdlr) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	ctx := r.Context()
 
 	perm, err := t.svc.ReadRefreshTokenPermission(ctx, *param.RefreshToken, clientId)
@@ -177,7 +176,7 @@ func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.R
 		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
 			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		} else if errors.Is(err, xerr.RefreshTokenPermissionNotFound) {
-			RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+			RespondJSON401(w, r, xerr.InvalidRequest2, nil, err)
 		} else {
 			RespondJSON500(w, r, err)
 		}
@@ -218,7 +217,7 @@ func (t *TokenHdlr) parseForm(r *http.Request) (*TokenFormdataBody, error) {
 
 	params, err := url.ParseQuery(string(body))
 	if err != nil {
-		return nil, xerr.MalformedFormParameter
+		return nil, err
 	}
 
 	code := params.Get("code")

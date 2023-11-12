@@ -3,6 +3,7 @@ package httpstore
 import (
 	"context"
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -18,7 +19,7 @@ import (
 
 const nRetryWriteCache = 3
 const clientIdFieldName = "ClientId"
-const redirectUriFieldName = "RedirectUri"
+const redirectURIFieldName = "RedirectURI"
 const userIdFieldName = "UserId"
 
 func NewCache(opt *option.Option) *Cache {
@@ -35,24 +36,20 @@ type Cache struct {
 
 func (c *Cache) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
 	key := openIdParamCacheKey(clientId, authCode)
-
-	redirectUri, err := c.repo.ReadHash(ctx, key, redirectUriFieldName)
-	if err != nil {
-		return nil, err
+	values, err := c.repo.ReadHashAll(ctx, key)
+	if errors.Is(err, xerr.CacheKeyNotFound) {
+		return nil, xerr.UnauthorizedRequest
 	}
 
-	userId, err := c.repo.ReadHash(ctx, key, userIdFieldName)
-	if err != nil {
-		return nil, err
-	}
-	userIdUint64, err := strconv.ParseUint(userId, 10, 64)
+	redirectURI := values[redirectURIFieldName]
+	userID, err := strconv.ParseUint(values[userIdFieldName], 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
 	return &typedef.OpenIdParam{
-		RedirectUri: redirectUri,
-		UserId:      typedef.UserID(userIdUint64),
+		RedirectURI: redirectURI,
+		UserId:      typedef.UserID(userID),
 	}, nil
 }
 
@@ -94,7 +91,7 @@ func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, 
 func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error {
 	key := openIdParamCacheKey(clientId, authCode)
 	values := map[string]string{
-		redirectUriFieldName: param.RedirectUri,
+		redirectURIFieldName: param.RedirectURI,
 		userIdFieldName:      strconv.FormatUint(uint64(param.UserId), 10),
 	}
 	ok, err := c.repo.WriteHash(ctx, key, values, config.AuthCodeTTL)

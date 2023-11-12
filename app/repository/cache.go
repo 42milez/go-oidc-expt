@@ -2,7 +2,10 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
@@ -32,11 +35,27 @@ func (s *Cache) Read(ctx context.Context, key string) (string, error) {
 }
 
 func (s *Cache) ReadHash(ctx context.Context, key string, field string) (string, error) {
-	return s.cache.Client.HGet(ctx, key, field).Result()
+	ret, err := s.cache.Client.HGet(ctx, key, field).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return "", xerr.CacheKeyNotFound
+		} else {
+			return "", xerr.UnexpectedErrorOccurred
+		}
+	}
+	return ret, nil
 }
 
 func (s *Cache) ReadHashAll(ctx context.Context, key string) (map[string]string, error) {
-	return s.cache.Client.HGetAll(ctx, key).Result()
+	ret, err := s.cache.Client.HGetAll(ctx, key).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return nil, xerr.CacheKeyNotFound
+		} else {
+			return nil, xerr.UnexpectedErrorOccurred
+		}
+	}
+	return ret, nil
 }
 
 func (s *Cache) Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {

@@ -108,8 +108,8 @@ func (ruq *RedirectUriQuery) FirstX(ctx context.Context) *RedirectUri {
 
 // FirstID returns the first RedirectUri ID from the query.
 // Returns a *NotFoundError when no RedirectUri ID was found.
-func (ruq *RedirectUriQuery) FirstID(ctx context.Context) (id typedef.RedirectUriID, err error) {
-	var ids []typedef.RedirectUriID
+func (ruq *RedirectUriQuery) FirstID(ctx context.Context) (id typedef.RedirectURIID, err error) {
+	var ids []typedef.RedirectURIID
 	if ids, err = ruq.Limit(1).IDs(setContextOp(ctx, ruq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -121,7 +121,7 @@ func (ruq *RedirectUriQuery) FirstID(ctx context.Context) (id typedef.RedirectUr
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ruq *RedirectUriQuery) FirstIDX(ctx context.Context) typedef.RedirectUriID {
+func (ruq *RedirectUriQuery) FirstIDX(ctx context.Context) typedef.RedirectURIID {
 	id, err := ruq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -159,8 +159,8 @@ func (ruq *RedirectUriQuery) OnlyX(ctx context.Context) *RedirectUri {
 // OnlyID is like Only, but returns the only RedirectUri ID in the query.
 // Returns a *NotSingularError when more than one RedirectUri ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ruq *RedirectUriQuery) OnlyID(ctx context.Context) (id typedef.RedirectUriID, err error) {
-	var ids []typedef.RedirectUriID
+func (ruq *RedirectUriQuery) OnlyID(ctx context.Context) (id typedef.RedirectURIID, err error) {
+	var ids []typedef.RedirectURIID
 	if ids, err = ruq.Limit(2).IDs(setContextOp(ctx, ruq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -176,7 +176,7 @@ func (ruq *RedirectUriQuery) OnlyID(ctx context.Context) (id typedef.RedirectUri
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ruq *RedirectUriQuery) OnlyIDX(ctx context.Context) typedef.RedirectUriID {
+func (ruq *RedirectUriQuery) OnlyIDX(ctx context.Context) typedef.RedirectURIID {
 	id, err := ruq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,7 +204,7 @@ func (ruq *RedirectUriQuery) AllX(ctx context.Context) []*RedirectUri {
 }
 
 // IDs executes the query and returns a list of RedirectUri IDs.
-func (ruq *RedirectUriQuery) IDs(ctx context.Context) (ids []typedef.RedirectUriID, err error) {
+func (ruq *RedirectUriQuery) IDs(ctx context.Context) (ids []typedef.RedirectURIID, err error) {
 	if ruq.ctx.Unique == nil && ruq.path != nil {
 		ruq.Unique(true)
 	}
@@ -216,7 +216,7 @@ func (ruq *RedirectUriQuery) IDs(ctx context.Context) (ids []typedef.RedirectUri
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ruq *RedirectUriQuery) IDsX(ctx context.Context) []typedef.RedirectUriID {
+func (ruq *RedirectUriQuery) IDsX(ctx context.Context) []typedef.RedirectURIID {
 	ids, err := ruq.IDs(ctx)
 	if err != nil {
 		panic(err)

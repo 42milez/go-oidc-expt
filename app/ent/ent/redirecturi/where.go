@@ -12,47 +12,47 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id typedef.RedirectUriID) predicate.RedirectUri {
+func ID(id typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id typedef.RedirectUriID) predicate.RedirectUri {
+func IDEQ(id typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id typedef.RedirectUriID) predicate.RedirectUri {
+func IDNEQ(id typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...typedef.RedirectUriID) predicate.RedirectUri {
+func IDIn(ids ...typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...typedef.RedirectUriID) predicate.RedirectUri {
+func IDNotIn(ids ...typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id typedef.RedirectUriID) predicate.RedirectUri {
+func IDGT(id typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id typedef.RedirectUriID) predicate.RedirectUri {
+func IDGTE(id typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id typedef.RedirectUriID) predicate.RedirectUri {
+func IDLT(id typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id typedef.RedirectUriID) predicate.RedirectUri {
+func IDLTE(id typedef.RedirectURIID) predicate.RedirectUri {
 	return predicate.RedirectUri(sql.FieldLTE(FieldID, id))
 }
 

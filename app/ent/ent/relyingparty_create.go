@@ -85,14 +85,14 @@ func (rpc *RelyingPartyCreate) AddAuthCodes(a ...*AuthCode) *RelyingPartyCreate 
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectUri entity by IDs.
-func (rpc *RelyingPartyCreate) AddRedirectURIIDs(ids ...typedef.RedirectUriID) *RelyingPartyCreate {
+func (rpc *RelyingPartyCreate) AddRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyCreate {
 	rpc.mutation.AddRedirectURIIDs(ids...)
 	return rpc
 }
 
 // AddRedirectUris adds the "redirect_uris" edges to the RedirectUri entity.
 func (rpc *RelyingPartyCreate) AddRedirectUris(r ...*RedirectUri) *RelyingPartyCreate {
-	ids := make([]typedef.RedirectUriID, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}

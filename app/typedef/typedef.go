@@ -7,7 +7,7 @@ import "strconv"
 
 type AuthCodeID uint64
 type ConsentID uint64
-type RedirectUriID uint64
+type RedirectURIID uint64
 type RelyingPartyID uint64
 type SessionID uint64
 type UserID uint64
@@ -37,7 +37,7 @@ func (uid UserID) String() string {
 // --------------------------------------------------
 
 type OpenIdParam struct {
-	RedirectUri string
+	RedirectURI string
 	UserId      UserID
 }
 
