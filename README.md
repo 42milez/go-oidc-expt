@@ -194,4 +194,5 @@ docker-compose up -d swagger-ui
     - [Lock-free/Wait-free algorithm](https://ja.wikipedia.org/wiki/Lock-free%E3%81%A8Wait-free%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0)
     - [Semaphore](https://en.wikipedia.org/wiki/Semaphore_(programming))
 - Others
+  - [Go Style Decisions: Naming](https://google.github.io/styleguide/go/decisions#naming)
   - [Go at Google: Language Design in the Service of Software Engineering](https://go.dev/talks/2012/splash.article)
