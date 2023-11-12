@@ -208,10 +208,10 @@ func ConfigureDatastore(ctx context.Context, cfg *config.Config, opt *option.Opt
 }
 
 func ConfigureHandler(opt *option.Option) {
-	checkHealthHdlr = NewCheckHealthHdlr(opt)
-	registerUserHdlr = NewRegisterHdlr(opt)
-	authenticateUserHdlr = NewAuthenticateHdlr(opt)
-	consentHdlr = NewConsentHdlr(opt)
-	authorizeGetHdlr = NewAuthorizeGetHdlr(opt)
-	tokenHdlr = NewTokenHdlr(opt)
+	healthCheck = NewHealthCheck(opt)
+	registration = NewRegistration(opt)
+	authentication = NewAuthentication(opt)
+	consent = NewConsent(opt)
+	authorizationGet = NewAuthorizationGet(opt)
+	token = NewToken(opt)
 }

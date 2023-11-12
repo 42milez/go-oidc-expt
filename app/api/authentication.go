@@ -23,10 +23,10 @@ import (
 
 const sessionIDCookieName = config.SessionIDCookieName
 
-var authenticateUserHdlr *AuthenticateHdlr
+var authentication *Authentication
 
-func NewAuthenticateHdlr(opt *option.Option) *AuthenticateHdlr {
-	return &AuthenticateHdlr{
+func NewAuthentication(opt *option.Option) *Authentication {
+	return &Authentication{
 		svc:    service.NewAuthenticate(opt),
 		cache:  httpstore.NewCache(opt),
 		cookie: opt.Cookie,
@@ -34,14 +34,14 @@ func NewAuthenticateHdlr(opt *option.Option) *AuthenticateHdlr {
 	}
 }
 
-type AuthenticateHdlr struct {
+type Authentication struct {
 	svc    Authenticator
 	cache  iface.UserInfoWriter
 	cookie iface.CookieWriter
 	v      iface.StructValidator
 }
 
-func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ah *Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var q *AuthorizeParams
@@ -92,7 +92,7 @@ func (ah *AuthenticateHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
 }
 
-func (ah *AuthenticateHdlr) parseRequestBody(r *http.Request) (*AuthenticateJSONRequestBody, error) {
+func (ah *Authentication) parseRequestBody(r *http.Request) (*AuthenticateJSONRequestBody, error) {
 	var ret *AuthenticateJSONRequestBody
 
 	if err := json.NewDecoder(r.Body).Decode(&ret); err != nil {
@@ -106,7 +106,7 @@ func (ah *AuthenticateHdlr) parseRequestBody(r *http.Request) (*AuthenticateJSON
 	return ret, nil
 }
 
-func (ah *AuthenticateHdlr) respondError(w http.ResponseWriter, r *http.Request, err error) {
+func (ah *Authentication) respondError(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, xerr.FailedToValidate) {
 		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return

@@ -29,6 +29,10 @@ var (
 	UserNotFound                   InternalError = "user not found"
 	CredentialNotFoundInHeader     InternalError = "credential not found in header"
 	UnauthorizedRequest            InternalError = "unauthorized request"
+	ParameterNotFound              InternalError = "parameter not found"
+	RedirectURINotMatched          InternalError = "redirect uri not matched"
+	RecordNotFound                 InternalError = "record not found"
+	FailedToRevokeAuthCode         InternalError = "failed to revoke authorization code"
 )
 
 var (

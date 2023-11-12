@@ -56,7 +56,7 @@ func (ac *AuthCode) ReadAuthCode(ctx context.Context, code, clientId string) (*e
 
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {
-			return nil, xerr.AuthCodeNotFound
+			return nil, xerr.RecordNotFound
 		} else {
 			return nil, err
 		}

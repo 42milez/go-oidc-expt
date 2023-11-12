@@ -65,10 +65,6 @@ type CredentialValidator interface {
 	ValidateCredential(ctx context.Context, clientID, clientSecret string) error
 }
 
-type AuthCodeValidator interface {
-	ValidateAuthCode(ctx context.Context, code, clientId string) error
-}
-
 type RefreshTokenPermissionReader interface {
 	ReadRefreshTokenPermission(ctx context.Context, token string, clientId string) (*typedef.RefreshTokenPermission, error)
 }
@@ -82,11 +78,15 @@ type TokenCacheReadWriter interface {
 	iface.RefreshTokenPermissionWriter
 }
 
-type TokenRequestAcceptor interface {
-	AuthCodeValidator
+type AuthCodeGrantAcceptor interface {
 	AuthCodeRevoker
-	RefreshTokenPermissionReader
 	iface.AccessTokenGenerator
 	iface.RefreshTokenGenerator
 	iface.IdTokenGenerator
+}
+
+type RefreshTokenGrantAcceptor interface {
+	RefreshTokenPermissionReader
+	iface.AccessTokenGenerator
+	iface.RefreshTokenGenerator
 }

@@ -16,10 +16,10 @@ import (
 	"github.com/gorilla/schema"
 )
 
-var authorizeGetHdlr *AuthorizeGetHdlr
+var authorizationGet *AuthorizationGet
 
-func NewAuthorizeGetHdlr(opt *option.Option) *AuthorizeGetHdlr {
-	return &AuthorizeGetHdlr{
+func NewAuthorizationGet(opt *option.Option) *AuthorizationGet {
+	return &AuthorizationGet{
 		svc:     service.NewAuthorize(opt),
 		cache:   httpstore.NewCache(opt),
 		context: &httpstore.Context{},
@@ -27,14 +27,14 @@ func NewAuthorizeGetHdlr(opt *option.Option) *AuthorizeGetHdlr {
 	}
 }
 
-type AuthorizeGetHdlr struct {
+type AuthorizationGet struct {
 	svc     Authorizer
 	cache   iface.OpenIdParamWriter
 	context iface.ContextReader
 	v       iface.StructValidator
 }
 
-func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
 	q := &AuthorizeParams{}
 

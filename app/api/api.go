@@ -10,25 +10,25 @@ import (
 type HandlerImpl struct{}
 
 func (_ *HandlerImpl) Authenticate(w http.ResponseWriter, r *http.Request) {
-	authenticateUserHdlr.ServeHTTP(w, r)
+	authentication.ServeHTTP(w, r)
 }
 
 func (_ *HandlerImpl) Authorize(w http.ResponseWriter, r *http.Request) {
-	authorizeGetHdlr.ServeHTTP(w, r)
+	authorizationGet.ServeHTTP(w, r)
 }
 
 func (_ *HandlerImpl) CheckHealth(w http.ResponseWriter, r *http.Request) {
-	checkHealthHdlr.ServeHTTP(w, r)
+	healthCheck.ServeHTTP(w, r)
 }
 
 func (_ *HandlerImpl) Consent(w http.ResponseWriter, r *http.Request) {
-	consentHdlr.ServeHTTP(w, r)
+	consent.ServeHTTP(w, r)
 }
 
 func (_ *HandlerImpl) Register(w http.ResponseWriter, r *http.Request) {
-	registerUserHdlr.ServeHTTP(w, r)
+	registration.ServeHTTP(w, r)
 }
 
 func (_ *HandlerImpl) Token(w http.ResponseWriter, r *http.Request) {
-	tokenHdlr.ServeHTTP(w, r)
+	token.ServeHTTP(w, r)
 }

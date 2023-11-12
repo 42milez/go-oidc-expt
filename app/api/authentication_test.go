@@ -182,7 +182,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 				t.Error(err)
 			}
 
-			sut := AuthenticateHdlr{
+			sut := Authentication{
 				svc:    svcMock,
 				cache:  sessMock,
 				cookie: httpstore.NewCookie(security.RawCookieHashKey, security.RawCookieBlockKey, &xtestutil.FixedClocker{}),

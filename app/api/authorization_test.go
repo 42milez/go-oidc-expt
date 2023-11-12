@@ -83,7 +83,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			hdlr := &AuthorizeGetHdlr{
+			hdlr := &AuthorizationGet{
 				svc:     svcMock,
 				context: ctxMock,
 				cache:   sessMock,
