@@ -59,7 +59,7 @@ func TestCache_WriteUserInfo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
 	cacheRWMock := NewMockCacheReadWriter(ctrl)
-	cacheRWMock.EXPECT().WriteHash(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(true, nil).AnyTimes()
+	cacheRWMock.EXPECT().WriteHash(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 	idGenMock := iface.NewMockIdGenerator(ctrl)
 	idGenMock.EXPECT().NextID().Return(uint64(wantSid), nil).AnyTimes()

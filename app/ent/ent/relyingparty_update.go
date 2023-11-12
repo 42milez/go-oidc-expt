@@ -59,14 +59,14 @@ func (rpu *RelyingPartyUpdate) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpdate 
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectUri entity by IDs.
-func (rpu *RelyingPartyUpdate) AddRedirectURIIDs(ids ...typedef.RedirectUriID) *RelyingPartyUpdate {
+func (rpu *RelyingPartyUpdate) AddRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyUpdate {
 	rpu.mutation.AddRedirectURIIDs(ids...)
 	return rpu
 }
 
 // AddRedirectUris adds the "redirect_uris" edges to the RedirectUri entity.
 func (rpu *RelyingPartyUpdate) AddRedirectUris(r ...*RedirectUri) *RelyingPartyUpdate {
-	ids := make([]typedef.RedirectUriID, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -106,14 +106,14 @@ func (rpu *RelyingPartyUpdate) ClearRedirectUris() *RelyingPartyUpdate {
 }
 
 // RemoveRedirectURIIDs removes the "redirect_uris" edge to RedirectUri entities by IDs.
-func (rpu *RelyingPartyUpdate) RemoveRedirectURIIDs(ids ...typedef.RedirectUriID) *RelyingPartyUpdate {
+func (rpu *RelyingPartyUpdate) RemoveRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyUpdate {
 	rpu.mutation.RemoveRedirectURIIDs(ids...)
 	return rpu
 }
 
 // RemoveRedirectUris removes "redirect_uris" edges to RedirectUri entities.
 func (rpu *RelyingPartyUpdate) RemoveRedirectUris(r ...*RedirectUri) *RelyingPartyUpdate {
-	ids := make([]typedef.RedirectUriID, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -322,14 +322,14 @@ func (rpuo *RelyingPartyUpdateOne) AddAuthCodes(a ...*AuthCode) *RelyingPartyUpd
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectUri entity by IDs.
-func (rpuo *RelyingPartyUpdateOne) AddRedirectURIIDs(ids ...typedef.RedirectUriID) *RelyingPartyUpdateOne {
+func (rpuo *RelyingPartyUpdateOne) AddRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyUpdateOne {
 	rpuo.mutation.AddRedirectURIIDs(ids...)
 	return rpuo
 }
 
 // AddRedirectUris adds the "redirect_uris" edges to the RedirectUri entity.
 func (rpuo *RelyingPartyUpdateOne) AddRedirectUris(r ...*RedirectUri) *RelyingPartyUpdateOne {
-	ids := make([]typedef.RedirectUriID, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
@@ -369,14 +369,14 @@ func (rpuo *RelyingPartyUpdateOne) ClearRedirectUris() *RelyingPartyUpdateOne {
 }
 
 // RemoveRedirectURIIDs removes the "redirect_uris" edge to RedirectUri entities by IDs.
-func (rpuo *RelyingPartyUpdateOne) RemoveRedirectURIIDs(ids ...typedef.RedirectUriID) *RelyingPartyUpdateOne {
+func (rpuo *RelyingPartyUpdateOne) RemoveRedirectURIIDs(ids ...typedef.RedirectURIID) *RelyingPartyUpdateOne {
 	rpuo.mutation.RemoveRedirectURIIDs(ids...)
 	return rpuo
 }
 
 // RemoveRedirectUris removes "redirect_uris" edges to RedirectUri entities.
 func (rpuo *RelyingPartyUpdateOne) RemoveRedirectUris(r ...*RedirectUri) *RelyingPartyUpdateOne {
-	ids := make([]typedef.RedirectUriID, len(r))
+	ids := make([]typedef.RedirectURIID, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}

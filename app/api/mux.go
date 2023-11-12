@@ -89,13 +89,15 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 		},
 		ErrorHandler: NewOapiErrorHandler(),
 	}))
+	mux.Use(InjectRequestParameter())
 
 	// Middleware Configuration on Each Handler
 
 	mw := NewMiddlewareFuncMap()
-	rs := RestoreSession(opt)
+	restoreSessMW := RestoreSession(opt)
 
-	mw.SetAuthenticateMW(rs).SetAuthorizeMW(rs).SetConsentMW(rs).SetRegisterMW(rs)
+	mw.SetAuthenticateMW(restoreSessMW).SetAuthorizeMW(restoreSessMW).SetConsentMW(restoreSessMW).
+		SetRegisterMW(restoreSessMW)
 
 	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,
@@ -140,13 +142,13 @@ func extractCredential(r *http.Request) ([]string, error) {
 	authHdr := r.Header.Get("Authorization")
 
 	if xutil.IsEmpty(authHdr) {
-		return nil, xerr.UnauthorizedRequest
+		return nil, xerr.CredentialNotFoundInHeader
 	}
 
 	credentialBase64 := strings.Replace(authHdr, "Basic ", "", -1)
 	credentialDecoded, err := base64.StdEncoding.DecodeString(credentialBase64)
 	if err != nil {
-		return nil, xerr.UnexpectedErrorOccurred
+		return nil, err
 	}
 
 	credentials := strings.Split(string(credentialDecoded), ":")
@@ -158,9 +160,9 @@ func NewOapiErrorHandler() nethttpmiddleware.ErrorHandler {
 	return func(w http.ResponseWriter, message string, statusCode int) {
 		switch statusCode {
 		case http.StatusBadRequest:
-			RespondJSON400(w, nil, xerr.InvalidRequest, nil, nil)
+			RespondJSON400(w, nil, xerr.InvalidRequest2, nil, nil)
 		case http.StatusUnauthorized:
-			RespondJSON401(w, nil, xerr.UnauthorizedRequest, nil, nil)
+			RespondTokenRequestError(w, nil, xerr.InvalidClient)
 		case http.StatusNotFound:
 			RespondJSON404(w)
 		default:
@@ -184,7 +186,7 @@ func NewOption() (*option.Option, error) {
 		return nil, err
 	}
 
-	if opt.V, err = NewAuthorizeParamValidator(); err != nil {
+	if opt.V, err = NewRequestParamValidator(); err != nil {
 		return nil, err
 	}
 
@@ -206,10 +208,10 @@ func ConfigureDatastore(ctx context.Context, cfg *config.Config, opt *option.Opt
 }
 
 func ConfigureHandler(opt *option.Option) {
-	checkHealthHdlr = NewCheckHealthHdlr(opt)
-	registerUserHdlr = NewRegisterHdlr(opt)
-	authenticateUserHdlr = NewAuthenticateHdlr(opt)
-	consentHdlr = NewConsentHdlr(opt)
-	authorizeGetHdlr = NewAuthorizeGetHdlr(opt)
-	tokenHdlr = NewTokenHdlr(opt)
+	healthCheck = NewHealthCheck(opt)
+	registration = NewRegistration(opt)
+	authentication = NewAuthentication(opt)
+	consent = NewConsent(opt)
+	authorizationGet = NewAuthorizationGet(opt)
+	token = NewToken(opt)
 }

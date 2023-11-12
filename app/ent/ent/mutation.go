@@ -1306,7 +1306,7 @@ type RedirectUriMutation struct {
 	config
 	op                   Op
 	typ                  string
-	id                   *typedef.RedirectUriID
+	id                   *typedef.RedirectURIID
 	uri                  *string
 	created_at           *time.Time
 	modified_at          *time.Time
@@ -1338,7 +1338,7 @@ func newRedirectUriMutation(c config, op Op, opts ...redirecturiOption) *Redirec
 }
 
 // withRedirectUriID sets the ID field of the mutation.
-func withRedirectUriID(id typedef.RedirectUriID) redirecturiOption {
+func withRedirectUriID(id typedef.RedirectURIID) redirecturiOption {
 	return func(m *RedirectUriMutation) {
 		var (
 			err   error
@@ -1390,13 +1390,13 @@ func (m RedirectUriMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of RedirectUri entities.
-func (m *RedirectUriMutation) SetID(id typedef.RedirectUriID) {
+func (m *RedirectUriMutation) SetID(id typedef.RedirectURIID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *RedirectUriMutation) ID() (id typedef.RedirectUriID, exists bool) {
+func (m *RedirectUriMutation) ID() (id typedef.RedirectURIID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1407,12 +1407,12 @@ func (m *RedirectUriMutation) ID() (id typedef.RedirectUriID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *RedirectUriMutation) IDs(ctx context.Context) ([]typedef.RedirectUriID, error) {
+func (m *RedirectUriMutation) IDs(ctx context.Context) ([]typedef.RedirectURIID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []typedef.RedirectUriID{id}, nil
+			return []typedef.RedirectURIID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1866,8 +1866,8 @@ type RelyingPartyMutation struct {
 	auth_codes           map[typedef.AuthCodeID]struct{}
 	removedauth_codes    map[typedef.AuthCodeID]struct{}
 	clearedauth_codes    bool
-	redirect_uris        map[typedef.RedirectUriID]struct{}
-	removedredirect_uris map[typedef.RedirectUriID]struct{}
+	redirect_uris        map[typedef.RedirectURIID]struct{}
+	removedredirect_uris map[typedef.RedirectURIID]struct{}
 	clearedredirect_uris bool
 	done                 bool
 	oldValue             func(context.Context) (*RelyingParty, error)
@@ -2177,9 +2177,9 @@ func (m *RelyingPartyMutation) ResetAuthCodes() {
 }
 
 // AddRedirectURIIDs adds the "redirect_uris" edge to the RedirectUri entity by ids.
-func (m *RelyingPartyMutation) AddRedirectURIIDs(ids ...typedef.RedirectUriID) {
+func (m *RelyingPartyMutation) AddRedirectURIIDs(ids ...typedef.RedirectURIID) {
 	if m.redirect_uris == nil {
-		m.redirect_uris = make(map[typedef.RedirectUriID]struct{})
+		m.redirect_uris = make(map[typedef.RedirectURIID]struct{})
 	}
 	for i := range ids {
 		m.redirect_uris[ids[i]] = struct{}{}
@@ -2197,9 +2197,9 @@ func (m *RelyingPartyMutation) RedirectUrisCleared() bool {
 }
 
 // RemoveRedirectURIIDs removes the "redirect_uris" edge to the RedirectUri entity by IDs.
-func (m *RelyingPartyMutation) RemoveRedirectURIIDs(ids ...typedef.RedirectUriID) {
+func (m *RelyingPartyMutation) RemoveRedirectURIIDs(ids ...typedef.RedirectURIID) {
 	if m.removedredirect_uris == nil {
-		m.removedredirect_uris = make(map[typedef.RedirectUriID]struct{})
+		m.removedredirect_uris = make(map[typedef.RedirectURIID]struct{})
 	}
 	for i := range ids {
 		delete(m.redirect_uris, ids[i])
@@ -2208,7 +2208,7 @@ func (m *RelyingPartyMutation) RemoveRedirectURIIDs(ids ...typedef.RedirectUriID
 }
 
 // RemovedRedirectUris returns the removed IDs of the "redirect_uris" edge to the RedirectUri entity.
-func (m *RelyingPartyMutation) RemovedRedirectUrisIDs() (ids []typedef.RedirectUriID) {
+func (m *RelyingPartyMutation) RemovedRedirectUrisIDs() (ids []typedef.RedirectURIID) {
 	for id := range m.removedredirect_uris {
 		ids = append(ids, id)
 	}
@@ -2216,7 +2216,7 @@ func (m *RelyingPartyMutation) RemovedRedirectUrisIDs() (ids []typedef.RedirectU
 }
 
 // RedirectUrisIDs returns the "redirect_uris" edge IDs in the mutation.
-func (m *RelyingPartyMutation) RedirectUrisIDs() (ids []typedef.RedirectUriID) {
+func (m *RelyingPartyMutation) RedirectUrisIDs() (ids []typedef.RedirectURIID) {
 	for id := range m.redirect_uris {
 		ids = append(ids, id)
 	}

@@ -15,9 +15,9 @@ import (
 )
 
 type Response struct {
-	Status  int            `json:"status"`
-	Summary xerr.PublicErr `json:"summary"`
-	Details []string       `json:"details,omitempty"`
+	Status  int              `json:"status"`
+	Summary xerr.PublicError `json:"summary"`
+	Details []string         `json:"details,omitempty"`
 }
 
 func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body any) {
@@ -32,7 +32,7 @@ func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body an
 
 		resp := Response{
 			Status:  http.StatusInternalServerError,
-			Summary: xerr.UnexpectedErrorOccurred,
+			Summary: xerr.UnexpectedErrorOccurred2,
 		}
 
 		if err = json.NewEncoder(w).Encode(resp); err != nil {
@@ -56,7 +56,7 @@ func RespondJSON200(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
+func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicError, details []string, err error) {
 	body := &Response{
 		Status:  http.StatusBadRequest,
 		Summary: summary,
@@ -70,7 +70,7 @@ func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicE
 	RespondJSON(w, r, http.StatusBadRequest, body)
 }
 
-func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicErr, details []string, err error) {
+func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicError, details []string, err error) {
 	body := &Response{
 		Status:  http.StatusUnauthorized,
 		Summary: summary,
@@ -95,7 +95,7 @@ func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {
 	}
 	RespondJSON(w, r, http.StatusInternalServerError, &Response{
 		Status:  http.StatusInternalServerError,
-		Summary: xerr.UnexpectedErrorOccurred,
+		Summary: xerr.UnexpectedErrorOccurred2,
 	})
 }
 
@@ -132,4 +132,26 @@ func Redirect(w http.ResponseWriter, r *http.Request, path string, code int) {
 	}
 
 	http.Redirect(w, r, redirectURL.String(), code)
+}
+
+type OIDCError struct {
+	Error            xerr.OIDCError `json:"error,string"`
+	ErrorDescription string         `json:"error_description,omitempty"`
+	ErrorUri         string         `json:"error_uri,omitempty"`
+}
+
+func RespondTokenRequestError(w http.ResponseWriter, r *http.Request, err xerr.OIDCError) {
+	body := &OIDCError{
+		Error: err,
+	}
+	RespondJSON(w, r, http.StatusBadRequest, body)
+}
+
+func RespondServerError(w http.ResponseWriter, r *http.Request) {
+	body := &struct {
+		Error xerr.OIDCError `json:"error,string"`
+	}{
+		Error: xerr.ServerError,
+	}
+	RespondJSON(w, r, http.StatusInternalServerError, body)
 }

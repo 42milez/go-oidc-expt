@@ -70,13 +70,26 @@ func RestoreSession(opt *option.Option) MiddlewareFunc {
 			}
 			sidUint64, err := strconv.ParseUint(sid, 10, 64)
 			if err != nil {
-				RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+				RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 				return
 			}
 			req, err := rs.Restore(r, typedef.SessionID(sidUint64))
 			if err != nil {
 				RespondJSON500(w, r, err)
 				return
+			}
+			next.ServeHTTP(w, req)
+		})
+	}
+}
+
+func InjectRequestParameter() MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			req, err := injectRequestParameter(r)
+			if err != nil {
+				// TODO: Handle errors
+				RespondJSON500(w, r, err)
 			}
 			next.ServeHTTP(w, req)
 		})

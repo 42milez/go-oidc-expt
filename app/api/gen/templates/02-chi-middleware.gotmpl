@@ -1,4 +1,4 @@
-//  MIDDLEWARE
+//  Middleware
 // --------------------------------------------------
 
 // HandlerInterfaceWrapper converts contexts to parameters.
@@ -112,3 +112,250 @@ type TooManyValuesForParamError struct {
 func (e *TooManyValuesForParamError) Error() string {
     return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
 }
+
+func injectRequestParameter(r *http.Request) (*http.Request, error) {
+    switch r.URL.Path {
+    {{- range . }}
+    case "{{ .Path }}":
+        return unmarshal{{ .OperationId }}Parameter(r)
+    {{- end }}
+    default:
+        return nil, xerr.InvalidPath
+    }
+}
+
+{{ range . }}
+func unmarshal{{ .OperationId }}Parameter(r *http.Request) (*http.Request, error) {
+    {{- if not (or .SecurityDefinitions .QueryParams .RequiresParamObject) -}}
+    return r, nil
+    {{- else }}
+
+    {{- if or .SecurityDefinitions .QueryParams .RequiresParamObject -}}
+    var ctx context.Context
+    {{ end }}
+    {{- if or .RequiresParamObject (gt (len .PathParams) 0) -}}
+    var err error
+    {{ end }}
+
+    {{ if .PathParams }}
+    // ==================================================
+    //  Path Parameter: BEGIN
+
+    {{ range .PathParams }}
+    var {{ $varName := .GoVariableName }}{{ $varName }} {{ .TypeDef }}
+    {{ if .IsPassThrough }}
+    {{ $varName }} = chi.URLParam(r, "{{ .ParamName }}")
+    {{ end }}
+    {{ if .IsJson }}
+    err = json.Unmarshal([]byte(chi.URLParam(r, "{{ .ParamName }}")), &{{ $varName }})
+    if err != nil {
+        return nil, &UnmarshalingParamError{
+            ParamName: "{{ .ParamName }}",
+            Err:       err,
+        }
+    }
+    {{ end }}
+    {{ if .IsStyled }}
+    err = runtime.BindStyledParameterWithLocation("{{ .Style }}",{{ .Explode }}, "{{ .ParamName }}", runtime.ParamLocationPath, chi.URLParam(r, "{{ .ParamName }}"), &{{ $varName }})
+    if err != nil {
+        return nil, &InvalidParamFormatError{
+            ParamName: "{{ .ParamName }}",
+            Err:       err,
+        }
+    }
+    {{ end }}
+    {{ end }}
+
+    //  Path Parameter: END
+    // ==================================================
+    {{ end }}
+
+    {{ if .SecurityDefinitions }}
+    // ==================================================
+    //  Security Definition: BEGIN
+
+    if ctx == nil {
+        ctx = r.Context()
+    }
+
+    {{ range .SecurityDefinitions }}
+    ctx = context.WithValue(ctx, {{ .ProviderName | sanitizeGoIdentity | ucFirst }}Scopes, {{ toStringArray .Scopes }})
+    {{ end }}
+
+    //  Security Definition: END
+    // ==================================================
+    {{ end }}
+
+    {{ if .RequiresParamObject }}
+    // ==================================================
+    // Unmarshal Parameter: BEGIN
+
+    if ctx == nil {
+        ctx = r.Context()
+    }
+
+    params := &{{ .OperationId }}Params{}
+
+    {{ if .QueryParams }}
+    // --------------------------------------------------
+    //  Query Parameter: BEGIN
+
+    if ctx == nil {
+        ctx = r.Context()
+    }
+
+    {{ range $paramIdx, $param := .QueryParams }}
+    {{ if (or (or .Required .IsPassThrough) (or .IsJson .IsStyled)) }}
+    // {{ if .Required }}Required{{ else }}Optional{{ end }} query parameter "{{ .ParamName }}"
+    {{- end -}}
+    {{ if .IsStyled }}
+    err = runtime.BindQueryParameter("{{ .Style }}", {{ .Explode }}, {{ .Required }}, "{{ .ParamName }}", r.URL.Query(), &params.{{ .GoName }})
+    if err != nil {
+        return nil, &InvalidParamFormatError{
+            ParamName: "{{ .ParamName }}",
+            Err:       err,
+        }
+    }
+    {{ else }}
+    if paramValue := r.URL.Query().Get("{{ .ParamName }}"); paramValue != "" {
+    {{ if .IsPassThrough }}
+        params.{{ .GoName }} = {{ if not .Required }}&{{ end }}paramValue
+    {{ end }}
+    {{ if .IsJson }}
+        var value {{ .TypeDef }}
+        err = json.Unmarshal([]byte(paramValue), &value)
+        if err != nil {
+            return nil, &UnmarshalingParamError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
+        }
+        params.{{ .GoName }} = {{ if not .Required }}&{{ end }}value
+    {{ end }}
+    } {{ if .Required }} else {
+        return nil, &RequiredParamError{
+            ParamName: "{{ .ParamName }}",
+        }
+    } {{ end }}
+    {{ end }}
+    {{ end }}
+
+    //  Query Parameter: END
+    // --------------------------------------------------
+    {{ end }}
+
+    {{ if .HeaderParams }}
+    // --------------------------------------------------
+    //  Header Parameter: BEGIN
+    headers := r.Header
+
+    {{ range .HeaderParams }}
+    // {{ if .Required }}Required{{ else }}Optional{{ end }} header parameter "{{ .ParamName }}"
+    if valueList, found := headers[http.CanonicalHeaderKey("{{ .ParamName }}")]; found {
+        var {{ .GoName }} {{ .TypeDef }}
+        n := len(valueList)
+        if n != 1 {
+            return nil, &TooManyValuesForParamError{
+                ParamName: "{{ .ParamName }}",
+                Count:     n,
+            }
+        }
+    {{ if .IsPassThrough }}
+        params.{{ .GoName }} = {{ if not .Required }}&{{ end }}valueList[0]
+    {{ end }}
+    {{ if .IsJson }}
+        err = json.Unmarshal([]byte(valueList[0]), &{{ .GoName }})
+        if err != nil {
+            return nil, &UnmarshalingParamError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
+        }
+    {{ end }}
+    {{ if .IsStyled }}
+        err = runtime.BindStyledParameterWithLocation("{{ .Style }}", {{ .Explode}}, "{{ .ParamName }}", runtime.ParamLocationHeader, valueList[0], &{{ .GoName }})
+        if err != nil {
+            return nil, &InvalidParamFormatError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
+        }
+    {{ end }}
+        params.{{ .GoName }} = {{ if not .Required }}&{{ end }}{{ .GoName }}
+    } {{ if .Required }} else {
+        err := fmt.Errorf("Header parameter {{ .ParamName }} is required, but not found")
+        return nil, &RequiredHeaderError{
+            ParamName: "{{ .ParamName }}",
+            Err:       err,
+        }
+    } {{ end }}
+    {{ end }}
+
+    //  Header Parameter: END
+    // --------------------------------------------------
+    {{ end }}
+
+    {{ if .CookieParams }}
+    // --------------------------------------------------
+    // Cookie Parameter: BEGIN
+
+    {{ range .CookieParams }}
+    var cookie *http.Cookie
+
+    if cookie, err = r.Cookie("{{ .ParamName }}"); err == nil {
+    {{- if .IsPassThrough -}}
+        params.{{ .GoName }} = {{ if not .Required }}&{{ end }}cookie.Value
+    {{- end -}}
+    {{- if .IsJson -}}
+        var value {{ .TypeDef }}
+        var decoded string
+        decoded, err := url.QueryUnescape(cookie.Value)
+        if err != nil {
+            err = fmt.Errorf("Error unescaping cookie parameter '{{ .ParamName }}'")
+            return nil, &UnescapedCookieParamError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
+        }
+        err = json.Unmarshal([]byte(decoded), &value)
+        if err != nil {
+            return nil, &UnmarshalingParamError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
+        }
+        params.{{ .GoName }} = {{ if not .Required }}&{{ end }}value
+    {{- end -}}
+    {{- if .IsStyled -}}
+        var value {{ .TypeDef }}
+        err = runtime.BindStyledParameter("simple", {{ .Explode }}, "{{ .ParamName}}", cookie.Value, &value)
+        if err != nil {
+            return nil, &InvalidParamFormatError{
+                ParamName: "{{ .ParamName }}",
+                Err:       err,
+            }
+        }
+        params.{{ .GoName }} = {{ if not .Required }}&{{ end }}value
+    {{- end -}}
+    } {{ if .Required }} else {
+        return nil, &RequiredParamError{
+            ParamName: "{{ .ParamName }}",
+        }
+    }
+    {{ end }}
+    {{ end }}
+
+    // Cookie Parameter: END
+    // --------------------------------------------------
+    {{ end }}
+
+    ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
+
+    // Unmarshal Parameter: END
+    // ==================================================
+    {{ end }}
+
+    return r.Clone(ctx), nil
+    {{- end }}
+}
+{{end}}

@@ -154,12 +154,11 @@ func (m *MockCacheWriter) EXPECT() *MockCacheWriterMockRecorder {
 }
 
 // Write mocks base method.
-func (m *MockCacheWriter) Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
+func (m *MockCacheWriter) Write(ctx context.Context, key string, value any, ttl time.Duration) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", ctx, key, value, ttl)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Write indicates an expected call of Write.
@@ -192,12 +191,11 @@ func (m *MockCacheHashWriter) EXPECT() *MockCacheHashWriterMockRecorder {
 }
 
 // WriteHash mocks base method.
-func (m *MockCacheHashWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) (bool, error) {
+func (m *MockCacheHashWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteHash", ctx, key, values, ttl)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // WriteHash indicates an expected call of WriteHash.
@@ -275,12 +273,11 @@ func (mr *MockCacheReadWriterMockRecorder) ReadHashAll(ctx, key any) *gomock.Cal
 }
 
 // Write mocks base method.
-func (m *MockCacheReadWriter) Write(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
+func (m *MockCacheReadWriter) Write(ctx context.Context, key string, value any, ttl time.Duration) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", ctx, key, value, ttl)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Write indicates an expected call of Write.
@@ -290,12 +287,11 @@ func (mr *MockCacheReadWriterMockRecorder) Write(ctx, key, value, ttl any) *gomo
 }
 
 // WriteHash mocks base method.
-func (m *MockCacheReadWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) (bool, error) {
+func (m *MockCacheReadWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteHash", ctx, key, values, ttl)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // WriteHash indicates an expected call of WriteHash.

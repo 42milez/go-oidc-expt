@@ -18,7 +18,7 @@ import (
 type RedirectUri struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID typedef.RedirectUriID `json:"id,omitempty"`
+	ID typedef.RedirectURIID `json:"id,omitempty"`
 	// URI holds the value of the "uri" field.
 	URI string `json:"uri,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -85,7 +85,7 @@ func (ru *RedirectUri) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				ru.ID = typedef.RedirectUriID(value.Int64)
+				ru.ID = typedef.RedirectURIID(value.Int64)
 			}
 		case redirecturi.FieldURI:
 			if value, ok := values[i].(*sql.NullString); !ok {

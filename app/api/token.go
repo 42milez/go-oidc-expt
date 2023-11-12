@@ -1,11 +1,12 @@
 package api
 
 import (
-	"context"
 	"errors"
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/42milez/go-oidc-server/app/service"
 
 	"github.com/42milez/go-oidc-server/app/option"
 
@@ -18,104 +19,93 @@ import (
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
-	"github.com/42milez/go-oidc-server/app/service"
 )
 
-var tokenHdlr *TokenHdlr
+var token *Token
 
-func NewTokenHdlr(opt *option.Option) *TokenHdlr {
-	return &TokenHdlr{
-		cache:   httpstore.NewCache(opt),
-		context: &httpstore.Context{},
-		svc:     service.NewToken(opt),
-		v:       opt.V,
+func NewToken(opt *option.Option) *Token {
+	return &Token{
+		acSVC: service.NewAuthCodeGrant(opt),
+		rtSVC: service.NewRefreshTokenGrant(opt),
+		cache: httpstore.NewCache(opt),
+		v:     opt.V,
 	}
 }
 
-type TokenHdlr struct {
-	svc     TokenRequestAcceptor
-	cache   TokenCacheReadWriter
-	context iface.ContextReader
-	v       iface.StructValidator
+type Token struct {
+	acSVC AuthCodeGrantAcceptor
+	rtSVC RefreshTokenGrantAcceptor
+	cache TokenCacheReadWriter
+	v     iface.StructValidator
 }
 
-func (t *TokenHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	credentials, err := extractCredential(r)
 	if err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondTokenRequestError(w, r, xerr.InvalidGrant)
+		return
 	}
-
 	clientId := credentials[0]
 
 	param, err := t.parseForm(r)
 	if err != nil {
-		if errors.Is(err, xerr.MalformedFormParameter) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-			return
-		}
-		RespondJSON500(w, r, err)
+		RespondServerError(w, r)
 		return
 	}
 
 	if err = t.v.Struct(param); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		return
 	}
 
 	if param.GrantType == config.AuthorizationCodeGrantType {
-		t.handleAuthCodeGrantType(w, r, param, clientId)
+		t.handleAuthCodeGrant(w, r, param, clientId)
 		return
 	} else if param.GrantType == config.RefreshTokenGrantType {
-		t.handleRefreshTokenGrantType(w, r, param, clientId)
+		t.handleRefreshTokenGrant(w, r, param, clientId)
 		return
 	} else {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		return
 	}
 }
 
-func (t *TokenHdlr) revokeAuthCode(ctx context.Context, code, clientId string) error {
-	if err := t.svc.ValidateAuthCode(ctx, code, clientId); err != nil {
-		return err
-	}
-	if err := t.svc.RevokeAuthCode(ctx, code, clientId); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
+func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	ctx := r.Context()
 
 	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectUri) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, nil)
+		RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		return
 	}
 
-	if err := t.revokeAuthCode(ctx, *param.Code, clientId); err != nil {
-		t.respondAuthCodeError(w, r, err)
+	if err := t.acSVC.RevokeAuthCode(ctx, *param.Code, clientId); err != nil {
+		respondRevokeAuthCodeError(w, r, err)
 		return
 	}
 
 	authParam, err := t.cache.ReadOpenIdParam(ctx, clientId, *param.Code)
 	if err != nil {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
+		if errors.Is(err, xerr.UnauthorizedRequest) {
+			RespondTokenRequestError(w, r, xerr.InvalidRequest)
+		} else {
+			RespondServerError(w, r)
+		}
 		return
 	}
 
-	if *param.RedirectUri != authParam.RedirectUri {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+	if *param.RedirectUri != authParam.RedirectURI {
+		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
 
 	tokens, err := t.generateToken(authParam.UserId)
 	if err != nil {
-		RespondJSON500(w, r, err)
+		RespondServerError(w, r)
 		return
 	}
 
 	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, authParam.UserId); err != nil {
-		RespondJSON500(w, r, err)
+		RespondServerError(w, r)
 		return
 	}
 
@@ -130,22 +120,41 @@ func (t *TokenHdlr) handleAuthCodeGrantType(w http.ResponseWriter, r *http.Reque
 	RespondJSON(w, r, http.StatusOK, resp)
 }
 
+func respondRevokeAuthCodeError(w http.ResponseWriter, r *http.Request, err error) {
+	if errors.Is(err, xerr.AuthCodeExpired) {
+		RespondTokenRequestError(w, r, xerr.InvalidGrant)
+		return
+	}
+
+	if errors.Is(err, xerr.AuthCodeNotFound) {
+		RespondTokenRequestError(w, r, xerr.InvalidGrant)
+		return
+	}
+
+	if errors.Is(err, xerr.AuthCodeUsed) {
+		RespondTokenRequestError(w, r, xerr.InvalidGrant)
+		return
+	}
+
+	RespondServerError(w, r)
+}
+
 const accessTokenKey = "AccessToken"
 const refreshTokenKey = "RefreshToken"
-const idTokenKey = "IdToken"
+const idTokenKey = "IDToken"
 
-func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error) {
-	accessToken, err := t.svc.GenerateAccessToken(uid)
+func (t *Token) generateToken(uid typedef.UserID) (map[string]*string, error) {
+	accessToken, err := t.acSVC.GenerateAccessToken(uid)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := t.svc.GenerateRefreshToken(uid)
+	refreshToken, err := t.acSVC.GenerateRefreshToken(uid)
 	if err != nil {
 		return nil, err
 	}
 
-	idToken, err := t.svc.GenerateIdToken(uid)
+	idToken, err := t.acSVC.GenerateIdToken(uid)
 	if err != nil {
 		return nil, err
 	}
@@ -157,39 +166,27 @@ func (t *TokenHdlr) generateToken(uid typedef.UserID) (map[string]*string, error
 	}, nil
 }
 
-func (t *TokenHdlr) respondAuthCodeError(w http.ResponseWriter, r *http.Request, err error) {
-	if errors.Is(err, xerr.AuthCodeNotFound) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-	} else if errors.Is(err, xerr.AuthCodeExpired) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-	} else if errors.Is(err, xerr.AuthCodeUsed) {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
-	} else {
-		RespondJSON500(w, r, err)
-	}
-}
-
-func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
+func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	ctx := r.Context()
 
-	perm, err := t.svc.ReadRefreshTokenPermission(ctx, *param.RefreshToken, clientId)
+	perm, err := t.rtSVC.ReadRefreshTokenPermission(ctx, *param.RefreshToken, clientId)
 	if err != nil {
 		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
-			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		} else if errors.Is(err, xerr.RefreshTokenPermissionNotFound) {
-			RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+			RespondJSON401(w, r, xerr.InvalidRequest2, nil, err)
 		} else {
 			RespondJSON500(w, r, err)
 		}
 	}
 
-	accessToken, err := t.svc.GenerateAccessToken(perm.UserId)
+	accessToken, err := t.rtSVC.GenerateAccessToken(perm.UserId)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	refreshToken, err := t.svc.GenerateRefreshToken(perm.UserId)
+	refreshToken, err := t.rtSVC.GenerateRefreshToken(perm.UserId)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
@@ -210,7 +207,7 @@ func (t *TokenHdlr) handleRefreshTokenGrantType(w http.ResponseWriter, r *http.R
 	RespondJSON(w, r, http.StatusOK, resp)
 }
 
-func (t *TokenHdlr) parseForm(r *http.Request) (*TokenFormdataBody, error) {
+func (t *Token) parseForm(r *http.Request) (*TokenFormdataBody, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
@@ -218,7 +215,7 @@ func (t *TokenHdlr) parseForm(r *http.Request) (*TokenFormdataBody, error) {
 
 	params, err := url.ParseQuery(string(body))
 	if err != nil {
-		return nil, xerr.MalformedFormParameter
+		return nil, err
 	}
 
 	code := params.Get("code")

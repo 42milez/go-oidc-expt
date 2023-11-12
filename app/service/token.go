@@ -2,48 +2,104 @@ package service
 
 import (
 	"context"
-
-	"github.com/42milez/go-oidc-server/app/option"
-	"github.com/42milez/go-oidc-server/app/pkg/xtime"
-
-	"github.com/42milez/go-oidc-server/app/iface"
+	"errors"
 
 	"github.com/42milez/go-oidc-server/app/httpstore"
-	"github.com/42milez/go-oidc-server/app/typedef"
 
+	"github.com/42milez/go-oidc-server/app/iface"
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 	"github.com/42milez/go-oidc-server/app/repository"
+
+	"github.com/42milez/go-oidc-server/app/option"
+
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewToken(opt *option.Option) *Token {
-	return &Token{
-		acRepo:  repository.NewAuthCode(opt.DB),
-		ruRepo:  repository.NewRedirectUri(opt.DB),
-		cache:   httpstore.NewCache(opt),
-		clock:   &xtime.RealClocker{},
-		context: &httpstore.Context{},
-		token:   opt.Token,
-		v:       opt.V,
+func NewAuthCodeGrant(opt *option.Option) *AuthCodeGrant {
+	return &AuthCodeGrant{
+		repo:  repository.NewAuthCode(opt.DB),
+		clock: &xtime.RealClocker{},
+		token: opt.Token,
 	}
 }
 
-type Token struct {
-	acRepo  AuthCodeReadRevoker
-	ruRepo  RedirectUriReader
-	cache   iface.RefreshTokenPermissionReader
-	clock   iface.Clocker
-	context iface.ContextReader
-	token   iface.TokenGenerateValidator
-	v       iface.StructValidator
+type AuthCodeGrant struct {
+	repo  AuthCodeReadRevoker
+	clock iface.Clocker
+	token iface.TokenGenerator
 }
 
-func (t *Token) ReadRefreshTokenPermission(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
-	if err := t.token.Validate(token); err != nil {
+func (a *AuthCodeGrant) RevokeAuthCode(ctx context.Context, code, clientId string) error {
+	if err := a.validateAuthCode(ctx, code, clientId); err != nil {
+		return err
+	}
+	if err := a.revokeAuthCode(ctx, code, clientId); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code, clientId string) error {
+	authCode, err := a.repo.ReadAuthCode(ctx, code, clientId)
+	if err != nil {
+		if errors.Is(err, xerr.RecordNotFound) {
+			return xerr.AuthCodeNotFound
+		} else {
+			return err
+		}
+	}
+
+	if !authCode.ExpireAt().After(a.clock.Now()) {
+		return xerr.AuthCodeExpired
+	}
+
+	if authCode.UsedAt() != nil {
+		return xerr.AuthCodeUsed
+	}
+
+	return nil
+}
+
+func (a *AuthCodeGrant) revokeAuthCode(ctx context.Context, code, clientId string) error {
+	_, err := a.repo.RevokeAuthCode(ctx, code, clientId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *AuthCodeGrant) GenerateAccessToken(uid typedef.UserID) (string, error) {
+	return generateAccessToken(a.token, uid)
+}
+
+func (a *AuthCodeGrant) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+	return generateRefreshToken(a.token, uid)
+}
+
+func (a *AuthCodeGrant) GenerateIdToken(uid typedef.UserID) (string, error) {
+	return generateIDToken(a.token, uid)
+}
+
+func NewRefreshTokenGrant(opt *option.Option) *RefreshTokenGrant {
+	return &RefreshTokenGrant{
+		cache: httpstore.NewCache(opt),
+		token: opt.Token,
+	}
+}
+
+type RefreshTokenGrant struct {
+	cache iface.RefreshTokenPermissionReader
+	token iface.TokenGenerateValidator
+}
+
+func (r *RefreshTokenGrant) ReadRefreshTokenPermission(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
+	if err := r.token.Validate(token); err != nil {
 		return nil, xerr.InvalidToken
 	}
 
-	perm, err := t.cache.ReadRefreshTokenPermission(ctx, token)
+	perm, err := r.cache.ReadRefreshTokenPermission(ctx, token)
 	if err != nil {
 		return nil, xerr.RefreshTokenPermissionNotFound
 	}
@@ -55,49 +111,32 @@ func (t *Token) ReadRefreshTokenPermission(ctx context.Context, token, clientId 
 	return perm, nil
 }
 
-func (t *Token) ValidateAuthCode(ctx context.Context, code, clientId string) error {
-	authCode, err := t.acRepo.ReadAuthCode(ctx, code, clientId)
-	if err != nil {
-		return err
-	}
-
-	if !authCode.ExpireAt().After(t.clock.Now()) {
-		return xerr.AuthCodeExpired
-	}
-
-	if authCode.UsedAt() != nil {
-		return xerr.AuthCodeUsed
-	}
-
-	return nil
+func (r *RefreshTokenGrant) GenerateAccessToken(uid typedef.UserID) (string, error) {
+	return generateAccessToken(r.token, uid)
 }
 
-func (t *Token) RevokeAuthCode(ctx context.Context, code, clientId string) error {
-	_, err := t.acRepo.RevokeAuthCode(ctx, code, clientId)
-	if err != nil {
-		return err
-	}
-	return nil
+func (r *RefreshTokenGrant) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+	return generateRefreshToken(r.token, uid)
 }
 
-func (t *Token) GenerateAccessToken(uid typedef.UserID) (string, error) {
-	accessToken, err := t.token.GenerateAccessToken(uid)
+func generateAccessToken(tokenGen iface.TokenGenerator, uid typedef.UserID) (string, error) {
+	accessToken, err := tokenGen.GenerateAccessToken(uid)
 	if err != nil {
 		return "", err
 	}
 	return accessToken, nil
 }
 
-func (t *Token) GenerateRefreshToken(uid typedef.UserID) (string, error) {
-	refreshToken, err := t.token.GenerateRefreshToken(uid)
+func generateRefreshToken(tokenGen iface.TokenGenerator, uid typedef.UserID) (string, error) {
+	refreshToken, err := tokenGen.GenerateRefreshToken(uid)
 	if err != nil {
 		return "", err
 	}
 	return refreshToken, nil
 }
 
-func (t *Token) GenerateIdToken(uid typedef.UserID) (string, error) {
-	idToken, err := t.token.GenerateIdToken(uid)
+func generateIDToken(tokenGen iface.TokenGenerator, uid typedef.UserID) (string, error) {
+	idToken, err := tokenGen.GenerateIdToken(uid)
 	if err != nil {
 		return "", err
 	}

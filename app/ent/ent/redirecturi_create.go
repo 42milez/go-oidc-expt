@@ -63,8 +63,8 @@ func (ruc *RedirectUriCreate) SetRelyingPartyID(tpi typedef.RelyingPartyID) *Red
 }
 
 // SetID sets the "id" field.
-func (ruc *RedirectUriCreate) SetID(tui typedef.RedirectUriID) *RedirectUriCreate {
-	ruc.mutation.SetID(tui)
+func (ruc *RedirectUriCreate) SetID(tu typedef.RedirectURIID) *RedirectUriCreate {
+	ruc.mutation.SetID(tu)
 	return ruc
 }
 
@@ -156,7 +156,7 @@ func (ruc *RedirectUriCreate) sqlSave(ctx context.Context) (*RedirectUri, error)
 	}
 	if _spec.ID.Value != _node.ID {
 		id := _spec.ID.Value.(int64)
-		_node.ID = typedef.RedirectUriID(id)
+		_node.ID = typedef.RedirectURIID(id)
 	}
 	ruc.mutation.id = &_node.ID
 	ruc.mutation.done = true
@@ -251,7 +251,7 @@ func (rucb *RedirectUriCreateBulk) Save(ctx context.Context) ([]*RedirectUri, er
 				mutation.id = &nodes[i].ID
 				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = typedef.RedirectUriID(id)
+					nodes[i].ID = typedef.RedirectURIID(id)
 				}
 				mutation.done = true
 				return nodes[i], nil

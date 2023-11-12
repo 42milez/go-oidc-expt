@@ -68,7 +68,7 @@ func TestNewOapiErrorHandler(t *testing.T) {
 	tests := map[string]struct {
 		ClientID   string
 		StatusCode int
-		Error      *xerr.PublicErr
+		Error      *xerr.PublicError
 	}{
 		"OK": {
 			ClientID: "CDcp9v3Nn4i70FqWig5AuohmorD6MG",

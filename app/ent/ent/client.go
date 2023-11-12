@@ -592,7 +592,7 @@ func (c *RedirectUriClient) UpdateOne(ru *RedirectUri) *RedirectUriUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RedirectUriClient) UpdateOneID(id typedef.RedirectUriID) *RedirectUriUpdateOne {
+func (c *RedirectUriClient) UpdateOneID(id typedef.RedirectURIID) *RedirectUriUpdateOne {
 	mutation := newRedirectUriMutation(c.config, OpUpdateOne, withRedirectUriID(id))
 	return &RedirectUriUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -609,7 +609,7 @@ func (c *RedirectUriClient) DeleteOne(ru *RedirectUri) *RedirectUriDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RedirectUriClient) DeleteOneID(id typedef.RedirectUriID) *RedirectUriDeleteOne {
+func (c *RedirectUriClient) DeleteOneID(id typedef.RedirectURIID) *RedirectUriDeleteOne {
 	builder := c.Delete().Where(redirecturi.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -626,12 +626,12 @@ func (c *RedirectUriClient) Query() *RedirectUriQuery {
 }
 
 // Get returns a RedirectUri entity by its id.
-func (c *RedirectUriClient) Get(ctx context.Context, id typedef.RedirectUriID) (*RedirectUri, error) {
+func (c *RedirectUriClient) Get(ctx context.Context, id typedef.RedirectURIID) (*RedirectUri, error) {
 	return c.Query().Where(redirecturi.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RedirectUriClient) GetX(ctx context.Context, id typedef.RedirectUriID) *RedirectUri {
+func (c *RedirectUriClient) GetX(ctx context.Context, id typedef.RedirectURIID) *RedirectUri {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

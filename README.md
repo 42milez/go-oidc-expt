@@ -176,11 +176,23 @@ docker-compose up -d swagger-ui
   - [RFC4226: An HMAC-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc4226)
   - [RFC6238: Time-Based One-Time Password Algorithm](https://www.rfc-editor.org/rfc/rfc6238)
   - [Key Uri Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format)
+  - [TOTP Base32 vs Base64](https://stackoverflow.com/questions/50082075/totp-base32-vs-base64)
 - Password
   - [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - Session
   - [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
 
-## Notes
+## Miscellaneous
 
-- [TOTP Base32 vs Base64](https://stackoverflow.com/questions/50082075/totp-base32-vs-base64)
+- Computer Science
+  - Memory Model
+    - [The Go Memory Model](https://go.dev/ref/mem)
+    - [Memory Models](https://research.swtch.com/mm)
+      - [Memory barrier](https://en.wikipedia.org/wiki/Memory_barrier)
+      - [Out-of-order execution](https://en.wikipedia.org/wiki/Out-of-order_execution)
+  - Synchronization
+    - [Lock-free/Wait-free algorithm](https://ja.wikipedia.org/wiki/Lock-free%E3%81%A8Wait-free%E3%82%A2%E3%83%AB%E3%82%B4%E3%83%AA%E3%82%BA%E3%83%A0)
+    - [Semaphore](https://en.wikipedia.org/wiki/Semaphore_(programming))
+- Others
+  - [Go Style Decisions: Naming](https://google.github.io/styleguide/go/decisions#naming)
+  - [Go at Google: Language Design in the Service of Software Engineering](https://go.dev/talks/2012/splash.article)

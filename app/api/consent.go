@@ -17,23 +17,23 @@ import (
 	"github.com/gorilla/schema"
 )
 
-var consentHdlr *ConsentHdlr
+var consent *Consent
 
-func NewConsentHdlr(opt *option.Option) *ConsentHdlr {
-	return &ConsentHdlr{
+func NewConsent(opt *option.Option) *Consent {
+	return &Consent{
 		svc:     service.NewConsent(opt),
 		context: &httpstore.Context{},
 		v:       opt.V,
 	}
 }
 
-type ConsentHdlr struct {
+type Consent struct {
 	svc     ConsentAcceptor
 	context iface.ContextReader
 	v       iface.StructValidator
 }
 
-func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (ch *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	decoder := schema.NewDecoder()
@@ -45,13 +45,13 @@ func (ch *ConsentHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := ch.v.Struct(q); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 
 	uid, ok := ch.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, nil)
+		RespondJSON401(w, r, xerr.InvalidRequest2, nil, nil)
 		return
 	}
 

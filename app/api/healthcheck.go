@@ -9,19 +9,19 @@ import (
 	"github.com/42milez/go-oidc-server/app/service"
 )
 
-var checkHealthHdlr *CheckHealthHdlr
+var healthCheck *HealthCheck
 
-func NewCheckHealthHdlr(opt *option.Option) *CheckHealthHdlr {
-	return &CheckHealthHdlr{
+func NewHealthCheck(opt *option.Option) *HealthCheck {
+	return &HealthCheck{
 		svc: service.NewCheckHealth(repository.NewCheckHealth(opt.DB, opt.Cache)),
 	}
 }
 
-type CheckHealthHdlr struct {
+type HealthCheck struct {
 	svc HealthChecker
 }
 
-func (c *CheckHealthHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (c *HealthCheck) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	errResp := func(err error) {
 		RespondJSON503(w, r, err)
 	}

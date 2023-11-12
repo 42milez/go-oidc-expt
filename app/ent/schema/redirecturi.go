@@ -31,7 +31,7 @@ func (RedirectUri) Annotations() []schema.Annotation {
 func (RedirectUri) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("id").
-			GoType(typedef.RedirectUriID(0)).
+			GoType(typedef.RedirectURIID(0)).
 			Immutable(),
 		field.String("uri").
 			NotEmpty(),

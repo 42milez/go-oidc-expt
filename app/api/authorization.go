@@ -16,10 +16,10 @@ import (
 	"github.com/gorilla/schema"
 )
 
-var authorizeGetHdlr *AuthorizeGetHdlr
+var authorizationGet *AuthorizationGet
 
-func NewAuthorizeGetHdlr(opt *option.Option) *AuthorizeGetHdlr {
-	return &AuthorizeGetHdlr{
+func NewAuthorizationGet(opt *option.Option) *AuthorizationGet {
+	return &AuthorizationGet{
 		svc:     service.NewAuthorize(opt),
 		cache:   httpstore.NewCache(opt),
 		context: &httpstore.Context{},
@@ -27,14 +27,14 @@ func NewAuthorizeGetHdlr(opt *option.Option) *AuthorizeGetHdlr {
 	}
 }
 
-type AuthorizeGetHdlr struct {
+type AuthorizationGet struct {
 	svc     Authorizer
 	cache   iface.OpenIdParamWriter
 	context iface.ContextReader
 	v       iface.StructValidator
 }
 
-func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	decoder := schema.NewDecoder()
 	q := &AuthorizeParams{}
 
@@ -44,7 +44,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := a.v.Struct(q); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 
@@ -56,7 +56,7 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	location, authCode, err := a.svc.Authorize(r.Context(), q.ClientID, q.RedirectUri, q.State)
 	if err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 
@@ -64,12 +64,12 @@ func (a *AuthorizeGetHdlr) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	uid, ok := a.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
-		RespondJSON401(w, r, xerr.UnauthorizedRequest, nil, err)
+		RespondJSON401(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
 
 	authParam := &typedef.OpenIdParam{
-		RedirectUri: q.RedirectUri,
+		RedirectURI: q.RedirectUri,
 		UserId:      uid,
 	}
 

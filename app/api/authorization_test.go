@@ -78,12 +78,12 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			sessMock.EXPECT().WriteOpenIdParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
 				AnyTimes()
 
-			v, err := NewAuthorizeParamValidator()
+			v, err := NewRequestParamValidator()
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			hdlr := &AuthorizeGetHdlr{
+			hdlr := &AuthorizationGet{
 				svc:     svcMock,
 				context: ctxMock,
 				cache:   sessMock,

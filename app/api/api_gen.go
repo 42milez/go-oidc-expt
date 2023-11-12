@@ -6,6 +6,7 @@ package api
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/base64"
 	"fmt"
 	"net/http"
@@ -17,6 +18,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/typedef"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
+	"github.com/oapi-codegen/runtime"
 )
 
 const (
@@ -35,9 +37,9 @@ const (
 
 // ErrorResponse represents error response
 type ErrorResponse struct {
-	Details *[]string      `json:"details,omitempty"`
-	Status  uint64         `json:"status"`
-	Summary xerr.PublicErr `json:"summary"`
+	Details *[]string        `json:"details,omitempty"`
+	Status  uint64           `json:"status"`
+	Summary xerr.PublicError `json:"summary"`
 }
 
 // Health represents the status of service.
@@ -210,7 +212,7 @@ type TokenFormdataRequestBody TokenFormdataBody
 // RegisterJSONRequestBody defines body for Register for application/json ContentType.
 type RegisterJSONRequestBody RegisterJSONBody
 
-//  INTERFACE
+//  Interface
 // --------------------------------------------------
 
 // HandlerInterface represents all server handlers.
@@ -235,7 +237,7 @@ type HandlerInterface interface {
 	Register(w http.ResponseWriter, r *http.Request)
 }
 
-//  MIDDLEWARE
+//  Middleware
 // --------------------------------------------------
 
 // HandlerInterfaceWrapper converts contexts to parameters.
@@ -373,7 +375,301 @@ func (e *TooManyValuesForParamError) Error() string {
 	return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
 }
 
-//  HANDLER AND OTHERS
+func injectRequestParameter(r *http.Request) (*http.Request, error) {
+	switch r.URL.Path {
+	case "/authenticate":
+		return unmarshalAuthenticateParameter(r)
+	case "/authorize":
+		return unmarshalAuthorizeParameter(r)
+	case "/consent":
+		return unmarshalConsentParameter(r)
+	case "/health":
+		return unmarshalCheckHealthParameter(r)
+	case "/token":
+		return unmarshalTokenParameter(r)
+	case "/user/register":
+		return unmarshalRegisterParameter(r)
+	default:
+		return nil, xerr.InvalidPath
+	}
+}
+
+func unmarshalAuthenticateParameter(r *http.Request) (*http.Request, error) {
+	var ctx context.Context
+	var err error
+
+	// ==================================================
+	// Unmarshal Parameter: BEGIN
+
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	params := &AuthenticateParams{}
+
+	// --------------------------------------------------
+	// Cookie Parameter: BEGIN
+
+	var cookie *http.Cookie
+
+	if cookie, err = r.Cookie("sid"); err == nil {
+		var value SessionId
+		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
+		if err != nil {
+			return nil, &InvalidParamFormatError{
+				ParamName: "sid",
+				Err:       err,
+			}
+		}
+		params.Sid = &value
+	}
+
+	// Cookie Parameter: END
+	// --------------------------------------------------
+
+	ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
+
+	// Unmarshal Parameter: END
+	// ==================================================
+
+	return r.Clone(ctx), nil
+}
+
+func unmarshalAuthorizeParameter(r *http.Request) (*http.Request, error) {
+	var ctx context.Context
+	var err error
+
+	// ==================================================
+	// Unmarshal Parameter: BEGIN
+
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	params := &AuthorizeParams{}
+
+	// --------------------------------------------------
+	//  Query Parameter: BEGIN
+
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	// Required query parameter "client_id"
+	err = runtime.BindQueryParameter("form", true, true, "client_id", r.URL.Query(), &params.ClientID)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "client_id",
+			Err:       err,
+		}
+	}
+
+	// Required query parameter "nonce"
+	err = runtime.BindQueryParameter("form", true, true, "nonce", r.URL.Query(), &params.Nonce)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "nonce",
+			Err:       err,
+		}
+	}
+
+	// Required query parameter "redirect_uri"
+	err = runtime.BindQueryParameter("form", true, true, "redirect_uri", r.URL.Query(), &params.RedirectUri)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "redirect_uri",
+			Err:       err,
+		}
+	}
+
+	// Required query parameter "response_type"
+	err = runtime.BindQueryParameter("form", true, true, "response_type", r.URL.Query(), &params.ResponseType)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "response_type",
+			Err:       err,
+		}
+	}
+
+	// Required query parameter "scope"
+	err = runtime.BindQueryParameter("form", true, true, "scope", r.URL.Query(), &params.Scope)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "scope",
+			Err:       err,
+		}
+	}
+
+	// Required query parameter "state"
+	err = runtime.BindQueryParameter("form", true, true, "state", r.URL.Query(), &params.State)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "state",
+			Err:       err,
+		}
+	}
+
+	// Required query parameter "display"
+	err = runtime.BindQueryParameter("form", true, true, "display", r.URL.Query(), &params.Display)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "display",
+			Err:       err,
+		}
+	}
+
+	// Required query parameter "max_age"
+	err = runtime.BindQueryParameter("form", true, true, "max_age", r.URL.Query(), &params.MaxAge)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "max_age",
+			Err:       err,
+		}
+	}
+
+	// Required query parameter "prompt"
+	err = runtime.BindQueryParameter("form", true, true, "prompt", r.URL.Query(), &params.Prompt)
+	if err != nil {
+		return nil, &InvalidParamFormatError{
+			ParamName: "prompt",
+			Err:       err,
+		}
+	}
+
+	//  Query Parameter: END
+	// --------------------------------------------------
+
+	// --------------------------------------------------
+	// Cookie Parameter: BEGIN
+
+	var cookie *http.Cookie
+
+	if cookie, err = r.Cookie("sid"); err == nil {
+		var value SessionId
+		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
+		if err != nil {
+			return nil, &InvalidParamFormatError{
+				ParamName: "sid",
+				Err:       err,
+			}
+		}
+		params.Sid = &value
+	}
+
+	// Cookie Parameter: END
+	// --------------------------------------------------
+
+	ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
+
+	// Unmarshal Parameter: END
+	// ==================================================
+
+	return r.Clone(ctx), nil
+}
+
+func unmarshalConsentParameter(r *http.Request) (*http.Request, error) {
+	var ctx context.Context
+	var err error
+
+	// ==================================================
+	// Unmarshal Parameter: BEGIN
+
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	params := &ConsentParams{}
+
+	// --------------------------------------------------
+	// Cookie Parameter: BEGIN
+
+	var cookie *http.Cookie
+
+	if cookie, err = r.Cookie("sid"); err == nil {
+		var value SessionId
+		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
+		if err != nil {
+			return nil, &InvalidParamFormatError{
+				ParamName: "sid",
+				Err:       err,
+			}
+		}
+		params.Sid = &value
+	}
+
+	// Cookie Parameter: END
+	// --------------------------------------------------
+
+	ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
+
+	// Unmarshal Parameter: END
+	// ==================================================
+
+	return r.Clone(ctx), nil
+}
+
+func unmarshalCheckHealthParameter(r *http.Request) (*http.Request, error) {
+	return r, nil
+}
+
+func unmarshalTokenParameter(r *http.Request) (*http.Request, error) {
+	var ctx context.Context
+	var err error
+
+	// ==================================================
+	//  Security Definition: BEGIN
+
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	ctx = context.WithValue(ctx, BasicAuthScopes, []string{})
+
+	//  Security Definition: END
+	// ==================================================
+
+	// ==================================================
+	// Unmarshal Parameter: BEGIN
+
+	if ctx == nil {
+		ctx = r.Context()
+	}
+
+	params := &TokenParams{}
+
+	// --------------------------------------------------
+	// Cookie Parameter: BEGIN
+
+	var cookie *http.Cookie
+
+	if cookie, err = r.Cookie("sid"); err == nil {
+		var value SessionId
+		err = runtime.BindStyledParameter("simple", true, "sid", cookie.Value, &value)
+		if err != nil {
+			return nil, &InvalidParamFormatError{
+				ParamName: "sid",
+				Err:       err,
+			}
+		}
+		params.Sid = &value
+	}
+
+	// Cookie Parameter: END
+	// --------------------------------------------------
+
+	ctx = context.WithValue(ctx, typedef.RequestParamKey{}, params)
+
+	// Unmarshal Parameter: END
+	// ==================================================
+
+	return r.Clone(ctx), nil
+}
+
+func unmarshalRegisterParameter(r *http.Request) (*http.Request, error) {
+	return r, nil
+}
+
+//  Handler and others
 // --------------------------------------------------
 
 type ChiServerOptions struct {
@@ -444,57 +740,57 @@ func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
