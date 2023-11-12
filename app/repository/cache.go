@@ -48,11 +48,10 @@ func (s *Cache) ReadHash(ctx context.Context, key string, field string) (string,
 func (s *Cache) ReadHashAll(ctx context.Context, key string) (map[string]string, error) {
 	ret, err := s.cache.Client.HGetAll(ctx, key).Result()
 	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			return nil, xerr.CacheKeyNotFound
-		} else {
-			return nil, err
-		}
+		return nil, err
+	}
+	if len(ret) == 0 {
+		return nil, xerr.CacheKeyNotFound
 	}
 	return ret, nil
 }
