@@ -49,7 +49,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	param, err := t.parseForm(r)
 	if err != nil {
-		RespondServerError(w, r)
+		RespondServerError(w, r, err)
 		return
 	}
 
@@ -88,7 +88,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		if errors.Is(err, xerr.UnauthorizedRequest) {
 			RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		} else {
-			RespondServerError(w, r)
+			RespondServerError(w, r, err)
 		}
 		return
 	}
@@ -100,12 +100,12 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 
 	tokens, err := t.generateToken(authParam.UserId)
 	if err != nil {
-		RespondServerError(w, r)
+		RespondServerError(w, r, err)
 		return
 	}
 
 	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, authParam.UserId); err != nil {
-		RespondServerError(w, r)
+		RespondServerError(w, r, err)
 		return
 	}
 
@@ -136,7 +136,7 @@ func respondRevokeAuthCodeError(w http.ResponseWriter, r *http.Request, err erro
 		return
 	}
 
-	RespondServerError(w, r)
+	RespondServerError(w, r, err)
 }
 
 const accessTokenKey = "AccessToken"

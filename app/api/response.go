@@ -147,7 +147,11 @@ func RespondTokenRequestError(w http.ResponseWriter, r *http.Request, err xerr.O
 	RespondJSON(w, r, http.StatusBadRequest, body)
 }
 
-func RespondServerError(w http.ResponseWriter, r *http.Request) {
+func RespondServerError(w http.ResponseWriter, r *http.Request, err error) {
+	if err != nil {
+		e := errors.WithStack(err)
+		appLogger.Error().Stack().Err(e).Send()
+	}
 	body := &struct {
 		Error xerr.OIDCError `json:"error,string"`
 	}{
