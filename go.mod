@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	ariga.io/atlas v0.15.0
-	entgo.io/ent v0.12.4
+	entgo.io/ent v0.12.5
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/cenkalti/backoff/v4 v4.2.1
@@ -21,6 +21,7 @@ require (
 	github.com/gorilla/securecookie v1.1.2
 	github.com/lestrrat-go/jwx/v2 v2.0.16
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
+	github.com/oapi-codegen/runtime v1.0.0
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/rs/zerolog v1.31.0
@@ -169,7 +170,6 @@ require (
 	github.com/nishanths/exhaustive v0.11.0 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nunnatsa/ginkgolinter v0.14.1 // indirect
-	github.com/oapi-codegen/runtime v1.0.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
