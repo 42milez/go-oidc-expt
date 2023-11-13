@@ -10,6 +10,7 @@ package api
 
 import (
 	context "context"
+	url "net/url"
 	reflect "reflect"
 
 	entity "github.com/42milez/go-oidc-server/app/entity"
@@ -309,6 +310,43 @@ func (mr *MockUserRegistererMockRecorder) RegisterUser(ctx, name, pw any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RegisterUser", reflect.TypeOf((*MockUserRegisterer)(nil).RegisterUser), ctx, name, pw)
 }
 
+// MockRequestFingerprintSaver is a mock of RequestFingerprintSaver interface.
+type MockRequestFingerprintSaver struct {
+	ctrl     *gomock.Controller
+	recorder *MockRequestFingerprintSaverMockRecorder
+}
+
+// MockRequestFingerprintSaverMockRecorder is the mock recorder for MockRequestFingerprintSaver.
+type MockRequestFingerprintSaverMockRecorder struct {
+	mock *MockRequestFingerprintSaver
+}
+
+// NewMockRequestFingerprintSaver creates a new mock instance.
+func NewMockRequestFingerprintSaver(ctrl *gomock.Controller) *MockRequestFingerprintSaver {
+	mock := &MockRequestFingerprintSaver{ctrl: ctrl}
+	mock.recorder = &MockRequestFingerprintSaverMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRequestFingerprintSaver) EXPECT() *MockRequestFingerprintSaverMockRecorder {
+	return m.recorder
+}
+
+// SaveRequestFingerprint mocks base method.
+func (m *MockRequestFingerprintSaver) SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, redirectURI, clientID, authCode)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveRequestFingerprint indicates an expected call of SaveRequestFingerprint.
+func (mr *MockRequestFingerprintSaverMockRecorder) SaveRequestFingerprint(ctx, redirectURI, clientID, authCode any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockRequestFingerprintSaver)(nil).SaveRequestFingerprint), ctx, redirectURI, clientID, authCode)
+}
+
 // MockAuthorizer is a mock of Authorizer interface.
 type MockAuthorizer struct {
 	ctrl     *gomock.Controller
@@ -333,10 +371,10 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // Authorize mocks base method.
-func (m *MockAuthorizer) Authorize(ctx context.Context, clientID, redirectURI, state string) (string, string, error) {
+func (m *MockAuthorizer) Authorize(ctx context.Context, clientID, redirectURI, state string) (*url.URL, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Authorize", ctx, clientID, redirectURI, state)
-	ret0, _ := ret[0].(string)
+	ret0, _ := ret[0].(*url.URL)
 	ret1, _ := ret[1].(string)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -346,6 +384,20 @@ func (m *MockAuthorizer) Authorize(ctx context.Context, clientID, redirectURI, s
 func (mr *MockAuthorizerMockRecorder) Authorize(ctx, clientID, redirectURI, state any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAuthorizer)(nil).Authorize), ctx, clientID, redirectURI, state)
+}
+
+// SaveRequestFingerprint mocks base method.
+func (m *MockAuthorizer) SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, redirectURI, clientID, authCode)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveRequestFingerprint indicates an expected call of SaveRequestFingerprint.
+func (mr *MockAuthorizerMockRecorder) SaveRequestFingerprint(ctx, redirectURI, clientID, authCode any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockAuthorizer)(nil).SaveRequestFingerprint), ctx, redirectURI, clientID, authCode)
 }
 
 // MockConsentAcceptor is a mock of ConsentAcceptor interface.

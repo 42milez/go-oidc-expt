@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"net/url"
 
 	"github.com/42milez/go-oidc-server/app/iface"
 
@@ -50,8 +51,13 @@ type UserRegisterer interface {
 //  Authorization
 // --------------------------------------------------
 
+type RequestFingerprintSaver interface {
+	SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error
+}
+
 type Authorizer interface {
-	Authorize(ctx context.Context, clientID, redirectURI, state string) (string, string, error)
+	Authorize(ctx context.Context, clientID, redirectURI, state string) (*url.URL, string, error)
+	RequestFingerprintSaver
 }
 
 type ConsentAcceptor interface {

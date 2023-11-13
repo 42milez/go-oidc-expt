@@ -35,6 +35,7 @@ var (
 	UnknownSecurityScheme          InternalError = "unknown security scheme"
 	UserIdNotFoundInContext        InternalError = "user id not found in context"
 	UserNotFound                   InternalError = "user not found"
+	InvalidRedirectURI             InternalError = "invalid redirect uri"
 )
 
 var (

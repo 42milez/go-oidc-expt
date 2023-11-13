@@ -109,7 +109,7 @@ func RespondJSON503(w http.ResponseWriter, r *http.Request, err error) {
 	})
 }
 
-func Redirect(w http.ResponseWriter, r *http.Request, path string, code int) {
+func Redirect2(w http.ResponseWriter, r *http.Request, path string, code int) {
 	cfg, err := config.New()
 	if err != nil {
 		RespondJSON500(w, r, err)
@@ -138,6 +138,22 @@ type OIDCError struct {
 	Error            xerr.OIDCError `json:"error,string"`
 	ErrorDescription string         `json:"error_description,omitempty"`
 	ErrorUri         string         `json:"error_uri,omitempty"`
+}
+
+func Redirect(w http.ResponseWriter, r *http.Request, uri *url.URL, code int) {
+	http.Redirect(w, r, uri.String(), code)
+}
+
+func RespondAuthorizationRequestError(w http.ResponseWriter, r *http.Request, redirectUri, state string, err xerr.OIDCError) {
+	uri, e := url.Parse(redirectUri)
+	if e != nil {
+		RespondServerError(w, r, err)
+	}
+	q := uri.Query()
+	q.Set("error", err.Error())
+	q.Set("state", state)
+	uri.RawQuery = q.Encode()
+	Redirect(w, r, uri, http.StatusFound)
 }
 
 func RespondTokenRequestError(w http.ResponseWriter, r *http.Request, err xerr.OIDCError) {

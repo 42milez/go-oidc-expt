@@ -85,11 +85,11 @@ func (ah *Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !isConsented {
-		Redirect(w, r, config.ConsentPath, http.StatusFound)
+		Redirect2(w, r, config.ConsentPath, http.StatusFound)
 		return
 	}
 
-	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
+	Redirect2(w, r, config.AuthorizationPath, http.StatusFound)
 }
 
 func (ah *Authentication) parseRequestBody(r *http.Request) (*AuthenticateJSONRequestBody, error) {

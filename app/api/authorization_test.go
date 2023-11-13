@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -23,7 +24,7 @@ const (
 
 func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 	type mockResp struct {
-		location string
+		location *url.URL
 		err      error
 	}
 
@@ -34,6 +35,14 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 
 	const userID typedef.UserID = 475924034190589956
 
+	location := func(uri string) *url.URL {
+		ret, err := url.Parse(uri)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return ret
+	}
+
 	tests := map[string]struct {
 		reqFile string
 		resp    mockResp
@@ -42,7 +51,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 		"ok": {
 			reqFile: tdAuthorizationRequest200,
 			resp: mockResp{
-				location: "https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA&state=af0ifjsldk",
+				location: location("https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA&state=af0ifjsldk"),
 				err:      nil,
 			},
 			want: want{
@@ -70,6 +79,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.EXPECT().Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(tt.resp.location, "", nil).AnyTimes()
+			svcMock.EXPECT().SaveRequestFingerprint(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.RequestParamKey{}).Return(&AuthorizeParams{
@@ -85,10 +95,6 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			}).AnyTimes()
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.UserIdKey{}).Return(typedef.UserID(0)).AnyTimes()
 
-			sessMock := iface.NewMockOpenIdParamWriter(gomock.NewController(t))
-			sessMock.EXPECT().WriteOpenIdParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
-				AnyTimes()
-
 			v, err := NewOIDCRequestParamValidator()
 			if err != nil {
 				t.Fatal(err)
@@ -97,7 +103,6 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			hdlr := &AuthorizationGet{
 				svc:     svcMock,
 				context: ctxMock,
-				cache:   sessMock,
 				v:       v,
 			}
 			hdlr.ServeHTTP(w, r)
