@@ -88,8 +88,7 @@ func InjectRequestParameter() MiddlewareFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			req, err := injectRequestParameter(r)
 			if err != nil {
-				// TODO: Handle errors
-				RespondJSON500(w, r, err)
+				RespondServerError(w, r, err)
 			}
 			next.ServeHTTP(w, req)
 		})
