@@ -72,13 +72,24 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				Return(tt.resp.location, "", nil).AnyTimes()
 
 			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
+			ctxMock.EXPECT().Read(gomock.Any(), typedef.RequestParamKey{}).Return(&AuthorizeParams{
+				ClientID:     "9NXtT29fw2lvmQ5EA42htc8sfNRQYe",
+				Nonce:        "K45zJFN4L7tXjlXpFtVRjqWbSnSCz6",
+				RedirectUri:  "https://example.com/cb",
+				ResponseType: "code",
+				Scope:        "openid",
+				State:        "lgwyrqpZ0jLGQI5Ftu94HytJRJOJSa",
+				Display:      "page",
+				MaxAge:       600,
+				Prompt:       "consent",
+			}).AnyTimes()
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.UserIdKey{}).Return(typedef.UserID(0)).AnyTimes()
 
 			sessMock := iface.NewMockOpenIdParamWriter(gomock.NewController(t))
 			sessMock.EXPECT().WriteOpenIdParam(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).
 				AnyTimes()
 
-			v, err := NewRequestParamValidator()
+			v, err := NewOIDCRequestParamValidator()
 			if err != nil {
 				t.Fatal(err)
 			}

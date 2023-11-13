@@ -9,7 +9,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-func NewRequestParamValidator() (*validator.Validate, error) {
+func NewOIDCRequestParamValidator() (*validator.Validate, error) {
 	ret := validator.New()
 
 	if err := ret.RegisterValidation("display-validator", validateDisplay); err != nil {
@@ -128,19 +128,31 @@ func validateResponseType(fl validator.FieldLevel) bool {
 	return true
 }
 
+const openIDScope = "openid"
+const profileScope = "profile"
+const emailScope = "email"
+
 var validScopes = []string{
-	"openid",
-	"profile",
-	"email",
+	openIDScope,
+	profileScope,
+	emailScope,
 }
 
 func validateScope(fl validator.FieldLevel) bool {
 	scopes := strings.Split(fl.Field().String(), " ")
+	validOpenIDScope := false
 
 	for _, v := range scopes {
 		if !slices.Contains(validScopes, v) {
 			return false
 		}
+		if v == openIDScope {
+			validOpenIDScope = true
+		}
+	}
+
+	if !validOpenIDScope {
+		return false
 	}
 
 	return true

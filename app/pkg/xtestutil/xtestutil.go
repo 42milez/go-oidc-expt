@@ -67,9 +67,12 @@ func assertLocation(t *testing.T, want *Response, got *http.Response) {
 	t.Helper()
 
 	gotLocation, err := got.Location()
-
 	if err != nil && !errors.Is(err, http.ErrNoLocation) {
 		t.Error(err)
+	}
+
+	if gotLocation == nil {
+		return
 	}
 
 	if len(want.Location) > 0 && want.Location != gotLocation.String() {

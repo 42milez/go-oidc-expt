@@ -35,15 +35,13 @@ type AuthorizationGet struct {
 }
 
 func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	decoder := schema.NewDecoder()
-	q := &AuthorizeParams{}
-
-	if err := decoder.Decode(q, r.URL.Query()); err != nil {
-		RespondJSON500(w, r, err)
-		return
+	ctx := r.Context()
+	params, ok := a.context.Read(ctx, typedef.RequestParamKey{}).(*AuthorizeParams)
+	if !ok {
+		RespondServerError(w, r, xerr.TypeAssertionFailed)
 	}
 
-	if err := a.v.Struct(q); err != nil {
+	if err := a.v.Struct(params); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
@@ -54,13 +52,11 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	location, authCode, err := a.svc.Authorize(r.Context(), q.ClientID, q.RedirectUri, q.State)
+	location, authCode, err := a.svc.Authorize(r.Context(), params.ClientID, params.RedirectUri, params.State)
 	if err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 		return
 	}
-
-	ctx := r.Context()
 
 	uid, ok := a.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
 	if !ok {
@@ -69,11 +65,11 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	authParam := &typedef.OpenIdParam{
-		RedirectURI: q.RedirectUri,
+		RedirectURI: params.RedirectUri,
 		UserId:      uid,
 	}
 
-	if err = a.cache.WriteOpenIdParam(ctx, authParam, q.ClientID, authCode); err != nil {
+	if err = a.cache.WriteOpenIdParam(ctx, authParam, params.ClientID, authCode); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
