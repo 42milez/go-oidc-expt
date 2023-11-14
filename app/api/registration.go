@@ -47,7 +47,7 @@ func (rr *Registration) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	RespondJSON(w, r, http.StatusOK, &User{
+	RespondJSON(w, r, http.StatusOK, nil, &User{
 		ID:   u.ID(),
 		Name: u.Name(),
 	})

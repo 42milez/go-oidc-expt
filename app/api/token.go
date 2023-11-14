@@ -109,7 +109,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	resp := &TokenResponse{
+	respBody := &TokenResponse{
 		AccessToken:  *tokens[accessTokenKey],
 		RefreshToken: *tokens[refreshTokenKey],
 		IdToken:      tokens[idTokenKey],
@@ -117,7 +117,12 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		ExpiresIn:    3600,
 	}
 
-	RespondJSON(w, r, http.StatusOK, resp)
+	headers := map[string]string{
+		"Cache-Control": "no-store",
+		"Pragma":        "no-cache",
+	}
+
+	RespondJSON(w, r, http.StatusOK, headers, respBody)
 }
 
 func respondRevokeAuthCodeError(w http.ResponseWriter, r *http.Request, err error) {
@@ -204,7 +209,7 @@ func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, 
 		ExpiresIn:    3600,
 	}
 
-	RespondJSON(w, r, http.StatusOK, resp)
+	RespondJSON(w, r, http.StatusOK, nil, resp)
 }
 
 func (t *Token) parseForm(r *http.Request) (*TokenFormdataBody, error) {
