@@ -28,7 +28,7 @@ import (
 
 type Response struct {
 	StatusCode int
-	Location   string
+	Location   *url.URL
 	Body       []byte
 }
 
@@ -67,12 +67,15 @@ func assertLocation(t *testing.T, want *Response, got *http.Response) {
 	t.Helper()
 
 	gotLocation, err := got.Location()
-
 	if err != nil && !errors.Is(err, http.ErrNoLocation) {
 		t.Error(err)
 	}
 
-	if len(want.Location) > 0 && want.Location != gotLocation.String() {
+	if gotLocation == nil {
+		return
+	}
+
+	if (want.Location != nil) && want.Location.String() != gotLocation.String() {
 		t.Errorf("location not matched ( want = %s; got = %s )", want.Location, gotLocation)
 	}
 }

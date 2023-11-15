@@ -20,8 +20,12 @@ type Response struct {
 	Details []string         `json:"details,omitempty"`
 }
 
-func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body any) {
+func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, headers map[string]string, body any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	for k, v := range headers {
+		w.Header().Set(k, v)
+	}
 
 	bodyBytes, err := json.Marshal(body)
 
@@ -50,7 +54,7 @@ func RespondJSON(w http.ResponseWriter, r *http.Request, statusCode int, body an
 }
 
 func RespondJSON200(w http.ResponseWriter, r *http.Request) {
-	RespondJSON(w, r, http.StatusOK, &Response{
+	RespondJSON(w, r, http.StatusOK, nil, &Response{
 		Status:  http.StatusOK,
 		Summary: xerr.OK,
 	})
@@ -67,7 +71,7 @@ func RespondJSON400(w http.ResponseWriter, r *http.Request, summary xerr.PublicE
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, r, http.StatusBadRequest, body)
+	RespondJSON(w, r, http.StatusBadRequest, nil, body)
 }
 
 func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicError, details []string, err error) {
@@ -81,11 +85,11 @@ func RespondJSON401(w http.ResponseWriter, r *http.Request, summary xerr.PublicE
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, r, http.StatusUnauthorized, body)
+	RespondJSON(w, r, http.StatusUnauthorized, nil, body)
 }
 
 func RespondJSON404(w http.ResponseWriter) {
-	RespondJSON(w, nil, http.StatusNotFound, nil)
+	RespondJSON(w, nil, http.StatusNotFound, nil, nil)
 }
 
 func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {
@@ -93,7 +97,7 @@ func RespondJSON500(w http.ResponseWriter, r *http.Request, err error) {
 		e := errors.WithStack(err)
 		appLogger.Error().Stack().Err(e).Send()
 	}
-	RespondJSON(w, r, http.StatusInternalServerError, &Response{
+	RespondJSON(w, r, http.StatusInternalServerError, nil, &Response{
 		Status:  http.StatusInternalServerError,
 		Summary: xerr.UnexpectedErrorOccurred2,
 	})
@@ -103,13 +107,13 @@ func RespondJSON503(w http.ResponseWriter, r *http.Request, err error) {
 	if err != nil {
 		appLogger.Error().Err(err).Send()
 	}
-	RespondJSON(w, r, http.StatusServiceUnavailable, &Response{
+	RespondJSON(w, r, http.StatusServiceUnavailable, nil, &Response{
 		Status:  http.StatusServiceUnavailable,
 		Summary: xerr.ServiceTemporaryUnavailable,
 	})
 }
 
-func Redirect(w http.ResponseWriter, r *http.Request, path string, code int) {
+func Redirect2(w http.ResponseWriter, r *http.Request, path string, code int) {
 	cfg, err := config.New()
 	if err != nil {
 		RespondJSON500(w, r, err)
@@ -140,18 +144,38 @@ type OIDCError struct {
 	ErrorUri         string         `json:"error_uri,omitempty"`
 }
 
+func Redirect(w http.ResponseWriter, r *http.Request, uri *url.URL, code int) {
+	http.Redirect(w, r, uri.String(), code)
+}
+
+func RespondAuthorizationRequestError(w http.ResponseWriter, r *http.Request, redirectUri, state string, err xerr.OIDCError) {
+	uri, e := url.Parse(redirectUri)
+	if e != nil {
+		RespondServerError(w, r, err)
+	}
+	q := uri.Query()
+	q.Set("error", err.Error())
+	q.Set("state", state)
+	uri.RawQuery = q.Encode()
+	Redirect(w, r, uri, http.StatusFound)
+}
+
 func RespondTokenRequestError(w http.ResponseWriter, r *http.Request, err xerr.OIDCError) {
 	body := &OIDCError{
 		Error: err,
 	}
-	RespondJSON(w, r, http.StatusBadRequest, body)
+	RespondJSON(w, r, http.StatusBadRequest, nil, body)
 }
 
-func RespondServerError(w http.ResponseWriter, r *http.Request) {
+func RespondServerError(w http.ResponseWriter, r *http.Request, err error) {
+	if err != nil {
+		e := errors.WithStack(err)
+		appLogger.Error().Stack().Err(e).Send()
+	}
 	body := &struct {
 		Error xerr.OIDCError `json:"error,string"`
 	}{
 		Error: xerr.ServerError,
 	}
-	RespondJSON(w, r, http.StatusInternalServerError, body)
+	RespondJSON(w, r, http.StatusInternalServerError, nil, body)
 }

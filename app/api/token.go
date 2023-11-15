@@ -49,7 +49,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	param, err := t.parseForm(r)
 	if err != nil {
-		RespondServerError(w, r)
+		RespondServerError(w, r, err)
 		return
 	}
 
@@ -88,7 +88,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		if errors.Is(err, xerr.UnauthorizedRequest) {
 			RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		} else {
-			RespondServerError(w, r)
+			RespondServerError(w, r, err)
 		}
 		return
 	}
@@ -100,16 +100,16 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 
 	tokens, err := t.generateToken(authParam.UserId)
 	if err != nil {
-		RespondServerError(w, r)
+		RespondServerError(w, r, err)
 		return
 	}
 
 	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, authParam.UserId); err != nil {
-		RespondServerError(w, r)
+		RespondServerError(w, r, err)
 		return
 	}
 
-	resp := &TokenResponse{
+	respBody := &TokenResponse{
 		AccessToken:  *tokens[accessTokenKey],
 		RefreshToken: *tokens[refreshTokenKey],
 		IdToken:      tokens[idTokenKey],
@@ -117,7 +117,12 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		ExpiresIn:    3600,
 	}
 
-	RespondJSON(w, r, http.StatusOK, resp)
+	headers := map[string]string{
+		"Cache-Control": "no-store",
+		"Pragma":        "no-cache",
+	}
+
+	RespondJSON(w, r, http.StatusOK, headers, respBody)
 }
 
 func respondRevokeAuthCodeError(w http.ResponseWriter, r *http.Request, err error) {
@@ -136,7 +141,7 @@ func respondRevokeAuthCodeError(w http.ResponseWriter, r *http.Request, err erro
 		return
 	}
 
-	RespondServerError(w, r)
+	RespondServerError(w, r, err)
 }
 
 const accessTokenKey = "AccessToken"
@@ -204,7 +209,7 @@ func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, 
 		ExpiresIn:    3600,
 	}
 
-	RespondJSON(w, r, http.StatusOK, resp)
+	RespondJSON(w, r, http.StatusOK, nil, resp)
 }
 
 func (t *Token) parseForm(r *http.Request) (*TokenFormdataBody, error) {

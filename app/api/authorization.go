@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/42milez/go-oidc-server/app/option"
@@ -21,7 +22,6 @@ var authorizationGet *AuthorizationGet
 func NewAuthorizationGet(opt *option.Option) *AuthorizationGet {
 	return &AuthorizationGet{
 		svc:     service.NewAuthorize(opt),
-		cache:   httpstore.NewCache(opt),
 		context: &httpstore.Context{},
 		v:       opt.V,
 	}
@@ -29,22 +29,19 @@ func NewAuthorizationGet(opt *option.Option) *AuthorizationGet {
 
 type AuthorizationGet struct {
 	svc     Authorizer
-	cache   iface.OpenIdParamWriter
 	context iface.ContextReader
 	v       iface.StructValidator
 }
 
 func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	decoder := schema.NewDecoder()
-	q := &AuthorizeParams{}
+	ctx := r.Context()
 
-	if err := decoder.Decode(q, r.URL.Query()); err != nil {
-		RespondJSON500(w, r, err)
-		return
+	params, ok := a.context.Read(ctx, typedef.RequestParamKey{}).(*AuthorizeParams)
+	if !ok {
+		RespondServerError(w, r, xerr.TypeAssertionFailed)
 	}
-
-	if err := a.v.Struct(q); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+	if err := a.v.Struct(params); err != nil {
+		RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.InvalidRequest)
 		return
 	}
 
@@ -54,31 +51,28 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	location, authCode, err := a.svc.Authorize(r.Context(), q.ClientID, q.RedirectUri, q.State)
+	location, authCode, err := a.svc.Authorize(r.Context(), params.ClientID, params.RedirectUri, params.State)
 	if err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+		if errors.Is(err, xerr.UserIdNotFoundInContext) {
+			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.AccessDenied)
+		} else if errors.Is(err, xerr.InvalidRedirectURI) {
+			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.InvalidRequest)
+		} else {
+			RespondServerError(w, r, err)
+		}
 		return
 	}
 
-	ctx := r.Context()
-
-	uid, ok := a.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
-	if !ok {
-		RespondJSON401(w, r, xerr.InvalidRequest2, nil, err)
+	if err := a.svc.SaveRequestFingerprint(ctx, params.RedirectUri, params.ClientID, authCode); err != nil {
+		if errors.Is(err, xerr.UserIdNotFoundInContext) {
+			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.AccessDenied)
+		} else {
+			RespondServerError(w, r, err)
+		}
 		return
 	}
 
-	authParam := &typedef.OpenIdParam{
-		RedirectURI: q.RedirectUri,
-		UserId:      uid,
-	}
-
-	if err = a.cache.WriteOpenIdParam(ctx, authParam, q.ClientID, authCode); err != nil {
-		RespondJSON500(w, r, err)
-		return
-	}
-
-	http.Redirect(w, r, location, http.StatusFound)
+	Redirect(w, r, location, http.StatusFound)
 }
 
 func NewAuthorizePost() *AuthorizePost {

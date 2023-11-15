@@ -186,7 +186,7 @@ func NewOption() (*option.Option, error) {
 		return nil, err
 	}
 
-	if opt.V, err = NewRequestParamValidator(); err != nil {
+	if opt.V, err = NewOIDCRequestParamValidator(); err != nil {
 		return nil, err
 	}
 
