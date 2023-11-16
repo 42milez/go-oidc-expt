@@ -68,7 +68,19 @@ func (j *JWT) generateToken(sub string, ttl time.Duration) (string, error) {
 }
 
 func (j *JWT) GenerateAccessToken(uid typedef.UserID) (string, error) {
-	return j.generateToken(strconv.FormatUint(uint64(uid), 10), config.AccessTokenTTL)
+	token, err := jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).
+		Subject(strconv.FormatUint(uint64(uid), 10)).IssuedAt(j.clock.Now()).
+		Expiration(j.clock.Now().Add(config.AccessTokenTTL)).Build()
+	if err != nil {
+		return "", err
+	}
+
+	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
+	if err != nil {
+		return "", err
+	}
+
+	return string(ret), nil
 }
 
 func (j *JWT) GenerateRefreshToken(uid typedef.UserID) (string, error) {
