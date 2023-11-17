@@ -3,7 +3,6 @@ package security
 import (
 	_ "embed"
 	"strconv"
-	"time"
 
 	"github.com/42milez/go-oidc-server/app/iface"
 
@@ -52,24 +51,12 @@ type JWT struct {
 	clock                 iface.Clocker
 }
 
-func (j *JWT) generateToken(sub string, ttl time.Duration) (string, error) {
-	token, err := jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).Subject(sub).
-		IssuedAt(j.clock.Now()).Expiration(j.clock.Now().Add(ttl)).Build()
-	if err != nil {
-		return "", err
-	}
-
-	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
-	if err != nil {
-		return "", err
-	}
-
-	return string(ret), nil
-}
-
 func (j *JWT) GenerateAccessToken(uid typedef.UserID) (string, error) {
-	token, err := jwt.NewBuilder().JwtID(uuid.New().String()).Issuer(config.Issuer).
-		Subject(strconv.FormatUint(uint64(uid), 10)).IssuedAt(j.clock.Now()).
+	token, err := jwt.NewBuilder().
+		JwtID(uuid.New().String()).
+		Subject(strconv.FormatUint(uint64(uid), 10)).
+		Issuer(config.Issuer).
+		IssuedAt(j.clock.Now()).
 		Expiration(j.clock.Now().Add(config.AccessTokenTTL)).Build()
 	if err != nil {
 		return "", err
@@ -84,11 +71,41 @@ func (j *JWT) GenerateAccessToken(uid typedef.UserID) (string, error) {
 }
 
 func (j *JWT) GenerateRefreshToken(uid typedef.UserID) (string, error) {
-	return j.generateToken(strconv.FormatUint(uint64(uid), 10), config.RefreshTokenTTL)
+	token, err := jwt.NewBuilder().
+		JwtID(uuid.New().String()).
+		Subject(strconv.FormatUint(uint64(uid), 10)).
+		Issuer(config.Issuer).
+		IssuedAt(j.clock.Now()).
+		Expiration(j.clock.Now().Add(config.RefreshTokenTTL)).Build()
+	if err != nil {
+		return "", err
+	}
+
+	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
+	if err != nil {
+		return "", err
+	}
+
+	return string(ret), nil
 }
 
 func (j *JWT) GenerateIdToken(uid typedef.UserID) (string, error) {
-	return j.generateToken(strconv.FormatUint(uint64(uid), 10), config.IDTokenTTL)
+	token, err := jwt.NewBuilder().
+		JwtID(uuid.New().String()).
+		Subject(strconv.FormatUint(uint64(uid), 10)).
+		Issuer(config.Issuer).
+		IssuedAt(j.clock.Now()).
+		Expiration(j.clock.Now().Add(config.IDTokenTTL)).Build()
+	if err != nil {
+		return "", err
+	}
+
+	ret, err := jwt.Sign(token, jwt.WithKey(jwa.ES256, j.privateKey))
+	if err != nil {
+		return "", err
+	}
+
+	return string(ret), nil
 }
 
 func (j *JWT) Validate(token string) error {

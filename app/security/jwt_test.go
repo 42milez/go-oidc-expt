@@ -2,12 +2,13 @@ package security
 
 import (
 	"bytes"
-	"github.com/42milez/go-oidc-server/app/config"
-	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
-	"github.com/42milez/go-oidc-server/app/typedef"
 	"reflect"
 	"strconv"
 	"testing"
+
+	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 
@@ -58,12 +59,24 @@ func TestJWT_GenerateToken(t *testing.T) {
 		},
 		"RefreshToken_OK": {
 			Generator: j.GenerateRefreshToken,
-			UserID:    wantUID,
+			UserID:    uid,
+			WantClaims: map[string]any{
+				jwt.IssuerKey:     config.Issuer,
+				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
+				jwt.IssuedAtKey:   clock.Now(),
+				jwt.ExpirationKey: clock.Now().Add(config.RefreshTokenTTL),
+			},
 		},
-		//"IDToken_OK": {
-		//	Generator: j.GenerateIdToken,
-		//	UserID:    wantUID,
-		//},
+		"IDToken_OK": {
+			Generator: j.GenerateIdToken,
+			UserID:    uid,
+			WantClaims: map[string]any{
+				jwt.IssuerKey:     config.Issuer,
+				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
+				jwt.IssuedAtKey:   clock.Now(),
+				jwt.ExpirationKey: clock.Now().Add(config.IDTokenTTL),
+			},
+		},
 	}
 
 	for n, tt := range tests {
