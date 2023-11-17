@@ -243,18 +243,18 @@ func (m *MockAccessTokenGenerator) EXPECT() *MockAccessTokenGeneratorMockRecorde
 }
 
 // GenerateAccessToken mocks base method.
-func (m *MockAccessTokenGenerator) GenerateAccessToken(uid typedef.UserID) (string, error) {
+func (m *MockAccessTokenGenerator) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", uid)
+	ret := m.ctrl.Call(m, "GenerateAccessToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockAccessTokenGeneratorMockRecorder) GenerateAccessToken(uid any) *gomock.Call {
+func (mr *MockAccessTokenGeneratorMockRecorder) GenerateAccessToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockAccessTokenGenerator)(nil).GenerateAccessToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockAccessTokenGenerator)(nil).GenerateAccessToken), uid, claims)
 }
 
 // MockRefreshTokenGenerator is a mock of RefreshTokenGenerator interface.
@@ -281,18 +281,18 @@ func (m *MockRefreshTokenGenerator) EXPECT() *MockRefreshTokenGeneratorMockRecor
 }
 
 // GenerateRefreshToken mocks base method.
-func (m *MockRefreshTokenGenerator) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+func (m *MockRefreshTokenGenerator) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateRefreshToken", uid)
+	ret := m.ctrl.Call(m, "GenerateRefreshToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
-func (mr *MockRefreshTokenGeneratorMockRecorder) GenerateRefreshToken(uid any) *gomock.Call {
+func (mr *MockRefreshTokenGeneratorMockRecorder) GenerateRefreshToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockRefreshTokenGenerator)(nil).GenerateRefreshToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockRefreshTokenGenerator)(nil).GenerateRefreshToken), uid, claims)
 }
 
 // MockIdTokenGenerator is a mock of IdTokenGenerator interface.
@@ -319,18 +319,18 @@ func (m *MockIdTokenGenerator) EXPECT() *MockIdTokenGeneratorMockRecorder {
 }
 
 // GenerateIdToken mocks base method.
-func (m *MockIdTokenGenerator) GenerateIdToken(uid typedef.UserID) (string, error) {
+func (m *MockIdTokenGenerator) GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateIdToken", uid)
+	ret := m.ctrl.Call(m, "GenerateIdToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockIdTokenGeneratorMockRecorder) GenerateIdToken(uid any) *gomock.Call {
+func (mr *MockIdTokenGeneratorMockRecorder) GenerateIdToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockIdTokenGenerator)(nil).GenerateIdToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockIdTokenGenerator)(nil).GenerateIdToken), uid, claims)
 }
 
 // MockTokenGenerator is a mock of TokenGenerator interface.
@@ -357,48 +357,48 @@ func (m *MockTokenGenerator) EXPECT() *MockTokenGeneratorMockRecorder {
 }
 
 // GenerateAccessToken mocks base method.
-func (m *MockTokenGenerator) GenerateAccessToken(uid typedef.UserID) (string, error) {
+func (m *MockTokenGenerator) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", uid)
+	ret := m.ctrl.Call(m, "GenerateAccessToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockTokenGeneratorMockRecorder) GenerateAccessToken(uid any) *gomock.Call {
+func (mr *MockTokenGeneratorMockRecorder) GenerateAccessToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateAccessToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateAccessToken), uid, claims)
 }
 
 // GenerateIdToken mocks base method.
-func (m *MockTokenGenerator) GenerateIdToken(uid typedef.UserID) (string, error) {
+func (m *MockTokenGenerator) GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateIdToken", uid)
+	ret := m.ctrl.Call(m, "GenerateIdToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockTokenGeneratorMockRecorder) GenerateIdToken(uid any) *gomock.Call {
+func (mr *MockTokenGeneratorMockRecorder) GenerateIdToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateIdToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateIdToken), uid, claims)
 }
 
 // GenerateRefreshToken mocks base method.
-func (m *MockTokenGenerator) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+func (m *MockTokenGenerator) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateRefreshToken", uid)
+	ret := m.ctrl.Call(m, "GenerateRefreshToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
-func (mr *MockTokenGeneratorMockRecorder) GenerateRefreshToken(uid any) *gomock.Call {
+func (mr *MockTokenGeneratorMockRecorder) GenerateRefreshToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateRefreshToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateRefreshToken), uid, claims)
 }
 
 // MockTokenValidator is a mock of TokenValidator interface.
@@ -462,48 +462,48 @@ func (m *MockTokenGenerateValidator) EXPECT() *MockTokenGenerateValidatorMockRec
 }
 
 // GenerateAccessToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateAccessToken(uid typedef.UserID) (string, error) {
+func (m *MockTokenGenerateValidator) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", uid)
+	ret := m.ctrl.Call(m, "GenerateAccessToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateAccessToken(uid any) *gomock.Call {
+func (mr *MockTokenGenerateValidatorMockRecorder) GenerateAccessToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateAccessToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateAccessToken), uid, claims)
 }
 
 // GenerateIdToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateIdToken(uid typedef.UserID) (string, error) {
+func (m *MockTokenGenerateValidator) GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateIdToken", uid)
+	ret := m.ctrl.Call(m, "GenerateIdToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateIdToken(uid any) *gomock.Call {
+func (mr *MockTokenGenerateValidatorMockRecorder) GenerateIdToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateIdToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateIdToken), uid, claims)
 }
 
 // GenerateRefreshToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateRefreshToken(uid typedef.UserID) (string, error) {
+func (m *MockTokenGenerateValidator) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateRefreshToken", uid)
+	ret := m.ctrl.Call(m, "GenerateRefreshToken", uid, claims)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateRefreshToken(uid any) *gomock.Call {
+func (mr *MockTokenGenerateValidatorMockRecorder) GenerateRefreshToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateRefreshToken), uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateRefreshToken), uid, claims)
 }
 
 // Validate mocks base method.

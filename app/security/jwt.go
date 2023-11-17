@@ -51,13 +51,22 @@ type JWT struct {
 	clock                 iface.Clocker
 }
 
-func (j *JWT) GenerateAccessToken(uid typedef.UserID) (string, error) {
-	token, err := jwt.NewBuilder().
+func (j *JWT) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
+	builder := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
 		Subject(strconv.FormatUint(uint64(uid), 10)).
 		Issuer(config.Issuer).
 		IssuedAt(j.clock.Now()).
-		Expiration(j.clock.Now().Add(config.AccessTokenTTL)).Build()
+		Expiration(j.clock.Now().Add(config.AccessTokenTTL))
+
+	for k := range claims {
+		switch k {
+		default:
+			return "", xerr.UnsupportedClaim
+		}
+	}
+
+	token, err := builder.Build()
 	if err != nil {
 		return "", err
 	}
@@ -70,13 +79,22 @@ func (j *JWT) GenerateAccessToken(uid typedef.UserID) (string, error) {
 	return string(ret), nil
 }
 
-func (j *JWT) GenerateRefreshToken(uid typedef.UserID) (string, error) {
-	token, err := jwt.NewBuilder().
+func (j *JWT) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error) {
+	builder := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
 		Subject(strconv.FormatUint(uint64(uid), 10)).
 		Issuer(config.Issuer).
 		IssuedAt(j.clock.Now()).
-		Expiration(j.clock.Now().Add(config.RefreshTokenTTL)).Build()
+		Expiration(j.clock.Now().Add(config.RefreshTokenTTL))
+
+	for k := range claims {
+		switch k {
+		default:
+			return "", xerr.UnsupportedClaim
+		}
+	}
+
+	token, err := builder.Build()
 	if err != nil {
 		return "", err
 	}
@@ -89,13 +107,36 @@ func (j *JWT) GenerateRefreshToken(uid typedef.UserID) (string, error) {
 	return string(ret), nil
 }
 
-func (j *JWT) GenerateIdToken(uid typedef.UserID) (string, error) {
-	token, err := jwt.NewBuilder().
+const nonceKey = "nonce"
+
+func (j *JWT) GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error) {
+	builder := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
 		Subject(strconv.FormatUint(uint64(uid), 10)).
 		Issuer(config.Issuer).
 		IssuedAt(j.clock.Now()).
-		Expiration(j.clock.Now().Add(config.IDTokenTTL)).Build()
+		Expiration(j.clock.Now().Add(config.IDTokenTTL))
+
+	for k, v := range claims {
+		switch k {
+		case jwt.AudienceKey:
+			vv, ok := v.([]string)
+			if !ok {
+				return "", xerr.AssertionFailed
+			}
+			builder.Audience(vv)
+		case nonceKey:
+			vv, ok := v.(string)
+			if !ok {
+				return "", xerr.AssertionFailed
+			}
+			builder.Claim(nonceKey, vv)
+		default:
+			return "", xerr.UnsupportedClaim
+		}
+	}
+
+	token, err := builder.Build()
 	if err != nil {
 		return "", err
 	}

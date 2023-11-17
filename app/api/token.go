@@ -149,17 +149,17 @@ const refreshTokenKey = "RefreshToken"
 const idTokenKey = "IDToken"
 
 func (t *Token) generateToken(uid typedef.UserID) (map[string]*string, error) {
-	accessToken, err := t.acSVC.GenerateAccessToken(uid)
+	accessToken, err := t.acSVC.GenerateAccessToken(uid, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := t.acSVC.GenerateRefreshToken(uid)
+	refreshToken, err := t.acSVC.GenerateRefreshToken(uid, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	idToken, err := t.acSVC.GenerateIdToken(uid)
+	idToken, err := t.acSVC.GenerateIdToken(uid, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -185,13 +185,13 @@ func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, 
 		}
 	}
 
-	accessToken, err := t.rtSVC.GenerateAccessToken(perm.UserId)
+	accessToken, err := t.rtSVC.GenerateAccessToken(perm.UserId, nil)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	refreshToken, err := t.rtSVC.GenerateRefreshToken(perm.UserId)
+	refreshToken, err := t.rtSVC.GenerateRefreshToken(perm.UserId, nil)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return

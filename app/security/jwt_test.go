@@ -43,38 +43,48 @@ func TestJWT_GenerateToken(t *testing.T) {
 	uid := typedef.UserID(485911246986543469)
 
 	tests := map[string]struct {
-		Generator  func(uid typedef.UserID) (string, error)
-		UserID     typedef.UserID
-		WantClaims map[string]any
+		Generator           func(uid typedef.UserID, claims map[string]any) (string, error)
+		UserID              typedef.UserID
+		WantCommonClaims    map[string]any
+		WantDedicatedClaims map[string]any
 	}{
 		"AccessToken_OK": {
 			Generator: j.GenerateAccessToken,
 			UserID:    uid,
-			WantClaims: map[string]any{
+			WantCommonClaims: map[string]any{
 				jwt.IssuerKey:     config.Issuer,
 				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
 				jwt.IssuedAtKey:   clock.Now(),
 				jwt.ExpirationKey: clock.Now().Add(config.AccessTokenTTL),
 			},
+			WantDedicatedClaims: nil,
 		},
 		"RefreshToken_OK": {
 			Generator: j.GenerateRefreshToken,
 			UserID:    uid,
-			WantClaims: map[string]any{
+			WantCommonClaims: map[string]any{
 				jwt.IssuerKey:     config.Issuer,
 				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
 				jwt.IssuedAtKey:   clock.Now(),
 				jwt.ExpirationKey: clock.Now().Add(config.RefreshTokenTTL),
 			},
+			WantDedicatedClaims: nil,
 		},
 		"IDToken_OK": {
 			Generator: j.GenerateIdToken,
 			UserID:    uid,
-			WantClaims: map[string]any{
+			// https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#IDToken
+			WantCommonClaims: map[string]any{
 				jwt.IssuerKey:     config.Issuer,
 				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
 				jwt.IssuedAtKey:   clock.Now(),
 				jwt.ExpirationKey: clock.Now().Add(config.IDTokenTTL),
+			},
+			WantDedicatedClaims: map[string]any{
+				jwt.AudienceKey: []string{
+					"RZYY4jJnxBSH5vifs4bKma03wkRgee",
+				},
+				nonceKey: "EZeNAZyB0tXxZzUJuICiW1yqBHi3FB",
 			},
 		},
 	}
@@ -85,7 +95,7 @@ func TestJWT_GenerateToken(t *testing.T) {
 		t.Run(n, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := tt.Generator(tt.UserID)
+			got, err := tt.Generator(tt.UserID, tt.WantDedicatedClaims)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -99,7 +109,7 @@ func TestJWT_GenerateToken(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			for k, claim := range tt.WantClaims {
+			for k, claim := range tt.WantCommonClaims {
 				gotClaim, ok := gotToken.Get(k)
 				if !ok {
 					t.Fatalf("claim not included: %s", k)
@@ -117,6 +127,9 @@ func TestJWT_GenerateToken(t *testing.T) {
 					t.Fatalf("want = %v; got = %v", wantClaimValue, gotClaimValue)
 				}
 			}
+
+			// TODO: check dedicated claims
+			// ...
 		})
 	}
 }
@@ -132,7 +145,7 @@ func TestJWT_Validate(t *testing.T) {
 	uid := typedef.UserID(485911246986543469)
 
 	tests := map[string]struct {
-		Generator func(uid typedef.UserID) (string, error)
+		Generator func(uid typedef.UserID, claims map[string]any) (string, error)
 		UserID    typedef.UserID
 	}{
 		"AccessToken_OK": {
@@ -155,7 +168,7 @@ func TestJWT_Validate(t *testing.T) {
 		t.Run(n, func(t *testing.T) {
 			t.Parallel()
 
-			token, err := tt.Generator(tt.UserID)
+			token, err := tt.Generator(tt.UserID, nil)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -36,6 +36,8 @@ var (
 	UserIdNotFoundInContext        InternalError = "user id not found in context"
 	UserNotFound                   InternalError = "user not found"
 	InvalidRedirectURI             InternalError = "invalid redirect uri"
+	AssertionFailed                InternalError = "assertion failed"
+	UnsupportedClaim               InternalError = "unsupported claim"
 )
 
 var (

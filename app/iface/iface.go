@@ -44,15 +44,15 @@ type CookieReadWriter interface {
 // --------------------------------------------------
 
 type AccessTokenGenerator interface {
-	GenerateAccessToken(uid typedef.UserID) (string, error)
+	GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error)
 }
 
 type RefreshTokenGenerator interface {
-	GenerateRefreshToken(uid typedef.UserID) (string, error)
+	GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error)
 }
 
 type IdTokenGenerator interface {
-	GenerateIdToken(uid typedef.UserID) (string, error)
+	GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error)
 }
 
 type TokenGenerator interface {
