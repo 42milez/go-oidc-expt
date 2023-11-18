@@ -2,7 +2,6 @@ package security
 
 import (
 	"bytes"
-	"reflect"
 	"strconv"
 	"testing"
 
@@ -109,29 +108,13 @@ func TestJWT_GenerateToken(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			cmpType := func(v1, v2 any) {
-				typ1 := reflect.TypeOf(v1).Name()
-				typ2 := reflect.TypeOf(v2).Name()
-				if !reflect.DeepEqual(typ1, typ2) {
-					t.Fatalf("want = %s; got = %s", typ1, typ2)
-				}
-			}
-
-			cmpValue := func(v1, v2 any) {
-				val1 := reflect.ValueOf(v1).Interface()
-				val2 := reflect.ValueOf(v2).Interface()
-				if !reflect.DeepEqual(val1, val2) {
-					t.Fatalf("want = %s; got = %s", val1, val2)
-				}
-			}
-
 			for k, claim := range tt.WantCommonClaims {
 				gotClaim, ok := gotToken.Get(k)
 				if !ok {
 					t.Fatalf("claim not included: %s", k)
 				}
-				cmpType(claim, gotClaim)
-				cmpValue(claim, gotClaim)
+				xtestutil.CompareType(t, claim, gotClaim)
+				xtestutil.CompareValue(t, claim, gotClaim)
 			}
 
 			for k, claim := range tt.WantDedicatedClaims {
@@ -139,8 +122,8 @@ func TestJWT_GenerateToken(t *testing.T) {
 				if !ok {
 					t.Fatalf("claim not included: %s", k)
 				}
-				cmpType(claim, gotClaim)
-				cmpValue(claim, gotClaim)
+				xtestutil.CompareType(t, claim, gotClaim)
+				xtestutil.CompareValue(t, claim, gotClaim)
 			}
 		})
 	}

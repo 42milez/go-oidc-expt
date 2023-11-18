@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -290,5 +291,22 @@ func CloseResponseBody(t *testing.T, resp *http.Response) {
 	}
 	if err := resp.Body.Close(); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func CompareType(t *testing.T, v1, v2 any) {
+	t.Helper()
+	typ1 := reflect.TypeOf(v1).Name()
+	typ2 := reflect.TypeOf(v2).Name()
+	if !reflect.DeepEqual(typ1, typ2) {
+		t.Fatalf("want = %s; got = %s", typ1, typ2)
+	}
+}
+
+func CompareValue(t *testing.T, v1, v2 any) {
+	val1 := reflect.ValueOf(v1).Interface()
+	val2 := reflect.ValueOf(v2).Interface()
+	if !reflect.DeepEqual(val1, val2) {
+		t.Fatalf("want = %s; got = %s", val1, val2)
 	}
 }
