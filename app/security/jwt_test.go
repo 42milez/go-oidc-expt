@@ -73,13 +73,13 @@ func TestJWT_GenerateToken(t *testing.T) {
 		"IDToken_OK": {
 			Generator: j.GenerateIdToken,
 			UserID:    uid,
-			// https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#IDToken
 			WantCommonClaims: map[string]any{
 				jwt.IssuerKey:     config.Issuer,
 				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
 				jwt.IssuedAtKey:   clock.Now(),
 				jwt.ExpirationKey: clock.Now().Add(config.IDTokenTTL),
 			},
+			// https://openid.net/specs/openid-connect-core-1_0.html#IDToken
 			WantDedicatedClaims: map[string]any{
 				jwt.AudienceKey: []string{
 					"RZYY4jJnxBSH5vifs4bKma03wkRgee",
@@ -109,27 +109,39 @@ func TestJWT_GenerateToken(t *testing.T) {
 				t.Fatal(err)
 			}
 
+			cmpType := func(v1, v2 any) {
+				typ1 := reflect.TypeOf(v1).Name()
+				typ2 := reflect.TypeOf(v2).Name()
+				if !reflect.DeepEqual(typ1, typ2) {
+					t.Fatalf("want = %s; got = %s", typ1, typ2)
+				}
+			}
+
+			cmpValue := func(v1, v2 any) {
+				val1 := reflect.ValueOf(v1).Interface()
+				val2 := reflect.ValueOf(v2).Interface()
+				if !reflect.DeepEqual(val1, val2) {
+					t.Fatalf("want = %s; got = %s", val1, val2)
+				}
+			}
+
 			for k, claim := range tt.WantCommonClaims {
 				gotClaim, ok := gotToken.Get(k)
 				if !ok {
 					t.Fatalf("claim not included: %s", k)
 				}
-
-				wantClaimType := reflect.TypeOf(claim).Name()
-				gotClaimType := reflect.TypeOf(gotClaim).Name()
-				if wantClaimType != gotClaimType {
-					t.Fatalf("want = %s; got = %s", wantClaimType, gotClaimType)
-				}
-
-				wantClaimValue := reflect.ValueOf(claim).Interface()
-				gotClaimValue := reflect.ValueOf(gotClaim).Interface()
-				if wantClaimValue != gotClaimValue {
-					t.Fatalf("want = %v; got = %v", wantClaimValue, gotClaimValue)
-				}
+				cmpType(claim, gotClaim)
+				cmpValue(claim, gotClaim)
 			}
 
-			// TODO: check dedicated claims
-			// ...
+			for k, claim := range tt.WantDedicatedClaims {
+				gotClaim, ok := gotToken.Get(k)
+				if !ok {
+					t.Fatalf("claim not included: %s", k)
+				}
+				cmpType(claim, gotClaim)
+				cmpValue(claim, gotClaim)
+			}
 		})
 	}
 }
