@@ -75,7 +75,7 @@ The containers:
 ### Apply migrations
 
 ```
-./scripts/atlas/migrate-apply.sh
+make migrate-apply DB_NAMES=idp,idp_test
 ```
 
 ## Commands and scripts

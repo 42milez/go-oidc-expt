@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
@@ -32,29 +34,57 @@ func TestJWT_Embed(t *testing.T) {
 func TestJWT_GenerateToken(t *testing.T) {
 	t.Parallel()
 
-	j, err := NewJWT(&xtime.RealClocker{})
+	clock := &xtestutil.FixedClocker{}
+	j, err := NewJWT(clock)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	wantUID := typedef.UserID(485911246986543469)
-	wantUIDString := strconv.FormatUint(uint64(wantUID), 10)
+	uid := typedef.UserID(485911246986543469)
 
 	tests := map[string]struct {
-		Generator func(uid typedef.UserID) (string, error)
-		UserID    typedef.UserID
+		Generator           func(uid typedef.UserID, claims map[string]any) (string, error)
+		UserID              typedef.UserID
+		WantCommonClaims    map[string]any
+		WantDedicatedClaims map[string]any
 	}{
 		"AccessToken_OK": {
 			Generator: j.GenerateAccessToken,
-			UserID:    wantUID,
+			UserID:    uid,
+			WantCommonClaims: map[string]any{
+				jwt.IssuerKey:     config.Issuer,
+				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
+				jwt.IssuedAtKey:   clock.Now(),
+				jwt.ExpirationKey: clock.Now().Add(config.AccessTokenTTL),
+			},
+			WantDedicatedClaims: nil,
 		},
 		"RefreshToken_OK": {
 			Generator: j.GenerateRefreshToken,
-			UserID:    wantUID,
+			UserID:    uid,
+			WantCommonClaims: map[string]any{
+				jwt.IssuerKey:     config.Issuer,
+				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
+				jwt.IssuedAtKey:   clock.Now(),
+				jwt.ExpirationKey: clock.Now().Add(config.RefreshTokenTTL),
+			},
+			WantDedicatedClaims: nil,
 		},
 		"IDToken_OK": {
 			Generator: j.GenerateIdToken,
-			UserID:    wantUID,
+			UserID:    uid,
+			WantCommonClaims: map[string]any{
+				jwt.IssuerKey:     config.Issuer,
+				jwt.SubjectKey:    strconv.FormatUint(uint64(uid), 10),
+				jwt.IssuedAtKey:   clock.Now(),
+				jwt.ExpirationKey: clock.Now().Add(config.IDTokenTTL),
+			},
+			// https://openid.net/specs/openid-connect-core-1_0.html#IDToken
+			WantDedicatedClaims: map[string]any{
+				jwt.AudienceKey: []string{
+					"RZYY4jJnxBSH5vifs4bKma03wkRgee",
+				},
+				nonceKey: "EZeNAZyB0tXxZzUJuICiW1yqBHi3FB",
+			},
 		},
 	}
 
@@ -64,7 +94,7 @@ func TestJWT_GenerateToken(t *testing.T) {
 		t.Run(n, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := tt.Generator(wantUID)
+			got, err := tt.Generator(tt.UserID, tt.WantDedicatedClaims)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -73,14 +103,27 @@ func TestJWT_GenerateToken(t *testing.T) {
 				t.Fatal("want = ( not empty ); got = ( empty )")
 			}
 
-			gotJWT, err := jwt.ParseString(got, jwt.WithKey(jwa.ES256, j.publicKey))
+			gotToken, err := jwt.ParseString(got, jwt.WithKey(jwa.ES256, j.publicKey), jwt.WithValidate(false))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			gotUID := gotJWT.Subject()
-			if gotUID != wantUIDString {
-				t.Fatalf("want = %d; got = %s", wantUID, gotUID)
+			for k, claim := range tt.WantCommonClaims {
+				gotClaim, ok := gotToken.Get(k)
+				if !ok {
+					t.Fatalf("claim not included: %s", k)
+				}
+				xtestutil.CompareType(t, claim, gotClaim)
+				xtestutil.CompareValue(t, claim, gotClaim)
+			}
+
+			for k, claim := range tt.WantDedicatedClaims {
+				gotClaim, ok := gotToken.Get(k)
+				if !ok {
+					t.Fatalf("claim not included: %s", k)
+				}
+				xtestutil.CompareType(t, claim, gotClaim)
+				xtestutil.CompareValue(t, claim, gotClaim)
 			}
 		})
 	}
@@ -97,7 +140,7 @@ func TestJWT_Validate(t *testing.T) {
 	uid := typedef.UserID(485911246986543469)
 
 	tests := map[string]struct {
-		Generator func(uid typedef.UserID) (string, error)
+		Generator func(uid typedef.UserID, claims map[string]any) (string, error)
 		UserID    typedef.UserID
 	}{
 		"AccessToken_OK": {
@@ -120,7 +163,7 @@ func TestJWT_Validate(t *testing.T) {
 		t.Run(n, func(t *testing.T) {
 			t.Parallel()
 
-			token, err := tt.Generator(tt.UserID)
+			token, err := tt.Generator(tt.UserID, nil)
 			if err != nil {
 				t.Fatal(err)
 			}

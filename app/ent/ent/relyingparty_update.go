@@ -37,6 +37,14 @@ func (rpu *RelyingPartyUpdate) SetClientSecret(s string) *RelyingPartyUpdate {
 	return rpu
 }
 
+// SetNillableClientSecret sets the "client_secret" field if the given value is not nil.
+func (rpu *RelyingPartyUpdate) SetNillableClientSecret(s *string) *RelyingPartyUpdate {
+	if s != nil {
+		rpu.SetClientSecret(*s)
+	}
+	return rpu
+}
+
 // SetModifiedAt sets the "modified_at" field.
 func (rpu *RelyingPartyUpdate) SetModifiedAt(t time.Time) *RelyingPartyUpdate {
 	rpu.mutation.SetModifiedAt(t)
@@ -297,6 +305,14 @@ type RelyingPartyUpdateOne struct {
 // SetClientSecret sets the "client_secret" field.
 func (rpuo *RelyingPartyUpdateOne) SetClientSecret(s string) *RelyingPartyUpdateOne {
 	rpuo.mutation.SetClientSecret(s)
+	return rpuo
+}
+
+// SetNillableClientSecret sets the "client_secret" field if the given value is not nil.
+func (rpuo *RelyingPartyUpdateOne) SetNillableClientSecret(s *string) *RelyingPartyUpdateOne {
+	if s != nil {
+		rpuo.SetClientSecret(*s)
+	}
 	return rpuo
 }
 

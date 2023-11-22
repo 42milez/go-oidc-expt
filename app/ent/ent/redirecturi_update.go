@@ -34,6 +34,14 @@ func (ruu *RedirectUriUpdate) SetURI(s string) *RedirectUriUpdate {
 	return ruu
 }
 
+// SetNillableURI sets the "uri" field if the given value is not nil.
+func (ruu *RedirectUriUpdate) SetNillableURI(s *string) *RedirectUriUpdate {
+	if s != nil {
+		ruu.SetURI(*s)
+	}
+	return ruu
+}
+
 // SetModifiedAt sets the "modified_at" field.
 func (ruu *RedirectUriUpdate) SetModifiedAt(t time.Time) *RedirectUriUpdate {
 	ruu.mutation.SetModifiedAt(t)
@@ -135,6 +143,14 @@ type RedirectUriUpdateOne struct {
 // SetURI sets the "uri" field.
 func (ruuo *RedirectUriUpdateOne) SetURI(s string) *RedirectUriUpdateOne {
 	ruuo.mutation.SetURI(s)
+	return ruuo
+}
+
+// SetNillableURI sets the "uri" field if the given value is not nil.
+func (ruuo *RedirectUriUpdateOne) SetNillableURI(s *string) *RedirectUriUpdateOne {
+	if s != nil {
+		ruuo.SetURI(*s)
+	}
 	return ruuo
 }
 

@@ -70,16 +70,16 @@ func (a *AuthCodeGrant) revokeAuthCode(ctx context.Context, code, clientId strin
 	return nil
 }
 
-func (a *AuthCodeGrant) GenerateAccessToken(uid typedef.UserID) (string, error) {
-	return generateAccessToken(a.token, uid)
+func (a *AuthCodeGrant) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
+	return generateAccessToken(a.token, uid, claims)
 }
 
-func (a *AuthCodeGrant) GenerateRefreshToken(uid typedef.UserID) (string, error) {
-	return generateRefreshToken(a.token, uid)
+func (a *AuthCodeGrant) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error) {
+	return generateRefreshToken(a.token, uid, claims)
 }
 
-func (a *AuthCodeGrant) GenerateIdToken(uid typedef.UserID) (string, error) {
-	return generateIDToken(a.token, uid)
+func (a *AuthCodeGrant) GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error) {
+	return generateIDToken(a.token, uid, claims)
 }
 
 func NewRefreshTokenGrant(opt *option.Option) *RefreshTokenGrant {
@@ -111,32 +111,32 @@ func (r *RefreshTokenGrant) ReadRefreshTokenPermission(ctx context.Context, toke
 	return perm, nil
 }
 
-func (r *RefreshTokenGrant) GenerateAccessToken(uid typedef.UserID) (string, error) {
-	return generateAccessToken(r.token, uid)
+func (r *RefreshTokenGrant) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
+	return generateAccessToken(r.token, uid, claims)
 }
 
-func (r *RefreshTokenGrant) GenerateRefreshToken(uid typedef.UserID) (string, error) {
-	return generateRefreshToken(r.token, uid)
+func (r *RefreshTokenGrant) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error) {
+	return generateRefreshToken(r.token, uid, claims)
 }
 
-func generateAccessToken(tokenGen iface.TokenGenerator, uid typedef.UserID) (string, error) {
-	accessToken, err := tokenGen.GenerateAccessToken(uid)
+func generateAccessToken(tokenGen iface.TokenGenerator, uid typedef.UserID, claims map[string]any) (string, error) {
+	accessToken, err := tokenGen.GenerateAccessToken(uid, claims)
 	if err != nil {
 		return "", err
 	}
 	return accessToken, nil
 }
 
-func generateRefreshToken(tokenGen iface.TokenGenerator, uid typedef.UserID) (string, error) {
-	refreshToken, err := tokenGen.GenerateRefreshToken(uid)
+func generateRefreshToken(tokenGen iface.TokenGenerator, uid typedef.UserID, claims map[string]any) (string, error) {
+	refreshToken, err := tokenGen.GenerateRefreshToken(uid, claims)
 	if err != nil {
 		return "", err
 	}
 	return refreshToken, nil
 }
 
-func generateIDToken(tokenGen iface.TokenGenerator, uid typedef.UserID) (string, error) {
-	idToken, err := tokenGen.GenerateIdToken(uid)
+func generateIDToken(tokenGen iface.TokenGenerator, uid typedef.UserID, claims map[string]any) (string, error) {
+	idToken, err := tokenGen.GenerateIdToken(uid, claims)
 	if err != nil {
 		return "", err
 	}
