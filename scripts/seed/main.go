@@ -6,10 +6,11 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/42milez/go-oidc-server/app/datastore"
+	"github.com/42milez/go-oidc-server/app/idp/config"
+	datastore2 "github.com/42milez/go-oidc-server/app/idp/datastore"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 
-	"github.com/42milez/go-oidc-server/app/config"
 	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
 )
 
@@ -20,7 +21,7 @@ func printSeeds(data any) {
 	}
 }
 
-func run(ctx context.Context, db *datastore.Database) error {
+func run(ctx context.Context, db *datastore2.Database) error {
 	var err error
 
 	//  For Swagger
@@ -94,7 +95,7 @@ func main() {
 	}
 
 	cfg.DBPort = 13306
-	db, err := datastore.NewMySQL(ctx, cfg)
+	db, err := datastore2.NewMySQL(ctx, cfg)
 
 	if err != nil {
 		log.Fatal(err)

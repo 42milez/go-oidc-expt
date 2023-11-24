@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/app/security"
-
-	"github.com/42milez/go-oidc-server/app/datastore"
-	"github.com/42milez/go-oidc-server/app/ent/ent"
+	"github.com/42milez/go-oidc-server/app/idp/datastore"
+	"github.com/42milez/go-oidc-server/app/idp/security"
 	"github.com/42milez/go-oidc-server/app/typedef"
+
+	"github.com/42milez/go-oidc-server/app/ent/ent"
 )
 
 func insertFixedData(ctx context.Context, db *datastore.Database) error {

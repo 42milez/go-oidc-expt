@@ -5,7 +5,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/idp/config"
+	"github.com/42milez/go-oidc-server/app/typedef"
 
 	"entgo.io/ent/schema/index"
 
@@ -13,7 +14,6 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
 // RelyingParty holds the schema definition for the RelyingParty entity.

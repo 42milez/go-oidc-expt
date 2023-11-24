@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/42milez/go-oidc-server/app/config"
+	"github.com/42milez/go-oidc-server/app/idp/config"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent/migrate"
 
