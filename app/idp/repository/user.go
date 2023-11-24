@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/idp/entity"
+
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
-	entity2 "github.com/42milez/go-oidc-server/app/idp/entity"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
 	"github.com/42milez/go-oidc-server/app/typedef"
 
@@ -27,15 +28,15 @@ type User struct {
 	idGen iface.IdGenerator
 }
 
-func (u *User) CreateUser(ctx context.Context, name string, pw string) (*entity2.User, error) {
+func (u *User) CreateUser(ctx context.Context, name string, pw string) (*entity.User, error) {
 	v, err := u.db.Client.User.Create().SetName(name).SetPassword(pw).Save(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return entity2.NewUser(v), nil
+	return entity.NewUser(v), nil
 }
 
-func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity2.Consent, error) {
+func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
 	tx, err := u.db.Client.Tx(ctx)
 	if err != nil {
 		return nil, rollback(tx, err)
@@ -55,10 +56,10 @@ func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientI
 		return nil, rollback(tx, err)
 	}
 
-	return entity2.NewConsent(c), nil
+	return entity.NewConsent(c), nil
 }
 
-func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity2.Consent, error) {
+func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
 	c, err := u.db.Client.Consent.Query().Where(consent.UserID(userID), consent.ClientID(clientID)).Only(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {
@@ -67,10 +68,10 @@ func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID 
 			return nil, err
 		}
 	}
-	return entity2.NewConsent(c), nil
+	return entity.NewConsent(c), nil
 }
 
-func (u *User) ReadUser(ctx context.Context, name string) (*entity2.User, error) {
+func (u *User) ReadUser(ctx context.Context, name string) (*entity.User, error) {
 	v, err := u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {
@@ -78,5 +79,5 @@ func (u *User) ReadUser(ctx context.Context, name string) (*entity2.User, error)
 		}
 		return nil, err
 	}
-	return entity2.NewUser(v), err
+	return entity.NewUser(v), err
 }

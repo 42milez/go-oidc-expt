@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/42milez/go-oidc-server/app/idp/httpstore"
+
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/entity"
-	httpstore2 "github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
 	"github.com/42milez/go-oidc-server/app/idp/option"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
@@ -22,8 +23,8 @@ import (
 func NewAuthorize(opt *option.Option) *Authorize {
 	return &Authorize{
 		repo:    repository.NewRelyingParty(opt.DB),
-		cache:   httpstore2.NewCache(opt),
-		context: &httpstore2.Context{},
+		cache:   httpstore.NewCache(opt),
+		context: &httpstore.Context{},
 	}
 }
 

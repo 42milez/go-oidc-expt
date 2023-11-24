@@ -12,11 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/api"
-	"github.com/42milez/go-oidc-server/app/idp/config"
-	entity2 "github.com/42milez/go-oidc-server/app/idp/entity"
+	"github.com/42milez/go-oidc-server/app/idp/entity"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent"
+	"github.com/42milez/go-oidc-server/app/idp/api"
+	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/google/go-querystring/query"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
@@ -77,7 +77,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		return v.Encode()
 	}
 
-	registerRelyingParty := func() *entity2.RelyingParty {
+	registerRelyingParty := func() *entity.RelyingParty {
 		clientId, err := xrandom.GenerateCryptoRandomStringNoCache(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
@@ -95,10 +95,10 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		_, err = db.Client.RedirectUri.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
 		xtestutil.ExitOnError(t, err)
 
-		return entity2.NewRelyingParty(rp)
+		return entity.NewRelyingParty(rp)
 	}
 
-	registerUser := func() *entity2.User {
+	registerUser := func() *entity.User {
 		regUrl, err := url.Parse(registrationEndpoint)
 		xtestutil.ExitOnError(t, err)
 
@@ -136,13 +136,13 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 			xtestutil.ExitOnError(t, err)
 		})
 
-		return entity2.NewUser(&ent.User{
+		return entity.NewUser(&ent.User{
 			Name:     username,
 			Password: password,
 		})
 	}
 
-	authenticate := func(u *entity2.User, authoParam string) []*http.Cookie {
+	authenticate := func(u *entity.User, authoParam string) []*http.Cookie {
 		autheUrl, err := url.Parse(fmt.Sprintf("%s?%s", authenticationEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
@@ -209,7 +209,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		return cbUrl
 	}
 
-	initialRequestToken := func(rp *entity2.RelyingParty, cookies []*http.Cookie, authoParam string, cbUrl *url.URL) string {
+	initialRequestToken := func(rp *entity.RelyingParty, cookies []*http.Cookie, authoParam string, cbUrl *url.URL) string {
 		tokenUrl, err := url.Parse(fmt.Sprintf("%s?%s", tokenEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
@@ -250,7 +250,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		return tokenResp.RefreshToken
 	}
 
-	requestToken := func(rp *entity2.RelyingParty, cookies []*http.Cookie, refreshToken string) {
+	requestToken := func(rp *entity.RelyingParty, cookies []*http.Cookie, refreshToken string) {
 		tokenUrl, err := url.Parse(fmt.Sprintf("%s", tokenEndpoint))
 		xtestutil.ExitOnError(t, err)
 

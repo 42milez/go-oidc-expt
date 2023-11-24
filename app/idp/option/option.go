@@ -1,7 +1,7 @@
 package option
 
 import (
-	datastore2 "github.com/42milez/go-oidc-server/app/idp/datastore"
+	"github.com/42milez/go-oidc-server/app/idp/datastore"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
 	"github.com/42milez/go-oidc-server/app/idp/security"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
@@ -9,9 +9,9 @@ import (
 )
 
 type Option struct {
-	Cache  *datastore2.Cache
+	Cache  *datastore.Cache
 	Cookie iface.CookieReadWriter
-	DB     *datastore2.Database
+	DB     *datastore.Database
 	IdGen  *xid.UniqueID
 	Token  *security.JWT
 	V      *validator.Validate

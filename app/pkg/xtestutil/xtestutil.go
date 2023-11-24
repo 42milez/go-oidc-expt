@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/config"
-	datastore2 "github.com/42milez/go-oidc-server/app/idp/datastore"
+	"github.com/42milez/go-oidc-server/app/idp/datastore"
 
+	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
@@ -166,7 +166,7 @@ const TestDBUser = "idp_test"
 const TestDBPassword = "idp_test"
 const TestDBName = "idp_test"
 
-func NewDatabase(t *testing.T, c *config.Config) *datastore2.Database {
+func NewDatabase(t *testing.T, c *config.Config) *datastore.Database {
 	t.Helper()
 
 	var cfg *config.Config
@@ -186,9 +186,9 @@ func NewDatabase(t *testing.T, c *config.Config) *datastore2.Database {
 		cfg.Debug = false
 	}
 
-	var db *datastore2.Database
+	var db *datastore.Database
 
-	if db, err = datastore2.NewMySQL(context.Background(), cfg); err != nil {
+	if db, err = datastore.NewMySQL(context.Background(), cfg); err != nil {
 		t.Fatal(err)
 	}
 
@@ -206,7 +206,7 @@ const TestRedisPort = 16379
 const TestRedisPassword = ""
 const TestRedisDB = 1
 
-func NewCache(t *testing.T) *datastore2.Cache {
+func NewCache(t *testing.T) *datastore.Cache {
 	t.Helper()
 
 	var cfg *config.Config
@@ -221,9 +221,9 @@ func NewCache(t *testing.T) *datastore2.Cache {
 	cfg.RedisPassword = TestRedisPassword
 	cfg.RedisDB = TestRedisDB
 
-	var cache *datastore2.Cache
+	var cache *datastore.Cache
 
-	if cache, err = datastore2.NewRedis(context.Background(), cfg); err != nil {
+	if cache, err = datastore.NewRedis(context.Background(), cfg); err != nil {
 		t.Fatal(err)
 	}
 

@@ -3,7 +3,8 @@ package service
 import (
 	"context"
 
-	entity2 "github.com/42milez/go-oidc-server/app/idp/entity"
+	"github.com/42milez/go-oidc-server/app/idp/entity"
+
 	"github.com/42milez/go-oidc-server/app/typedef"
 )
 
@@ -29,15 +30,15 @@ type PingSender interface {
 // --------------------------------------------------
 
 type UserCreator interface {
-	CreateUser(ctx context.Context, name string, pw string) (*entity2.User, error)
+	CreateUser(ctx context.Context, name string, pw string) (*entity.User, error)
 }
 
 type ConsentReader interface {
-	ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity2.Consent, error)
+	ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error)
 }
 
 type UserReader interface {
-	ReadUser(ctx context.Context, name string) (*entity2.User, error)
+	ReadUser(ctx context.Context, name string) (*entity.User, error)
 }
 
 type UserConsentReader interface {
@@ -46,18 +47,18 @@ type UserConsentReader interface {
 }
 
 type CredentialReader interface {
-	ReadCredential(ctx context.Context, clientID, clientSecret string) (*entity2.RelyingParty, error)
+	ReadCredential(ctx context.Context, clientID, clientSecret string) (*entity.RelyingParty, error)
 }
 
 //  Authorization
 // --------------------------------------------------
 
 type AuthCodeCreator interface {
-	CreateAuthCode(ctx context.Context, code string, clientID string, userID typedef.UserID) (*entity2.AuthCode, error)
+	CreateAuthCode(ctx context.Context, code string, clientID string, userID typedef.UserID) (*entity.AuthCode, error)
 }
 
 type RedirectUrisReader interface {
-	ReadRedirectUris(ctx context.Context, clientID string) ([]*entity2.RedirectUri, error)
+	ReadRedirectUris(ctx context.Context, clientID string) ([]*entity.RedirectUri, error)
 }
 
 type Authorizer interface {
@@ -66,18 +67,18 @@ type Authorizer interface {
 }
 
 type ConsentCreator interface {
-	CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity2.Consent, error)
+	CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error)
 }
 
 //  Token
 // --------------------------------------------------
 
 type AuthCodeReader interface {
-	ReadAuthCode(ctx context.Context, code string, clientId string) (*entity2.AuthCode, error)
+	ReadAuthCode(ctx context.Context, code string, clientId string) (*entity.AuthCode, error)
 }
 
 type AuthCodeRevoker interface {
-	RevokeAuthCode(ctx context.Context, code, clientId string) (*entity2.AuthCode, error)
+	RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error)
 }
 
 type AuthCodeReadRevoker interface {
@@ -86,5 +87,5 @@ type AuthCodeReadRevoker interface {
 }
 
 type RedirectUriReader interface {
-	ReadRedirectUri(ctx context.Context, clientId string) (*entity2.RedirectUri, error)
+	ReadRedirectUri(ctx context.Context, clientId string) (*entity.RedirectUri, error)
 }

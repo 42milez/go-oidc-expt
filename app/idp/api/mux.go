@@ -7,12 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/idp/security"
+
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/idp/option"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
-	security2 "github.com/42milez/go-oidc-server/app/idp/security"
 	"github.com/42milez/go-oidc-server/app/idp/service"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
@@ -174,14 +175,14 @@ func NewOption() (*option.Option, error) {
 	var err error
 
 	opt := &option.Option{
-		Cookie: httpstore.NewCookie(security2.RawCookieHashKey, security2.RawCookieBlockKey, &xtime.RealClocker{}),
+		Cookie: httpstore.NewCookie(security.RawCookieHashKey, security.RawCookieBlockKey, &xtime.RealClocker{}),
 	}
 
 	if opt.IdGen, err = xid.GetUniqueIDGenerator(); err != nil {
 		return nil, err
 	}
 
-	if opt.Token, err = security2.NewJWT(xtime.RealClocker{}); err != nil {
+	if opt.Token, err = security.NewJWT(xtime.RealClocker{}); err != nil {
 		return nil, err
 	}
 

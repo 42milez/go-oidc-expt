@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 
-	datastore2 "github.com/42milez/go-oidc-server/app/idp/datastore"
+	"github.com/42milez/go-oidc-server/app/idp/datastore"
 )
 
-func NewCheckHealth(db *datastore2.Database, cache *datastore2.Cache) *CheckHealth {
+func NewCheckHealth(db *datastore.Database, cache *datastore.Cache) *CheckHealth {
 	return &CheckHealth{
 		db:    db,
 		cache: cache,
@@ -14,8 +14,8 @@ func NewCheckHealth(db *datastore2.Database, cache *datastore2.Cache) *CheckHeal
 }
 
 type CheckHealth struct {
-	cache *datastore2.Cache
-	db    *datastore2.Database
+	cache *datastore.Cache
+	db    *datastore.Database
 }
 
 func (ch *CheckHealth) PingCache(ctx context.Context) error {
