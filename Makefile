@@ -34,15 +34,15 @@ benchmark:
 	@go test -bench . -skip Test.+ -benchmem `go list ./... | grep -v "/ent" | grep -v "/docs"`
 
 ## cleanup-db: Clean up database
-cleanup-db: export DB_HOST := 127.0.0.1
+cleanup-db: export DB1_HOST := 127.0.0.1
 cleanup-db: export DB_USER := root
-cleanup-db: export DB_PORT := 13306
+cleanup-db: export DB1_PORT := 13306
 cleanup-db: export DB_NAME := idp
 cleanup-db:
-	@mysql -h $$DB_HOST -u $$DB_USER -P $$DB_PORT -Nse "show tables" $$DB_NAME | \
+	@mysql -h $$DB1_HOST -u $$DB_USER -P $$DB1_PORT -Nse "show tables" $$DB_NAME | \
 		while read table; do \
 			[[ $$table == "atlas_schema_revisions" ]] && continue; \
-			mysql -h $$DB_HOST -u $$DB_USER -P $$DB_PORT --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" -e "truncate table $$table" $$DB_NAME; \
+			mysql -h $$DB1_HOST -u $$DB_USER -P $$DB1_PORT --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" -e "truncate table $$table" $$DB_NAME; \
 		done
 
 ## cleanup-go: Clean up caches
@@ -64,18 +64,21 @@ lint:
 
 ## migrate-apply: Apply migrations
 migrate-apply:
-	@./scripts/atlas/migrate-apply.sh ${DB_NAMES}
+	@./scripts/atlas/migrate.sh apply --service ${SERVICE} --database ${DATABASE}
 
 ## migrate-diff: Generate migrations
 migrate-diff:
 ifndef MIGRATION_NAME
-	$(error MIGRATION_NAME is required; e.g. make MIGRATION_NAME=xxx migrate-diff)
+	$(error MIGRATION_NAME is required; e.g. make migrate-diff MIGRATION_NAME=***)
 endif
-	@./scripts/atlas/migrate-diff.sh ${MIGRATION_NAME}
+	@./scripts/atlas/migrate.sh diff --migration-name ${MIGRATION_NAME}
 
 ## migrate-lint: Run analysis on the migration directory
 migrate-lint:
-	@./scripts/atlas/migrate-lint.sh ${N_LATEST}
+ifdef LATEST
+	@./scripts/atlas/migrate.sh lint --latest ${LATEST}
+endif
+	@./scripts/atlas/migrate.sh lint
 
 ## resolve: Resolve dependencies
 resolve:

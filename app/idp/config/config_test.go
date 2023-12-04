@@ -26,7 +26,7 @@ func TestNew(t *testing.T) {
 	}
 
 	wantErr := env.AggregateError{}
-	t.Setenv("DB_PORT", "INVALID_DB_PORT")
+	t.Setenv("DB1_PORT", "INVALID_DB1_PORT")
 	_, err = New()
 	if !errors.As(err, &wantErr) {
 		t.Errorf("got = %+v; want = %+v", reflect.TypeOf(err), reflect.TypeOf(wantErr))

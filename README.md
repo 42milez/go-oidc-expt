@@ -75,7 +75,9 @@ The containers:
 ### Apply migrations
 
 ```
-make migrate-apply DB_NAMES=idp,idp_test
+make migrate-apply SERVICE=db1 DATABASE=idp
+make migrate-apply SERVICE=db1 DATABASE=idp_test
+make migrate-apply SERVICE=db2 DATABASE=idp
 ```
 
 ## Commands and scripts

@@ -1,3 +1,3 @@
 package entity
 
-//go:generate go run ./gen/gen.go
+//go:generate go run -mod=mod ./gen/gen.go

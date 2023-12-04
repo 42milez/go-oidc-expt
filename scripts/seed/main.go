@@ -94,7 +94,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.DBPort = 13306
+	cfg.DB1Port = 13306
 	db, err := datastore2.NewMySQL(ctx, cfg)
 
 	if err != nil {

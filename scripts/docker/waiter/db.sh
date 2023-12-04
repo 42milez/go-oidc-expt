@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-readonly DB_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
-. "${DB_SCRIPT_DIR}/waiter.sh"
+function wait_db() {
+  local -r SERVICE="${1}"
+  local -r DB1_HOST="${2}"
+  local -r DB1_PORT="${3}"
+  local -r DB_USER="${4}"
+  local -r HEALTHCHECK_COMMAND="mysql -h '${DB1_HOST}' -P '${DB1_PORT}' -u '${DB_USER}' -e 'SELECT 1;'"
 
-readonly DB_HOST="127.0.0.1"
-readonly DB_PORT=13306
-readonly DB_USER="root"
-readonly HEALTHCHECK_COMMAND="mysql -h '${DB_HOST}' -P '${DB_PORT}' -u '${DB_USER}' -e 'SELECT 1;'"
+  wait_service "${SERVICE}" "${HEALTHCHECK_COMMAND}"
+}
 
-WaitService "db" "${HEALTHCHECK_COMMAND}"
+wait_db "db1" "127.0.0.1" 13306 "root"
+wait_db "db2" "127.0.0.1" 23306 "root"

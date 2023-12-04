@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/cmd/oapi-codegen -config gen/config.yml -o api_gen.go spec/spec.yml
+//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen -config gen/config.yml -o api_gen.go spec/spec.yml
 
 type HandlerImpl struct{}
 

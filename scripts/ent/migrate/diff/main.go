@@ -46,7 +46,7 @@ func main() {
 	}
 
 	if len(os.Args) != 2 {
-		log.Fatal("migration name is required. Use: 'go run -mod=mod app/ent/cmd/migrate/diff.go <MIGRATION_NAME>'")
+		log.Fatal("migration name is required. Use: 'go run -mod=mod scripts/ent/migrate/diff/main.go <MIGRATION_NAME>'")
 	}
 
 	ctx := context.Background()
@@ -56,11 +56,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.DBName = "atlas"
 	cfg.DBAdmin = cfg.DBName
 	cfg.DBPassword = cfg.DBName
 
-	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
+	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.DBAdmin, cfg.DBPassword, cfg.DB1Host, cfg.DB1Port, cfg.DBName)
 
 	if err = migrate.NamedDiff(ctx, url, os.Args[1], opts...); err != nil {
 		log.Fatalf("failed to generate migration file: %+v", err)

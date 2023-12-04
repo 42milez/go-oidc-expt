@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 set -eu
 
-export INTERVAL=5
-export STARTED_AT=$(date +%s)
-export TIMEOUT=300
+readonly INTERVAL=5
+readonly TIMEOUT=300
 
-function WaitService() {
-  local -r name="${1}"
-  local -r cmd="${2}"
+function wait_service() {
+  local -r SERVICE="${1}"
+  local -r CMD="${2}"
+  local -r STARTED_AT=$(date +%s)
 
-  echo "[${name}] Wait for service to be available (Timeout: ${TIMEOUT}s)"
+  echo "[${SERVICE}] Wait for service to be available (Timeout: ${TIMEOUT}s)"
 
-  while ! eval "${cmd}" >/dev/null 2>&1; do
+  while ! eval "${CMD}" >/dev/null 2>&1; do
     now=$(date +%s)
     d=$((now-STARTED_AT))
 
     if [[ ${d} -gt ${TIMEOUT} ]]; then
-      echo "[${name}] Timeout"
+      echo "[${SERVICE}] Timeout"
       exit 1
     fi
 
-    echo "[${name}] Waiting... ${d}s"
+    echo "[${SERVICE}] Waiting... ${d}s"
 
     sleep "${INTERVAL}"
   done
 
-  echo "[${name}] Service is ready"
+  echo "[${SERVICE}] Service is ready"
 }

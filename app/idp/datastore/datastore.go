@@ -17,7 +17,7 @@ import (
 )
 
 func NewMySQL(ctx context.Context, cfg *config.Config) (*Database, error) {
-	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
+	dataSrc := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=True", cfg.DBAdmin, cfg.DBPassword, cfg.DB1Host, cfg.DB1Port, cfg.DBName)
 	db, err := sql.Open(dialect.MySQL, dataSrc)
 
 	if err != nil {
