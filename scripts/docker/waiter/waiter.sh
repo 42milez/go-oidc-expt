@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 set -eu
 
-readonly INTERVAL=5
-readonly TIMEOUT=300
-
 function wait_service() {
   local -r SERVICE="${1}"
   local -r CMD="${2}"
+  local -r INTERVAL=5
+  local -r TIMEOUT=300
   local -r STARTED_AT=$(date +%s)
 
   echo "[${SERVICE}] Wait for service to be available (Timeout: ${TIMEOUT}s)"

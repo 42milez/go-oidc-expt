@@ -7,9 +7,10 @@ function up() {
 
   docker-compose up -d app app-ci cache db1 db2 log
 
-  . "${SCRIPT_DIR}/waiter/waiter.sh"
-  . "${SCRIPT_DIR}/waiter/app.sh"
-  . "${SCRIPT_DIR}/waiter/db.sh"
+  . "${SCRIPT_DIR}/waiter/app.sh" "app" "localhost" 8080
+  . "${SCRIPT_DIR}/waiter/app.sh" "app-ci" "localhost" 8081
+  . "${SCRIPT_DIR}/waiter/db.sh" "db1" "127.0.0.1" 13306 "root"
+  . "${SCRIPT_DIR}/waiter/db.sh" "db2" "127.0.0.1" 23306 "root"
 }
 
 up
