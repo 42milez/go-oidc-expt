@@ -19,7 +19,7 @@ require (
 	github.com/google/uuid v1.4.0
 	github.com/gorilla/schema v1.2.1
 	github.com/gorilla/securecookie v1.1.2
-	github.com/lestrrat-go/jwx/v2 v2.0.17
+	github.com/lestrrat-go/jwx/v2 v2.0.18
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
 	github.com/oapi-codegen/runtime v1.1.0
 	github.com/pkg/errors v0.9.1
