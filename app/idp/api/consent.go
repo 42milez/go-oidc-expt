@@ -3,13 +3,13 @@ package api
 import (
 	"net/http"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
 	"github.com/42milez/go-oidc-server/app/idp/option"
 	"github.com/42milez/go-oidc-server/app/idp/service"
-	"github.com/42milez/go-oidc-server/app/typedef"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/gorilla/schema"
 )

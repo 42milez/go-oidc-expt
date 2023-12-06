@@ -4,10 +4,10 @@ import (
 	_ "embed"
 	"strconv"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
-	"github.com/42milez/go-oidc-server/app/typedef"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 
 	"github.com/google/uuid"

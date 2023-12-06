@@ -10,7 +10,7 @@ import (
 	"reflect"
 
 	"github.com/42milez/go-oidc-server/app/ent/ent/migrate"
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"

@@ -17,7 +17,6 @@ RUN --mount=type=cache,target=/go/pkg \
 COPY app/ent/ ./app/ent
 COPY app/idp/ ./app/idp
 COPY app/pkg/ ./app/pkg
-COPY app/typedef/ ./app/typedef
 
 RUN --mount=type=cache,target=/go/pkg \
     --mount=type=cache,target=/root/.cache/go-build \

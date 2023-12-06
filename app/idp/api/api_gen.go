@@ -14,8 +14,8 @@ import (
 	"path"
 	"strings"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-	"github.com/42milez/go-oidc-server/app/typedef"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"

@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"entgo.io/ent/schema/index"
+	"github.com/42milez/go-oidc-server/app/idp/config"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"

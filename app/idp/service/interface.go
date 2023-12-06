@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/app/idp/entity"
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/idp/entity"
 )
 
 //go:generate go run -mod=mod go.uber.org/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE
