@@ -198,3 +198,4 @@ docker-compose up -d swagger-ui
 - Others
   - [Go Style Decisions: Naming](https://google.github.io/styleguide/go/decisions#naming)
   - [Go at Google: Language Design in the Service of Software Engineering](https://go.dev/talks/2012/splash.article)
+  - [Standard Go Project Layout](https://github.com/golang-standards/project-layout)
