@@ -10,13 +10,18 @@ ARG VERSION
 WORKDIR /workspace
 
 COPY go.mod go.sum ./
+
 RUN --mount=type=cache,target=/go/pkg \
     go mod download
 
-COPY app/ ./app
+COPY app/ent/ ./app/ent
+COPY app/idp/ ./app/idp
+COPY app/pkg/ ./app/pkg
+COPY app/typedef/ ./app/typedef
+
 RUN --mount=type=cache,target=/go/pkg \
     --mount=type=cache,target=/root/.cache/go-build \
-    go build -trimpath -ldflags "-s -w -X main.Version=${VERSION}" -o app ./app
+    go build -trimpath -ldflags "-s -w -X main.Version=${VERSION}" -o idp ./app/idp
 
 #  deploy
 # --------------------------------------------------
@@ -26,9 +31,9 @@ FROM debian:bookworm-20230320-slim as deploy
 RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=deploy-builder /workspace/app .
+COPY --from=deploy-builder /workspace/idp .
 
-CMD [ "./app" ]
+CMD [ "./idp" ]
 
 #  dev
 # --------------------------------------------------

@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
-readonly APP_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
-. "${APP_SCRIPT_DIR}/waiter.sh"
+function wait_app() {
+  local -r SERVICE="${1}"
+  local -r HOST="${2}"
+  local -r PORT="${3}"
+  local -r HEALTHCHECK_COMMAND="curl -f http://${HOST}:${PORT}/health"
+  local -r SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 
-readonly APP_HEALTHCHECK_COMMAND="curl -f http://localhost:8080/health"
-readonly APP_CI_HEALTHCHECK_COMMAND="curl -f http://localhost:8081/health"
+  . "${SCRIPT_DIR}/waiter.sh"
 
-WaitService "app" "${APP_HEALTHCHECK_COMMAND}"
-WaitService "app-ci" "${APP_CI_HEALTHCHECK_COMMAND}"
+  wait_service "${SERVICE}" "${HEALTHCHECK_COMMAND}"
+}
+
+wait_app "$@"

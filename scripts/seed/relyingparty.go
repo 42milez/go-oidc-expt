@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/42milez/go-oidc-server/app/config"
-	"github.com/42milez/go-oidc-server/app/datastore"
+	"github.com/42milez/go-oidc-server/app/idp/config"
+	"github.com/42milez/go-oidc-server/app/idp/datastore"
+
 	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
 )

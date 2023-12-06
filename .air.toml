@@ -12,7 +12,7 @@ args_bin = []
 # Binary file yields from `cmd`.
 bin = "../tmp/app"
 # Just plain old shell command. You could use `make` as well.
-cmd = 'go build -gcflags "all=-N -l" -o ../tmp/app ./app'
+cmd = 'go build -gcflags "all=-N -l" -o ../tmp/app ./app/idp'
 # It's not necessary to trigger build each time file changes if it's too frequent.
 delay = 0 # ms
 # Ignore these filename extensions or directories.

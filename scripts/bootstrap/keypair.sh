@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eu
 
-readonly KEY_PAIR_DIR="app/security/secret/keypair"
+readonly KEY_PAIR_DIR="app/idp/security/secret/keypair"
 readonly PRIVATE_KEY_FILE="${KEY_PAIR_DIR}/private.pem"
 readonly PUBLIC_KEY_FILE="${KEY_PAIR_DIR}/public.pem"
 readonly CURVE="prime256v1"

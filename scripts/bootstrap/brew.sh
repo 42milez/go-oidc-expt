@@ -8,6 +8,7 @@ readonly FORMULAS=(
   docker-buildx
   docker-compose
   golangci-lint
+  gnu-getopt
   lima
   openssl@3
 )
