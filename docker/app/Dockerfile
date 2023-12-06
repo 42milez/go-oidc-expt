@@ -14,7 +14,6 @@ COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg \
     go mod download
 
-COPY app/ent/ ./app/ent
 COPY app/idp/ ./app/idp
 COPY app/pkg/ ./app/pkg
 

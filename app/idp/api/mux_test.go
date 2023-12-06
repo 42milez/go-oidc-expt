@@ -10,10 +10,11 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
+
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 	"github.com/42milez/go-oidc-server/app/idp/option"
 
-	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"github.com/getkin/kin-openapi/openapi3"

@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/42milez/go-oidc-server/app/idp/config"
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/migrate"
 
-	"github.com/42milez/go-oidc-server/app/ent/ent/migrate"
+	"github.com/42milez/go-oidc-server/app/idp/config"
 
 	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect"
@@ -24,7 +24,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	migrationDir := filepath.Join(workDir, "app/ent/migrations")
+	migrationDir := filepath.Join(workDir, "app/pkg/ent/migrations")
 
 	if err = os.MkdirAll(migrationDir, os.ModePerm); err != nil {
 		log.Fatal(err)

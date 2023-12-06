@@ -111,7 +111,7 @@ make migrate-apply SERVICE=db2 DATABASE=idp
 e.g. The following command generates `AuthCode` schema.
 
 ```
-go run -mod=mod entgo.io/ent/cmd/ent new --target app/ent/schema AuthCode
+go run -mod=mod entgo.io/ent/cmd/ent new --target app/pkg/ent/schema AuthCode
 ```
 
 ### Generating versioned a migration file
