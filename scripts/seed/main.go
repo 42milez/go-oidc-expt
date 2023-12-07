@@ -6,12 +6,12 @@ import (
 	"log"
 	"reflect"
 
+	ent2 "github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	datastore2 "github.com/42milez/go-oidc-server/app/idp/datastore"
 
-	"github.com/42milez/go-oidc-server/app/ent/ent"
-
-	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
+	_ "github.com/42milez/go-oidc-server/app/pkg/ent/ent/runtime"
 )
 
 func printSeeds(data any) {
@@ -41,8 +41,8 @@ func run(ctx context.Context, db *datastore2.Database) error {
 	nAuthCodeByRelyingParty := 3
 	nRedirectUriByRelyingParty := 3
 
-	var relyingParties []*ent.RelyingParty
-	var users []*ent.User
+	var relyingParties []*ent2.RelyingParty
+	var users []*ent2.User
 
 	if relyingParties, err = InsertRelyingParties(ctx, db, nRelyingParty); err != nil {
 		return err
@@ -59,9 +59,9 @@ func run(ctx context.Context, db *datastore2.Database) error {
 	//  Other Edges
 	// --------------------------------------------------
 
-	var authCodes []*ent.AuthCode
-	var redirectURIs []*ent.RedirectUri
-	var consents []*ent.Consent
+	var authCodes []*ent2.AuthCode
+	var redirectURIs []*ent2.RedirectUri
+	var consents []*ent2.Consent
 
 	if authCodes, err = InsertAuthCodes(ctx, db, relyingParties, users, nAuthCodeByRelyingParty); err != nil {
 		return err

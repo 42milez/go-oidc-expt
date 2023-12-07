@@ -7,23 +7,24 @@ GITHUB_ID := 42milez
 help: Makefile
 	@sed -n "s/^##//p" $< | column -t -s ":" |  sed -e "s/^/ /"
 
+define run
+	cmd=$1; \
+	echo "▶ RUN: $${cmd}"; eval "$${cmd}"
+endef
+
 # ==================================================
 #  Build
 # ==================================================
 
 ## build: Build a docker image to deploy
 build:
-	@docker build \
-		--no-cache \
-		-f docker/app/Dockerfile \
-		-t ${GITHUB_ID}/${PROJECT_NAME}:${VERSION} \
-		--build-arg VERSION=${VERSION} \
-		--target deploy \
-		.
+	@cmd="docker build --no-cache -f docker/app/Dockerfile -t ${GITHUB_ID}/${PROJECT_NAME}:${VERSION} --build-arg VERSION=${VERSION} --target deploy ."; \
+		$(call run,"$${cmd}")
 
 ## build-local: Build docker images
 build-local:
-	@docker-compose build --no-cache
+	@cmd="docker-compose build --no-cache"; \
+		$(call run,"$${cmd}")
 
 # ==================================================
 #  Utility
@@ -31,7 +32,8 @@ build-local:
 
 ## benchmark: Run all benchmarks
 benchmark:
-	@go test -bench . -skip Test.+ -benchmem `go list ./... | grep -v "/ent" | grep -v "/docs"`
+	@cmd='go test -bench . -skip Test.+ -benchmem `go list ./... | grep -v "/ent" | grep -v "/docs"`'; \
+		$(call run,"$${cmd}")
 
 ## cleanup-db: Clean up database
 cleanup-db: export DB1_HOST := 127.0.0.1
@@ -42,56 +44,84 @@ cleanup-db:
 	@mysql -h $$DB1_HOST -u $$DB_USER -P $$DB1_PORT -Nse "show tables" $$DB_NAME | \
 		while read table; do \
 			[[ $$table == "atlas_schema_revisions" ]] && continue; \
-			mysql -h $$DB1_HOST -u $$DB_USER -P $$DB1_PORT --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" -e "truncate table $$table" $$DB_NAME; \
+			cmd="mysql -h $$DB1_HOST -u $$DB_USER -P $$DB1_PORT --init-command='SET SESSION FOREIGN_KEY_CHECKS=0;' -e 'truncate table $$table' $$DB_NAME"; \
+			$(call run,"$${cmd}"); \
 		done
 
 ## cleanup-go: Clean up caches
 cleanup-go:
-	@go clean -cache -fuzzcache -testcache
+	@cmd="go clean -cache -fuzzcache -testcache"; \
+		$(call run,$${cmd})
 
 ## fmt: Run formatter
 fmt:
-	@go fmt ./...
+	@commands=( \
+		"go run -mod=mod golang.org/x/tools/cmd/goimports -w ./app" \
+		"go run -mod=mod golang.org/x/tools/cmd/goimports -w ./scripts" \
+		"go fmt ./..." \
+	); \
+		for cmd in "$${commands[@]}"; do \
+			$(call run,$${cmd}); \
+		done
 
 ## gen: Run generator
 gen:
-	@go generate ./...
+	@cmd="go generate ./..."; \
+		$(call run,$${cmd})
 
 ## lint: Run linters
 lint:
-	@go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run -v --fix
-	@vacuum lint -r .vacuum.yml -d app/idp/api/spec/spec.yml
+	@commands=( \
+		"go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run -v --fix" \
+		"vacuum lint -r .vacuum.yml -d app/idp/api/spec/spec.yml" \
+	); \
+		for cmd in "$${commands[@]}"; do \
+			$(call run,$${cmd}); \
+		done
 
 ## migrate-apply: Apply migrations
 migrate-apply:
-	@./scripts/atlas/migrate.sh apply --service ${SERVICE} --database ${DATABASE}
+ifndef SERVICE
+	$(error SERVICE is required; e.g. make migrate-apply SERVICE=*** DATABASE=***)
+else ifndef DATABASE
+	$(error DATABASE is required; e.g. make migrate-apply SERVICE=*** DATABASE=***)
+endif
+	@cmd="./scripts/atlas/migrate.sh apply --service $${SERVICE} --database $${DATABASE}"; \
+		$(call run,$${cmd})
 
 ## migrate-diff: Generate migrations
 migrate-diff:
 ifndef MIGRATION_NAME
 	$(error MIGRATION_NAME is required; e.g. make migrate-diff MIGRATION_NAME=***)
 endif
-	@./scripts/atlas/migrate.sh diff --migration-name ${MIGRATION_NAME}
+	@cmd="./scripts/atlas/migrate.sh diff --migration-name $${MIGRATION_NAME}"; \
+		$(call run,$${cmd})
 
 ## migrate-lint: Run analysis on the migration directory
 migrate-lint:
 ifdef LATEST
-	@./scripts/atlas/migrate.sh lint --latest ${LATEST}
+	@cmd="./scripts/atlas/migrate.sh lint --latest $${LATEST}"; \
+		$(call run,$${cmd})
+else
+	@cmd="./scripts/atlas/migrate.sh lint"; \
+		$(call run,$${cmd})
 endif
-	@./scripts/atlas/migrate.sh lint
 
 ## resolve: Resolve dependencies
 resolve:
-	@go mod tidy
+	@cmd="go mod tidy"; \
+		$(call run,$${cmd})
 
 ## seed: Seeding database
 seed:
-	@go run ./scripts/seed/*.go
+	@cmd="go run ./scripts/seed/*.go"; \
+		$(call run,$${cmd})
 
 ## test: Run all tests
 test:
 	@go clean -testcache
-	@go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`
+	@cmd='go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`'; \
+		$(call run,$${cmd})
 
 # ==================================================
 #  Lima
@@ -99,19 +129,23 @@ test:
 
 ## lc-create: Create virtual machine with Lima
 lc-create:
-	@limactl create --tty=false --name=$(PROJECT_NAME) lima.yml
+	@cmd="limactl create --tty=false --name=$(PROJECT_NAME) lima.yml"; \
+		$(call run,$${cmd})
 
 ## lc-start: Start virtual machine
 lc-start:
-	@limactl start $(PROJECT_NAME)
+	@cmd="limactl start $(PROJECT_NAME)"; \
+		$(call run,$${cmd})
 
 ## lc-stop: Stop virtual machine
 lc-stop:
-	@limactl stop $(PROJECT_NAME)
+	@cmd="limactl stop $(PROJECT_NAME)"; \
+		$(call run,$${cmd})
 
 ## lc-delete: Delete virtual machine
 lc-delete:
-	@limactl delete $(PROJECT_NAME)
+	@cmd="limactl delete $(PROJECT_NAME)"; \
+		$(call run,$${cmd})
 
 # ==================================================
 #  Docker
@@ -119,20 +153,25 @@ lc-delete:
 
 ## up: Create and start containers
 up:
-	@./scripts/docker/up.sh
+	@cmd="./scripts/docker/up.sh"; \
+		$(call run,$${cmd})
 
 ## down: Stop and remove containers
 down:
-	@docker-compose down
+	@cmd="docker-compose down"; \
+		$(call run,$${cmd})
 
 ## start: Start containers
 start:
-	@docker-compose start
+	@cmd="docker-compose start"; \
+		$(call run,$${cmd})
 
 ## stop: Stop containers
 stop:
-	@docker-compose stop
+	@cmd="docker-compose stop"; \
+		$(call run,$${cmd})
 
 ## destroy: Delete all resources
 destroy:
-	@docker-compose down --volumes
+	@cmd="docker-compose down --volumes"; \
+		$(call run,$${cmd})

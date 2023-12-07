@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/consent"
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/user"
+
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
-	"github.com/42milez/go-oidc-server/app/typedef"
-
-	"github.com/42milez/go-oidc-server/app/ent/ent/consent"
-	_ "github.com/42milez/go-oidc-server/app/ent/ent/runtime"
-	"github.com/42milez/go-oidc-server/app/ent/ent/user"
+	_ "github.com/42milez/go-oidc-server/app/pkg/ent/ent/runtime"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 

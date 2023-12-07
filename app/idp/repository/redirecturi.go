@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
+
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/app/ent/ent/redirecturi"
-	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 

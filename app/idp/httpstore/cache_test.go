@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/idp/iface"
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
+	"github.com/42milez/go-oidc-server/app/idp/iface"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"go.uber.org/mock/gomock"
 )

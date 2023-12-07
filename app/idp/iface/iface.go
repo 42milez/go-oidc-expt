@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 )
 
 //go:generate go run -mod=mod go.uber.org/mock/mockgen -source=iface.go -destination=iface_mock.go -package=$GOPACKAGE

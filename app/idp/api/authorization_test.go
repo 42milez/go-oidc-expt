@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/app/idp/iface"
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
+	"github.com/42milez/go-oidc-server/app/idp/iface"
 	"github.com/42milez/go-oidc-server/app/pkg/xstring"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 	"go.uber.org/mock/gomock"

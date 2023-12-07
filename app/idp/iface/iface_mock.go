@@ -14,7 +14,7 @@ import (
 	reflect "reflect"
 	time "time"
 
-	typedef "github.com/42milez/go-oidc-server/app/typedef"
+	typedef "github.com/42milez/go-oidc-server/app/pkg/typedef"
 	gomock "go.uber.org/mock/gomock"
 )
 

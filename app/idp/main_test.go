@@ -12,15 +12,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/user"
+
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 
-	"github.com/42milez/go-oidc-server/app/ent/ent"
 	"github.com/42milez/go-oidc-server/app/idp/api"
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/google/go-querystring/query"
-
-	"github.com/42milez/go-oidc-server/app/ent/ent/relyingparty"
-	"github.com/42milez/go-oidc-server/app/ent/ent/user"
 
 	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"

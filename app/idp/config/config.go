@@ -3,7 +3,7 @@ package config
 import (
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/typedef"
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"github.com/rs/zerolog"
 

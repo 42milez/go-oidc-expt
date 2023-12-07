@@ -120,7 +120,7 @@ function run() {
       go run -mod=mod "scripts/ent/migrate/diff/main.go" "${MIGRATION_NAME}"
     ;;
     lint)
-      cmd="atlas migrate lint --dir file://app/ent/migrations --dev-url mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB1_PORT}/${DB_NAME}"
+      cmd="atlas migrate lint --dir file://app/pkg/ent/migrations --dev-url mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB1_PORT}/${DB_NAME}"
       if [[ -n "${LATEST}" ]]; then
         cmd_exec="${cmd} --latest ${LATEST}"
       else

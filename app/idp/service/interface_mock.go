@@ -13,7 +13,7 @@ import (
 	reflect "reflect"
 
 	entity "github.com/42milez/go-oidc-server/app/idp/entity"
-	typedef "github.com/42milez/go-oidc-server/app/typedef"
+	typedef "github.com/42milez/go-oidc-server/app/pkg/typedef"
 	gomock "go.uber.org/mock/gomock"
 )
 

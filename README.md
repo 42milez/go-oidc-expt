@@ -111,7 +111,7 @@ make migrate-apply SERVICE=db2 DATABASE=idp
 e.g. The following command generates `AuthCode` schema.
 
 ```
-go run -mod=mod entgo.io/ent/cmd/ent new --target app/ent/schema AuthCode
+go run -mod=mod entgo.io/ent/cmd/ent new --target app/pkg/ent/schema AuthCode
 ```
 
 ### Generating versioned a migration file
@@ -198,3 +198,4 @@ docker-compose up -d swagger-ui
 - Others
   - [Go Style Decisions: Naming](https://google.github.io/styleguide/go/decisions#naming)
   - [Go at Google: Language Design in the Service of Software Engineering](https://go.dev/talks/2012/splash.article)
+  - [Standard Go Project Layout](https://github.com/golang-standards/project-layout)

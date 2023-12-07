@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	ent2 "github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
 	"github.com/42milez/go-oidc-server/app/idp/security"
-
-	"github.com/42milez/go-oidc-server/app/ent/ent"
 )
 
 const nUserMin = 1
@@ -17,7 +17,7 @@ type User struct {
 	Password string
 }
 
-func InsertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent.User, error) {
+func InsertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent2.User, error) {
 	if nUser < nUserMin {
 		return nil, fmt.Errorf("the number of users must be greater than or equal to %d", nUserMin)
 	}
@@ -36,7 +36,7 @@ func InsertUsers(ctx context.Context, db *datastore.Database, nUser int) ([]*ent
 		params[i].Password = pwHash
 	}
 
-	builders := make([]*ent.UserCreate, len(params))
+	builders := make([]*ent2.UserCreate, len(params))
 
 	for i, v := range params {
 		builders[i] = db.Client.User.Create().SetName(v.Name).SetPassword(v.Password)
