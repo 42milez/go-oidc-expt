@@ -1,3 +1,4 @@
 extends: [[spectral:oas, recommended]]
 rules:
   description-duplication: false
+  operation-description: false
