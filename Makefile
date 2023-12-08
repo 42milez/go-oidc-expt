@@ -72,7 +72,7 @@ gen:
 ## lint: Run linters
 lint:
 	@commands=( \
-		"go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run -v --fix" \
+		"go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run --fix" \
 		"vacuum lint -r .vacuum.yml -d app/idp/api/spec/spec.yml" \
 	); \
 		for cmd in "$${commands[@]}"; do \
