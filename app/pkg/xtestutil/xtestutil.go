@@ -183,7 +183,7 @@ func NewDatabase(t *testing.T, c *config.Config) *datastore.Database {
 		cfg.DB1Host = TestDB1Host
 		cfg.DB1Port = TestDB1Port
 		cfg.DBName = TestDBName
-		cfg.Debug = false
+		cfg.EnableDebugDBClient = false
 	}
 
 	var db *datastore.Database
