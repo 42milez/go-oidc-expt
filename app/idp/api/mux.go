@@ -7,27 +7,23 @@ import (
 	"strings"
 	"time"
 
-	"github.com/42milez/go-oidc-server/app/idp/security"
-
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/idp/option"
 	"github.com/42milez/go-oidc-server/app/idp/repository"
+	"github.com/42milez/go-oidc-server/app/idp/security"
 	"github.com/42milez/go-oidc-server/app/idp/service"
-
+	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
-
-	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
-
-	"github.com/42milez/go-oidc-server/app/pkg/xerr"
-	"github.com/getkin/kin-openapi/openapi3filter"
-	"github.com/go-chi/chi/v5/middleware"
-
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
+
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/oapi-codegen/nethttp-middleware"
 	"github.com/rs/zerolog"
 )
 
