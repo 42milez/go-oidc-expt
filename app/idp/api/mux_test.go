@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
+	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 
 	"github.com/42milez/go-oidc-server/app/idp/entity"
 	"github.com/42milez/go-oidc-server/app/idp/option"
@@ -20,7 +21,6 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
-	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 )
 
 func TestNewOapiErrorHandler(t *testing.T) {

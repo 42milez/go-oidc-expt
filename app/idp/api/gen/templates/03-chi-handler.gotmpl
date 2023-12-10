@@ -8,27 +8,42 @@ type ChiServerOptions struct {
 }
 
 // MuxWithOptions creates http.Handler with additional options
-func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
-    r := options.BaseRouter
+func MuxWithOptions(hi HandlerInterface, option *ChiServerOptions, appOption *option.Option) (*chi.Mux, error) {
+    r := option.BaseRouter
 
     if r == nil {
         r = chi.NewRouter()
     }
 
-    if options.ErrorHandlerFunc == nil {
-        options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+    if option.ErrorHandlerFunc == nil {
+        option.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
             http.Error(w, err.Error(), http.StatusBadRequest)
         }
     }
 
+    swag, err := GetSwagger()
+    if err != nil {
+        return nil, err
+    }
+    swag.Servers = nil
+
+    oapiValidator := nethttpmiddleware.OapiRequestValidatorWithOptions(swag, &nethttpmiddleware.Options{
+        Options: openapi3filter.Options{
+            AuthenticationFunc: NewOapiAuthentication(appOption),
+        },
+        ErrorHandler: NewOapiErrorHandler(),
+    })
+
     {{range .}}
     r.Group(func(r chi.Router) {
-        if mw := options.Middlewares.raw("{{.OperationId}}"); mw != nil {
+        r.Use(oapiValidator)
+        r.Use(InjectRequestParameter())
+        if mw := option.Middlewares.raw("{{.OperationId}}"); mw != nil {
             r.Use(mw...)
         }
-        r.{{.Method | lower | title}}("{{.Path | swaggerUriToChiUri}}", si.{{.OperationId}})
+        r.{{.Method | lower | title}}("{{.Path | swaggerUriToChiUri}}", hi.{{.OperationId}})
     })
     {{end}}
 
-    return r
+    return r, nil
 }

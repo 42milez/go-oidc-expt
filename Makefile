@@ -72,7 +72,7 @@ gen:
 ## lint: Run linters
 lint:
 	@commands=( \
-		"go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run -v --fix" \
+		"go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run --fix" \
 		"vacuum lint -r .vacuum.yml -d app/idp/api/spec/spec.yml" \
 	); \
 		for cmd in "$${commands[@]}"; do \
@@ -145,6 +145,11 @@ lc-stop:
 ## lc-delete: Delete virtual machine
 lc-delete:
 	@cmd="limactl delete $(PROJECT_NAME)"; \
+		$(call run,$${cmd})
+
+## lc-restart: Restart virutal machine
+lc-restart:
+	@cmd="limactl stop $(PROJECT_NAME) && limactl start $(PROJECT_NAME)"; \
 		$(call run,$${cmd})
 
 # ==================================================

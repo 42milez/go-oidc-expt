@@ -14,10 +14,13 @@ import (
 	"path"
 	"strings"
 
+	"github.com/42milez/go-oidc-server/app/idp/option"
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
+	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 	"github.com/oapi-codegen/runtime"
 )
 
@@ -679,62 +682,87 @@ type ChiServerOptions struct {
 }
 
 // MuxWithOptions creates http.Handler with additional options
-func MuxWithOptions(si HandlerInterface, options *ChiServerOptions) *chi.Mux {
-	r := options.BaseRouter
+func MuxWithOptions(hi HandlerInterface, option *ChiServerOptions, appOption *option.Option) (*chi.Mux, error) {
+	r := option.BaseRouter
 
 	if r == nil {
 		r = chi.NewRouter()
 	}
 
-	if options.ErrorHandlerFunc == nil {
-		options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
+	if option.ErrorHandlerFunc == nil {
+		option.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 	}
 
-	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("Authenticate"); mw != nil {
-			r.Use(mw...)
-		}
-		r.Post("/authenticate", si.Authenticate)
+	swag, err := GetSwagger()
+	if err != nil {
+		return nil, err
+	}
+	swag.Servers = nil
+
+	oapiValidator := nethttpmiddleware.OapiRequestValidatorWithOptions(swag, &nethttpmiddleware.Options{
+		Options: openapi3filter.Options{
+			AuthenticationFunc: NewOapiAuthentication(appOption),
+		},
+		ErrorHandler: NewOapiErrorHandler(),
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("Authorize"); mw != nil {
+		r.Use(oapiValidator)
+		r.Use(InjectRequestParameter())
+		if mw := option.Middlewares.raw("Authenticate"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Get("/authorize", si.Authorize)
+		r.Post("/authenticate", hi.Authenticate)
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("Consent"); mw != nil {
+		r.Use(oapiValidator)
+		r.Use(InjectRequestParameter())
+		if mw := option.Middlewares.raw("Authorize"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Post("/consent", si.Consent)
+		r.Get("/authorize", hi.Authorize)
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("CheckHealth"); mw != nil {
+		r.Use(oapiValidator)
+		r.Use(InjectRequestParameter())
+		if mw := option.Middlewares.raw("Consent"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Get("/health", si.CheckHealth)
+		r.Post("/consent", hi.Consent)
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("Token"); mw != nil {
+		r.Use(oapiValidator)
+		r.Use(InjectRequestParameter())
+		if mw := option.Middlewares.raw("CheckHealth"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Post("/token", si.Token)
+		r.Get("/health", hi.CheckHealth)
 	})
 
 	r.Group(func(r chi.Router) {
-		if mw := options.Middlewares.raw("Register"); mw != nil {
+		r.Use(oapiValidator)
+		r.Use(InjectRequestParameter())
+		if mw := option.Middlewares.raw("Token"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Post("/user/register", si.Register)
+		r.Post("/token", hi.Token)
 	})
 
-	return r
+	r.Group(func(r chi.Router) {
+		r.Use(oapiValidator)
+		r.Use(InjectRequestParameter())
+		if mw := option.Middlewares.raw("Register"); mw != nil {
+			r.Use(mw...)
+		}
+		r.Post("/user/register", hi.Register)
+	})
+
+	return r, nil
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object

@@ -41,7 +41,7 @@ func NewMySQL(ctx context.Context, cfg *config.Config) (*Database, error) {
 	drv := entsql.OpenDB(dbDialect, db)
 	client := ent.NewClient(ent.Driver(drv))
 
-	if cfg.Debug {
+	if cfg.EnableDebugDBClient {
 		client = client.Debug()
 	}
 
