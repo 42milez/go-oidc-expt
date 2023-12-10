@@ -147,6 +147,11 @@ lc-delete:
 	@cmd="limactl delete $(PROJECT_NAME)"; \
 		$(call run,$${cmd})
 
+## lc-restart: Restart virutal machine
+lc-restart:
+	@cmd="limactl stop $(PROJECT_NAME) && limactl start $(PROJECT_NAME)"; \
+		$(call run,$${cmd})
+
 # ==================================================
 #  Docker
 # ==================================================

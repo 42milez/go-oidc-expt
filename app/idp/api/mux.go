@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"net/http"
 	"strings"
 	"time"
@@ -19,11 +20,10 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xtime"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/oapi-codegen/nethttp-middleware"
+	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 	"github.com/rs/zerolog"
 )
 
@@ -69,23 +69,11 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	mux.Use(middleware.Timeout(requestTimeout))
 	mux.Use(middleware.Recoverer)
 
-	// OpenAPI Validation Middleware
+	// Enable debugging
 
-	var swag *openapi3.T
-
-	if swag, err = GetSwagger(); err != nil {
-		return nil, nil, err
+	if cfg.EnableProfiler {
+		mux.Mount("/debug", middleware.Profiler())
 	}
-
-	swag.Servers = nil
-
-	mux.Use(nethttpmiddleware.OapiRequestValidatorWithOptions(swag, &nethttpmiddleware.Options{
-		Options: openapi3filter.Options{
-			AuthenticationFunc: NewOapiAuthentication(opt),
-		},
-		ErrorHandler: NewOapiErrorHandler(),
-	}))
-	mux.Use(InjectRequestParameter())
 
 	// Middleware Configuration on Each Handler
 
@@ -95,10 +83,14 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	mw.SetAuthenticateMW(restoreSessMW).SetAuthorizeMW(restoreSessMW).SetConsentMW(restoreSessMW).
 		SetRegisterMW(restoreSessMW)
 
-	mux = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
+	mux, err = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,
 		Middlewares: mw,
-	})
+	}, opt)
+
+	if err != nil {
+		return nil, nil, errors.New("failed to setup router")
+	}
 
 	return mux, func() {
 		xutil.CloseConnection(opt.DB.Client)

@@ -32,7 +32,7 @@ type Config struct {
 	LogLevel            zerolog.Level `env:"ZEROLOG_LEVEL" envDefault:"0"` // debug
 	IdpHost             string        `env:"IDP_HOST" envDefault:"http://localhost:8080"`
 	EnableDebugDBClient bool          `env:"ENABLE_DEBUG_DB_CLIENT" envDefault:"true"`
-	EnablePProf         bool          `env:"ENABLE_PPROF" envDefault:"true"`
+	EnableProfiler      bool          `env:"ENABLE_PROFILER" envDefault:"true"`
 }
 
 func (p *Config) IsDevelopment() bool {
