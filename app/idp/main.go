@@ -16,7 +16,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
-var Version = "dev"
+var version = "dev"
 
 func NewServer(lis net.Listener, mux http.Handler) *Server {
 	return &Server{
@@ -33,7 +33,8 @@ func NewBaseLogger(cfg *config.Config) *zerolog.Logger {
 	return &ret
 }
 
-func Run(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) error {
+func Run(cfg *config.Config, logger *zerolog.Logger) error {
+	ctx := context.Background()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
 
 	if err != nil {
@@ -41,12 +42,12 @@ func Run(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) error 
 	}
 
 	log.Printf("listening on tcp://%s", lis.Addr().String())
-	log.Printf("application starting in %s (Version: %s)\n", cfg.Env, Version)
+	log.Printf("application starting in %s (Version: %s)\n", cfg.Env, version)
 
-	mux, cleanup, err := api.NewMux(ctx, cfg, logger)
+	mux, shutdown, err := api.NewMux(ctx, cfg, logger)
 
-	if cleanup != nil {
-		defer cleanup()
+	if shutdown != nil {
+		defer shutdown()
 	}
 
 	if err != nil {
@@ -68,7 +69,7 @@ func main() {
 
 	baseLogger := NewBaseLogger(cfg)
 
-	if err = Run(context.Background(), cfg, baseLogger); err != nil {
+	if err = Run(cfg, baseLogger); err != nil {
 		log.Fatalf("failed to run server: %s", err)
 	}
 }
