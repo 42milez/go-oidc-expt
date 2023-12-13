@@ -34,7 +34,7 @@ func NewBaseLogger(cfg *config.Config) *zerolog.Logger {
 }
 
 func Run(cfg *config.Config, logger *zerolog.Logger) error {
-	ctx := context.Background()
+	appCtx := context.Background()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
 
 	if err != nil {
@@ -44,7 +44,7 @@ func Run(cfg *config.Config, logger *zerolog.Logger) error {
 	log.Printf("listening on tcp://%s", lis.Addr().String())
 	log.Printf("application starting in %s (Version: %s)\n", cfg.Env, version)
 
-	mux, shutdown, err := api.NewMux(ctx, cfg, logger)
+	mux, shutdown, err := api.NewMux(appCtx, cfg, logger)
 
 	if shutdown != nil {
 		defer shutdown()
@@ -56,7 +56,7 @@ func Run(cfg *config.Config, logger *zerolog.Logger) error {
 
 	srv := NewServer(lis, mux)
 
-	return srv.Run(ctx)
+	return srv.Run(appCtx)
 }
 
 func main() {
@@ -70,6 +70,6 @@ func main() {
 	baseLogger := NewBaseLogger(cfg)
 
 	if err = Run(cfg, baseLogger); err != nil {
-		log.Fatalf("failed to run server: %s", err)
+		log.Fatal(err)
 	}
 }
