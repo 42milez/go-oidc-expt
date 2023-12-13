@@ -19,7 +19,7 @@ COPY app/pkg/ ./app/pkg
 
 RUN --mount=type=cache,target=/go/pkg \
     --mount=type=cache,target=/root/.cache/go-build \
-    go build -trimpath -ldflags "-s -w -X main.Version=${VERSION}" -o idp ./app/idp
+    go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o idp ./app/idp
 
 #  deploy
 # --------------------------------------------------
