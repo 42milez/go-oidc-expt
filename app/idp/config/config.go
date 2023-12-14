@@ -18,7 +18,6 @@ const AccessLoggerTagValue = "access"
 // --------------------------------------------------
 
 type Config struct {
-	Env                 string        `env:"ENV" envDefault:"dev"`
 	Port                int           `env:"PORT" envDefault:"80"`
 	DB1Host             string        `env:"DB1_HOST" envDefault:"127.0.0.1"`
 	DB1Port             int           `env:"DB1_PORT" envDefault:"3306"`
@@ -33,10 +32,6 @@ type Config struct {
 	IdpHost             string        `env:"IDP_HOST" envDefault:"http://localhost:8080"`
 	EnableDebugDBClient bool          `env:"ENABLE_DEBUG_DB_CLIENT" envDefault:"true"`
 	EnableProfiler      bool          `env:"ENABLE_PROFILER" envDefault:"true"`
-}
-
-func (p *Config) IsDevelopment() bool {
-	return p.Env == "dev"
 }
 
 func New() (*Config, error) {

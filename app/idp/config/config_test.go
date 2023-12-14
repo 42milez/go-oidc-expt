@@ -20,11 +20,6 @@ func TestNew(t *testing.T) {
 		t.Errorf("got = %d; want = %d", got.Port, wantPort)
 	}
 
-	wantEnv := "dev"
-	if got.Env != wantEnv {
-		t.Errorf("got = %s; want = %s", got.Env, wantEnv)
-	}
-
 	wantErr := env.AggregateError{}
 	t.Setenv("DB1_PORT", "INVALID_DB1_PORT")
 	_, err = New()

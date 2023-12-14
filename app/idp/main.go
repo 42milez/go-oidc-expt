@@ -28,8 +28,7 @@ func NewServer(lis net.Listener, mux http.Handler) *Server {
 func NewBaseLogger(cfg *config.Config) *zerolog.Logger {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixNano
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
-	ret := zerolog.New(os.Stdout).Level(cfg.LogLevel).With().Timestamp().Str("env", cfg.Env).
-		Str("service", config.AppName).Logger()
+	ret := zerolog.New(os.Stdout).Level(cfg.LogLevel).With().Timestamp().Str("service", config.AppName).Logger()
 	return &ret
 }
 
@@ -42,7 +41,7 @@ func Run(cfg *config.Config, logger *zerolog.Logger) error {
 	}
 
 	log.Printf("listening on tcp://%s", lis.Addr().String())
-	log.Printf("application starting in %s (Version: %s)\n", cfg.Env, version)
+	log.Printf("application starting (Version: %s)\n", version)
 
 	mux, shutdown, err := api.NewMux(appCtx, cfg, logger)
 
