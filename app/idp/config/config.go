@@ -68,7 +68,7 @@ const (
 // --------------------------------------------------
 
 const (
-	RegisterPath = "/user/register"
+	RegisterPath = "/user/registration"
 )
 
 const (

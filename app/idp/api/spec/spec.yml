@@ -176,7 +176,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenErrorResponse'
-  /user/register:
+  /user/registration:
     post:
       description: Creates a new user in the database.
       operationId: register

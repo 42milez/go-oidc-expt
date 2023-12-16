@@ -236,7 +236,7 @@ type HandlerInterface interface {
 	// POST: /token
 	Token(w http.ResponseWriter, r *http.Request)
 
-	// POST: /user/register
+	// POST: /user/registration
 	Register(w http.ResponseWriter, r *http.Request)
 }
 
@@ -390,7 +390,7 @@ func injectRequestParameter(r *http.Request) (*http.Request, error) {
 		return unmarshalCheckHealthParameter(r)
 	case "/token":
 		return unmarshalTokenParameter(r)
-	case "/user/register":
+	case "/user/registration":
 		return unmarshalRegisterParameter(r)
 	default:
 		return nil, xerr.InvalidPath
@@ -759,7 +759,7 @@ func MuxWithOptions(hi HandlerInterface, option *ChiServerOptions, appOption *op
 		if mw := option.Middlewares.raw("Register"); mw != nil {
 			r.Use(mw...)
 		}
-		r.Post("/user/register", hi.Register)
+		r.Post("/user/registration", hi.Register)
 	})
 
 	return r, nil
@@ -815,10 +815,11 @@ var swaggerSpec = []string{
 	"BxnBXOMwtz+UsO1DFheov3/F0mo0SnfD7dQF9bQ1Gc3sxX6Ki1518fOGVlEms5al1syM1sjaFZt1y4pZ",
 	"rheXJvreLX0XX0E909OKH1Ulc7BrnlAkFCvqimcuryA2kJhQ8NCQs6BAKCaUGlLH+sw0iOh6ylMsZO/z",
 	"jILUld58KMUfD7zhaa9476S+46hnPuJ4eVUElwuJbMO2IDL6JZh/B7tjqO4wKjnzs3MnbE1ZVUjGwSnq",
-	"Lp9wPDIDFgx11RTLS4e3w2PlXZYJJ7VZ/omIpBpgOlRTra8fNyoc4x1tQtvsZVVs1DmMiJCmY1y8p3c4",
-	"2BaJ2tO6QiFU7yJVqAywKCDjXqz139b20DxhbEeM2go49rNsJ+RNwlK38VftzthWFY2lt8W/8p7dRFTp",
-	"q/Y3KVnSczo3dpcpUZMP8of/B/BZGKjaeY8+EM5oYO/cZq3ZudJVh21ufSUeqWS4SIfo1OvCyNSIF9bS",
-	"veF5bSeceZGrQVumcE5RQhmzBm+uMaLmSv2SlHapH9L1Q+p1BtfUe0NOLzcv/xcAAP//6njhheY1AAA=",
+	"Lp9wPDIDFgx11RTLS4e3w2PlXZYJJ7VZ/omIpBpgOlRTra8fNyoc4x1tQtvsZVVs1DmMiJB8RbNkh4Nt",
+	"k6h9rasUQvVOUsXKAIsCQu5pzbqF8+9qfWiuMLYjRm0VHPtZthvyJqGpW/mrdmhsq4rI0lvjX3nX3kvF",
+	"aonr9jcpW9JzOjd2pylRkxPyDYAH8FkYqPp5jz4Qzmhg791m7dm58lWHbW59JR6phLhIh+jU68LI1IgX",
+	"1tL94XltJ5x5katBW6ZwTlFCG7Mmb645ouZK/ZKUd6kf0jVE6nUG19R7Q1AvNy//FwAA//++iOAT6jUA",
+	"AA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
