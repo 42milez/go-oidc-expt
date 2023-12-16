@@ -12,6 +12,7 @@ import (
 	context "context"
 	url "net/url"
 	reflect "reflect"
+	time "time"
 
 	entity "github.com/42milez/go-oidc-server/app/idp/entity"
 	typedef "github.com/42milez/go-oidc-server/app/pkg/typedef"
@@ -640,18 +641,18 @@ func (mr *MockAuthCodeGrantAcceptorMockRecorder) GenerateAccessToken(uid, claims
 }
 
 // GenerateIdToken mocks base method.
-func (m *MockAuthCodeGrantAcceptor) GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error) {
+func (m *MockAuthCodeGrantAcceptor) GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateIdToken", uid, claims)
+	ret := m.ctrl.Call(m, "GenerateIdToken", uid, audiences, authTime, nonce)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockAuthCodeGrantAcceptorMockRecorder) GenerateIdToken(uid, claims any) *gomock.Call {
+func (mr *MockAuthCodeGrantAcceptorMockRecorder) GenerateIdToken(uid, audiences, authTime, nonce any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockAuthCodeGrantAcceptor)(nil).GenerateIdToken), uid, claims)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockAuthCodeGrantAcceptor)(nil).GenerateIdToken), uid, audiences, authTime, nonce)
 }
 
 // GenerateRefreshToken mocks base method.

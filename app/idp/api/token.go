@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
@@ -155,7 +156,11 @@ func (t *Token) generateToken(uid typedef.UserID) (map[string]*string, error) {
 		return nil, err
 	}
 
-	idToken, err := t.acSVC.GenerateIdToken(uid, nil)
+	// TODO: Pass authTime and nonce
+	dummyAuthTime := time.Now()
+	dummyAudiences := []string{""}
+	dummyNonce := ""
+	idToken, err := t.acSVC.GenerateIdToken(uid, dummyAudiences, dummyAuthTime, dummyNonce)
 	if err != nil {
 		return nil, err
 	}

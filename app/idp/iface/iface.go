@@ -52,7 +52,7 @@ type RefreshTokenGenerator interface {
 }
 
 type IdTokenGenerator interface {
-	GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error)
+	GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error)
 }
 
 type TokenGenerator interface {
