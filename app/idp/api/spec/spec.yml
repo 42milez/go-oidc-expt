@@ -48,7 +48,7 @@ paths:
                 $ref: '#/components/schemas/Health'
               example:
                 status: 500
-  /authenticate:
+  /authentication:
     post:
       description: Authenticates a user.
       operationId: authenticate

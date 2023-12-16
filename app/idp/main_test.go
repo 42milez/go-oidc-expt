@@ -159,7 +159,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		xtestutil.ExitOnError(t, err)
 
 		if autheResp.StatusCode != http.StatusFound {
-			t.Fatalf("POST /authenticate failed: want = %d; got = %d", http.StatusFound, autheResp.StatusCode)
+			t.Fatalf("POST /authentication failed: want = %d; got = %d", http.StatusFound, autheResp.StatusCode)
 		}
 
 		cookies := autheResp.Cookies()
