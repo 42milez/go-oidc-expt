@@ -73,7 +73,7 @@ const (
 
 const (
 	AuthenticationPath = "/authentication"
-	AuthorizationPath  = "/authorize"
+	AuthorizationPath  = "/authorization"
 	ConsentPath        = "/consent"
 	TokenPath          = "/token"
 )

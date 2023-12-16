@@ -98,10 +98,10 @@ paths:
               schema:
                 type: string
                 format: url
-              example: http://localhost:8080/authorize?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
+              example: http://localhost:8080/authorization?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /authorize:
+  /authorization:
     get:
       description: Determines authentication and authorization status of user, redirects user to the appropriate page and returns an authorization code.
       operationId: authorize

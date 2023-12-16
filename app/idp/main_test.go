@@ -200,7 +200,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		xtestutil.ExitOnError(t, err)
 
 		if authoResp.StatusCode != http.StatusFound {
-			t.Fatalf("GET /authorize failed: want = %d; got = %d", http.StatusFound, authoResp.StatusCode)
+			t.Fatalf("GET /authorization failed: want = %d; got = %d", http.StatusFound, authoResp.StatusCode)
 		}
 
 		cbUrl, err := authoResp.Location()
