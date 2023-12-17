@@ -5,8 +5,6 @@ sequenceDiagram
   participant EndUser as End-User
   participant RP as Relying Party
   participant IdP as Identity Provider
-  participant DB as Database
-  participant Cache as Cache
 
   EndUser ->>+ RP: A request that needs credentials issued by Identity Provider
   RP -->>- EndUser: Redirect to authorization endpoint
@@ -14,10 +12,14 @@ sequenceDiagram
   alt End-user is authenticated / Permission is grantted
     EndUser ->>+ IdP: Authorization Request: GET /authorization
     IdP -->>- EndUser: Redirect to callback endpoint
-  else End-user isn't authenticated / Permission isn't grantted 
+  else End-user isn't authenticated / Permission isn't grantted
     EndUser ->>+ IdP: Authorization Request: GET /authorization
     IdP -->> EndUser: Redirect to authentication endpoint
     EndUser ->> IdP: Authentication Request: POST /authentication
+    
+    %% Password verification
+    IdP ->> IdP: Verify password
+    
     IdP -->> EndUser: Redirect to consent endpoint
     EndUser ->> IdP: Grant permission: POST /consent
     IdP -->> EndUser: Redirect to authorization endpoint
