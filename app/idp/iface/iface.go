@@ -89,8 +89,8 @@ type RefreshTokenPermissionWriter interface {
 	WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error
 }
 
-type UserInfoWriter interface {
-	WriteUserInfo(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error)
+type SessionWriter interface {
+	WriteSession(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error)
 }
 
 //  Validator

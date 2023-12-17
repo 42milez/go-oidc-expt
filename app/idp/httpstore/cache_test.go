@@ -51,7 +51,7 @@ func TestCache_Restore(t *testing.T) {
 	}
 }
 
-func TestCache_WriteUserInfo(t *testing.T) {
+func TestCache_WriteSession(t *testing.T) {
 	t.Parallel()
 
 	wantSid := typedef.SessionID(484493849344016749)
@@ -71,7 +71,7 @@ func TestCache_WriteUserInfo(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	gotSid, err := cache.WriteUserInfo(ctx, uid)
+	gotSid, err := cache.WriteSession(ctx, uid)
 	if err != nil {
 		t.Fatal(err)
 	}

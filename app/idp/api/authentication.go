@@ -31,7 +31,7 @@ func NewAuthentication(opt *option.Option) *Authentication {
 
 type Authentication struct {
 	svc    Authenticator
-	cache  iface.UserInfoWriter
+	cache  iface.SessionWriter
 	cookie iface.CookieWriter
 	v      iface.StructValidator
 }
@@ -62,7 +62,7 @@ func (ah *Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	var sid typedef.SessionID
 
-	if sid, err = ah.cache.WriteUserInfo(ctx, userID); err != nil {
+	if sid, err = ah.cache.WriteSession(ctx, userID); err != nil {
 		ah.respondError(w, r, err)
 		return
 	}

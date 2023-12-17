@@ -71,7 +71,7 @@ func (c *Cache) ReadRefreshTokenPermission(ctx context.Context, token string) (*
 func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
 	ctx := r.Context()
 
-	key := userInfoCacheKey(sid)
+	key := sessionCacheKey(sid)
 	uid, err := c.repo.ReadHash(ctx, key, userIdFieldName)
 	if err != nil {
 		return nil, err
@@ -111,13 +111,13 @@ func (c *Cache) WriteRefreshTokenPermission(ctx context.Context, token, clientId
 	return nil
 }
 
-func (c *Cache) WriteUserInfo(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
+func (c *Cache) WriteSession(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
 	sid, err := c.idGen.NextID()
 	if err != nil {
 		return 0, err
 	}
 
-	key := userInfoCacheKey(typedef.SessionID(sid))
+	key := sessionCacheKey(typedef.SessionID(sid))
 	values := map[string]string{
 		userIdFieldName: strconv.FormatUint(uint64(uid), 10),
 	}
@@ -136,7 +136,7 @@ func refreshTokenPermissionCacheKey(token string) string {
 	return fmt.Sprintf("rp:refreshtoken:permission:%s", token)
 }
 
-func userInfoCacheKey(sid typedef.SessionID) string {
+func sessionCacheKey(sid typedef.SessionID) string {
 	return fmt.Sprintf("idp:session:%d", sid)
 }
 
