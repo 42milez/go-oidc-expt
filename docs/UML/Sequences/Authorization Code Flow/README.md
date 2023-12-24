@@ -1,4 +1,4 @@
-Here is a sequence of Authorization Code flow:
+Here is the sequence of Authorization Code flow:
 
 ```mermaid
 sequenceDiagram
@@ -35,13 +35,13 @@ sequenceDiagram
 
   EndUser ->>+ RP: Pass authorization code: GET /callback
 
-  alt Get tokens
-    RP ->>+ OP: Token Request: POST /token with grant_type=authorization_code
+  alt Get tokens (grant_type=authorization_code)
+    RP ->>+ OP: Token Request: POST /token
     OP ->> OP: Generate tokens
     OP ->> OP: Save refresh token permission into cache
     OP -->>- RP: Respond tokens
-  else Refresh access token
-    RP ->>+ OP: Token Request: POST /token with grant_type=refresh_token
+  else Refresh access token (grant_type=refresh_token)
+    RP ->>+ OP: Token Request: POST /token
     OP ->> OP: Generate tokens (without ID token)
     OP ->> OP: Save refresh token permission into cache
     OP -->>- RP: Respond tokens
