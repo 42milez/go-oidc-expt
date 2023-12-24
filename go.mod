@@ -3,14 +3,14 @@ module github.com/42milez/go-oidc-server
 go 1.21
 
 require (
-	ariga.io/atlas v0.15.0
+	ariga.io/atlas v0.16.0
 	entgo.io/ent v0.12.5
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/deepmap/oapi-codegen/v2 v2.0.1-0.20231204155340-1f53862bcc64
 	github.com/getkin/kin-openapi v0.122.0
-	github.com/go-chi/chi/v5 v5.0.10
+	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golangci/golangci-lint v1.55.2
@@ -23,11 +23,11 @@ require (
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
 	github.com/oapi-codegen/runtime v1.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/redis/go-redis/v9 v9.3.0
+	github.com/redis/go-redis/v9 v9.3.1
 	github.com/rs/zerolog v1.31.0
 	github.com/sony/sonyflake v1.2.0
-	go.uber.org/mock v0.3.0
-	golang.org/x/crypto v0.16.0
+	go.uber.org/mock v0.4.0
+	golang.org/x/crypto v0.17.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 	golang.org/x/sync v0.5.0
 	golang.org/x/tools v0.16.1
