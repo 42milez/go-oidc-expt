@@ -5,6 +5,7 @@
 //
 //	mockgen -source=interface.go -destination=interface_mock.go -package=httpstore
 //
+
 // Package httpstore is a generated GoMock package.
 package httpstore
 

@@ -5,6 +5,7 @@
 //
 //	mockgen -source=iface.go -destination=iface_mock.go -package=iface
 //
+
 // Package iface is a generated GoMock package.
 package iface
 

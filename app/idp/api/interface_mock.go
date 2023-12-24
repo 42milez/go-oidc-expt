@@ -5,6 +5,7 @@
 //
 //	mockgen -source=interface.go -destination=interface_mock.go -package=api
 //
+
 // Package api is a generated GoMock package.
 package api
 

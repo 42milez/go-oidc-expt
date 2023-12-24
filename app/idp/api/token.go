@@ -95,7 +95,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	tokens, err := t.generateToken(authParam.UserId)
+	tokens, err := t.generateToken(authParam.UserId, clientId)
 	if err != nil {
 		RespondServerError(w, r, err)
 		return
@@ -145,7 +145,7 @@ const accessTokenKey = "AccessToken"
 const refreshTokenKey = "RefreshToken"
 const idTokenKey = "IDToken"
 
-func (t *Token) generateToken(uid typedef.UserID) (map[string]*string, error) {
+func (t *Token) generateToken(uid typedef.UserID, clientId string) (map[string]*string, error) {
 	accessToken, err := t.acSVC.GenerateAccessToken(uid, nil)
 	if err != nil {
 		return nil, err
@@ -157,10 +157,10 @@ func (t *Token) generateToken(uid typedef.UserID) (map[string]*string, error) {
 	}
 
 	// TODO: Pass authTime and nonce
+	audiences := []string{clientId}
 	dummyAuthTime := time.Now()
-	dummyAudiences := []string{""}
 	dummyNonce := ""
-	idToken, err := t.acSVC.GenerateIdToken(uid, dummyAudiences, dummyAuthTime, dummyNonce)
+	idToken, err := t.acSVC.GenerateIdToken(uid, audiences, dummyAuthTime, dummyNonce)
 	if err != nil {
 		return nil, err
 	}
