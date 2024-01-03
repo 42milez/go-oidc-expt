@@ -671,42 +671,42 @@ func (mr *MockRefreshTokenPermissionWriterMockRecorder) WriteRefreshTokenPermiss
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteRefreshTokenPermission", reflect.TypeOf((*MockRefreshTokenPermissionWriter)(nil).WriteRefreshTokenPermission), ctx, token, clientId, userId)
 }
 
-// MockSessionWriter is a mock of SessionWriter interface.
-type MockSessionWriter struct {
+// MockSessionCreator is a mock of SessionCreator interface.
+type MockSessionCreator struct {
 	ctrl     *gomock.Controller
-	recorder *MockSessionWriterMockRecorder
+	recorder *MockSessionCreatorMockRecorder
 }
 
-// MockSessionWriterMockRecorder is the mock recorder for MockSessionWriter.
-type MockSessionWriterMockRecorder struct {
-	mock *MockSessionWriter
+// MockSessionCreatorMockRecorder is the mock recorder for MockSessionCreator.
+type MockSessionCreatorMockRecorder struct {
+	mock *MockSessionCreator
 }
 
-// NewMockSessionWriter creates a new mock instance.
-func NewMockSessionWriter(ctrl *gomock.Controller) *MockSessionWriter {
-	mock := &MockSessionWriter{ctrl: ctrl}
-	mock.recorder = &MockSessionWriterMockRecorder{mock}
+// NewMockSessionCreator creates a new mock instance.
+func NewMockSessionCreator(ctrl *gomock.Controller) *MockSessionCreator {
+	mock := &MockSessionCreator{ctrl: ctrl}
+	mock.recorder = &MockSessionCreatorMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSessionWriter) EXPECT() *MockSessionWriterMockRecorder {
+func (m *MockSessionCreator) EXPECT() *MockSessionCreatorMockRecorder {
 	return m.recorder
 }
 
-// WriteSession mocks base method.
-func (m *MockSessionWriter) WriteSession(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
+// CreateSession mocks base method.
+func (m *MockSessionCreator) CreateSession(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "WriteSession", ctx, uid)
+	ret := m.ctrl.Call(m, "CreateSession", ctx, uid)
 	ret0, _ := ret[0].(typedef.SessionID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// WriteSession indicates an expected call of WriteSession.
-func (mr *MockSessionWriterMockRecorder) WriteSession(ctx, uid any) *gomock.Call {
+// CreateSession indicates an expected call of CreateSession.
+func (mr *MockSessionCreatorMockRecorder) CreateSession(ctx, uid any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteSession", reflect.TypeOf((*MockSessionWriter)(nil).WriteSession), ctx, uid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSession", reflect.TypeOf((*MockSessionCreator)(nil).CreateSession), ctx, uid)
 }
 
 // MockStructValidator is a mock of StructValidator interface.

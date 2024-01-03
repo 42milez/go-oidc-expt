@@ -111,7 +111,7 @@ func (c *Cache) WriteRefreshTokenPermission(ctx context.Context, token, clientId
 	return nil
 }
 
-func (c *Cache) WriteSession(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
+func (c *Cache) CreateSession(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
 	sid, err := c.idGen.NextID()
 	if err != nil {
 		return 0, err
