@@ -193,7 +193,7 @@ func TestCache_WriteHash(t *testing.T) {
 
 	ctx := context.Background()
 	key := "TestCache_WriteHash"
-	want := map[string]string{
+	want := map[string]any{
 		"value1": "TestCache_ReadHash_OK_Value1",
 		"value2": "TestCache_ReadHash_OK_Value2",
 	}

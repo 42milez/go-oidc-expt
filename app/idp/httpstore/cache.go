@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
@@ -20,6 +21,7 @@ import (
 const clientIdFieldName = "ClientId"
 const redirectURIFieldName = "RedirectURI"
 const userIdFieldName = "UserId"
+const authTimeFieldName = "AuthTime"
 
 func NewCache(opt *option.Option) *Cache {
 	return &Cache{
@@ -89,7 +91,7 @@ func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, 
 
 func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error {
 	key := openIdParamCacheKey(clientId, authCode)
-	values := map[string]string{
+	values := map[string]any{
 		redirectURIFieldName: param.RedirectURI,
 		userIdFieldName:      strconv.FormatUint(uint64(param.UserId), 10),
 	}
@@ -101,7 +103,7 @@ func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam
 
 func (c *Cache) WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error {
 	key := refreshTokenPermissionCacheKey(hash(token))
-	values := map[string]string{
+	values := map[string]any{
 		clientIdFieldName: clientId,
 		userIdFieldName:   strconv.FormatUint(uint64(userId), 10),
 	}
@@ -118,8 +120,9 @@ func (c *Cache) CreateSession(ctx context.Context, uid typedef.UserID) (typedef.
 	}
 
 	key := sessionCacheKey(typedef.SessionID(sid))
-	values := map[string]string{
-		userIdFieldName: strconv.FormatUint(uint64(uid), 10),
+	values := map[string]any{
+		userIdFieldName:   strconv.FormatUint(uint64(uid), 10),
+		authTimeFieldName: time.Now(),
 	}
 	if err = c.repo.WriteHash(ctx, key, values, config.SessionTTL); err != nil {
 		return 0, err
