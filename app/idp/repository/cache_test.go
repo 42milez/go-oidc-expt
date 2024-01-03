@@ -78,7 +78,11 @@ func TestCache_ReadHash(t *testing.T) {
 			repo.cache.Client.Del(ctx, key)
 		})
 
-		if err := repo.cache.Client.HSet(ctx, key, want).Err(); err != nil {
+		values := map[string]any{}
+		for k, v := range want {
+			values[k] = v
+		}
+		if err := repo.cache.Client.HSet(ctx, key, values).Err(); err != nil {
 			t.Fatal(err)
 		}
 
@@ -135,7 +139,11 @@ func TestCache_ReadHashAll(t *testing.T) {
 			repo.cache.Client.Del(ctx, key)
 		})
 
-		if err := repo.cache.Client.HSet(ctx, key, want).Err(); err != nil {
+		values := map[string]any{}
+		for k, v := range want {
+			values[k] = v
+		}
+		if err := repo.cache.Client.HSet(ctx, key, values).Err(); err != nil {
 			t.Fatal(err)
 		}
 
@@ -193,7 +201,7 @@ func TestCache_WriteHash(t *testing.T) {
 
 	ctx := context.Background()
 	key := "TestCache_WriteHash"
-	want := map[string]any{
+	want := map[string]string{
 		"value1": "TestCache_ReadHash_OK_Value1",
 		"value2": "TestCache_ReadHash_OK_Value2",
 	}
@@ -203,7 +211,11 @@ func TestCache_WriteHash(t *testing.T) {
 		repo.cache.Client.Del(ctx, key)
 	})
 
-	if err := repo.WriteHash(ctx, key, want, ttl); err != nil {
+	values := map[string]any{}
+	for k, v := range want {
+		values[k] = v
+	}
+	if err := repo.WriteHash(ctx, key, values, ttl); err != nil {
 		t.Fatal(err)
 	}
 
