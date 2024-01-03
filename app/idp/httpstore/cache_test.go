@@ -4,7 +4,10 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
+
+	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
 
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
@@ -16,11 +19,15 @@ import (
 func TestCache_Restore(t *testing.T) {
 	t.Parallel()
 
+	clock := xtestutil.FixedClocker{}
+
 	wantSid := typedef.SessionID(484493849343885677)
 	wantUserId := typedef.UserID(484493849343820141)
+	wantAuthTime := clock.Now()
 
 	cacheRWMock := NewMockCacheReadWriter(gomock.NewController(t))
-	cacheRWMock.EXPECT().ReadHash(gomock.Any(), gomock.Any(), gomock.Any()).Return(wantUserId.String(), nil).AnyTimes()
+	cacheRWMock.EXPECT().ReadHash(gomock.Any(), gomock.Any(), userIdFieldName).Return(wantUserId.String(), nil).AnyTimes()
+	cacheRWMock.EXPECT().ReadHash(gomock.Any(), gomock.Any(), authTimeFieldName).Return(strconv.FormatInt(wantAuthTime.Unix(), 10), nil).AnyTimes()
 
 	cache := &Cache{
 		repo: cacheRWMock,
@@ -42,12 +49,15 @@ func TestCache_Restore(t *testing.T) {
 		t.Errorf("want = %d; got = %d", wantSid, gotSid)
 	}
 
-	gotUserId, ok := ctx.Value(typedef.UserIdKey{}).(typedef.UserID)
+	gotSess, ok := ctx.Value(SessionKey{}).(*Session)
 	if !ok {
 		t.Fatal(xerr.TypeAssertionFailed)
 	}
-	if wantUserId != gotUserId {
-		t.Errorf("want = %d; got = %d", gotUserId, gotUserId)
+	if wantUserId != gotSess.UserID {
+		t.Errorf("want = %d; got = %d", wantUserId, gotSess.UserID)
+	}
+	if !wantAuthTime.Equal(gotSess.AuthTime) {
+		t.Errorf("want = %v; got = %v", wantAuthTime, gotSess.AuthTime)
 	}
 }
 

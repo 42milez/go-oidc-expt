@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"github.com/42milez/go-oidc-server/app/idp/iface"
@@ -33,7 +34,10 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 		respFile   string
 	}
 
-	const userID typedef.UserID = 475924034190589956
+	clock := xtestutil.FixedClocker{}
+
+	userID := typedef.UserID(475924034190589956)
+	authTime := clock.Now()
 
 	location := func(uri string) *url.URL {
 		ret, err := url.Parse(uri)
@@ -74,7 +78,12 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				nil,
 			)
 			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqFile)), "\n", "", -1)
-			r = r.Clone(context.WithValue(r.Context(), typedef.UserIdKey{}, userID))
+
+			sess := &httpstore.Session{
+				UserID:   userID,
+				AuthTime: authTime,
+			}
+			r = r.Clone(context.WithValue(r.Context(), httpstore.SessionKey{}, sess))
 
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.EXPECT().Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
@@ -93,7 +102,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				MaxAge:       600,
 				Prompt:       "consent",
 			}).AnyTimes()
-			ctxMock.EXPECT().Read(gomock.Any(), typedef.UserIdKey{}).Return(typedef.UserID(0)).AnyTimes()
+			ctxMock.EXPECT().Read(gomock.Any(), httpstore.SessionKey{}).Return(sess).AnyTimes()
 
 			v, err := NewOIDCRequestParamValidator()
 			if err != nil {

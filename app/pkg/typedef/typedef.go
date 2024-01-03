@@ -23,8 +23,6 @@ func (sid SessionID) String() string {
 	return strconv.FormatUint(uint64(sid), 10)
 }
 
-type UserIdKey struct{}
-
 func (uid UserID) MarshalBinary() ([]byte, error) {
 	return []byte(strconv.FormatUint(uint64(uid), 10)), nil
 }

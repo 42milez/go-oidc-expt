@@ -70,21 +70,40 @@ func (c *Cache) ReadRefreshTokenPermission(ctx context.Context, token string) (*
 	}, nil
 }
 
+type Session struct {
+	UserID   typedef.UserID
+	AuthTime time.Time
+}
+type SessionKey struct{}
+
 func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, error) {
 	ctx := r.Context()
 
 	key := sessionCacheKey(sid)
-	uid, err := c.repo.ReadHash(ctx, key, userIdFieldName)
+	sess := &Session{}
+
+	uidRaw, err := c.repo.ReadHash(ctx, key, userIdFieldName)
 	if err != nil {
 		return nil, err
 	}
-	uidUint64, err := strconv.ParseUint(uid, 10, 64)
+	uid, err := strconv.ParseUint(uidRaw, 10, 64)
 	if err != nil {
 		return nil, err
 	}
+	sess.UserID = typedef.UserID(uid)
+
+	authTimeRaw, err := c.repo.ReadHash(ctx, key, authTimeFieldName)
+	if err != nil {
+		return nil, err
+	}
+	authTime, err := strconv.ParseInt(authTimeRaw, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	sess.AuthTime = time.Unix(authTime, 0)
 
 	ctx = context.WithValue(ctx, typedef.SessionIdKey{}, sid)
-	ctx = context.WithValue(ctx, typedef.UserIdKey{}, typedef.UserID(uidUint64))
+	ctx = context.WithValue(ctx, SessionKey{}, sess)
 
 	return r.Clone(ctx), nil
 }
@@ -122,7 +141,7 @@ func (c *Cache) CreateSession(ctx context.Context, uid typedef.UserID) (typedef.
 	key := sessionCacheKey(typedef.SessionID(sid))
 	values := map[string]any{
 		userIdFieldName:   strconv.FormatUint(uint64(uid), 10),
-		authTimeFieldName: time.Now(),
+		authTimeFieldName: time.Now().Unix(),
 	}
 	if err = c.repo.WriteHash(ctx, key, values, config.SessionTTL); err != nil {
 		return 0, err

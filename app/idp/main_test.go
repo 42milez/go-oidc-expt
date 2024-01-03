@@ -225,6 +225,9 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 
 		cbQuery := cbUrl.Query()
 
+		// TODO: Handle error if the query contains error parameter
+		// ...
+
 		param := url.Values{}
 		param.Add("grant_type", "authorization_code")
 		param.Add("code", cbQuery.Get("code"))
