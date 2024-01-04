@@ -21,7 +21,7 @@ require (
 	github.com/gorilla/securecookie v1.1.2
 	github.com/lestrrat-go/jwx/v2 v2.0.18
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
-	github.com/oapi-codegen/runtime v1.1.0
+	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.3.1
 	github.com/rs/zerolog v1.31.0
@@ -155,7 +155,7 @@ require (
 	github.com/maratori/testpackage v1.1.1 // indirect
 	github.com/matoous/godox v0.0.0-20230222163458-006bad1f9d26 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mbilski/exhaustivestruct v1.2.0 // indirect
