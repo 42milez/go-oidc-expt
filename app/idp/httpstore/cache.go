@@ -35,7 +35,7 @@ type Cache struct {
 	idGen iface.IdGenerator
 }
 
-func (c *Cache) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
+func (c *Cache) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error) {
 	key := openIdParamCacheKey(clientId, authCode)
 	values, err := c.repo.ReadHashAll(ctx, key)
 	if errors.Is(err, xerr.CacheKeyNotFound) {
@@ -48,7 +48,7 @@ func (c *Cache) ReadOpenIdParam(ctx context.Context, clientId, authCode string) 
 		return nil, err
 	}
 
-	return &typedef.OpenIdParam{
+	return &typedef.OIDCParam{
 		RedirectURI: redirectURI,
 		UserId:      typedef.UserID(userID),
 	}, nil
@@ -108,7 +108,7 @@ func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, 
 	return r.Clone(ctx), nil
 }
 
-func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error {
+func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OIDCParam, clientId, authCode string) error {
 	key := openIdParamCacheKey(clientId, authCode)
 	values := map[string]any{
 		redirectURIFieldName: param.RedirectURI,

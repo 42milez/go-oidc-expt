@@ -575,10 +575,10 @@ func (m *MockTokenCacheReadWriter) EXPECT() *MockTokenCacheReadWriterMockRecorde
 }
 
 // ReadOpenIdParam mocks base method.
-func (m *MockTokenCacheReadWriter) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
+func (m *MockTokenCacheReadWriter) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadOpenIdParam", ctx, clientId, authCode)
-	ret0, _ := ret[0].(*typedef.OpenIdParam)
+	ret0, _ := ret[0].(*typedef.OIDCParam)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

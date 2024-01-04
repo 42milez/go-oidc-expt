@@ -74,11 +74,11 @@ type TokenGenerateValidator interface {
 // --------------------------------------------------
 
 type OpenIdParamReader interface {
-	ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error)
+	ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error)
 }
 
 type OpenIdParamWriter interface {
-	WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error
+	WriteOpenIdParam(ctx context.Context, param *typedef.OIDCParam, clientId, authCode string) error
 }
 
 type RefreshTokenPermissionReader interface {

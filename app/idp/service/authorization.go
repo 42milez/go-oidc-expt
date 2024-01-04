@@ -81,10 +81,11 @@ func (a *Authorize) SaveRequestFingerprint(ctx context.Context, redirectURI, cli
 		return xerr.UnauthorizedRequest
 	}
 
-	authParam := &typedef.OpenIdParam{
+	oidcParam := &typedef.OIDCParam{
 		RedirectURI: redirectURI,
 		UserId:      sess.UserID,
+		AuthTime:    sess.AuthTime,
 	}
 
-	return a.cache.WriteOpenIdParam(ctx, authParam, clientID, authCode)
+	return a.cache.WriteOpenIdParam(ctx, oidcParam, clientID, authCode)
 }

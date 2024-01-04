@@ -1,6 +1,9 @@
 package typedef
 
-import "strconv"
+import (
+	"strconv"
+	"time"
+)
 
 //  Entity
 // --------------------------------------------------
@@ -34,9 +37,10 @@ func (uid UserID) String() string {
 //  Cache
 // --------------------------------------------------
 
-type OpenIdParam struct {
+type OIDCParam struct {
 	RedirectURI string
 	UserId      UserID
+	AuthTime    time.Time
 }
 
 type RefreshTokenPermission struct {

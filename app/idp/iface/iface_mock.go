@@ -545,10 +545,10 @@ func (m *MockOpenIdParamReader) EXPECT() *MockOpenIdParamReaderMockRecorder {
 }
 
 // ReadOpenIdParam mocks base method.
-func (m *MockOpenIdParamReader) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
+func (m *MockOpenIdParamReader) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadOpenIdParam", ctx, clientId, authCode)
-	ret0, _ := ret[0].(*typedef.OpenIdParam)
+	ret0, _ := ret[0].(*typedef.OIDCParam)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -583,7 +583,7 @@ func (m *MockOpenIdParamWriter) EXPECT() *MockOpenIdParamWriterMockRecorder {
 }
 
 // WriteOpenIdParam mocks base method.
-func (m *MockOpenIdParamWriter) WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error {
+func (m *MockOpenIdParamWriter) WriteOpenIdParam(ctx context.Context, param *typedef.OIDCParam, clientId, authCode string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteOpenIdParam", ctx, param, clientId, authCode)
 	ret0, _ := ret[0].(error)
