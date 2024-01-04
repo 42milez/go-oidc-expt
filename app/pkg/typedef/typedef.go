@@ -41,6 +41,7 @@ type OIDCParam struct {
 	RedirectURI string
 	UserId      UserID
 	AuthTime    time.Time
+	Nonce       string
 }
 
 type RefreshTokenPermission struct {
@@ -51,4 +52,10 @@ type RefreshTokenPermission struct {
 //  API
 // --------------------------------------------------
 
+type AuthorizationRequestFingerPrintParam struct {
+	ClientID    string
+	RedirectURI string
+	AuthCode    string
+	Nonce       string
+}
 type TokenType string

@@ -60,7 +60,13 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.svc.SaveRequestFingerprint(ctx, params.RedirectUri, params.ClientID, authCode); err != nil {
+	fp := &typedef.AuthorizationRequestFingerPrintParam{
+		ClientID:    params.ClientID,
+		RedirectURI: params.RedirectUri,
+		AuthCode:    authCode,
+		Nonce:       params.Nonce,
+	}
+	if err := a.svc.SaveRequestFingerprint(ctx, fp); err != nil {
 		if errors.Is(err, xerr.UserIdNotFoundInContext) {
 			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.AccessDenied)
 		} else {

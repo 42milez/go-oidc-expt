@@ -336,17 +336,17 @@ func (m *MockRequestFingerprintSaver) EXPECT() *MockRequestFingerprintSaverMockR
 }
 
 // SaveRequestFingerprint mocks base method.
-func (m *MockRequestFingerprintSaver) SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error {
+func (m *MockRequestFingerprintSaver) SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, redirectURI, clientID, authCode)
+	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, params)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveRequestFingerprint indicates an expected call of SaveRequestFingerprint.
-func (mr *MockRequestFingerprintSaverMockRecorder) SaveRequestFingerprint(ctx, redirectURI, clientID, authCode any) *gomock.Call {
+func (mr *MockRequestFingerprintSaverMockRecorder) SaveRequestFingerprint(ctx, params any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockRequestFingerprintSaver)(nil).SaveRequestFingerprint), ctx, redirectURI, clientID, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockRequestFingerprintSaver)(nil).SaveRequestFingerprint), ctx, params)
 }
 
 // MockAuthorizer is a mock of Authorizer interface.
@@ -389,17 +389,17 @@ func (mr *MockAuthorizerMockRecorder) Authorize(ctx, clientID, redirectURI, stat
 }
 
 // SaveRequestFingerprint mocks base method.
-func (m *MockAuthorizer) SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error {
+func (m *MockAuthorizer) SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, redirectURI, clientID, authCode)
+	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, params)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveRequestFingerprint indicates an expected call of SaveRequestFingerprint.
-func (mr *MockAuthorizerMockRecorder) SaveRequestFingerprint(ctx, redirectURI, clientID, authCode any) *gomock.Call {
+func (mr *MockAuthorizerMockRecorder) SaveRequestFingerprint(ctx, params any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockAuthorizer)(nil).SaveRequestFingerprint), ctx, redirectURI, clientID, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockAuthorizer)(nil).SaveRequestFingerprint), ctx, params)
 }
 
 // MockConsentAcceptor is a mock of ConsentAcceptor interface.

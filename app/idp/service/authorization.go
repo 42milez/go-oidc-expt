@@ -75,17 +75,18 @@ func (a *Authorize) validateRedirectUri(s []*entity.RedirectUri, v string) bool 
 	})
 }
 
-func (a *Authorize) SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error {
+func (a *Authorize) SaveRequestFingerprint(ctx context.Context, param *typedef.AuthorizationRequestFingerPrintParam) error {
 	sess, ok := a.context.Read(ctx, httpstore.SessionKey{}).(*httpstore.Session)
 	if !ok {
 		return xerr.UnauthorizedRequest
 	}
 
 	oidcParam := &typedef.OIDCParam{
-		RedirectURI: redirectURI,
+		RedirectURI: param.RedirectURI,
 		UserId:      sess.UserID,
 		AuthTime:    sess.AuthTime,
+		Nonce:       param.Nonce,
 	}
 
-	return a.cache.WriteOpenIdParam(ctx, oidcParam, clientID, authCode)
+	return a.cache.WriteOpenIdParam(ctx, oidcParam, param.ClientID, param.AuthCode)
 }

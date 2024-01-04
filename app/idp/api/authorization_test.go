@@ -88,7 +88,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.EXPECT().Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(tt.resp.location, "", nil).AnyTimes()
-			svcMock.EXPECT().SaveRequestFingerprint(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+			svcMock.EXPECT().SaveRequestFingerprint(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.RequestParamKey{}).Return(&AuthorizeParams{
