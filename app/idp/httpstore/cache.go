@@ -48,10 +48,17 @@ func (c *Cache) ReadOpenIdParam(ctx context.Context, clientId, authCode string) 
 	if err != nil {
 		return nil, err
 	}
+	authTimeUnix, err := strconv.ParseInt(values[authTimeFieldName], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	authTime := time.Unix(authTimeUnix, 0)
 
 	return &typedef.OIDCParam{
 		RedirectURI: redirectURI,
 		UserId:      typedef.UserID(userID),
+		AuthTime:    authTime,
+		Nonce:       values[nonceFieldName],
 	}, nil
 }
 
