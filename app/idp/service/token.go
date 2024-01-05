@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
@@ -76,8 +77,8 @@ func (a *AuthCodeGrant) GenerateRefreshToken(uid typedef.UserID, claims map[stri
 	return generateRefreshToken(a.token, uid, claims)
 }
 
-func (a *AuthCodeGrant) GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error) {
-	return generateIDToken(a.token, uid, claims)
+func (a *AuthCodeGrant) GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
+	return generateIDToken(a.token, uid, audiences, authTime, nonce)
 }
 
 func NewRefreshTokenGrant(opt *option.Option) *RefreshTokenGrant {
@@ -133,8 +134,8 @@ func generateRefreshToken(tokenGen iface.TokenGenerator, uid typedef.UserID, cla
 	return refreshToken, nil
 }
 
-func generateIDToken(tokenGen iface.TokenGenerator, uid typedef.UserID, claims map[string]any) (string, error) {
-	idToken, err := tokenGen.GenerateIdToken(uid, claims)
+func generateIDToken(tokenGen iface.TokenGenerator, uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
+	idToken, err := tokenGen.GenerateIdToken(uid, audiences, authTime, nonce)
 	if err != nil {
 		return "", err
 	}

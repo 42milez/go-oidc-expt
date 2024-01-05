@@ -24,7 +24,7 @@ type CacheWriter interface {
 }
 
 type CacheHashWriter interface {
-	WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) error
+	WriteHash(ctx context.Context, key string, values map[string]any, ttl time.Duration) error
 }
 
 type CacheReadWriter interface {

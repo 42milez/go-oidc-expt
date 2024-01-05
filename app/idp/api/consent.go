@@ -3,8 +3,6 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/app/pkg/typedef"
-
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
@@ -46,13 +44,13 @@ func (ch *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid, ok := ch.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
+	sess, ok := ch.context.Read(ctx, httpstore.SessionKey{}).(*httpstore.Session)
 	if !ok {
 		RespondJSON401(w, r, xerr.InvalidRequest2, nil, nil)
 		return
 	}
 
-	if err := ch.svc.AcceptConsent(ctx, uid, q.ClientID); err != nil {
+	if err := ch.svc.AcceptConsent(ctx, sess.UserID, q.ClientID); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

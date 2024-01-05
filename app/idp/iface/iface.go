@@ -52,7 +52,7 @@ type RefreshTokenGenerator interface {
 }
 
 type IdTokenGenerator interface {
-	GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error)
+	GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error)
 }
 
 type TokenGenerator interface {
@@ -74,11 +74,11 @@ type TokenGenerateValidator interface {
 // --------------------------------------------------
 
 type OpenIdParamReader interface {
-	ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error)
+	ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error)
 }
 
 type OpenIdParamWriter interface {
-	WriteOpenIdParam(ctx context.Context, param *typedef.OpenIdParam, clientId, authCode string) error
+	WriteOpenIdParam(ctx context.Context, param *typedef.OIDCParam, clientId, authCode string) error
 }
 
 type RefreshTokenPermissionReader interface {
@@ -89,8 +89,8 @@ type RefreshTokenPermissionWriter interface {
 	WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error
 }
 
-type UserInfoWriter interface {
-	WriteUserInfo(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error)
+type SessionCreator interface {
+	CreateSession(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error)
 }
 
 //  Validator

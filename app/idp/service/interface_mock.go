@@ -5,6 +5,7 @@
 //
 //	mockgen -source=interface.go -destination=interface_mock.go -package=service
 //
+
 // Package service is a generated GoMock package.
 package service
 

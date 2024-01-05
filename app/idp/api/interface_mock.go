@@ -5,6 +5,7 @@
 //
 //	mockgen -source=interface.go -destination=interface_mock.go -package=api
 //
+
 // Package api is a generated GoMock package.
 package api
 
@@ -12,6 +13,7 @@ import (
 	context "context"
 	url "net/url"
 	reflect "reflect"
+	time "time"
 
 	entity "github.com/42milez/go-oidc-server/app/idp/entity"
 	typedef "github.com/42milez/go-oidc-server/app/pkg/typedef"
@@ -334,17 +336,17 @@ func (m *MockRequestFingerprintSaver) EXPECT() *MockRequestFingerprintSaverMockR
 }
 
 // SaveRequestFingerprint mocks base method.
-func (m *MockRequestFingerprintSaver) SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error {
+func (m *MockRequestFingerprintSaver) SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, redirectURI, clientID, authCode)
+	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, params)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveRequestFingerprint indicates an expected call of SaveRequestFingerprint.
-func (mr *MockRequestFingerprintSaverMockRecorder) SaveRequestFingerprint(ctx, redirectURI, clientID, authCode any) *gomock.Call {
+func (mr *MockRequestFingerprintSaverMockRecorder) SaveRequestFingerprint(ctx, params any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockRequestFingerprintSaver)(nil).SaveRequestFingerprint), ctx, redirectURI, clientID, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockRequestFingerprintSaver)(nil).SaveRequestFingerprint), ctx, params)
 }
 
 // MockAuthorizer is a mock of Authorizer interface.
@@ -387,17 +389,17 @@ func (mr *MockAuthorizerMockRecorder) Authorize(ctx, clientID, redirectURI, stat
 }
 
 // SaveRequestFingerprint mocks base method.
-func (m *MockAuthorizer) SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error {
+func (m *MockAuthorizer) SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, redirectURI, clientID, authCode)
+	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, params)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveRequestFingerprint indicates an expected call of SaveRequestFingerprint.
-func (mr *MockAuthorizerMockRecorder) SaveRequestFingerprint(ctx, redirectURI, clientID, authCode any) *gomock.Call {
+func (mr *MockAuthorizerMockRecorder) SaveRequestFingerprint(ctx, params any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockAuthorizer)(nil).SaveRequestFingerprint), ctx, redirectURI, clientID, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockAuthorizer)(nil).SaveRequestFingerprint), ctx, params)
 }
 
 // MockConsentAcceptor is a mock of ConsentAcceptor interface.
@@ -573,10 +575,10 @@ func (m *MockTokenCacheReadWriter) EXPECT() *MockTokenCacheReadWriterMockRecorde
 }
 
 // ReadOpenIdParam mocks base method.
-func (m *MockTokenCacheReadWriter) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OpenIdParam, error) {
+func (m *MockTokenCacheReadWriter) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadOpenIdParam", ctx, clientId, authCode)
-	ret0, _ := ret[0].(*typedef.OpenIdParam)
+	ret0, _ := ret[0].(*typedef.OIDCParam)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -640,18 +642,18 @@ func (mr *MockAuthCodeGrantAcceptorMockRecorder) GenerateAccessToken(uid, claims
 }
 
 // GenerateIdToken mocks base method.
-func (m *MockAuthCodeGrantAcceptor) GenerateIdToken(uid typedef.UserID, claims map[string]any) (string, error) {
+func (m *MockAuthCodeGrantAcceptor) GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateIdToken", uid, claims)
+	ret := m.ctrl.Call(m, "GenerateIdToken", uid, audiences, authTime, nonce)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockAuthCodeGrantAcceptorMockRecorder) GenerateIdToken(uid, claims any) *gomock.Call {
+func (mr *MockAuthCodeGrantAcceptorMockRecorder) GenerateIdToken(uid, audiences, authTime, nonce any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockAuthCodeGrantAcceptor)(nil).GenerateIdToken), uid, claims)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockAuthCodeGrantAcceptor)(nil).GenerateIdToken), uid, audiences, authTime, nonce)
 }
 
 // GenerateRefreshToken mocks base method.

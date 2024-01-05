@@ -78,10 +78,10 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	}
 
 	registerRelyingParty := func() *entity.RelyingParty {
-		clientId, err := xrandom.GenerateCryptoRandomStringNoCache(config.ClientIDLength)
+		clientId, err := xrandom.GenerateCryptoRandomString(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
-		clientSecret, err := xrandom.GenerateCryptoRandomStringNoCache(config.ClientIDLength)
+		clientSecret, err := xrandom.GenerateCryptoRandomString(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
 		rp, err := db.Client.RelyingParty.Create().SetClientID(clientId).SetClientSecret(clientSecret).Save(ctx)
@@ -159,7 +159,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		xtestutil.ExitOnError(t, err)
 
 		if autheResp.StatusCode != http.StatusFound {
-			t.Fatalf("POST /authenticate failed: want = %d; got = %d", http.StatusFound, autheResp.StatusCode)
+			t.Fatalf("POST /authentication failed: want = %d; got = %d", http.StatusFound, autheResp.StatusCode)
 		}
 
 		cookies := autheResp.Cookies()
@@ -200,7 +200,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		xtestutil.ExitOnError(t, err)
 
 		if authoResp.StatusCode != http.StatusFound {
-			t.Fatalf("GET /authorize failed: want = %d; got = %d", http.StatusFound, authoResp.StatusCode)
+			t.Fatalf("GET /authorization failed: want = %d; got = %d", http.StatusFound, authoResp.StatusCode)
 		}
 
 		cbUrl, err := authoResp.Location()
@@ -224,6 +224,9 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		}
 
 		cbQuery := cbUrl.Query()
+
+		// TODO: Handle error if the query contains error parameter
+		// ...
 
 		param := url.Values{}
 		param.Add("grant_type", "authorization_code")

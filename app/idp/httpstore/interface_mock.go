@@ -5,6 +5,7 @@
 //
 //	mockgen -source=interface.go -destination=interface_mock.go -package=httpstore
 //
+
 // Package httpstore is a generated GoMock package.
 package httpstore
 
@@ -191,7 +192,7 @@ func (m *MockCacheHashWriter) EXPECT() *MockCacheHashWriterMockRecorder {
 }
 
 // WriteHash mocks base method.
-func (m *MockCacheHashWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) error {
+func (m *MockCacheHashWriter) WriteHash(ctx context.Context, key string, values map[string]any, ttl time.Duration) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteHash", ctx, key, values, ttl)
 	ret0, _ := ret[0].(error)
@@ -287,7 +288,7 @@ func (mr *MockCacheReadWriterMockRecorder) Write(ctx, key, value, ttl any) *gomo
 }
 
 // WriteHash mocks base method.
-func (m *MockCacheReadWriter) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) error {
+func (m *MockCacheReadWriter) WriteHash(ctx context.Context, key string, values map[string]any, ttl time.Duration) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteHash", ctx, key, values, ttl)
 	ret0, _ := ret[0].(error)

@@ -68,12 +68,12 @@ const (
 // --------------------------------------------------
 
 const (
-	RegisterPath = "/user/register"
+	RegisterPath = "/user/registration"
 )
 
 const (
-	AuthenticationPath = "/authenticate"
-	AuthorizationPath  = "/authorize"
+	AuthenticationPath = "/authentication"
+	AuthorizationPath  = "/authorization"
 	ConsentPath        = "/consent"
 	TokenPath          = "/token"
 )

@@ -68,7 +68,7 @@ func (c *Cache) Write(ctx context.Context, key string, value any, ttl time.Durat
 	return nil
 }
 
-func (c *Cache) WriteHash(ctx context.Context, key string, values map[string]string, ttl time.Duration) error {
+func (c *Cache) WriteHash(ctx context.Context, key string, values map[string]any, ttl time.Duration) error {
 	for fieldName, v := range values {
 		ok, err := c.cache.Client.HSetNX(ctx, key, fieldName, v).Result()
 		if err != nil {

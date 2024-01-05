@@ -40,12 +40,12 @@ func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state 
 		return nil, "", err
 	}
 
-	uid, ok := a.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
+	sess, ok := a.context.Read(ctx, httpstore.SessionKey{}).(*httpstore.Session)
 	if !ok {
-		return nil, "", xerr.UserIdNotFoundInContext
+		return nil, "", xerr.UnauthorizedRequest
 	}
 
-	if _, err = a.repo.CreateAuthCode(ctx, code, clientID, uid); err != nil {
+	if _, err = a.repo.CreateAuthCode(ctx, code, clientID, sess.UserID); err != nil {
 		return nil, "", err
 	}
 
@@ -75,16 +75,18 @@ func (a *Authorize) validateRedirectUri(s []*entity.RedirectUri, v string) bool 
 	})
 }
 
-func (a *Authorize) SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error {
-	uid, ok := a.context.Read(ctx, typedef.UserIdKey{}).(typedef.UserID)
+func (a *Authorize) SaveRequestFingerprint(ctx context.Context, param *typedef.AuthorizationRequestFingerPrintParam) error {
+	sess, ok := a.context.Read(ctx, httpstore.SessionKey{}).(*httpstore.Session)
 	if !ok {
-		return xerr.UserIdNotFoundInContext
+		return xerr.UnauthorizedRequest
 	}
 
-	authParam := &typedef.OpenIdParam{
-		RedirectURI: redirectURI,
-		UserId:      uid,
+	oidcParam := &typedef.OIDCParam{
+		RedirectURI: param.RedirectURI,
+		UserId:      sess.UserID,
+		AuthTime:    sess.AuthTime,
+		Nonce:       param.Nonce,
 	}
 
-	return a.cache.WriteOpenIdParam(ctx, authParam, clientID, authCode)
+	return a.cache.WriteOpenIdParam(ctx, oidcParam, param.ClientID, param.AuthCode)
 }

@@ -79,7 +79,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	authParam, err := t.cache.ReadOpenIdParam(ctx, clientId, *param.Code)
+	oidcParam, err := t.cache.ReadOpenIdParam(ctx, clientId, *param.Code)
 	if err != nil {
 		if errors.Is(err, xerr.UnauthorizedRequest) {
 			RespondTokenRequestError(w, r, xerr.InvalidRequest)
@@ -89,18 +89,18 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	if *param.RedirectUri != authParam.RedirectURI {
+	if *param.RedirectUri != oidcParam.RedirectURI {
 		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
 
-	tokens, err := t.generateToken(authParam.UserId)
+	tokens, err := t.generateToken(oidcParam, clientId)
 	if err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
 
-	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, authParam.UserId); err != nil {
+	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, oidcParam.UserId); err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
@@ -144,18 +144,19 @@ const accessTokenKey = "AccessToken"
 const refreshTokenKey = "RefreshToken"
 const idTokenKey = "IDToken"
 
-func (t *Token) generateToken(uid typedef.UserID) (map[string]*string, error) {
-	accessToken, err := t.acSVC.GenerateAccessToken(uid, nil)
+func (t *Token) generateToken(param *typedef.OIDCParam, clientId string) (map[string]*string, error) {
+	accessToken, err := t.acSVC.GenerateAccessToken(param.UserId, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := t.acSVC.GenerateRefreshToken(uid, nil)
+	refreshToken, err := t.acSVC.GenerateRefreshToken(param.UserId, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	idToken, err := t.acSVC.GenerateIdToken(uid, nil)
+	audiences := []string{clientId}
+	idToken, err := t.acSVC.GenerateIdToken(param.UserId, audiences, param.AuthTime, param.Nonce)
 	if err != nil {
 		return nil, err
 	}

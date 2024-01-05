@@ -1,6 +1,9 @@
 package typedef
 
-import "strconv"
+import (
+	"strconv"
+	"time"
+)
 
 //  Entity
 // --------------------------------------------------
@@ -23,8 +26,6 @@ func (sid SessionID) String() string {
 	return strconv.FormatUint(uint64(sid), 10)
 }
 
-type UserIdKey struct{}
-
 func (uid UserID) MarshalBinary() ([]byte, error) {
 	return []byte(strconv.FormatUint(uint64(uid), 10)), nil
 }
@@ -36,9 +37,11 @@ func (uid UserID) String() string {
 //  Cache
 // --------------------------------------------------
 
-type OpenIdParam struct {
+type OIDCParam struct {
 	RedirectURI string
 	UserId      UserID
+	AuthTime    time.Time
+	Nonce       string
 }
 
 type RefreshTokenPermission struct {
@@ -49,4 +52,10 @@ type RefreshTokenPermission struct {
 //  API
 // --------------------------------------------------
 
+type AuthorizationRequestFingerPrintParam struct {
+	ClientID    string
+	RedirectURI string
+	AuthCode    string
+	Nonce       string
+}
 type TokenType string

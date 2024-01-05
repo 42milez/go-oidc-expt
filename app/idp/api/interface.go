@@ -52,7 +52,7 @@ type UserRegisterer interface {
 // --------------------------------------------------
 
 type RequestFingerprintSaver interface {
-	SaveRequestFingerprint(ctx context.Context, redirectURI, clientID, authCode string) error
+	SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error
 }
 
 type Authorizer interface {
