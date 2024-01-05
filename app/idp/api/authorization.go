@@ -75,7 +75,7 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Redirect(w, r, location, http.StatusFound)
+	http.Redirect(w, r, location.String(), http.StatusFound)
 }
 
 func NewAuthorizePost() *AuthorizePost {

@@ -113,7 +113,7 @@ func RespondJSON503(w http.ResponseWriter, r *http.Request, err error) {
 	})
 }
 
-func Redirect2(w http.ResponseWriter, r *http.Request, path string, code int) {
+func Redirect(w http.ResponseWriter, r *http.Request, path string, code int) {
 	cfg, err := config.New()
 	if err != nil {
 		RespondJSON500(w, r, err)
@@ -121,7 +121,6 @@ func Redirect2(w http.ResponseWriter, r *http.Request, path string, code int) {
 	}
 
 	redirectURL, err := url.Parse(cfg.IdpHost + path)
-
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
@@ -144,10 +143,6 @@ type OIDCError struct {
 	ErrorUri         string         `json:"error_uri,omitempty"`
 }
 
-func Redirect(w http.ResponseWriter, r *http.Request, uri *url.URL, code int) {
-	http.Redirect(w, r, uri.String(), code)
-}
-
 func RespondAuthorizationRequestError(w http.ResponseWriter, r *http.Request, redirectUri, state string, err xerr.OIDCError) {
 	uri, e := url.Parse(redirectUri)
 	if e != nil {
@@ -157,7 +152,7 @@ func RespondAuthorizationRequestError(w http.ResponseWriter, r *http.Request, re
 	q.Set("error", err.Error())
 	q.Set("state", state)
 	uri.RawQuery = q.Encode()
-	Redirect(w, r, uri, http.StatusFound)
+	http.Redirect(w, r, uri.String(), http.StatusFound)
 }
 
 func RespondTokenRequestError(w http.ResponseWriter, r *http.Request, err xerr.OIDCError) {

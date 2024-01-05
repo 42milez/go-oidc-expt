@@ -94,7 +94,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	tokens, err := t.generateToken(oidcParam, clientId)
+	tokens, err := t.generateTokens(oidcParam, clientId)
 	if err != nil {
 		RespondServerError(w, r, err)
 		return
@@ -144,7 +144,7 @@ const accessTokenKey = "AccessToken"
 const refreshTokenKey = "RefreshToken"
 const idTokenKey = "IDToken"
 
-func (t *Token) generateToken(param *typedef.OIDCParam, clientId string) (map[string]*string, error) {
+func (t *Token) generateTokens(param *typedef.OIDCParam, clientId string) (map[string]*string, error) {
 	accessToken, err := t.acSVC.GenerateAccessToken(param.UserId, nil)
 	if err != nil {
 		return nil, err
