@@ -41,12 +41,12 @@ func TestCache_Restore(t *testing.T) {
 
 	ctx := gotReq.Context()
 
-	gotSid, ok := ctx.Value(typedef.SessionIdKey{}).(typedef.SessionID)
+	sess, ok := ctx.Value(SessionKey{}).(*Session)
 	if !ok {
 		t.Fatal(xerr.TypeAssertionFailed)
 	}
-	if wantSid != gotSid {
-		t.Errorf("want = %d; got = %d", wantSid, gotSid)
+	if wantSid != sess.ID {
+		t.Errorf("want = %d; got = %d", wantSid, sess.ID)
 	}
 
 	gotSess, ok := ctx.Value(SessionKey{}).(*Session)

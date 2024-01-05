@@ -79,6 +79,7 @@ func (c *Cache) ReadRefreshTokenPermission(ctx context.Context, token string) (*
 }
 
 type Session struct {
+	ID       typedef.SessionID
 	UserID   typedef.UserID
 	AuthTime time.Time
 }
@@ -88,7 +89,9 @@ func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, 
 	ctx := r.Context()
 
 	key := sessionCacheKey(sid)
-	sess := &Session{}
+	sess := &Session{
+		ID: sid,
+	}
 
 	uidRaw, err := c.repo.ReadHash(ctx, key, userIdFieldName)
 	if err != nil {
@@ -110,7 +113,6 @@ func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, 
 	}
 	sess.AuthTime = time.Unix(authTime, 0)
 
-	ctx = context.WithValue(ctx, typedef.SessionIdKey{}, sid)
 	ctx = context.WithValue(ctx, SessionKey{}, sess)
 
 	return r.Clone(ctx), nil
