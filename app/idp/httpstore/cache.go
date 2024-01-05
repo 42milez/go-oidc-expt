@@ -22,6 +22,7 @@ const clientIdFieldName = "ClientId"
 const redirectURIFieldName = "RedirectURI"
 const userIdFieldName = "UserId"
 const authTimeFieldName = "AuthTime"
+const nonceFieldName = "Nonce"
 
 func NewCache(opt *option.Option) *Cache {
 	return &Cache{
@@ -113,6 +114,8 @@ func (c *Cache) WriteOpenIdParam(ctx context.Context, param *typedef.OIDCParam, 
 	values := map[string]any{
 		redirectURIFieldName: param.RedirectURI,
 		userIdFieldName:      strconv.FormatUint(uint64(param.UserId), 10),
+		authTimeFieldName:    param.AuthTime.Unix(),
+		nonceFieldName:       param.Nonce,
 	}
 	if err := c.repo.WriteHash(ctx, key, values, config.AuthCodeTTL); err != nil {
 		return err
