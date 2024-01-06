@@ -16,18 +16,15 @@ var (
 	CredentialNotFoundInHeader     InternalError = "credential not found in header"
 	FailedToInitialize             InternalError = "failed to initialize"
 	FailedToReadResponseBody       InternalError = "failed to read response body"
-	FailedToRevokeAuthCode         InternalError = "failed to revoke authorization code"
+	FailedToReadSession            InternalError = "failed to read session"
 	FailedToSetTimeoutOnCacheKey   InternalError = "failed to set timeout on cache key"
 	FailedToValidate               InternalError = "failed to validate"
 	FailedToWriteCache             InternalError = "failed to write cache"
 	InvalidPath                    InternalError = "invalid path"
 	InvalidResponseType            InternalError = "invalid response type"
 	InvalidToken                   InternalError = "invalid token"
-	MalformedFormParameter         InternalError = "malformed form parameter"
-	ParameterNotFound              InternalError = "parameter not found"
 	PasswordNotMatched             InternalError = "password not matched"
 	RecordNotFound                 InternalError = "record not found"
-	RedirectURINotMatched          InternalError = "redirect uri not matched"
 	RedirectUriNotFound            InternalError = "redirect uri not found"
 	RefreshTokenPermissionNotFound InternalError = "refresh token permission not found"
 	UnauthorizedRequest            InternalError = "unauthorized request"
@@ -36,7 +33,6 @@ var (
 	UserIdNotFoundInContext        InternalError = "user id not found in context"
 	UserNotFound                   InternalError = "user not found"
 	InvalidRedirectURI             InternalError = "invalid redirect uri"
-	AssertionFailed                InternalError = "assertion failed"
 	UnsupportedClaim               InternalError = "unsupported claim"
 )
 
@@ -49,16 +45,11 @@ var (
 )
 
 var (
-	AccessDenied            OIDCError = "access_denied"
-	InvalidClient           OIDCError = "invalid_client"
-	InvalidGrant            OIDCError = "invalid_grant"
-	InvalidRequest          OIDCError = "invalid_request"
-	InvalidScope            OIDCError = "invalid_scope"
-	ServerError             OIDCError = "server_error"
-	TemporaryUnavailable    OIDCError = "temporarily_unavailable"
-	UnauthorizedClient      OIDCError = "unauthorized_client"
-	UnsupportedGrantType    OIDCError = "unsupported_grant_type"
-	UnsupportedResponseType OIDCError = "unsupported_response_type"
+	AccessDenied   OIDCError = "access_denied"
+	InvalidClient  OIDCError = "invalid_client"
+	InvalidGrant   OIDCError = "invalid_grant"
+	InvalidRequest OIDCError = "invalid_request"
+	ServerError    OIDCError = "server_error"
 )
 
 var (

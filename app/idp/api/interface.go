@@ -52,7 +52,7 @@ type UserRegisterer interface {
 // --------------------------------------------------
 
 type RequestFingerprintSaver interface {
-	SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error
+	SaveAuthorizationRequestFingerprint(ctx context.Context, clientID, redirectURI, nonce, authCode string) error
 }
 
 type Authorizer interface {
@@ -80,7 +80,7 @@ type AuthCodeRevoker interface {
 }
 
 type TokenCacheReadWriter interface {
-	iface.OpenIdParamReader
+	iface.AuthorizationRequestFingerprintReader
 	iface.RefreshTokenPermissionWriter
 }
 

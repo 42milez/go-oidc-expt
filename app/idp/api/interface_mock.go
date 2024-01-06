@@ -335,18 +335,18 @@ func (m *MockRequestFingerprintSaver) EXPECT() *MockRequestFingerprintSaverMockR
 	return m.recorder
 }
 
-// SaveRequestFingerprint mocks base method.
-func (m *MockRequestFingerprintSaver) SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error {
+// SaveAuthorizationRequestFingerprint mocks base method.
+func (m *MockRequestFingerprintSaver) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID, redirectURI, nonce, authCode string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, params)
+	ret := m.ctrl.Call(m, "SaveAuthorizationRequestFingerprint", ctx, clientID, redirectURI, nonce, authCode)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SaveRequestFingerprint indicates an expected call of SaveRequestFingerprint.
-func (mr *MockRequestFingerprintSaverMockRecorder) SaveRequestFingerprint(ctx, params any) *gomock.Call {
+// SaveAuthorizationRequestFingerprint indicates an expected call of SaveAuthorizationRequestFingerprint.
+func (mr *MockRequestFingerprintSaverMockRecorder) SaveAuthorizationRequestFingerprint(ctx, clientID, redirectURI, nonce, authCode any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockRequestFingerprintSaver)(nil).SaveRequestFingerprint), ctx, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveAuthorizationRequestFingerprint", reflect.TypeOf((*MockRequestFingerprintSaver)(nil).SaveAuthorizationRequestFingerprint), ctx, clientID, redirectURI, nonce, authCode)
 }
 
 // MockAuthorizer is a mock of Authorizer interface.
@@ -388,18 +388,18 @@ func (mr *MockAuthorizerMockRecorder) Authorize(ctx, clientID, redirectURI, stat
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Authorize", reflect.TypeOf((*MockAuthorizer)(nil).Authorize), ctx, clientID, redirectURI, state)
 }
 
-// SaveRequestFingerprint mocks base method.
-func (m *MockAuthorizer) SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error {
+// SaveAuthorizationRequestFingerprint mocks base method.
+func (m *MockAuthorizer) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID, redirectURI, nonce, authCode string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveRequestFingerprint", ctx, params)
+	ret := m.ctrl.Call(m, "SaveAuthorizationRequestFingerprint", ctx, clientID, redirectURI, nonce, authCode)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SaveRequestFingerprint indicates an expected call of SaveRequestFingerprint.
-func (mr *MockAuthorizerMockRecorder) SaveRequestFingerprint(ctx, params any) *gomock.Call {
+// SaveAuthorizationRequestFingerprint indicates an expected call of SaveAuthorizationRequestFingerprint.
+func (mr *MockAuthorizerMockRecorder) SaveAuthorizationRequestFingerprint(ctx, clientID, redirectURI, nonce, authCode any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveRequestFingerprint", reflect.TypeOf((*MockAuthorizer)(nil).SaveRequestFingerprint), ctx, params)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveAuthorizationRequestFingerprint", reflect.TypeOf((*MockAuthorizer)(nil).SaveAuthorizationRequestFingerprint), ctx, clientID, redirectURI, nonce, authCode)
 }
 
 // MockConsentAcceptor is a mock of ConsentAcceptor interface.
@@ -574,19 +574,19 @@ func (m *MockTokenCacheReadWriter) EXPECT() *MockTokenCacheReadWriterMockRecorde
 	return m.recorder
 }
 
-// ReadOpenIdParam mocks base method.
-func (m *MockTokenCacheReadWriter) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error) {
+// ReadAuthorizationRequestFingerprint mocks base method.
+func (m *MockTokenCacheReadWriter) ReadAuthorizationRequestFingerprint(ctx context.Context, clientId, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadOpenIdParam", ctx, clientId, authCode)
-	ret0, _ := ret[0].(*typedef.OIDCParam)
+	ret := m.ctrl.Call(m, "ReadAuthorizationRequestFingerprint", ctx, clientId, authCode)
+	ret0, _ := ret[0].(*typedef.AuthorizationRequestFingerprint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadOpenIdParam indicates an expected call of ReadOpenIdParam.
-func (mr *MockTokenCacheReadWriterMockRecorder) ReadOpenIdParam(ctx, clientId, authCode any) *gomock.Call {
+// ReadAuthorizationRequestFingerprint indicates an expected call of ReadAuthorizationRequestFingerprint.
+func (mr *MockTokenCacheReadWriterMockRecorder) ReadAuthorizationRequestFingerprint(ctx, clientId, authCode any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadOpenIdParam", reflect.TypeOf((*MockTokenCacheReadWriter)(nil).ReadOpenIdParam), ctx, clientId, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthorizationRequestFingerprint", reflect.TypeOf((*MockTokenCacheReadWriter)(nil).ReadAuthorizationRequestFingerprint), ctx, clientId, authCode)
 }
 
 // WriteRefreshTokenPermission mocks base method.

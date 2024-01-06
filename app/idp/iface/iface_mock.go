@@ -521,79 +521,79 @@ func (mr *MockTokenGenerateValidatorMockRecorder) Validate(name any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockTokenGenerateValidator)(nil).Validate), name)
 }
 
-// MockOpenIdParamReader is a mock of OpenIdParamReader interface.
-type MockOpenIdParamReader struct {
+// MockAuthorizationRequestFingerprintReader is a mock of AuthorizationRequestFingerprintReader interface.
+type MockAuthorizationRequestFingerprintReader struct {
 	ctrl     *gomock.Controller
-	recorder *MockOpenIdParamReaderMockRecorder
+	recorder *MockAuthorizationRequestFingerprintReaderMockRecorder
 }
 
-// MockOpenIdParamReaderMockRecorder is the mock recorder for MockOpenIdParamReader.
-type MockOpenIdParamReaderMockRecorder struct {
-	mock *MockOpenIdParamReader
+// MockAuthorizationRequestFingerprintReaderMockRecorder is the mock recorder for MockAuthorizationRequestFingerprintReader.
+type MockAuthorizationRequestFingerprintReaderMockRecorder struct {
+	mock *MockAuthorizationRequestFingerprintReader
 }
 
-// NewMockOpenIdParamReader creates a new mock instance.
-func NewMockOpenIdParamReader(ctrl *gomock.Controller) *MockOpenIdParamReader {
-	mock := &MockOpenIdParamReader{ctrl: ctrl}
-	mock.recorder = &MockOpenIdParamReaderMockRecorder{mock}
+// NewMockAuthorizationRequestFingerprintReader creates a new mock instance.
+func NewMockAuthorizationRequestFingerprintReader(ctrl *gomock.Controller) *MockAuthorizationRequestFingerprintReader {
+	mock := &MockAuthorizationRequestFingerprintReader{ctrl: ctrl}
+	mock.recorder = &MockAuthorizationRequestFingerprintReaderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockOpenIdParamReader) EXPECT() *MockOpenIdParamReaderMockRecorder {
+func (m *MockAuthorizationRequestFingerprintReader) EXPECT() *MockAuthorizationRequestFingerprintReaderMockRecorder {
 	return m.recorder
 }
 
-// ReadOpenIdParam mocks base method.
-func (m *MockOpenIdParamReader) ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error) {
+// ReadAuthorizationRequestFingerprint mocks base method.
+func (m *MockAuthorizationRequestFingerprintReader) ReadAuthorizationRequestFingerprint(ctx context.Context, clientId, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadOpenIdParam", ctx, clientId, authCode)
-	ret0, _ := ret[0].(*typedef.OIDCParam)
+	ret := m.ctrl.Call(m, "ReadAuthorizationRequestFingerprint", ctx, clientId, authCode)
+	ret0, _ := ret[0].(*typedef.AuthorizationRequestFingerprint)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReadOpenIdParam indicates an expected call of ReadOpenIdParam.
-func (mr *MockOpenIdParamReaderMockRecorder) ReadOpenIdParam(ctx, clientId, authCode any) *gomock.Call {
+// ReadAuthorizationRequestFingerprint indicates an expected call of ReadAuthorizationRequestFingerprint.
+func (mr *MockAuthorizationRequestFingerprintReaderMockRecorder) ReadAuthorizationRequestFingerprint(ctx, clientId, authCode any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadOpenIdParam", reflect.TypeOf((*MockOpenIdParamReader)(nil).ReadOpenIdParam), ctx, clientId, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthorizationRequestFingerprint", reflect.TypeOf((*MockAuthorizationRequestFingerprintReader)(nil).ReadAuthorizationRequestFingerprint), ctx, clientId, authCode)
 }
 
-// MockOpenIdParamWriter is a mock of OpenIdParamWriter interface.
-type MockOpenIdParamWriter struct {
+// MockAuthorizationRequestFingerprintWriter is a mock of AuthorizationRequestFingerprintWriter interface.
+type MockAuthorizationRequestFingerprintWriter struct {
 	ctrl     *gomock.Controller
-	recorder *MockOpenIdParamWriterMockRecorder
+	recorder *MockAuthorizationRequestFingerprintWriterMockRecorder
 }
 
-// MockOpenIdParamWriterMockRecorder is the mock recorder for MockOpenIdParamWriter.
-type MockOpenIdParamWriterMockRecorder struct {
-	mock *MockOpenIdParamWriter
+// MockAuthorizationRequestFingerprintWriterMockRecorder is the mock recorder for MockAuthorizationRequestFingerprintWriter.
+type MockAuthorizationRequestFingerprintWriterMockRecorder struct {
+	mock *MockAuthorizationRequestFingerprintWriter
 }
 
-// NewMockOpenIdParamWriter creates a new mock instance.
-func NewMockOpenIdParamWriter(ctrl *gomock.Controller) *MockOpenIdParamWriter {
-	mock := &MockOpenIdParamWriter{ctrl: ctrl}
-	mock.recorder = &MockOpenIdParamWriterMockRecorder{mock}
+// NewMockAuthorizationRequestFingerprintWriter creates a new mock instance.
+func NewMockAuthorizationRequestFingerprintWriter(ctrl *gomock.Controller) *MockAuthorizationRequestFingerprintWriter {
+	mock := &MockAuthorizationRequestFingerprintWriter{ctrl: ctrl}
+	mock.recorder = &MockAuthorizationRequestFingerprintWriterMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockOpenIdParamWriter) EXPECT() *MockOpenIdParamWriterMockRecorder {
+func (m *MockAuthorizationRequestFingerprintWriter) EXPECT() *MockAuthorizationRequestFingerprintWriterMockRecorder {
 	return m.recorder
 }
 
-// WriteOpenIdParam mocks base method.
-func (m *MockOpenIdParamWriter) WriteOpenIdParam(ctx context.Context, param *typedef.OIDCParam, clientId, authCode string) error {
+// WriteAuthorizationRequestFingerprint mocks base method.
+func (m *MockAuthorizationRequestFingerprintWriter) WriteAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "WriteOpenIdParam", ctx, param, clientId, authCode)
+	ret := m.ctrl.Call(m, "WriteAuthorizationRequestFingerprint", ctx, clientID, authCode, param)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// WriteOpenIdParam indicates an expected call of WriteOpenIdParam.
-func (mr *MockOpenIdParamWriterMockRecorder) WriteOpenIdParam(ctx, param, clientId, authCode any) *gomock.Call {
+// WriteAuthorizationRequestFingerprint indicates an expected call of WriteAuthorizationRequestFingerprint.
+func (mr *MockAuthorizationRequestFingerprintWriterMockRecorder) WriteAuthorizationRequestFingerprint(ctx, clientID, authCode, param any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteOpenIdParam", reflect.TypeOf((*MockOpenIdParamWriter)(nil).WriteOpenIdParam), ctx, param, clientId, authCode)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteAuthorizationRequestFingerprint", reflect.TypeOf((*MockAuthorizationRequestFingerprintWriter)(nil).WriteAuthorizationRequestFingerprint), ctx, clientID, authCode, param)
 }
 
 // MockRefreshTokenPermissionReader is a mock of RefreshTokenPermissionReader interface.

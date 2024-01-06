@@ -31,13 +31,6 @@ func (uid UserID) String() string {
 //  Cache
 // --------------------------------------------------
 
-type OIDCParam struct {
-	RedirectURI string
-	UserId      UserID
-	AuthTime    time.Time
-	Nonce       string
-}
-
 type RefreshTokenPermission struct {
 	ClientId string
 	UserId   UserID
@@ -46,10 +39,10 @@ type RefreshTokenPermission struct {
 //  API
 // --------------------------------------------------
 
-type AuthorizationRequestFingerPrintParam struct {
-	ClientID    string
-	RedirectURI string
-	AuthCode    string
+type AuthorizationRequestFingerprint struct {
+	AuthTime    time.Time
 	Nonce       string
+	RedirectURI string
+	UserID      UserID
 }
 type TokenType string

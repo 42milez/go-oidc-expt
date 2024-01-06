@@ -79,7 +79,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	oidcParam, err := t.cache.ReadOpenIdParam(ctx, clientId, *param.Code)
+	fp, err := t.cache.ReadAuthorizationRequestFingerprint(ctx, clientId, *param.Code)
 	if err != nil {
 		if errors.Is(err, xerr.UnauthorizedRequest) {
 			RespondTokenRequestError(w, r, xerr.InvalidRequest)
@@ -89,18 +89,18 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	if *param.RedirectUri != oidcParam.RedirectURI {
+	if *param.RedirectUri != fp.RedirectURI {
 		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
 
-	tokens, err := t.generateTokens(oidcParam, clientId)
+	tokens, err := t.generateTokens(fp, clientId)
 	if err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
 
-	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, oidcParam.UserId); err != nil {
+	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, fp.UserID); err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
@@ -144,19 +144,19 @@ const accessTokenKey = "AccessToken"
 const refreshTokenKey = "RefreshToken"
 const idTokenKey = "IDToken"
 
-func (t *Token) generateTokens(param *typedef.OIDCParam, clientId string) (map[string]*string, error) {
-	accessToken, err := t.acSVC.GenerateAccessToken(param.UserId, nil)
+func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, clientId string) (map[string]*string, error) {
+	accessToken, err := t.acSVC.GenerateAccessToken(param.UserID, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := t.acSVC.GenerateRefreshToken(param.UserId, nil)
+	refreshToken, err := t.acSVC.GenerateRefreshToken(param.UserID, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	audiences := []string{clientId}
-	idToken, err := t.acSVC.GenerateIdToken(param.UserId, audiences, param.AuthTime, param.Nonce)
+	idToken, err := t.acSVC.GenerateIdToken(param.UserID, audiences, param.AuthTime, param.Nonce)
 	if err != nil {
 		return nil, err
 	}

@@ -73,12 +73,12 @@ type TokenGenerateValidator interface {
 //  Cache
 // --------------------------------------------------
 
-type OpenIdParamReader interface {
-	ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error)
+type AuthorizationRequestFingerprintReader interface {
+	ReadAuthorizationRequestFingerprint(ctx context.Context, clientId, authCode string) (*typedef.AuthorizationRequestFingerprint, error)
 }
 
-type OpenIdParamWriter interface {
-	WriteOpenIdParam(ctx context.Context, param *typedef.OIDCParam, clientId, authCode string) error
+type AuthorizationRequestFingerprintWriter interface {
+	WriteAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error
 }
 
 type RefreshTokenPermissionReader interface {

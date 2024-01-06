@@ -30,7 +30,7 @@ func NewAuthorize(opt *option.Option) *Authorize {
 
 type Authorize struct {
 	repo    Authorizer
-	cache   iface.OpenIdParamWriter
+	cache   iface.AuthorizationRequestFingerprintWriter
 	context iface.ContextReader
 }
 
@@ -75,18 +75,16 @@ func (a *Authorize) validateRedirectUri(s []*entity.RedirectUri, v string) bool 
 	})
 }
 
-func (a *Authorize) SaveRequestFingerprint(ctx context.Context, param *typedef.AuthorizationRequestFingerPrintParam) error {
+func (a *Authorize) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID, redirectURI, nonce, authCode string) error {
 	sess, ok := a.context.Read(ctx, httpstore.SessionKey{}).(*httpstore.Session)
 	if !ok {
-		return xerr.UnauthorizedRequest
+		return xerr.FailedToReadSession
 	}
-
-	oidcParam := &typedef.OIDCParam{
-		RedirectURI: param.RedirectURI,
-		UserId:      sess.UserID,
+	fp := &typedef.AuthorizationRequestFingerprint{
 		AuthTime:    sess.AuthTime,
-		Nonce:       param.Nonce,
+		Nonce:       nonce,
+		RedirectURI: redirectURI,
+		UserID:      sess.UserID,
 	}
-
-	return a.cache.WriteOpenIdParam(ctx, oidcParam, param.ClientID, param.AuthCode)
+	return a.cache.WriteAuthorizationRequestFingerprint(ctx, clientID, authCode, fp)
 }
