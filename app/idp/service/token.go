@@ -89,16 +89,16 @@ func NewRefreshTokenGrant(opt *option.Option) *RefreshTokenGrant {
 }
 
 type RefreshTokenGrant struct {
-	cache iface.RefreshTokenPermissionReader
+	cache iface.RefreshTokenReader
 	token iface.TokenGenerateValidator
 }
 
-func (r *RefreshTokenGrant) ReadRefreshTokenPermission(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
+func (r *RefreshTokenGrant) ReadRefreshToken(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
 	if err := r.token.Validate(token); err != nil {
 		return nil, xerr.InvalidToken
 	}
 
-	perm, err := r.cache.ReadRefreshTokenPermission(ctx, token)
+	perm, err := r.cache.ReadRefreshToken(ctx, token)
 	if err != nil {
 		return nil, xerr.RefreshTokenPermissionNotFound
 	}

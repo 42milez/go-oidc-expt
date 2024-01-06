@@ -81,12 +81,12 @@ type AuthorizationRequestFingerprintWriter interface {
 	WriteAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error
 }
 
-type RefreshTokenPermissionReader interface {
-	ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error)
+type RefreshTokenReader interface {
+	ReadRefreshToken(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error)
 }
 
-type RefreshTokenPermissionWriter interface {
-	WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error
+type RefreshTokenWriter interface {
+	WriteRefreshToken(ctx context.Context, token, clientId string, userId typedef.UserID) error
 }
 
 type SessionCreator interface {

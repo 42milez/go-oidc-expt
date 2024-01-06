@@ -100,7 +100,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, fp.UserID); err != nil {
+	if err = t.cache.WriteRefreshToken(ctx, *tokens[refreshTokenKey], clientId, fp.UserID); err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
@@ -171,7 +171,7 @@ func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, c
 func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	ctx := r.Context()
 
-	perm, err := t.rtSVC.ReadRefreshTokenPermission(ctx, *param.RefreshToken, clientId)
+	perm, err := t.rtSVC.ReadRefreshToken(ctx, *param.RefreshToken, clientId)
 	if err != nil {
 		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
 			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
@@ -194,7 +194,7 @@ func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	if err = t.cache.WriteRefreshTokenPermission(ctx, refreshToken, clientId, perm.UserId); err != nil {
+	if err = t.cache.WriteRefreshToken(ctx, refreshToken, clientId, perm.UserId); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

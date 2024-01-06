@@ -61,22 +61,6 @@ func (c *Cache) ReadAuthorizationRequestFingerprint(ctx context.Context, clientI
 	}, nil
 }
 
-func (c *Cache) ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error) {
-	key := refreshTokenPermissionCacheKey(hash(token))
-	perm, err := c.repo.ReadHashAll(ctx, key)
-	if err != nil {
-		return nil, err
-	}
-	userIdUint64, err := strconv.ParseUint(perm[userIdFieldName], 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	return &typedef.RefreshTokenPermission{
-		ClientId: perm[clientIdFieldName],
-		UserId:   typedef.UserID(userIdUint64),
-	}, nil
-}
-
 type Session struct {
 	ID       typedef.SessionID
 	UserID   typedef.UserID
@@ -131,8 +115,8 @@ func (c *Cache) WriteAuthorizationRequestFingerprint(ctx context.Context, client
 	return nil
 }
 
-func (c *Cache) WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error {
-	key := refreshTokenPermissionCacheKey(hash(token))
+func (c *Cache) WriteRefreshToken(ctx context.Context, token, clientId string, userId typedef.UserID) error {
+	key := refreshTokenCacheKey(hash(token))
 	values := map[string]any{
 		clientIdFieldName: clientId,
 		userIdFieldName:   strconv.FormatUint(uint64(userId), 10),
@@ -141,6 +125,22 @@ func (c *Cache) WriteRefreshTokenPermission(ctx context.Context, token, clientId
 		return err
 	}
 	return nil
+}
+
+func (c *Cache) ReadRefreshToken(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error) {
+	key := refreshTokenCacheKey(hash(token))
+	perm, err := c.repo.ReadHashAll(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	userIdUint64, err := strconv.ParseUint(perm[userIdFieldName], 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	return &typedef.RefreshTokenPermission{
+		ClientId: perm[clientIdFieldName],
+		UserId:   typedef.UserID(userIdUint64),
+	}, nil
 }
 
 func (c *Cache) CreateSession(ctx context.Context, uid typedef.UserID) (typedef.SessionID, error) {
@@ -165,7 +165,7 @@ func openIdParamCacheKey(clientId, authCode string) string {
 	return fmt.Sprintf("op:authorization:fingerprint:%s.%s", clientId, authCode)
 }
 
-func refreshTokenPermissionCacheKey(token string) string {
+func refreshTokenCacheKey(token string) string {
 	return fmt.Sprintf("rp:refreshtoken:permission:%s", token)
 }
 
