@@ -2,7 +2,6 @@ package httpstore
 
 import (
 	"context"
-	"crypto/sha256"
 	"errors"
 	"fmt"
 	"net/http"
@@ -20,7 +19,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-const clientIdFieldName = "ClientId"
 const redirectURIFieldName = "RedirectURI"
 const nonceFieldName = "Nonce"
 const userIdFieldName = "UserId"
@@ -168,9 +166,4 @@ func refreshTokenCacheKey(clientID string, userID typedef.UserID) string {
 
 func sessionCacheKey(sid typedef.SessionID) string {
 	return fmt.Sprintf("op:session:%d", sid)
-}
-
-func hash(s string) string {
-	h := sha256.Sum256([]byte(s))
-	return string(h[:])
 }
