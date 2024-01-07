@@ -16,7 +16,7 @@ var registration *Registration
 
 func NewRegistration(opt *option.Option) *Registration {
 	return &Registration{
-		svc: service.NewRegisterUser(repository.NewUser(opt.DB, opt.IdGen)),
+		svc: service.NewRegisterUser(repository.NewUser(opt.DB, opt.IDGen)),
 		v:   opt.V,
 	}
 }

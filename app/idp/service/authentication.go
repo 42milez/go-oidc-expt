@@ -15,7 +15,7 @@ import (
 
 func NewAuthenticate(opt *option.Option) *Authenticate {
 	return &Authenticate{
-		repo:  repository.NewUser(opt.DB, opt.IdGen),
+		repo:  repository.NewUser(opt.DB, opt.IDGen),
 		token: opt.Token,
 	}
 }

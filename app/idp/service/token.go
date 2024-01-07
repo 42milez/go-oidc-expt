@@ -33,18 +33,18 @@ type AuthCodeGrant struct {
 	token iface.TokenGenerator
 }
 
-func (a *AuthCodeGrant) RevokeAuthCode(ctx context.Context, code, clientId string) error {
-	if err := a.validateAuthCode(ctx, code, clientId); err != nil {
+func (a *AuthCodeGrant) RevokeAuthCode(ctx context.Context, code, clientID string) error {
+	if err := a.validateAuthCode(ctx, code, clientID); err != nil {
 		return err
 	}
-	if err := a.revokeAuthCode(ctx, code, clientId); err != nil {
+	if err := a.revokeAuthCode(ctx, code, clientID); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code, clientId string) error {
-	authCode, err := a.repo.ReadAuthCode(ctx, code, clientId)
+func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code, clientID string) error {
+	authCode, err := a.repo.ReadAuthCode(ctx, code, clientID)
 	if err != nil {
 		if errors.Is(err, xerr.RecordNotFound) {
 			return xerr.AuthCodeNotFound
@@ -64,8 +64,8 @@ func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code, clientId str
 	return nil
 }
 
-func (a *AuthCodeGrant) revokeAuthCode(ctx context.Context, code, clientId string) error {
-	_, err := a.repo.RevokeAuthCode(ctx, code, clientId)
+func (a *AuthCodeGrant) revokeAuthCode(ctx context.Context, code, clientID string) error {
+	_, err := a.repo.RevokeAuthCode(ctx, code, clientID)
 	if err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (a *AuthCodeGrant) GenerateRefreshToken(uid typedef.UserID, claims map[stri
 	return generateRefreshToken(a.token, uid, claims)
 }
 
-func (a *AuthCodeGrant) GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
+func (a *AuthCodeGrant) GenerateIDToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
 	return generateIDToken(a.token, uid, audiences, authTime, nonce)
 }
 
@@ -156,7 +156,7 @@ func generateRefreshToken(tokenGen iface.TokenGenerator, uid typedef.UserID, cla
 }
 
 func generateIDToken(tokenGen iface.TokenGenerator, uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
-	idToken, err := tokenGen.GenerateIdToken(uid, audiences, authTime, nonce)
+	idToken, err := tokenGen.GenerateIDToken(uid, audiences, authTime, nonce)
 	if err != nil {
 		return "", err
 	}

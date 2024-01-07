@@ -109,9 +109,9 @@ func (j *JWT) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (s
 const authTimeKey = "auth_time"
 const nonceKey = "nonce"
 
-// GenerateIdToken generates ID token and returns it as string. The detail of ID token is described here:
+// GenerateIDToken generates ID token and returns it as string. The detail of ID token is described here:
 // https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html#IDToken
-func (j *JWT) GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
+func (j *JWT) GenerateIDToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
 	builder := jwt.NewBuilder().
 		JwtID(uuid.New().String()).
 		Issuer(config.Issuer).

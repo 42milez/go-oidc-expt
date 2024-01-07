@@ -517,6 +517,7 @@ components:
         id_token:
           type: string
           example: ''
+          x-go-name: IDToken
         refresh_token:
           type: string
           example: ''

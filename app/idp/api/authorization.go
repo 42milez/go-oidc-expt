@@ -50,7 +50,7 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	location, authCode, err := a.svc.Authorize(r.Context(), params.ClientID, params.RedirectUri, params.State)
 	if err != nil {
-		if errors.Is(err, xerr.UserIdNotFoundInContext) {
+		if errors.Is(err, xerr.UserIDNotFoundInContext) {
 			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.AccessDenied)
 		} else if errors.Is(err, xerr.InvalidRedirectURI) {
 			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.InvalidRequest)
@@ -61,7 +61,7 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := a.svc.SaveAuthorizationRequestFingerprint(ctx, params.ClientID, params.RedirectUri, params.Nonce, authCode); err != nil {
-		if errors.Is(err, xerr.UserIdNotFoundInContext) {
+		if errors.Is(err, xerr.UserIDNotFoundInContext) {
 			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.AccessDenied)
 		} else {
 			RespondServerError(w, r, err)

@@ -53,35 +53,30 @@ type RefreshTokenGenerator interface {
 	GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error)
 }
 
-type IdTokenGenerator interface {
-	GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error)
+type IDTokenGenerator interface {
+	GenerateIDToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error)
 }
 
 type TokenGenerator interface {
 	AccessTokenGenerator
 	RefreshTokenGenerator
-	IdTokenGenerator
+	IDTokenGenerator
 }
 
 type TokenParser interface {
 	Parse(token string) (jwt.Token, error)
 }
 
-//type TokenValidator interface {
-//	Validate(name string) error
-//}
-
 type TokenProcessor interface {
 	TokenGenerator
 	TokenParser
-	//TokenValidator
 }
 
 //  Cache
 // --------------------------------------------------
 
 type AuthorizationRequestFingerprintReader interface {
-	ReadAuthorizationRequestFingerprint(ctx context.Context, clientId, authCode string) (*typedef.AuthorizationRequestFingerprint, error)
+	ReadAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error)
 }
 
 type AuthorizationRequestFingerprintWriter interface {
@@ -93,7 +88,7 @@ type RefreshTokenReader interface {
 }
 
 type RefreshTokenWriter interface {
-	WriteRefreshToken(ctx context.Context, token, clientId string, userId typedef.UserID) error
+	WriteRefreshToken(ctx context.Context, token, clientID string, userID typedef.UserID) error
 }
 
 type SessionCreator interface {
@@ -110,6 +105,6 @@ type StructValidator interface {
 //  ID Generator
 // --------------------------------------------------
 
-type IdGenerator interface {
+type IDGenerator interface {
 	NextID() (uint64, error)
 }

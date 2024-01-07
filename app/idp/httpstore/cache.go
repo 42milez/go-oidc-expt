@@ -21,31 +21,31 @@ import (
 
 const redirectURIFieldName = "RedirectURI"
 const nonceFieldName = "Nonce"
-const userIdFieldName = "UserId"
+const userIDFieldName = "UserID"
 const authTimeFieldName = "AuthTime"
 
 func NewCache(opt *option.Option) *Cache {
 	return &Cache{
 		repo:  repository.NewCache(opt.Cache),
-		idGen: opt.IdGen,
+		idGen: opt.IDGen,
 		token: opt.Token,
 	}
 }
 
 type Cache struct {
 	repo  CacheReadWriter
-	idGen iface.IdGenerator
+	idGen iface.IDGenerator
 	token iface.TokenParser
 }
 
-func (c *Cache) ReadAuthorizationRequestFingerprint(ctx context.Context, clientId, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
-	key := openIdParamCacheKey(clientId, authCode)
+func (c *Cache) ReadAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
+	key := authorizationFingerprintCacheKey(clientID, authCode)
 	values, err := c.repo.ReadHashAll(ctx, key)
 	if errors.Is(err, xerr.CacheKeyNotFound) {
 		return nil, xerr.UnauthorizedRequest
 	}
 
-	userID, err := strconv.ParseUint(values[userIdFieldName], 10, 64)
+	userID, err := strconv.ParseUint(values[userIDFieldName], 10, 64)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,7 @@ func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, 
 		ID: sid,
 	}
 
-	uidRaw, err := c.repo.ReadHash(ctx, key, userIdFieldName)
+	uidRaw, err := c.repo.ReadHash(ctx, key, userIDFieldName)
 	if err != nil {
 		return nil, err
 	}
@@ -104,11 +104,11 @@ func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, 
 }
 
 func (c *Cache) WriteAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error {
-	key := openIdParamCacheKey(clientID, authCode)
+	key := authorizationFingerprintCacheKey(clientID, authCode)
 	values := map[string]any{
 		redirectURIFieldName: param.RedirectURI,
 		nonceFieldName:       param.Nonce,
-		userIdFieldName:      strconv.FormatUint(uint64(param.UserID), 10),
+		userIDFieldName:      strconv.FormatUint(uint64(param.UserID), 10),
 		authTimeFieldName:    param.AuthTime.Unix(),
 	}
 	if err := c.repo.WriteHash(ctx, key, values, config.AuthCodeTTL); err != nil {
@@ -117,8 +117,8 @@ func (c *Cache) WriteAuthorizationRequestFingerprint(ctx context.Context, client
 	return nil
 }
 
-func (c *Cache) WriteRefreshToken(ctx context.Context, token, clientId string, userId typedef.UserID) error {
-	key := refreshTokenCacheKey(clientId, userId)
+func (c *Cache) WriteRefreshToken(ctx context.Context, token, clientID string, userID typedef.UserID) error {
+	key := refreshTokenCacheKey(clientID, userID)
 	if err := c.repo.Write(ctx, key, token, config.RefreshTokenTTL); err != nil {
 		return err
 	}
@@ -146,7 +146,7 @@ func (c *Cache) CreateSession(ctx context.Context, uid typedef.UserID) (typedef.
 
 	key := sessionCacheKey(typedef.SessionID(sid))
 	values := map[string]any{
-		userIdFieldName:   strconv.FormatUint(uint64(uid), 10),
+		userIDFieldName:   strconv.FormatUint(uint64(uid), 10),
 		authTimeFieldName: time.Now().Unix(),
 	}
 	if err = c.repo.WriteHash(ctx, key, values, config.SessionTTL); err != nil {
@@ -156,8 +156,8 @@ func (c *Cache) CreateSession(ctx context.Context, uid typedef.UserID) (typedef.
 	return typedef.SessionID(sid), nil
 }
 
-func openIdParamCacheKey(clientId, authCode string) string {
-	return fmt.Sprintf("op:authorization:fingerprint:%s.%s", clientId, authCode)
+func authorizationFingerprintCacheKey(clientID, authCode string) string {
+	return fmt.Sprintf("op:authorization:fingerprint:%s.%s", clientID, authCode)
 }
 
 func refreshTokenCacheKey(clientID string, userID typedef.UserID) string {

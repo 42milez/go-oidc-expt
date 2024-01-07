@@ -41,7 +41,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
-	clientId := credentials[0]
+	clientID := credentials[0]
 
 	param, err := t.parseForm(r)
 	if err != nil {
@@ -55,10 +55,10 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if param.GrantType == config.AuthorizationCodeGrantType {
-		t.handleAuthCodeGrant(w, r, param, clientId)
+		t.handleAuthCodeGrant(w, r, param, clientID)
 		return
 	} else if param.GrantType == config.RefreshTokenGrantType {
-		t.handleRefreshTokenGrant(w, r, param, clientId)
+		t.handleRefreshTokenGrant(w, r, param, clientID)
 		return
 	} else {
 		RespondTokenRequestError(w, r, xerr.InvalidRequest)
@@ -66,7 +66,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
+func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID string) {
 	ctx := r.Context()
 
 	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectUri) {
@@ -74,12 +74,12 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	if err := t.acSVC.RevokeAuthCode(ctx, *param.Code, clientId); err != nil {
+	if err := t.acSVC.RevokeAuthCode(ctx, *param.Code, clientID); err != nil {
 		respondRevokeAuthCodeError(w, r, err)
 		return
 	}
 
-	fp, err := t.cache.ReadAuthorizationRequestFingerprint(ctx, clientId, *param.Code)
+	fp, err := t.cache.ReadAuthorizationRequestFingerprint(ctx, clientID, *param.Code)
 	if err != nil {
 		if errors.Is(err, xerr.UnauthorizedRequest) {
 			RespondTokenRequestError(w, r, xerr.InvalidRequest)
@@ -94,13 +94,13 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	tokens, err := t.generateTokens(fp, clientId)
+	tokens, err := t.generateTokens(fp, clientID)
 	if err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
 
-	if err = t.cache.WriteRefreshToken(ctx, *tokens[refreshTokenKey], clientId, fp.UserID); err != nil {
+	if err = t.cache.WriteRefreshToken(ctx, *tokens[refreshTokenKey], clientID, fp.UserID); err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
@@ -108,7 +108,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 	respBody := &TokenResponse{
 		AccessToken:  *tokens[accessTokenKey],
 		RefreshToken: *tokens[refreshTokenKey],
-		IdToken:      tokens[idTokenKey],
+		IDToken:      tokens[idTokenKey],
 		TokenType:    config.BearerTokenType,
 		ExpiresIn:    3600,
 	}
@@ -144,7 +144,7 @@ const accessTokenKey = "AccessToken"
 const refreshTokenKey = "RefreshToken"
 const idTokenKey = "IDToken"
 
-func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, clientId string) (map[string]*string, error) {
+func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, clientID string) (map[string]*string, error) {
 	accessToken, err := t.acSVC.GenerateAccessToken(param.UserID, nil)
 	if err != nil {
 		return nil, err
@@ -155,8 +155,8 @@ func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, c
 		return nil, err
 	}
 
-	audiences := []string{clientId}
-	idToken, err := t.acSVC.GenerateIdToken(param.UserID, audiences, param.AuthTime, param.Nonce)
+	audiences := []string{clientID}
+	idToken, err := t.acSVC.GenerateIDToken(param.UserID, audiences, param.AuthTime, param.Nonce)
 	if err != nil {
 		return nil, err
 	}
@@ -168,12 +168,12 @@ func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, c
 	}, nil
 }
 
-func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
+func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID string) {
 	ctx := r.Context()
 
-	err := t.rtSVC.VerifyRefreshToken(ctx, *param.RefreshToken, clientId)
+	err := t.rtSVC.VerifyRefreshToken(ctx, *param.RefreshToken, clientID)
 	if err != nil {
-		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
+		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIDNotMatched) {
 			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
 			return
 		} else if errors.Is(err, xerr.RefreshTokenNotFound) {
@@ -203,7 +203,7 @@ func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	if err = t.cache.WriteRefreshToken(ctx, refreshToken, clientId, uid); err != nil {
+	if err = t.cache.WriteRefreshToken(ctx, refreshToken, clientID, uid); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

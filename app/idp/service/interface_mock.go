@@ -539,18 +539,18 @@ func (m *MockAuthCodeReader) EXPECT() *MockAuthCodeReaderMockRecorder {
 }
 
 // ReadAuthCode mocks base method.
-func (m *MockAuthCodeReader) ReadAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeReader) ReadAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientId)
+	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReadAuthCode indicates an expected call of ReadAuthCode.
-func (mr *MockAuthCodeReaderMockRecorder) ReadAuthCode(ctx, code, clientId any) *gomock.Call {
+func (mr *MockAuthCodeReaderMockRecorder) ReadAuthCode(ctx, code, clientID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReader)(nil).ReadAuthCode), ctx, code, clientId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReader)(nil).ReadAuthCode), ctx, code, clientID)
 }
 
 // MockAuthCodeRevoker is a mock of AuthCodeRevoker interface.
@@ -577,18 +577,18 @@ func (m *MockAuthCodeRevoker) EXPECT() *MockAuthCodeRevokerMockRecorder {
 }
 
 // RevokeAuthCode mocks base method.
-func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientId)
+	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // RevokeAuthCode indicates an expected call of RevokeAuthCode.
-func (mr *MockAuthCodeRevokerMockRecorder) RevokeAuthCode(ctx, code, clientId any) *gomock.Call {
+func (mr *MockAuthCodeRevokerMockRecorder) RevokeAuthCode(ctx, code, clientID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeRevoker)(nil).RevokeAuthCode), ctx, code, clientId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeRevoker)(nil).RevokeAuthCode), ctx, code, clientID)
 }
 
 // MockAuthCodeReadRevoker is a mock of AuthCodeReadRevoker interface.
@@ -615,33 +615,33 @@ func (m *MockAuthCodeReadRevoker) EXPECT() *MockAuthCodeReadRevokerMockRecorder 
 }
 
 // ReadAuthCode mocks base method.
-func (m *MockAuthCodeReadRevoker) ReadAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeReadRevoker) ReadAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientId)
+	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReadAuthCode indicates an expected call of ReadAuthCode.
-func (mr *MockAuthCodeReadRevokerMockRecorder) ReadAuthCode(ctx, code, clientId any) *gomock.Call {
+func (mr *MockAuthCodeReadRevokerMockRecorder) ReadAuthCode(ctx, code, clientID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReadRevoker)(nil).ReadAuthCode), ctx, code, clientId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAuthCode", reflect.TypeOf((*MockAuthCodeReadRevoker)(nil).ReadAuthCode), ctx, code, clientID)
 }
 
 // RevokeAuthCode mocks base method.
-func (m *MockAuthCodeReadRevoker) RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeReadRevoker) RevokeAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientId)
+	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(*entity.AuthCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // RevokeAuthCode indicates an expected call of RevokeAuthCode.
-func (mr *MockAuthCodeReadRevokerMockRecorder) RevokeAuthCode(ctx, code, clientId any) *gomock.Call {
+func (mr *MockAuthCodeReadRevokerMockRecorder) RevokeAuthCode(ctx, code, clientID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeReadRevoker)(nil).RevokeAuthCode), ctx, code, clientId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAuthCode", reflect.TypeOf((*MockAuthCodeReadRevoker)(nil).RevokeAuthCode), ctx, code, clientID)
 }
 
 // MockRedirectUriReader is a mock of RedirectUriReader interface.
@@ -668,16 +668,16 @@ func (m *MockRedirectUriReader) EXPECT() *MockRedirectUriReaderMockRecorder {
 }
 
 // ReadRedirectUri mocks base method.
-func (m *MockRedirectUriReader) ReadRedirectUri(ctx context.Context, clientId string) (*entity.RedirectUri, error) {
+func (m *MockRedirectUriReader) ReadRedirectUri(ctx context.Context, clientID string) (*entity.RedirectUri, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, clientId)
+	ret := m.ctrl.Call(m, "ReadRedirectUri", ctx, clientID)
 	ret0, _ := ret[0].(*entity.RedirectUri)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReadRedirectUri indicates an expected call of ReadRedirectUri.
-func (mr *MockRedirectUriReaderMockRecorder) ReadRedirectUri(ctx, clientId any) *gomock.Call {
+func (mr *MockRedirectUriReaderMockRecorder) ReadRedirectUri(ctx, clientID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockRedirectUriReader)(nil).ReadRedirectUri), ctx, clientId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRedirectUri", reflect.TypeOf((*MockRedirectUriReader)(nil).ReadRedirectUri), ctx, clientID)
 }

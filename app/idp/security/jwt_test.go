@@ -32,7 +32,7 @@ func TestJWT_Embed(t *testing.T) {
 	}
 }
 
-func TestJWT_GenerateIdToken(t *testing.T) {
+func TestJWT_GenerateIDToken(t *testing.T) {
 	t.Parallel()
 
 	clock := &xtestutil.FixedClocker{}
@@ -82,7 +82,7 @@ func TestJWT_GenerateIdToken(t *testing.T) {
 				t.Fatal("type assertion failed")
 			}
 
-			got, err := j.GenerateIdToken(tt.WantUserID, audiences, authTime, nonce)
+			got, err := j.GenerateIDToken(tt.WantUserID, audiences, authTime, nonce)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -208,7 +208,7 @@ func TestJWT_Validate(t *testing.T) {
 			UserID:    uid,
 		},
 		//"IDToken_OK": {
-		//	Generator: j.GenerateIdToken,
+		//	Generator: j.GenerateIDToken,
 		//	UserID:    uid,
 		//},
 	}

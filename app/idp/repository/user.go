@@ -17,7 +17,7 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewUser(db *datastore.Database, idGen iface.IdGenerator) *User {
+func NewUser(db *datastore.Database, idGen iface.IDGenerator) *User {
 	return &User{
 		db:    db,
 		idGen: idGen,
@@ -26,7 +26,7 @@ func NewUser(db *datastore.Database, idGen iface.IdGenerator) *User {
 
 type User struct {
 	db    *datastore.Database
-	idGen iface.IdGenerator
+	idGen iface.IDGenerator
 }
 
 func (u *User) CreateUser(ctx context.Context, name string, pw string) (*entity.User, error) {

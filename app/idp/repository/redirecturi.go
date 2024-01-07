@@ -24,14 +24,14 @@ type RedirectUri struct {
 	db *datastore.Database
 }
 
-func (ru *RedirectUri) ReadRedirectUri(ctx context.Context, clientId string) (*entity.RedirectUri, error) {
+func (ru *RedirectUri) ReadRedirectUri(ctx context.Context, clientID string) (*entity.RedirectUri, error) {
 	v, err := ru.db.Client.RedirectUri.Query().
 		Where(func(s *sql.Selector) {
 			t := sql.Table(relyingparty.Table)
 			s.Where(
 				sql.In(
 					s.C(redirecturi.FieldRelyingPartyID),
-					sql.Select(t.C(relyingparty.FieldID)).From(t).Where(sql.EQ(t.C(relyingparty.FieldClientID), clientId)),
+					sql.Select(t.C(relyingparty.FieldID)).From(t).Where(sql.EQ(t.C(relyingparty.FieldClientID), clientID)),
 				),
 			)
 		}).

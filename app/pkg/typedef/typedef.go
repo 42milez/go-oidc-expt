@@ -28,14 +28,6 @@ func (uid UserID) String() string {
 	return strconv.FormatUint(uint64(uid), 10)
 }
 
-//  Cache
-// --------------------------------------------------
-
-type RefreshTokenPermission struct {
-	ClientId string
-	UserId   UserID
-}
-
 //  API
 // --------------------------------------------------
 

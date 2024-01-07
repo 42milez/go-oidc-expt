@@ -166,7 +166,7 @@ func NewOption() (*option.Option, error) {
 		Cookie: httpstore.NewCookie(security.RawCookieHashKey, security.RawCookieBlockKey, &xtime.RealClocker{}),
 	}
 
-	if opt.IdGen, err = xid.GetUniqueIDGenerator(); err != nil {
+	if opt.IDGen, err = xid.GetUniqueIDGenerator(); err != nil {
 		return nil, err
 	}
 

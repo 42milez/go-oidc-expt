@@ -72,7 +72,7 @@ type CredentialValidator interface {
 }
 
 type RefreshTokenVerifier interface {
-	VerifyRefreshToken(ctx context.Context, token string, clientId string) error
+	VerifyRefreshToken(ctx context.Context, token string, clientID string) error
 }
 
 type UserIDExtractor interface {
@@ -80,7 +80,7 @@ type UserIDExtractor interface {
 }
 
 type AuthCodeRevoker interface {
-	RevokeAuthCode(ctx context.Context, code, clientId string) error
+	RevokeAuthCode(ctx context.Context, code, clientID string) error
 }
 
 type TokenCacheReadWriter interface {
@@ -92,7 +92,7 @@ type AuthCodeGrantAcceptor interface {
 	AuthCodeRevoker
 	iface.AccessTokenGenerator
 	iface.RefreshTokenGenerator
-	iface.IdTokenGenerator
+	iface.IDTokenGenerator
 }
 
 type RefreshTokenGrantAcceptor interface {

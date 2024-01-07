@@ -74,11 +74,11 @@ type ConsentCreator interface {
 // --------------------------------------------------
 
 type AuthCodeReader interface {
-	ReadAuthCode(ctx context.Context, code string, clientId string) (*entity.AuthCode, error)
+	ReadAuthCode(ctx context.Context, code string, clientID string) (*entity.AuthCode, error)
 }
 
 type AuthCodeRevoker interface {
-	RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error)
+	RevokeAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error)
 }
 
 type AuthCodeReadRevoker interface {
@@ -87,5 +87,5 @@ type AuthCodeReadRevoker interface {
 }
 
 type RedirectUriReader interface {
-	ReadRedirectUri(ctx context.Context, clientId string) (*entity.RedirectUri, error)
+	ReadRedirectUri(ctx context.Context, clientID string) (*entity.RedirectUri, error)
 }
