@@ -810,7 +810,7 @@ type ConsentMutation struct {
 	op            Op
 	typ           string
 	id            *typedef.ConsentID
-	client_id     *string
+	client_id     *typedef.ClientID
 	created_at    *time.Time
 	clearedFields map[string]struct{}
 	user          *typedef.UserID
@@ -925,12 +925,12 @@ func (m *ConsentMutation) IDs(ctx context.Context) ([]typedef.ConsentID, error) 
 }
 
 // SetClientID sets the "client_id" field.
-func (m *ConsentMutation) SetClientID(s string) {
-	m.client_id = &s
+func (m *ConsentMutation) SetClientID(ti typedef.ClientID) {
+	m.client_id = &ti
 }
 
 // ClientID returns the value of the "client_id" field in the mutation.
-func (m *ConsentMutation) ClientID() (r string, exists bool) {
+func (m *ConsentMutation) ClientID() (r typedef.ClientID, exists bool) {
 	v := m.client_id
 	if v == nil {
 		return
@@ -941,7 +941,7 @@ func (m *ConsentMutation) ClientID() (r string, exists bool) {
 // OldClientID returns the old "client_id" field's value of the Consent entity.
 // If the Consent object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ConsentMutation) OldClientID(ctx context.Context) (v string, err error) {
+func (m *ConsentMutation) OldClientID(ctx context.Context) (v typedef.ClientID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
 	}
@@ -1142,7 +1142,7 @@ func (m *ConsentMutation) OldField(ctx context.Context, name string) (ent.Value,
 func (m *ConsentMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case consent.FieldClientID:
-		v, ok := value.(string)
+		v, ok := value.(typedef.ClientID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1858,7 +1858,7 @@ type RelyingPartyMutation struct {
 	op                   Op
 	typ                  string
 	id                   *typedef.RelyingPartyID
-	client_id            *string
+	client_id            *typedef.ClientID
 	client_secret        *string
 	created_at           *time.Time
 	modified_at          *time.Time
@@ -1979,12 +1979,12 @@ func (m *RelyingPartyMutation) IDs(ctx context.Context) ([]typedef.RelyingPartyI
 }
 
 // SetClientID sets the "client_id" field.
-func (m *RelyingPartyMutation) SetClientID(s string) {
-	m.client_id = &s
+func (m *RelyingPartyMutation) SetClientID(ti typedef.ClientID) {
+	m.client_id = &ti
 }
 
 // ClientID returns the value of the "client_id" field in the mutation.
-func (m *RelyingPartyMutation) ClientID() (r string, exists bool) {
+func (m *RelyingPartyMutation) ClientID() (r typedef.ClientID, exists bool) {
 	v := m.client_id
 	if v == nil {
 		return
@@ -1995,7 +1995,7 @@ func (m *RelyingPartyMutation) ClientID() (r string, exists bool) {
 // OldClientID returns the old "client_id" field's value of the RelyingParty entity.
 // If the RelyingParty object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RelyingPartyMutation) OldClientID(ctx context.Context) (v string, err error) {
+func (m *RelyingPartyMutation) OldClientID(ctx context.Context) (v typedef.ClientID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
 	}
@@ -2320,7 +2320,7 @@ func (m *RelyingPartyMutation) OldField(ctx context.Context, name string) (ent.V
 func (m *RelyingPartyMutation) SetField(name string, value ent.Value) error {
 	switch name {
 	case relyingparty.FieldClientID:
-		v, ok := value.(string)
+		v, ok := value.(typedef.ClientID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

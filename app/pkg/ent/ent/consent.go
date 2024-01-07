@@ -20,7 +20,7 @@ type Consent struct {
 	// ID of the ent.
 	ID typedef.ConsentID `json:"id,omitempty"`
 	// ClientID holds the value of the "client_id" field.
-	ClientID string `json:"client_id,omitempty"`
+	ClientID typedef.ClientID `json:"client_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UserID holds the value of the "user_id" field.
@@ -89,7 +89,7 @@ func (c *Consent) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
-				c.ClientID = value.String
+				c.ClientID = typedef.ClientID(value.String)
 			}
 		case consent.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -145,7 +145,7 @@ func (c *Consent) String() string {
 	builder.WriteString("Consent(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
 	builder.WriteString("client_id=")
-	builder.WriteString(c.ClientID)
+	builder.WriteString(fmt.Sprintf("%v", c.ClientID))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(c.CreatedAt.Format(time.ANSIC))

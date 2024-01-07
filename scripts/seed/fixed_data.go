@@ -22,7 +22,7 @@ func insertFixedData(ctx context.Context, db *datastore.Database) error {
 		return err
 	}
 
-	clientID := "CDcp9v3Nn4i70FqWig5AuohmorD6MG"
+	clientID := typedef.ClientID("CDcp9v3Nn4i70FqWig5AuohmorD6MG")
 	clientSecret := "nZ83cfW2yPmIItORmzYH9XdM5oLE7t"
 
 	var relyingParty *ent.RelyingParty
@@ -56,7 +56,7 @@ func insertFixedUser(ctx context.Context, db *datastore.Database, username, pass
 	return db.Client.User.Create().SetName(username).SetPassword(hashedPassword).Save(ctx)
 }
 
-func insertFixedRelyingParty(ctx context.Context, db *datastore.Database, clientID, clientSecret string) (*ent.RelyingParty, error) {
+func insertFixedRelyingParty(ctx context.Context, db *datastore.Database, clientID typedef.ClientID, clientSecret string) (*ent.RelyingParty, error) {
 	return db.Client.RelyingParty.Create().SetClientID(clientID).SetClientSecret(clientSecret).Save(ctx)
 }
 

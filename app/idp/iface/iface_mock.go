@@ -548,7 +548,7 @@ func (m *MockAuthorizationRequestFingerprintReader) EXPECT() *MockAuthorizationR
 }
 
 // ReadAuthorizationRequestFingerprint mocks base method.
-func (m *MockAuthorizationRequestFingerprintReader) ReadAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
+func (m *MockAuthorizationRequestFingerprintReader) ReadAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAuthorizationRequestFingerprint", ctx, clientID, authCode)
 	ret0, _ := ret[0].(*typedef.AuthorizationRequestFingerprint)
@@ -586,7 +586,7 @@ func (m *MockAuthorizationRequestFingerprintWriter) EXPECT() *MockAuthorizationR
 }
 
 // WriteAuthorizationRequestFingerprint mocks base method.
-func (m *MockAuthorizationRequestFingerprintWriter) WriteAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error {
+func (m *MockAuthorizationRequestFingerprintWriter) WriteAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteAuthorizationRequestFingerprint", ctx, clientID, authCode, param)
 	ret0, _ := ret[0].(error)
@@ -623,7 +623,7 @@ func (m *MockRefreshTokenReader) EXPECT() *MockRefreshTokenReaderMockRecorder {
 }
 
 // ReadRefreshToken mocks base method.
-func (m *MockRefreshTokenReader) ReadRefreshToken(ctx context.Context, clientID string, userID typedef.UserID) (jwt.Token, error) {
+func (m *MockRefreshTokenReader) ReadRefreshToken(ctx context.Context, clientID typedef.ClientID, userID typedef.UserID) (jwt.Token, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRefreshToken", ctx, clientID, userID)
 	ret0, _ := ret[0].(jwt.Token)
@@ -661,7 +661,7 @@ func (m *MockRefreshTokenWriter) EXPECT() *MockRefreshTokenWriterMockRecorder {
 }
 
 // WriteRefreshToken mocks base method.
-func (m *MockRefreshTokenWriter) WriteRefreshToken(ctx context.Context, token, clientID string, userID typedef.UserID) error {
+func (m *MockRefreshTokenWriter) WriteRefreshToken(ctx context.Context, token string, clientID typedef.ClientID, userID typedef.UserID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteRefreshToken", ctx, token, clientID, userID)
 	ret0, _ := ret[0].(error)

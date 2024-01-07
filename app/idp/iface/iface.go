@@ -76,19 +76,19 @@ type TokenProcessor interface {
 // --------------------------------------------------
 
 type AuthorizationRequestFingerprintReader interface {
-	ReadAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error)
+	ReadAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error)
 }
 
 type AuthorizationRequestFingerprintWriter interface {
-	WriteAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error
+	WriteAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error
 }
 
 type RefreshTokenReader interface {
-	ReadRefreshToken(ctx context.Context, clientID string, userID typedef.UserID) (jwt.Token, error)
+	ReadRefreshToken(ctx context.Context, clientID typedef.ClientID, userID typedef.UserID) (jwt.Token, error)
 }
 
 type RefreshTokenWriter interface {
-	WriteRefreshToken(ctx context.Context, token, clientID string, userID typedef.UserID) error
+	WriteRefreshToken(ctx context.Context, token string, clientID typedef.ClientID, userID typedef.UserID) error
 }
 
 type SessionCreator interface {

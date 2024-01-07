@@ -38,7 +38,7 @@ type Cache struct {
 	token iface.TokenParser
 }
 
-func (c *Cache) ReadAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
+func (c *Cache) ReadAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
 	key := authorizationFingerprintCacheKey(clientID, authCode)
 	values, err := c.repo.ReadHashAll(ctx, key)
 	if errors.Is(err, xerr.CacheKeyNotFound) {
@@ -103,7 +103,7 @@ func (c *Cache) Restore(r *http.Request, sid typedef.SessionID) (*http.Request, 
 	return r.Clone(ctx), nil
 }
 
-func (c *Cache) WriteAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error {
+func (c *Cache) WriteAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error {
 	key := authorizationFingerprintCacheKey(clientID, authCode)
 	values := map[string]any{
 		redirectURIFieldName: param.RedirectURI,
@@ -117,7 +117,7 @@ func (c *Cache) WriteAuthorizationRequestFingerprint(ctx context.Context, client
 	return nil
 }
 
-func (c *Cache) WriteRefreshToken(ctx context.Context, token, clientID string, userID typedef.UserID) error {
+func (c *Cache) WriteRefreshToken(ctx context.Context, token string, clientID typedef.ClientID, userID typedef.UserID) error {
 	key := refreshTokenCacheKey(clientID, userID)
 	if err := c.repo.Write(ctx, key, token, config.RefreshTokenTTL); err != nil {
 		return err
@@ -125,7 +125,7 @@ func (c *Cache) WriteRefreshToken(ctx context.Context, token, clientID string, u
 	return nil
 }
 
-func (c *Cache) ReadRefreshToken(ctx context.Context, clientID string, userID typedef.UserID) (jwt.Token, error) {
+func (c *Cache) ReadRefreshToken(ctx context.Context, clientID typedef.ClientID, userID typedef.UserID) (jwt.Token, error) {
 	key := refreshTokenCacheKey(clientID, userID)
 	v, err := c.repo.Read(ctx, key)
 	if err != nil {
@@ -156,11 +156,11 @@ func (c *Cache) CreateSession(ctx context.Context, uid typedef.UserID) (typedef.
 	return typedef.SessionID(sid), nil
 }
 
-func authorizationFingerprintCacheKey(clientID, authCode string) string {
+func authorizationFingerprintCacheKey(clientID typedef.ClientID, authCode string) string {
 	return fmt.Sprintf("op:authorization:fingerprint:%s.%s", clientID, authCode)
 }
 
-func refreshTokenCacheKey(clientID string, userID typedef.UserID) string {
+func refreshTokenCacheKey(clientID typedef.ClientID, userID typedef.UserID) string {
 	return fmt.Sprintf("rp:refreshtoken:%s.%s", clientID, userID)
 }
 

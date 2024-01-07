@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
 
@@ -24,7 +26,7 @@ type RedirectURI struct {
 	db *datastore.Database
 }
 
-func (ru *RedirectURI) ReadRedirectURI(ctx context.Context, clientID string) (*entity.RedirectURI, error) {
+func (ru *RedirectURI) ReadRedirectURI(ctx context.Context, clientID typedef.ClientID) (*entity.RedirectURI, error) {
 	v, err := ru.db.Client.RedirectURI.Query().
 		Where(func(s *sql.Selector) {
 			t := sql.Table(relyingparty.Table)

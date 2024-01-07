@@ -19,7 +19,7 @@ type RelyingParty struct {
 	// ID of the ent.
 	ID typedef.RelyingPartyID `json:"id,omitempty"`
 	// ClientID holds the value of the "client_id" field.
-	ClientID string `json:"client_id,omitempty"`
+	ClientID typedef.ClientID `json:"client_id,omitempty"`
 	// ClientSecret holds the value of the "client_secret" field.
 	ClientSecret string `json:"-"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -97,7 +97,7 @@ func (rp *RelyingParty) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
-				rp.ClientID = value.String
+				rp.ClientID = typedef.ClientID(value.String)
 			}
 		case relyingparty.FieldClientSecret:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -164,7 +164,7 @@ func (rp *RelyingParty) String() string {
 	builder.WriteString("RelyingParty(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", rp.ID))
 	builder.WriteString("client_id=")
-	builder.WriteString(rp.ClientID)
+	builder.WriteString(fmt.Sprintf("%v", rp.ClientID))
 	builder.WriteString(", ")
 	builder.WriteString("client_secret=<sensitive>")
 	builder.WriteString(", ")

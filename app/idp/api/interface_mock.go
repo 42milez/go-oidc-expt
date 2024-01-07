@@ -169,7 +169,7 @@ func (m *MockConsentVerifier) EXPECT() *MockConsentVerifierMockRecorder {
 }
 
 // VerifyConsent mocks base method.
-func (m *MockConsentVerifier) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error) {
+func (m *MockConsentVerifier) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "VerifyConsent", ctx, userID, clientID)
 	ret0, _ := ret[0].(bool)
@@ -245,7 +245,7 @@ func (m *MockAuthenticator) EXPECT() *MockAuthenticatorMockRecorder {
 }
 
 // VerifyConsent mocks base method.
-func (m *MockAuthenticator) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error) {
+func (m *MockAuthenticator) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "VerifyConsent", ctx, userID, clientID)
 	ret0, _ := ret[0].(bool)
@@ -336,7 +336,7 @@ func (m *MockRequestFingerprintSaver) EXPECT() *MockRequestFingerprintSaverMockR
 }
 
 // SaveAuthorizationRequestFingerprint mocks base method.
-func (m *MockRequestFingerprintSaver) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID, redirectURI, nonce, authCode string) error {
+func (m *MockRequestFingerprintSaver) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, redirectURI, nonce, authCode string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveAuthorizationRequestFingerprint", ctx, clientID, redirectURI, nonce, authCode)
 	ret0, _ := ret[0].(error)
@@ -373,7 +373,7 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // Authorize mocks base method.
-func (m *MockAuthorizer) Authorize(ctx context.Context, clientID, redirectURI, state string) (*url.URL, string, error) {
+func (m *MockAuthorizer) Authorize(ctx context.Context, clientID typedef.ClientID, redirectURI, state string) (*url.URL, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Authorize", ctx, clientID, redirectURI, state)
 	ret0, _ := ret[0].(*url.URL)
@@ -389,7 +389,7 @@ func (mr *MockAuthorizerMockRecorder) Authorize(ctx, clientID, redirectURI, stat
 }
 
 // SaveAuthorizationRequestFingerprint mocks base method.
-func (m *MockAuthorizer) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID, redirectURI, nonce, authCode string) error {
+func (m *MockAuthorizer) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, redirectURI, nonce, authCode string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveAuthorizationRequestFingerprint", ctx, clientID, redirectURI, nonce, authCode)
 	ret0, _ := ret[0].(error)
@@ -426,7 +426,7 @@ func (m *MockConsentAcceptor) EXPECT() *MockConsentAcceptorMockRecorder {
 }
 
 // AcceptConsent mocks base method.
-func (m *MockConsentAcceptor) AcceptConsent(ctx context.Context, userID typedef.UserID, clientID string) error {
+func (m *MockConsentAcceptor) AcceptConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AcceptConsent", ctx, userID, clientID)
 	ret0, _ := ret[0].(error)
@@ -463,7 +463,7 @@ func (m *MockCredentialValidator) EXPECT() *MockCredentialValidatorMockRecorder 
 }
 
 // ValidateCredential mocks base method.
-func (m *MockCredentialValidator) ValidateCredential(ctx context.Context, clientID, clientSecret string) error {
+func (m *MockCredentialValidator) ValidateCredential(ctx context.Context, clientID typedef.ClientID, clientSecret string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ValidateCredential", ctx, clientID, clientSecret)
 	ret0, _ := ret[0].(error)
@@ -500,7 +500,7 @@ func (m *MockRefreshTokenVerifier) EXPECT() *MockRefreshTokenVerifierMockRecorde
 }
 
 // VerifyRefreshToken mocks base method.
-func (m *MockRefreshTokenVerifier) VerifyRefreshToken(ctx context.Context, token, clientID string) error {
+func (m *MockRefreshTokenVerifier) VerifyRefreshToken(ctx context.Context, token string, clientID typedef.ClientID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "VerifyRefreshToken", ctx, token, clientID)
 	ret0, _ := ret[0].(error)
@@ -575,7 +575,7 @@ func (m *MockAuthCodeRevoker) EXPECT() *MockAuthCodeRevokerMockRecorder {
 }
 
 // RevokeAuthCode mocks base method.
-func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code, clientID string) error {
+func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(error)
@@ -612,7 +612,7 @@ func (m *MockTokenCacheReadWriter) EXPECT() *MockTokenCacheReadWriterMockRecorde
 }
 
 // ReadAuthorizationRequestFingerprint mocks base method.
-func (m *MockTokenCacheReadWriter) ReadAuthorizationRequestFingerprint(ctx context.Context, clientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
+func (m *MockTokenCacheReadWriter) ReadAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAuthorizationRequestFingerprint", ctx, clientID, authCode)
 	ret0, _ := ret[0].(*typedef.AuthorizationRequestFingerprint)
@@ -627,7 +627,7 @@ func (mr *MockTokenCacheReadWriterMockRecorder) ReadAuthorizationRequestFingerpr
 }
 
 // WriteRefreshToken mocks base method.
-func (m *MockTokenCacheReadWriter) WriteRefreshToken(ctx context.Context, token, clientID string, userID typedef.UserID) error {
+func (m *MockTokenCacheReadWriter) WriteRefreshToken(ctx context.Context, token string, clientID typedef.ClientID, userID typedef.UserID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "WriteRefreshToken", ctx, token, clientID, userID)
 	ret0, _ := ret[0].(error)
@@ -709,7 +709,7 @@ func (mr *MockAuthCodeGrantAcceptorMockRecorder) GenerateRefreshToken(uid, claim
 }
 
 // RevokeAuthCode mocks base method.
-func (m *MockAuthCodeGrantAcceptor) RevokeAuthCode(ctx context.Context, code, clientID string) error {
+func (m *MockAuthCodeGrantAcceptor) RevokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(error)
@@ -791,7 +791,7 @@ func (mr *MockRefreshTokenGrantAcceptorMockRecorder) GenerateRefreshToken(uid, c
 }
 
 // VerifyRefreshToken mocks base method.
-func (m *MockRefreshTokenGrantAcceptor) VerifyRefreshToken(ctx context.Context, token, clientID string) error {
+func (m *MockRefreshTokenGrantAcceptor) VerifyRefreshToken(ctx context.Context, token string, clientID typedef.ClientID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "VerifyRefreshToken", ctx, token, clientID)
 	ret0, _ := ret[0].(error)

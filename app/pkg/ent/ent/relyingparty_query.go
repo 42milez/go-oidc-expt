@@ -337,7 +337,7 @@ func (rpq *RelyingPartyQuery) WithRedirectUris(opts ...func(*RedirectURIQuery)) 
 // Example:
 //
 //	var v []struct {
-//		ClientID string `json:"client_id,omitempty"`
+//		ClientID typedef.ClientID `json:"client_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -360,7 +360,7 @@ func (rpq *RelyingPartyQuery) GroupBy(field string, fields ...string) *RelyingPa
 // Example:
 //
 //	var v []struct {
-//		ClientID string `json:"client_id,omitempty"`
+//		ClientID typedef.ClientID `json:"client_id,omitempty"`
 //	}
 //
 //	client.RelyingParty.Query().

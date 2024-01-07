@@ -22,7 +22,7 @@ func (rp *RelyingParty) ID() typedef.RelyingPartyID {
 	return rp.entity.ID
 }
 
-func (rp *RelyingParty) ClientID() string {
+func (rp *RelyingParty) ClientID() typedef.ClientID {
 	return rp.entity.ClientID
 }
 

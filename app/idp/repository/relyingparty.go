@@ -22,7 +22,7 @@ type RelyingParty struct {
 	db *datastore.Database
 }
 
-func (rp *RelyingParty) CreateAuthCode(ctx context.Context, code string, clientID string, userID typedef.UserID) (*entity.AuthCode, error) {
+func (rp *RelyingParty) CreateAuthCode(ctx context.Context, code string, clientID typedef.ClientID, userID typedef.UserID) (*entity.AuthCode, error) {
 	tx, err := rp.db.Client.Tx(ctx)
 	if err != nil {
 		return nil, rollback(tx, err)
@@ -45,7 +45,7 @@ func (rp *RelyingParty) CreateAuthCode(ctx context.Context, code string, clientI
 	return entity.NewAuthCode(authCode), nil
 }
 
-func (rp *RelyingParty) ReadRedirectURIs(ctx context.Context, clientID string) ([]*entity.RedirectURI, error) {
+func (rp *RelyingParty) ReadRedirectURIs(ctx context.Context, clientID typedef.ClientID) ([]*entity.RedirectURI, error) {
 	redirectUris, err := rp.db.Client.RelyingParty.
 		Query().
 		Where(relyingparty.ClientID(clientID)).
@@ -64,7 +64,7 @@ func (rp *RelyingParty) ReadRedirectURIs(ctx context.Context, clientID string) (
 	return ret, nil
 }
 
-func (rp *RelyingParty) ReadCredential(ctx context.Context, clientID, clientSecret string) (*entity.RelyingParty, error) {
+func (rp *RelyingParty) ReadCredential(ctx context.Context, clientID typedef.ClientID, clientSecret string) (*entity.RelyingParty, error) {
 	v, err := rp.db.Client.RelyingParty.Query().
 		Where(relyingparty.ClientID(clientID), relyingparty.ClientSecret(clientSecret)).Only(ctx)
 	if err != nil {

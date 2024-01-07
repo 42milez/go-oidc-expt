@@ -238,6 +238,7 @@ components:
       required: true
       schema:
         type: string
+        x-go-type: typedef.ClientID
       example: WDAVqWSJzs78oZE8JXmVfq0j1NhJvb
       x-go-name: ClientID
       x-oapi-codegen-extra-tags:

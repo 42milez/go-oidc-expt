@@ -41,7 +41,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
-	clientID := credentials[0]
+	clientID := typedef.ClientID(credentials[0])
 
 	param, err := t.parseForm(r)
 	if err != nil {
@@ -66,7 +66,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID string) {
+func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID typedef.ClientID) {
 	ctx := r.Context()
 
 	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectURI) {
@@ -144,7 +144,7 @@ const accessTokenKey = "AccessToken"
 const refreshTokenKey = "RefreshToken"
 const idTokenKey = "IDToken"
 
-func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, clientID string) (map[string]*string, error) {
+func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, clientID typedef.ClientID) (map[string]*string, error) {
 	accessToken, err := t.acSVC.GenerateAccessToken(param.UserID, nil)
 	if err != nil {
 		return nil, err
@@ -155,7 +155,7 @@ func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, c
 		return nil, err
 	}
 
-	audiences := []string{clientID}
+	audiences := []string{clientID.String()}
 	idToken, err := t.acSVC.GenerateIDToken(param.UserID, audiences, param.AuthTime, param.Nonce)
 	if err != nil {
 		return nil, err
@@ -168,7 +168,7 @@ func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, c
 	}, nil
 }
 
-func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID string) {
+func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID typedef.ClientID) {
 	ctx := r.Context()
 
 	err := t.rtSVC.VerifyRefreshToken(ctx, *param.RefreshToken, clientID)

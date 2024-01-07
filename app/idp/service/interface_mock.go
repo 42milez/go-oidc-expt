@@ -205,7 +205,7 @@ func (m *MockConsentReader) EXPECT() *MockConsentReaderMockRecorder {
 }
 
 // ReadConsent mocks base method.
-func (m *MockConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
+func (m *MockConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (*entity.Consent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadConsent", ctx, userID, clientID)
 	ret0, _ := ret[0].(*entity.Consent)
@@ -281,7 +281,7 @@ func (m *MockUserConsentReader) EXPECT() *MockUserConsentReaderMockRecorder {
 }
 
 // ReadConsent mocks base method.
-func (m *MockUserConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
+func (m *MockUserConsentReader) ReadConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (*entity.Consent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadConsent", ctx, userID, clientID)
 	ret0, _ := ret[0].(*entity.Consent)
@@ -334,7 +334,7 @@ func (m *MockCredentialReader) EXPECT() *MockCredentialReaderMockRecorder {
 }
 
 // ReadCredential mocks base method.
-func (m *MockCredentialReader) ReadCredential(ctx context.Context, clientID, clientSecret string) (*entity.RelyingParty, error) {
+func (m *MockCredentialReader) ReadCredential(ctx context.Context, clientID typedef.ClientID, clientSecret string) (*entity.RelyingParty, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadCredential", ctx, clientID, clientSecret)
 	ret0, _ := ret[0].(*entity.RelyingParty)
@@ -372,7 +372,7 @@ func (m *MockAuthCodeCreator) EXPECT() *MockAuthCodeCreatorMockRecorder {
 }
 
 // CreateAuthCode mocks base method.
-func (m *MockAuthCodeCreator) CreateAuthCode(ctx context.Context, code, clientID string, userID typedef.UserID) (*entity.AuthCode, error) {
+func (m *MockAuthCodeCreator) CreateAuthCode(ctx context.Context, code string, clientID typedef.ClientID, userID typedef.UserID) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAuthCode", ctx, code, clientID, userID)
 	ret0, _ := ret[0].(*entity.AuthCode)
@@ -410,7 +410,7 @@ func (m *MockRedirectURIsReader) EXPECT() *MockRedirectURIsReaderMockRecorder {
 }
 
 // ReadRedirectURIs mocks base method.
-func (m *MockRedirectURIsReader) ReadRedirectURIs(ctx context.Context, clientID string) ([]*entity.RedirectURI, error) {
+func (m *MockRedirectURIsReader) ReadRedirectURIs(ctx context.Context, clientID typedef.ClientID) ([]*entity.RedirectURI, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRedirectURIs", ctx, clientID)
 	ret0, _ := ret[0].([]*entity.RedirectURI)
@@ -448,7 +448,7 @@ func (m *MockAuthorizer) EXPECT() *MockAuthorizerMockRecorder {
 }
 
 // CreateAuthCode mocks base method.
-func (m *MockAuthorizer) CreateAuthCode(ctx context.Context, code, clientID string, userID typedef.UserID) (*entity.AuthCode, error) {
+func (m *MockAuthorizer) CreateAuthCode(ctx context.Context, code string, clientID typedef.ClientID, userID typedef.UserID) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAuthCode", ctx, code, clientID, userID)
 	ret0, _ := ret[0].(*entity.AuthCode)
@@ -463,7 +463,7 @@ func (mr *MockAuthorizerMockRecorder) CreateAuthCode(ctx, code, clientID, userID
 }
 
 // ReadRedirectURIs mocks base method.
-func (m *MockAuthorizer) ReadRedirectURIs(ctx context.Context, clientID string) ([]*entity.RedirectURI, error) {
+func (m *MockAuthorizer) ReadRedirectURIs(ctx context.Context, clientID typedef.ClientID) ([]*entity.RedirectURI, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRedirectURIs", ctx, clientID)
 	ret0, _ := ret[0].([]*entity.RedirectURI)
@@ -501,7 +501,7 @@ func (m *MockConsentCreator) EXPECT() *MockConsentCreatorMockRecorder {
 }
 
 // CreateConsent mocks base method.
-func (m *MockConsentCreator) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
+func (m *MockConsentCreator) CreateConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (*entity.Consent, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateConsent", ctx, userID, clientID)
 	ret0, _ := ret[0].(*entity.Consent)
@@ -539,7 +539,7 @@ func (m *MockAuthCodeReader) EXPECT() *MockAuthCodeReaderMockRecorder {
 }
 
 // ReadAuthCode mocks base method.
-func (m *MockAuthCodeReader) ReadAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeReader) ReadAuthCode(ctx context.Context, code string, clientID typedef.ClientID) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(*entity.AuthCode)
@@ -577,7 +577,7 @@ func (m *MockAuthCodeRevoker) EXPECT() *MockAuthCodeRevokerMockRecorder {
 }
 
 // RevokeAuthCode mocks base method.
-func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeRevoker) RevokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(*entity.AuthCode)
@@ -615,7 +615,7 @@ func (m *MockAuthCodeReadRevoker) EXPECT() *MockAuthCodeReadRevokerMockRecorder 
 }
 
 // ReadAuthCode mocks base method.
-func (m *MockAuthCodeReadRevoker) ReadAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeReadRevoker) ReadAuthCode(ctx context.Context, code string, clientID typedef.ClientID) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(*entity.AuthCode)
@@ -630,7 +630,7 @@ func (mr *MockAuthCodeReadRevokerMockRecorder) ReadAuthCode(ctx, code, clientID 
 }
 
 // RevokeAuthCode mocks base method.
-func (m *MockAuthCodeReadRevoker) RevokeAuthCode(ctx context.Context, code, clientID string) (*entity.AuthCode, error) {
+func (m *MockAuthCodeReadRevoker) RevokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) (*entity.AuthCode, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RevokeAuthCode", ctx, code, clientID)
 	ret0, _ := ret[0].(*entity.AuthCode)
@@ -668,7 +668,7 @@ func (m *MockRedirectURIReader) EXPECT() *MockRedirectURIReaderMockRecorder {
 }
 
 // ReadRedirectURI mocks base method.
-func (m *MockRedirectURIReader) ReadRedirectURI(ctx context.Context, clientID string) (*entity.RedirectURI, error) {
+func (m *MockRedirectURIReader) ReadRedirectURI(ctx context.Context, clientID typedef.ClientID) (*entity.RedirectURI, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadRedirectURI", ctx, clientID)
 	ret0, _ := ret[0].(*entity.RedirectURI)

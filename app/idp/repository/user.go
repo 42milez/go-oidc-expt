@@ -37,7 +37,7 @@ func (u *User) CreateUser(ctx context.Context, name string, pw string) (*entity.
 	return entity.NewUser(v), nil
 }
 
-func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
+func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (*entity.Consent, error) {
 	tx, err := u.db.Client.Tx(ctx)
 	if err != nil {
 		return nil, rollback(tx, err)
@@ -60,7 +60,7 @@ func (u *User) CreateConsent(ctx context.Context, userID typedef.UserID, clientI
 	return entity.NewConsent(c), nil
 }
 
-func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error) {
+func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (*entity.Consent, error) {
 	c, err := u.db.Client.Consent.Query().Where(consent.UserID(userID), consent.ClientID(clientID)).Only(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {

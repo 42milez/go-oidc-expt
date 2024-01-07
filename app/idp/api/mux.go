@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
@@ -115,7 +117,7 @@ func oapiBasicAuthenticate(ctx context.Context, input *openapi3filter.Authentica
 		return err
 	}
 
-	clientID := credentials[0]
+	clientID := typedef.ClientID(credentials[0])
 	clientSecret := credentials[1]
 
 	if err = svc.ValidateCredential(ctx, clientID, clientSecret); err != nil {

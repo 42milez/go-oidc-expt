@@ -34,7 +34,7 @@ type Authorize struct {
 	context iface.ContextReader
 }
 
-func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state string) (*url.URL, string, error) {
+func (a *Authorize) Authorize(ctx context.Context, clientID typedef.ClientID, redirectURI, state string) (*url.URL, string, error) {
 	code, err := xrandom.GenerateCryptoRandomString(config.AuthCodeLength)
 	if err != nil {
 		return nil, "", err
@@ -75,7 +75,7 @@ func (a *Authorize) validateRedirectURI(s []*entity.RedirectURI, v string) bool 
 	})
 }
 
-func (a *Authorize) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID, redirectURI, nonce, authCode string) error {
+func (a *Authorize) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, redirectURI, nonce, authCode string) error {
 	sess, ok := a.context.Read(ctx, httpstore.SessionKey{}).(*httpstore.Session)
 	if !ok {
 		return xerr.FailedToReadSession

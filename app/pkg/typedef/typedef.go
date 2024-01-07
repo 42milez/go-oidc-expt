@@ -37,4 +37,11 @@ type AuthorizationRequestFingerprint struct {
 	RedirectURI string
 	UserID      UserID
 }
+
+type ClientID string
+
+func (c ClientID) String() string {
+	return string(c)
+}
+
 type TokenType string

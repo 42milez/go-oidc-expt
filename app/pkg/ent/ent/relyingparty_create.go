@@ -24,8 +24,8 @@ type RelyingPartyCreate struct {
 }
 
 // SetClientID sets the "client_id" field.
-func (rpc *RelyingPartyCreate) SetClientID(s string) *RelyingPartyCreate {
-	rpc.mutation.SetClientID(s)
+func (rpc *RelyingPartyCreate) SetClientID(ti typedef.ClientID) *RelyingPartyCreate {
+	rpc.mutation.SetClientID(ti)
 	return rpc
 }
 
@@ -150,7 +150,7 @@ func (rpc *RelyingPartyCreate) check() error {
 		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "RelyingParty.client_id"`)}
 	}
 	if v, ok := rpc.mutation.ClientID(); ok {
-		if err := relyingparty.ClientIDValidator(v); err != nil {
+		if err := relyingparty.ClientIDValidator(string(v)); err != nil {
 			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "RelyingParty.client_id": %w`, err)}
 		}
 	}

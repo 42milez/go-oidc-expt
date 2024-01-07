@@ -22,7 +22,7 @@ func (c *Consent) ID() typedef.ConsentID {
 	return c.entity.ID
 }
 
-func (c *Consent) ClientID() string {
+func (c *Consent) ClientID() typedef.ClientID {
 	return c.entity.ClientID
 }
 

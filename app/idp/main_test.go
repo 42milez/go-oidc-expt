@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/user"
@@ -50,7 +52,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		},
 	}
 
-	newAuthorizeParam := func(clientID string) string {
+	newAuthorizeParam := func(clientID typedef.ClientID) string {
 		nonce, err := xrandom.GenerateCryptoRandomString(nonceLength)
 		xtestutil.ExitOnError(t, err)
 
@@ -84,7 +86,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		clientSecret, err := xrandom.GenerateCryptoRandomString(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
-		rp, err := db.Client.RelyingParty.Create().SetClientID(clientID).SetClientSecret(clientSecret).Save(ctx)
+		rp, err := db.Client.RelyingParty.Create().SetClientID(typedef.ClientID(clientID)).SetClientSecret(clientSecret).Save(ctx)
 		xtestutil.ExitOnError(t, err)
 
 		t.Cleanup(func() {
@@ -268,7 +270,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		}
 
 		param := url.Values{}
-		param.Add("client_id", rp.ClientID())
+		param.Add("client_id", rp.ClientID().String())
 		param.Add("client_secret", rp.ClientSecret())
 		param.Add("grant_type", "refresh_token")
 		param.Add("refresh_token", refreshToken)

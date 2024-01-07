@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
@@ -42,7 +44,7 @@ func InsertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingP
 	builders := make([]*ent.RelyingPartyCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = db.Client.RelyingParty.Create().SetClientID(v.ClientID).SetClientSecret(v.ClientSecret)
+		builders[i] = db.Client.RelyingParty.Create().SetClientID(typedef.ClientID(v.ClientID)).SetClientSecret(v.ClientSecret)
 	}
 
 	return db.Client.RelyingParty.CreateBulk(builders...).Save(ctx)

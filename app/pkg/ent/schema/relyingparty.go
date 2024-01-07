@@ -28,6 +28,7 @@ func (RelyingParty) Fields() []ent.Field {
 			GoType(typedef.RelyingPartyID(0)).
 			Immutable(),
 		field.String("client_id").
+			GoType(typedef.ClientID("")).
 			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-zA-Z]{%d}$", config.ClientIDLength))).
 			Unique().
 			Immutable(),

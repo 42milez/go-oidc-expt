@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
 
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
@@ -12,7 +14,7 @@ import (
 const nConsentMin = 1
 
 type Consent struct {
-	ClientID string
+	ClientID typedef.ClientID
 	User     *ent.User
 }
 

@@ -33,7 +33,7 @@ type AuthCodeGrant struct {
 	token iface.TokenGenerator
 }
 
-func (a *AuthCodeGrant) RevokeAuthCode(ctx context.Context, code, clientID string) error {
+func (a *AuthCodeGrant) RevokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error {
 	if err := a.validateAuthCode(ctx, code, clientID); err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (a *AuthCodeGrant) RevokeAuthCode(ctx context.Context, code, clientID strin
 	return nil
 }
 
-func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code, clientID string) error {
+func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error {
 	authCode, err := a.repo.ReadAuthCode(ctx, code, clientID)
 	if err != nil {
 		if errors.Is(err, xerr.RecordNotFound) {
@@ -64,7 +64,7 @@ func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code, clientID str
 	return nil
 }
 
-func (a *AuthCodeGrant) revokeAuthCode(ctx context.Context, code, clientID string) error {
+func (a *AuthCodeGrant) revokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error {
 	_, err := a.repo.RevokeAuthCode(ctx, code, clientID)
 	if err != nil {
 		return err
@@ -96,7 +96,7 @@ type RefreshTokenGrant struct {
 	token iface.TokenProcessor
 }
 
-func (r *RefreshTokenGrant) VerifyRefreshToken(ctx context.Context, token string, clientID string) error {
+func (r *RefreshTokenGrant) VerifyRefreshToken(ctx context.Context, token string, clientID typedef.ClientID) error {
 	rt1, err := r.token.Parse(token)
 	if err != nil {
 		return xerr.InvalidToken
