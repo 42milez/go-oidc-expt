@@ -32,6 +32,7 @@ func (AuthCode) Fields() []ent.Field {
 			}).
 			NotEmpty().
 			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-zA-Z]{%d}$", config.AuthCodeLength))).
+			Sensitive().
 			Immutable(),
 		field.Uint64("user_id").
 			GoType(typedef.UserID(0)).

@@ -43,7 +43,8 @@ func (User) Fields() []ent.Field {
 			SchemaType(map[string]string{
 				dialect.MySQL: PasswordSchemaType(),
 			}).
-			NotEmpty(),
+			NotEmpty().
+			Sensitive(),
 		// TOTP secret is encoded with base32 encoding.
 		// https://datatracker.ietf.org/doc/html/rfc4648#page-8
 		field.String("totp_secret").
@@ -51,7 +52,8 @@ func (User) Fields() []ent.Field {
 				dialect.MySQL: TotpSecretSchemaType(),
 			}).
 			Optional().
-			Match(regexp.MustCompile(fmt.Sprintf("^[A-Z2-7=]{%d}$", encodedTotpSecretLength))),
+			Match(regexp.MustCompile(fmt.Sprintf("^[A-Z2-7=]{%d}$", encodedTotpSecretLength))).
+			Sensitive(),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

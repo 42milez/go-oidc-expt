@@ -33,7 +33,8 @@ func (RelyingParty) Fields() []ent.Field {
 			Immutable(),
 		field.String("client_secret").
 			Match(regexp.MustCompile(fmt.Sprintf("^[0-9a-zA-Z]{%d}$", config.ClientSecretLength))).
-			NotEmpty(),
+			NotEmpty().
+			Sensitive(),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

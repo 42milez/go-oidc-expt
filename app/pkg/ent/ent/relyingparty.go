@@ -21,7 +21,7 @@ type RelyingParty struct {
 	// ClientID holds the value of the "client_id" field.
 	ClientID string `json:"client_id,omitempty"`
 	// ClientSecret holds the value of the "client_secret" field.
-	ClientSecret string `json:"client_secret,omitempty"`
+	ClientSecret string `json:"-"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
@@ -166,8 +166,7 @@ func (rp *RelyingParty) String() string {
 	builder.WriteString("client_id=")
 	builder.WriteString(rp.ClientID)
 	builder.WriteString(", ")
-	builder.WriteString("client_secret=")
-	builder.WriteString(rp.ClientSecret)
+	builder.WriteString("client_secret=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(rp.CreatedAt.Format(time.ANSIC))

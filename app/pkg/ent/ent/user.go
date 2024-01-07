@@ -21,9 +21,9 @@ type User struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Password holds the value of the "password" field.
-	Password string `json:"password,omitempty"`
+	Password string `json:"-"`
 	// TotpSecret holds the value of the "totp_secret" field.
-	TotpSecret string `json:"totp_secret,omitempty"`
+	TotpSecret string `json:"-"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
@@ -158,11 +158,9 @@ func (u *User) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(u.Name)
 	builder.WriteString(", ")
-	builder.WriteString("password=")
-	builder.WriteString(u.Password)
+	builder.WriteString("password=<sensitive>")
 	builder.WriteString(", ")
-	builder.WriteString("totp_secret=")
-	builder.WriteString(u.TotpSecret)
+	builder.WriteString("totp_secret=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
