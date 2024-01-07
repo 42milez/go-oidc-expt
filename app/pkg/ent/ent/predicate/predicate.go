@@ -12,8 +12,8 @@ type AuthCode func(*sql.Selector)
 // Consent is the predicate function for consent builders.
 type Consent func(*sql.Selector)
 
-// RedirectUri is the predicate function for redirecturi builders.
-type RedirectUri func(*sql.Selector)
+// RedirectURI is the predicate function for redirecturi builders.
+type RedirectURI func(*sql.Selector)
 
 // RelyingParty is the predicate function for relyingparty builders.
 type RelyingParty func(*sql.Selector)

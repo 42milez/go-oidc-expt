@@ -49,12 +49,12 @@ func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state 
 		return nil, "", err
 	}
 
-	ru, err := a.repo.ReadRedirectUris(ctx, clientID)
+	ru, err := a.repo.ReadRedirectURIs(ctx, clientID)
 	if err != nil {
 		return nil, "", err
 	}
 
-	if !a.validateRedirectUri(ru, redirectURI) {
+	if !a.validateRedirectURI(ru, redirectURI) {
 		return nil, "", xerr.InvalidRedirectURI
 	}
 
@@ -66,8 +66,8 @@ func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state 
 	return uri, code, nil
 }
 
-func (a *Authorize) validateRedirectUri(s []*entity.RedirectUri, v string) bool {
-	return slices.ContainsFunc(s, func(uri *entity.RedirectUri) bool {
+func (a *Authorize) validateRedirectURI(s []*entity.RedirectURI, v string) bool {
+	return slices.ContainsFunc(s, func(uri *entity.RedirectURI) bool {
 		if uri.URI() != v {
 			return false
 		}

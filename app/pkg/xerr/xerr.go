@@ -24,7 +24,7 @@ var (
 	InvalidToken                 InternalError = "invalid token"
 	PasswordNotMatched           InternalError = "password not matched"
 	RecordNotFound               InternalError = "record not found"
-	RedirectUriNotFound          InternalError = "redirect uri not found"
+	RedirectURINotFound          InternalError = "redirect uri not found"
 	RefreshTokenNotFound         InternalError = "refresh token not found"
 	RefreshTokenNotMatched       InternalError = "refresh token not matched"
 	UnauthorizedRequest          InternalError = "unauthorized request"

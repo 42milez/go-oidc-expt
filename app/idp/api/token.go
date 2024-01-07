@@ -69,7 +69,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID string) {
 	ctx := r.Context()
 
-	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectUri) {
+	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectURI) {
 		RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		return
 	}
@@ -89,7 +89,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	if *param.RedirectUri != fp.RedirectURI {
+	if *param.RedirectURI != fp.RedirectURI {
 		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
@@ -243,7 +243,7 @@ func (t *Token) parseForm(r *http.Request) (*TokenFormdataBody, error) {
 	}
 
 	if !xutil.IsEmpty(redirectUri) {
-		ret.RedirectUri = &redirectUri
+		ret.RedirectURI = &redirectUri
 	}
 
 	if !xutil.IsEmpty(refreshToken) {

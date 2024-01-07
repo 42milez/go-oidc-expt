@@ -45,7 +45,7 @@ func (rp *RelyingParty) CreateAuthCode(ctx context.Context, code string, clientI
 	return entity.NewAuthCode(authCode), nil
 }
 
-func (rp *RelyingParty) ReadRedirectUris(ctx context.Context, clientID string) ([]*entity.RedirectUri, error) {
+func (rp *RelyingParty) ReadRedirectURIs(ctx context.Context, clientID string) ([]*entity.RedirectURI, error) {
 	redirectUris, err := rp.db.Client.RelyingParty.
 		Query().
 		Where(relyingparty.ClientID(clientID)).
@@ -55,10 +55,10 @@ func (rp *RelyingParty) ReadRedirectUris(ctx context.Context, clientID string) (
 		return nil, err
 	}
 
-	ret := make([]*entity.RedirectUri, len(redirectUris))
+	ret := make([]*entity.RedirectURI, len(redirectUris))
 
 	for i, v := range redirectUris {
-		ret[i] = entity.NewRedirectUri(v)
+		ret[i] = entity.NewRedirectURI(v)
 	}
 
 	return ret, nil

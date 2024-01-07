@@ -49,7 +49,7 @@ func (RelyingParty) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_codes", AuthCode.Type).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
-		edge.To("redirect_uris", RedirectUri.Type).
+		edge.To("redirect_uris", RedirectURI.Type).
 			Annotations(entsql.OnDelete(entsql.Cascade)),
 	}
 }

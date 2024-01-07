@@ -14,18 +14,18 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewRedirectUri(db *datastore.Database) *RedirectUri {
-	return &RedirectUri{
+func NewRedirectURI(db *datastore.Database) *RedirectURI {
+	return &RedirectURI{
 		db: db,
 	}
 }
 
-type RedirectUri struct {
+type RedirectURI struct {
 	db *datastore.Database
 }
 
-func (ru *RedirectUri) ReadRedirectUri(ctx context.Context, clientID string) (*entity.RedirectUri, error) {
-	v, err := ru.db.Client.RedirectUri.Query().
+func (ru *RedirectURI) ReadRedirectURI(ctx context.Context, clientID string) (*entity.RedirectURI, error) {
+	v, err := ru.db.Client.RedirectURI.Query().
 		Where(func(s *sql.Selector) {
 			t := sql.Table(relyingparty.Table)
 			s.Where(
@@ -38,10 +38,10 @@ func (ru *RedirectUri) ReadRedirectUri(ctx context.Context, clientID string) (*e
 		Only(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {
-			return nil, xerr.RedirectUriNotFound
+			return nil, xerr.RedirectURINotFound
 		} else {
 			return nil, err
 		}
 	}
-	return entity.NewRedirectUri(v), nil
+	return entity.NewRedirectURI(v), nil
 }

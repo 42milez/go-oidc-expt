@@ -8,32 +8,32 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 )
 
-func NewRedirectUri(entity *ent.RedirectUri) *RedirectUri {
-	return &RedirectUri{
+func NewRedirectURI(entity *ent.RedirectURI) *RedirectURI {
+	return &RedirectURI{
 		entity: entity,
 	}
 }
 
-type RedirectUri struct {
-	entity *ent.RedirectUri
+type RedirectURI struct {
+	entity *ent.RedirectURI
 }
 
-func (ru *RedirectUri) ID() typedef.RedirectURIID {
-	return ru.entity.ID
+func (ruri *RedirectURI) ID() typedef.RedirectURIID {
+	return ruri.entity.ID
 }
 
-func (ru *RedirectUri) URI() string {
-	return ru.entity.URI
+func (ruri *RedirectURI) URI() string {
+	return ruri.entity.URI
 }
 
-func (ru *RedirectUri) CreatedAt() time.Time {
-	return ru.entity.CreatedAt
+func (ruri *RedirectURI) CreatedAt() time.Time {
+	return ruri.entity.CreatedAt
 }
 
-func (ru *RedirectUri) ModifiedAt() time.Time {
-	return ru.entity.ModifiedAt
+func (ruri *RedirectURI) ModifiedAt() time.Time {
+	return ruri.entity.ModifiedAt
 }
 
-func (ru *RedirectUri) RelyingPartyID() typedef.RelyingPartyID {
-	return ru.entity.RelyingPartyID
+func (ruri *RedirectURI) RelyingPartyID() typedef.RelyingPartyID {
+	return ruri.entity.RelyingPartyID
 }

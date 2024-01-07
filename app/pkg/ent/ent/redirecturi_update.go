@@ -15,27 +15,27 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/redirecturi"
 )
 
-// RedirectUriUpdate is the builder for updating RedirectUri entities.
-type RedirectUriUpdate struct {
+// RedirectURIUpdate is the builder for updating RedirectURI entities.
+type RedirectURIUpdate struct {
 	config
 	hooks    []Hook
-	mutation *RedirectUriMutation
+	mutation *RedirectURIMutation
 }
 
-// Where appends a list predicates to the RedirectUriUpdate builder.
-func (ruu *RedirectUriUpdate) Where(ps ...predicate.RedirectUri) *RedirectUriUpdate {
+// Where appends a list predicates to the RedirectURIUpdate builder.
+func (ruu *RedirectURIUpdate) Where(ps ...predicate.RedirectURI) *RedirectURIUpdate {
 	ruu.mutation.Where(ps...)
 	return ruu
 }
 
 // SetURI sets the "uri" field.
-func (ruu *RedirectUriUpdate) SetURI(s string) *RedirectUriUpdate {
+func (ruu *RedirectURIUpdate) SetURI(s string) *RedirectURIUpdate {
 	ruu.mutation.SetURI(s)
 	return ruu
 }
 
 // SetNillableURI sets the "uri" field if the given value is not nil.
-func (ruu *RedirectUriUpdate) SetNillableURI(s *string) *RedirectUriUpdate {
+func (ruu *RedirectURIUpdate) SetNillableURI(s *string) *RedirectURIUpdate {
 	if s != nil {
 		ruu.SetURI(*s)
 	}
@@ -43,24 +43,24 @@ func (ruu *RedirectUriUpdate) SetNillableURI(s *string) *RedirectUriUpdate {
 }
 
 // SetModifiedAt sets the "modified_at" field.
-func (ruu *RedirectUriUpdate) SetModifiedAt(t time.Time) *RedirectUriUpdate {
+func (ruu *RedirectURIUpdate) SetModifiedAt(t time.Time) *RedirectURIUpdate {
 	ruu.mutation.SetModifiedAt(t)
 	return ruu
 }
 
-// Mutation returns the RedirectUriMutation object of the builder.
-func (ruu *RedirectUriUpdate) Mutation() *RedirectUriMutation {
+// Mutation returns the RedirectURIMutation object of the builder.
+func (ruu *RedirectURIUpdate) Mutation() *RedirectURIMutation {
 	return ruu.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (ruu *RedirectUriUpdate) Save(ctx context.Context) (int, error) {
+func (ruu *RedirectURIUpdate) Save(ctx context.Context) (int, error) {
 	ruu.defaults()
 	return withHooks(ctx, ruu.sqlSave, ruu.mutation, ruu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ruu *RedirectUriUpdate) SaveX(ctx context.Context) int {
+func (ruu *RedirectURIUpdate) SaveX(ctx context.Context) int {
 	affected, err := ruu.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -69,20 +69,20 @@ func (ruu *RedirectUriUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (ruu *RedirectUriUpdate) Exec(ctx context.Context) error {
+func (ruu *RedirectURIUpdate) Exec(ctx context.Context) error {
 	_, err := ruu.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ruu *RedirectUriUpdate) ExecX(ctx context.Context) {
+func (ruu *RedirectURIUpdate) ExecX(ctx context.Context) {
 	if err := ruu.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ruu *RedirectUriUpdate) defaults() {
+func (ruu *RedirectURIUpdate) defaults() {
 	if _, ok := ruu.mutation.ModifiedAt(); !ok {
 		v := redirecturi.UpdateDefaultModifiedAt()
 		ruu.mutation.SetModifiedAt(v)
@@ -90,19 +90,19 @@ func (ruu *RedirectUriUpdate) defaults() {
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ruu *RedirectUriUpdate) check() error {
+func (ruu *RedirectURIUpdate) check() error {
 	if v, ok := ruu.mutation.URI(); ok {
 		if err := redirecturi.URIValidator(v); err != nil {
-			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectUri.uri": %w`, err)}
+			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectURI.uri": %w`, err)}
 		}
 	}
 	if _, ok := ruu.mutation.RelyingPartyID(); ruu.mutation.RelyingPartyCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "RedirectUri.relying_party"`)
+		return errors.New(`ent: clearing a required unique edge "RedirectURI.relying_party"`)
 	}
 	return nil
 }
 
-func (ruu *RedirectUriUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (ruu *RedirectURIUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := ruu.check(); err != nil {
 		return n, err
 	}
@@ -132,22 +132,22 @@ func (ruu *RedirectUriUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// RedirectUriUpdateOne is the builder for updating a single RedirectUri entity.
-type RedirectUriUpdateOne struct {
+// RedirectURIUpdateOne is the builder for updating a single RedirectURI entity.
+type RedirectURIUpdateOne struct {
 	config
 	fields   []string
 	hooks    []Hook
-	mutation *RedirectUriMutation
+	mutation *RedirectURIMutation
 }
 
 // SetURI sets the "uri" field.
-func (ruuo *RedirectUriUpdateOne) SetURI(s string) *RedirectUriUpdateOne {
+func (ruuo *RedirectURIUpdateOne) SetURI(s string) *RedirectURIUpdateOne {
 	ruuo.mutation.SetURI(s)
 	return ruuo
 }
 
 // SetNillableURI sets the "uri" field if the given value is not nil.
-func (ruuo *RedirectUriUpdateOne) SetNillableURI(s *string) *RedirectUriUpdateOne {
+func (ruuo *RedirectURIUpdateOne) SetNillableURI(s *string) *RedirectURIUpdateOne {
 	if s != nil {
 		ruuo.SetURI(*s)
 	}
@@ -155,37 +155,37 @@ func (ruuo *RedirectUriUpdateOne) SetNillableURI(s *string) *RedirectUriUpdateOn
 }
 
 // SetModifiedAt sets the "modified_at" field.
-func (ruuo *RedirectUriUpdateOne) SetModifiedAt(t time.Time) *RedirectUriUpdateOne {
+func (ruuo *RedirectURIUpdateOne) SetModifiedAt(t time.Time) *RedirectURIUpdateOne {
 	ruuo.mutation.SetModifiedAt(t)
 	return ruuo
 }
 
-// Mutation returns the RedirectUriMutation object of the builder.
-func (ruuo *RedirectUriUpdateOne) Mutation() *RedirectUriMutation {
+// Mutation returns the RedirectURIMutation object of the builder.
+func (ruuo *RedirectURIUpdateOne) Mutation() *RedirectURIMutation {
 	return ruuo.mutation
 }
 
-// Where appends a list predicates to the RedirectUriUpdate builder.
-func (ruuo *RedirectUriUpdateOne) Where(ps ...predicate.RedirectUri) *RedirectUriUpdateOne {
+// Where appends a list predicates to the RedirectURIUpdate builder.
+func (ruuo *RedirectURIUpdateOne) Where(ps ...predicate.RedirectURI) *RedirectURIUpdateOne {
 	ruuo.mutation.Where(ps...)
 	return ruuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (ruuo *RedirectUriUpdateOne) Select(field string, fields ...string) *RedirectUriUpdateOne {
+func (ruuo *RedirectURIUpdateOne) Select(field string, fields ...string) *RedirectURIUpdateOne {
 	ruuo.fields = append([]string{field}, fields...)
 	return ruuo
 }
 
-// Save executes the query and returns the updated RedirectUri entity.
-func (ruuo *RedirectUriUpdateOne) Save(ctx context.Context) (*RedirectUri, error) {
+// Save executes the query and returns the updated RedirectURI entity.
+func (ruuo *RedirectURIUpdateOne) Save(ctx context.Context) (*RedirectURI, error) {
 	ruuo.defaults()
 	return withHooks(ctx, ruuo.sqlSave, ruuo.mutation, ruuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ruuo *RedirectUriUpdateOne) SaveX(ctx context.Context) *RedirectUri {
+func (ruuo *RedirectURIUpdateOne) SaveX(ctx context.Context) *RedirectURI {
 	node, err := ruuo.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -194,20 +194,20 @@ func (ruuo *RedirectUriUpdateOne) SaveX(ctx context.Context) *RedirectUri {
 }
 
 // Exec executes the query on the entity.
-func (ruuo *RedirectUriUpdateOne) Exec(ctx context.Context) error {
+func (ruuo *RedirectURIUpdateOne) Exec(ctx context.Context) error {
 	_, err := ruuo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ruuo *RedirectUriUpdateOne) ExecX(ctx context.Context) {
+func (ruuo *RedirectURIUpdateOne) ExecX(ctx context.Context) {
 	if err := ruuo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ruuo *RedirectUriUpdateOne) defaults() {
+func (ruuo *RedirectURIUpdateOne) defaults() {
 	if _, ok := ruuo.mutation.ModifiedAt(); !ok {
 		v := redirecturi.UpdateDefaultModifiedAt()
 		ruuo.mutation.SetModifiedAt(v)
@@ -215,26 +215,26 @@ func (ruuo *RedirectUriUpdateOne) defaults() {
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ruuo *RedirectUriUpdateOne) check() error {
+func (ruuo *RedirectURIUpdateOne) check() error {
 	if v, ok := ruuo.mutation.URI(); ok {
 		if err := redirecturi.URIValidator(v); err != nil {
-			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectUri.uri": %w`, err)}
+			return &ValidationError{Name: "uri", err: fmt.Errorf(`ent: validator failed for field "RedirectURI.uri": %w`, err)}
 		}
 	}
 	if _, ok := ruuo.mutation.RelyingPartyID(); ruuo.mutation.RelyingPartyCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "RedirectUri.relying_party"`)
+		return errors.New(`ent: clearing a required unique edge "RedirectURI.relying_party"`)
 	}
 	return nil
 }
 
-func (ruuo *RedirectUriUpdateOne) sqlSave(ctx context.Context) (_node *RedirectUri, err error) {
+func (ruuo *RedirectURIUpdateOne) sqlSave(ctx context.Context) (_node *RedirectURI, err error) {
 	if err := ruuo.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(redirecturi.Table, redirecturi.Columns, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	id, ok := ruuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RedirectUri.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RedirectURI.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ruuo.fields; len(fields) > 0 {
@@ -262,7 +262,7 @@ func (ruuo *RedirectUriUpdateOne) sqlSave(ctx context.Context) (_node *RedirectU
 	if value, ok := ruuo.mutation.ModifiedAt(); ok {
 		_spec.SetField(redirecturi.FieldModifiedAt, field.TypeTime, value)
 	}
-	_node = &RedirectUri{config: ruuo.config}
+	_node = &RedirectURI{config: ruuo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
 	if err = sqlgraph.UpdateNode(ctx, ruuo.driver, _spec); err != nil {

@@ -37,7 +37,7 @@ const (
 	AuthCodesColumn = "relying_party_id"
 	// RedirectUrisTable is the table that holds the redirect_uris relation/edge.
 	RedirectUrisTable = "redirect_uris"
-	// RedirectUrisInverseTable is the table name for the RedirectUri entity.
+	// RedirectUrisInverseTable is the table name for the RedirectURI entity.
 	// It exists in this package in order to avoid circular dependency with the "redirecturi" package.
 	RedirectUrisInverseTable = "redirect_uris"
 	// RedirectUrisColumn is the table column denoting the redirect_uris relation/edge.

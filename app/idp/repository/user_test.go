@@ -14,6 +14,6 @@ func TestUser_ReadUser(t *testing.T) {
 	// NOT IMPLEMENTED
 }
 
-func TestUser_ReadRedirectUriByUserID(t *testing.T) {
+func TestUser_ReadRedirectURIByUserID(t *testing.T) {
 	// NOT IMPLEMENTED
 }

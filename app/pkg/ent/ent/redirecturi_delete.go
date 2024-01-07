@@ -12,26 +12,26 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/redirecturi"
 )
 
-// RedirectUriDelete is the builder for deleting a RedirectUri entity.
-type RedirectUriDelete struct {
+// RedirectURIDelete is the builder for deleting a RedirectURI entity.
+type RedirectURIDelete struct {
 	config
 	hooks    []Hook
-	mutation *RedirectUriMutation
+	mutation *RedirectURIMutation
 }
 
-// Where appends a list predicates to the RedirectUriDelete builder.
-func (rud *RedirectUriDelete) Where(ps ...predicate.RedirectUri) *RedirectUriDelete {
+// Where appends a list predicates to the RedirectURIDelete builder.
+func (rud *RedirectURIDelete) Where(ps ...predicate.RedirectURI) *RedirectURIDelete {
 	rud.mutation.Where(ps...)
 	return rud
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (rud *RedirectUriDelete) Exec(ctx context.Context) (int, error) {
+func (rud *RedirectURIDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, rud.sqlExec, rud.mutation, rud.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rud *RedirectUriDelete) ExecX(ctx context.Context) int {
+func (rud *RedirectURIDelete) ExecX(ctx context.Context) int {
 	n, err := rud.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,7 +39,7 @@ func (rud *RedirectUriDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (rud *RedirectUriDelete) sqlExec(ctx context.Context) (int, error) {
+func (rud *RedirectURIDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(redirecturi.Table, sqlgraph.NewFieldSpec(redirecturi.FieldID, field.TypeUint64))
 	if ps := rud.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -56,19 +56,19 @@ func (rud *RedirectUriDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// RedirectUriDeleteOne is the builder for deleting a single RedirectUri entity.
-type RedirectUriDeleteOne struct {
-	rud *RedirectUriDelete
+// RedirectURIDeleteOne is the builder for deleting a single RedirectURI entity.
+type RedirectURIDeleteOne struct {
+	rud *RedirectURIDelete
 }
 
-// Where appends a list predicates to the RedirectUriDelete builder.
-func (rudo *RedirectUriDeleteOne) Where(ps ...predicate.RedirectUri) *RedirectUriDeleteOne {
+// Where appends a list predicates to the RedirectURIDelete builder.
+func (rudo *RedirectURIDeleteOne) Where(ps ...predicate.RedirectURI) *RedirectURIDeleteOne {
 	rudo.rud.mutation.Where(ps...)
 	return rudo
 }
 
 // Exec executes the deletion query.
-func (rudo *RedirectUriDeleteOne) Exec(ctx context.Context) error {
+func (rudo *RedirectURIDeleteOne) Exec(ctx context.Context) error {
 	n, err := rudo.rud.Exec(ctx)
 	switch {
 	case err != nil:
@@ -81,7 +81,7 @@ func (rudo *RedirectUriDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rudo *RedirectUriDeleteOne) ExecX(ctx context.Context) {
+func (rudo *RedirectURIDeleteOne) ExecX(ctx context.Context) {
 	if err := rudo.Exec(ctx); err != nil {
 		panic(err)
 	}

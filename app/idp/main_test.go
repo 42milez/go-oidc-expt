@@ -63,7 +63,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 			MaxAge:       86400,
 			Nonce:        nonce,
 			Prompt:       "consent",
-			RedirectUri:  redirectUri,
+			RedirectURI:  redirectUri,
 			ResponseType: responseType,
 			Scope:        scope,
 			State:        state,
@@ -92,7 +92,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 			xtestutil.ExitOnError(t, err)
 		})
 
-		_, err = db.Client.RedirectUri.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
+		_, err = db.Client.RedirectURI.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
 		xtestutil.ExitOnError(t, err)
 
 		return entity.NewRelyingParty(rp)

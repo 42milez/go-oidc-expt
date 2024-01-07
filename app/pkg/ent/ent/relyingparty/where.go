@@ -321,7 +321,7 @@ func HasRedirectUris() predicate.RelyingParty {
 }
 
 // HasRedirectUrisWith applies the HasEdge predicate on the "redirect_uris" edge with a given conditions (other predicates).
-func HasRedirectUrisWith(preds ...predicate.RedirectUri) predicate.RelyingParty {
+func HasRedirectUrisWith(preds ...predicate.RedirectURI) predicate.RelyingParty {
 	return predicate.RelyingParty(func(s *sql.Selector) {
 		step := newRedirectUrisStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

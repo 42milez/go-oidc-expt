@@ -94,7 +94,7 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.RequestParamKey{}).Return(&AuthorizeParams{
 				ClientID:     "9NXtT29fw2lvmQ5EA42htc8sfNRQYe",
 				Nonce:        "K45zJFN4L7tXjlXpFtVRjqWbSnSCz6",
-				RedirectUri:  "https://example.com/cb",
+				RedirectURI:  "https://example.com/cb",
 				ResponseType: "code",
 				Scope:        "openid",
 				State:        "lgwyrqpZ0jLGQI5Ftu94HytJRJOJSa",

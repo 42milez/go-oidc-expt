@@ -327,6 +327,7 @@ components:
         schema: redirect_uri
         url: redirect_uri
         validate: required,url_encoded
+      x-go-name: RedirectURI
     ResponseType:
       name: response_type
       in: query
@@ -397,6 +398,7 @@ components:
                 x-oapi-codegen-extra-tags:
                   schema: redirect_uri
                   validate: omitempty,url_encoded
+                x-go-name: RedirectURI
               refresh_token:
                 description: represents "refresh_token" parameter
                 type: string

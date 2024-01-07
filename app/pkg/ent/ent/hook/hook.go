@@ -33,16 +33,16 @@ func (f ConsentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConsentMutation", m)
 }
 
-// The RedirectUriFunc type is an adapter to allow the use of ordinary
-// function as RedirectUri mutator.
-type RedirectUriFunc func(context.Context, *ent.RedirectUriMutation) (ent.Value, error)
+// The RedirectURIFunc type is an adapter to allow the use of ordinary
+// function as RedirectURI mutator.
+type RedirectURIFunc func(context.Context, *ent.RedirectURIMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f RedirectUriFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.RedirectUriMutation); ok {
+func (f RedirectURIFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RedirectURIMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RedirectUriMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RedirectURIMutation", m)
 }
 
 // The RelyingPartyFunc type is an adapter to allow the use of ordinary
