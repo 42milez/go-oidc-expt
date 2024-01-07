@@ -94,21 +94,21 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	tokens, err := t.generateTokens(fp, clientID)
+	tokenSet, err := t.generateTokens(fp, clientID)
 	if err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
 
-	if err = t.cache.WriteRefreshToken(ctx, *tokens[refreshTokenKey], clientID, fp.UserID); err != nil {
+	if err = t.cache.WriteRefreshToken(ctx, tokenSet.RefreshToken, clientID, fp.UserID); err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
 
 	respBody := &TokenResponse{
-		AccessToken:  *tokens[accessTokenKey],
-		RefreshToken: *tokens[refreshTokenKey],
-		IDToken:      tokens[idTokenKey],
+		AccessToken:  tokenSet.AccessToken,
+		RefreshToken: tokenSet.RefreshToken,
+		IDToken:      &tokenSet.IDToken,
 		TokenType:    config.BearerTokenType,
 		ExpiresIn:    3600,
 	}
@@ -140,11 +140,13 @@ func respondRevokeAuthCodeError(w http.ResponseWriter, r *http.Request, err erro
 	RespondServerError(w, r, err)
 }
 
-const accessTokenKey = "AccessToken"
-const refreshTokenKey = "RefreshToken"
-const idTokenKey = "IDToken"
+type TokenSet struct {
+	AccessToken  string
+	RefreshToken string
+	IDToken      string
+}
 
-func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, clientID typedef.ClientID) (map[string]*string, error) {
+func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, clientID typedef.ClientID) (*TokenSet, error) {
 	accessToken, err := t.acSVC.GenerateAccessToken(param.UserID, nil)
 	if err != nil {
 		return nil, err
@@ -161,10 +163,10 @@ func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, c
 		return nil, err
 	}
 
-	return map[string]*string{
-		accessTokenKey:  &accessToken,
-		refreshTokenKey: &refreshToken,
-		idTokenKey:      &idToken,
+	return &TokenSet{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		IDToken:      idToken,
 	}, nil
 }
 
