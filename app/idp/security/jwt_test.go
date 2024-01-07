@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
-	"github.com/42milez/go-oidc-server/app/pkg/xtime"
-
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
@@ -224,7 +224,7 @@ func TestJWT_Validate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if err := j.Validate(token); err != nil {
+			if _, err := j.Parse(token); err != nil {
 				t.Error(err)
 			}
 		})

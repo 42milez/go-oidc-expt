@@ -16,6 +16,7 @@ import (
 	time "time"
 
 	typedef "github.com/42milez/go-oidc-server/app/pkg/typedef"
+	jwt "github.com/lestrrat-go/jwx/v2/jwt"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -402,68 +403,69 @@ func (mr *MockTokenGeneratorMockRecorder) GenerateRefreshToken(uid, claims any) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenGenerator)(nil).GenerateRefreshToken), uid, claims)
 }
 
-// MockTokenValidator is a mock of TokenValidator interface.
-type MockTokenValidator struct {
+// MockTokenParser is a mock of TokenParser interface.
+type MockTokenParser struct {
 	ctrl     *gomock.Controller
-	recorder *MockTokenValidatorMockRecorder
+	recorder *MockTokenParserMockRecorder
 }
 
-// MockTokenValidatorMockRecorder is the mock recorder for MockTokenValidator.
-type MockTokenValidatorMockRecorder struct {
-	mock *MockTokenValidator
+// MockTokenParserMockRecorder is the mock recorder for MockTokenParser.
+type MockTokenParserMockRecorder struct {
+	mock *MockTokenParser
 }
 
-// NewMockTokenValidator creates a new mock instance.
-func NewMockTokenValidator(ctrl *gomock.Controller) *MockTokenValidator {
-	mock := &MockTokenValidator{ctrl: ctrl}
-	mock.recorder = &MockTokenValidatorMockRecorder{mock}
+// NewMockTokenParser creates a new mock instance.
+func NewMockTokenParser(ctrl *gomock.Controller) *MockTokenParser {
+	mock := &MockTokenParser{ctrl: ctrl}
+	mock.recorder = &MockTokenParserMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenValidator) EXPECT() *MockTokenValidatorMockRecorder {
+func (m *MockTokenParser) EXPECT() *MockTokenParserMockRecorder {
 	return m.recorder
 }
 
-// Validate mocks base method.
-func (m *MockTokenValidator) Validate(name string) error {
+// Parse mocks base method.
+func (m *MockTokenParser) Parse(token string) (jwt.Token, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Validate", name)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "Parse", token)
+	ret0, _ := ret[0].(jwt.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// Validate indicates an expected call of Validate.
-func (mr *MockTokenValidatorMockRecorder) Validate(name any) *gomock.Call {
+// Parse indicates an expected call of Parse.
+func (mr *MockTokenParserMockRecorder) Parse(token any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockTokenValidator)(nil).Validate), name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Parse", reflect.TypeOf((*MockTokenParser)(nil).Parse), token)
 }
 
-// MockTokenGenerateValidator is a mock of TokenGenerateValidator interface.
-type MockTokenGenerateValidator struct {
+// MockTokenProcessor is a mock of TokenProcessor interface.
+type MockTokenProcessor struct {
 	ctrl     *gomock.Controller
-	recorder *MockTokenGenerateValidatorMockRecorder
+	recorder *MockTokenProcessorMockRecorder
 }
 
-// MockTokenGenerateValidatorMockRecorder is the mock recorder for MockTokenGenerateValidator.
-type MockTokenGenerateValidatorMockRecorder struct {
-	mock *MockTokenGenerateValidator
+// MockTokenProcessorMockRecorder is the mock recorder for MockTokenProcessor.
+type MockTokenProcessorMockRecorder struct {
+	mock *MockTokenProcessor
 }
 
-// NewMockTokenGenerateValidator creates a new mock instance.
-func NewMockTokenGenerateValidator(ctrl *gomock.Controller) *MockTokenGenerateValidator {
-	mock := &MockTokenGenerateValidator{ctrl: ctrl}
-	mock.recorder = &MockTokenGenerateValidatorMockRecorder{mock}
+// NewMockTokenProcessor creates a new mock instance.
+func NewMockTokenProcessor(ctrl *gomock.Controller) *MockTokenProcessor {
+	mock := &MockTokenProcessor{ctrl: ctrl}
+	mock.recorder = &MockTokenProcessorMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockTokenGenerateValidator) EXPECT() *MockTokenGenerateValidatorMockRecorder {
+func (m *MockTokenProcessor) EXPECT() *MockTokenProcessorMockRecorder {
 	return m.recorder
 }
 
 // GenerateAccessToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
+func (m *MockTokenProcessor) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateAccessToken", uid, claims)
 	ret0, _ := ret[0].(string)
@@ -472,13 +474,13 @@ func (m *MockTokenGenerateValidator) GenerateAccessToken(uid typedef.UserID, cla
 }
 
 // GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateAccessToken(uid, claims any) *gomock.Call {
+func (mr *MockTokenProcessorMockRecorder) GenerateAccessToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateAccessToken), uid, claims)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockTokenProcessor)(nil).GenerateAccessToken), uid, claims)
 }
 
 // GenerateIdToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
+func (m *MockTokenProcessor) GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateIdToken", uid, audiences, authTime, nonce)
 	ret0, _ := ret[0].(string)
@@ -487,13 +489,13 @@ func (m *MockTokenGenerateValidator) GenerateIdToken(uid typedef.UserID, audienc
 }
 
 // GenerateIdToken indicates an expected call of GenerateIdToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateIdToken(uid, audiences, authTime, nonce any) *gomock.Call {
+func (mr *MockTokenProcessorMockRecorder) GenerateIdToken(uid, audiences, authTime, nonce any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateIdToken), uid, audiences, authTime, nonce)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateIdToken", reflect.TypeOf((*MockTokenProcessor)(nil).GenerateIdToken), uid, audiences, authTime, nonce)
 }
 
 // GenerateRefreshToken mocks base method.
-func (m *MockTokenGenerateValidator) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error) {
+func (m *MockTokenProcessor) GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateRefreshToken", uid, claims)
 	ret0, _ := ret[0].(string)
@@ -502,23 +504,24 @@ func (m *MockTokenGenerateValidator) GenerateRefreshToken(uid typedef.UserID, cl
 }
 
 // GenerateRefreshToken indicates an expected call of GenerateRefreshToken.
-func (mr *MockTokenGenerateValidatorMockRecorder) GenerateRefreshToken(uid, claims any) *gomock.Call {
+func (mr *MockTokenProcessorMockRecorder) GenerateRefreshToken(uid, claims any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenGenerateValidator)(nil).GenerateRefreshToken), uid, claims)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateRefreshToken", reflect.TypeOf((*MockTokenProcessor)(nil).GenerateRefreshToken), uid, claims)
 }
 
-// Validate mocks base method.
-func (m *MockTokenGenerateValidator) Validate(name string) error {
+// Parse mocks base method.
+func (m *MockTokenProcessor) Parse(token string) (jwt.Token, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Validate", name)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "Parse", token)
+	ret0, _ := ret[0].(jwt.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// Validate indicates an expected call of Validate.
-func (mr *MockTokenGenerateValidatorMockRecorder) Validate(name any) *gomock.Call {
+// Parse indicates an expected call of Parse.
+func (mr *MockTokenProcessorMockRecorder) Parse(token any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockTokenGenerateValidator)(nil).Validate), name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Parse", reflect.TypeOf((*MockTokenProcessor)(nil).Parse), token)
 }
 
 // MockAuthorizationRequestFingerprintReader is a mock of AuthorizationRequestFingerprintReader interface.
@@ -620,18 +623,18 @@ func (m *MockRefreshTokenReader) EXPECT() *MockRefreshTokenReaderMockRecorder {
 }
 
 // ReadRefreshToken mocks base method.
-func (m *MockRefreshTokenReader) ReadRefreshToken(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error) {
+func (m *MockRefreshTokenReader) ReadRefreshToken(ctx context.Context, clientID string, userID typedef.UserID) (jwt.Token, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRefreshToken", ctx, token)
-	ret0, _ := ret[0].(*typedef.RefreshTokenPermission)
+	ret := m.ctrl.Call(m, "ReadRefreshToken", ctx, clientID, userID)
+	ret0, _ := ret[0].(jwt.Token)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReadRefreshToken indicates an expected call of ReadRefreshToken.
-func (mr *MockRefreshTokenReaderMockRecorder) ReadRefreshToken(ctx, token any) *gomock.Call {
+func (mr *MockRefreshTokenReaderMockRecorder) ReadRefreshToken(ctx, clientID, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRefreshToken", reflect.TypeOf((*MockRefreshTokenReader)(nil).ReadRefreshToken), ctx, token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRefreshToken", reflect.TypeOf((*MockRefreshTokenReader)(nil).ReadRefreshToken), ctx, clientID, userID)
 }
 
 // MockRefreshTokenWriter is a mock of RefreshTokenWriter interface.

@@ -58,12 +58,9 @@ func (c *Cache) ReadHashAll(ctx context.Context, key string) (map[string]string,
 }
 
 func (c *Cache) Write(ctx context.Context, key string, value any, ttl time.Duration) error {
-	ok, err := c.cache.Client.SetNX(ctx, key, value, ttl).Result()
+	_, err := c.cache.Client.Set(ctx, key, value, ttl).Result()
 	if err != nil {
 		return xerr.UnexpectedErrorOccurred.Wrap(err)
-	}
-	if !ok {
-		return xerr.CacheKeyDuplicated
 	}
 	return nil
 }

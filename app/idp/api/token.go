@@ -171,30 +171,39 @@ func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, c
 func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
 	ctx := r.Context()
 
-	perm, err := t.rtSVC.ReadRefreshToken(ctx, *param.RefreshToken, clientId)
+	err := t.rtSVC.VerifyRefreshToken(ctx, *param.RefreshToken, clientId)
 	if err != nil {
 		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
 			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
-		} else if errors.Is(err, xerr.RefreshTokenPermissionNotFound) {
+			return
+		} else if errors.Is(err, xerr.RefreshTokenNotFound) {
 			RespondJSON401(w, r, xerr.InvalidRequest2, nil, err)
+			return
 		} else {
 			RespondJSON500(w, r, err)
+			return
 		}
 	}
 
-	accessToken, err := t.rtSVC.GenerateAccessToken(perm.UserId, nil)
+	uid, err := t.rtSVC.ExtractUserID(*param.RefreshToken)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	refreshToken, err := t.rtSVC.GenerateRefreshToken(perm.UserId, nil)
+	accessToken, err := t.rtSVC.GenerateAccessToken(uid, nil)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	if err = t.cache.WriteRefreshToken(ctx, refreshToken, clientId, perm.UserId); err != nil {
+	refreshToken, err := t.rtSVC.GenerateRefreshToken(uid, nil)
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	if err = t.cache.WriteRefreshToken(ctx, refreshToken, clientId, uid); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

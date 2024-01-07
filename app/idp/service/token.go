@@ -3,7 +3,10 @@ package service
 import (
 	"context"
 	"errors"
+	"strconv"
 	"time"
+
+	"github.com/lestrrat-go/jwx/v2/jwt"
 
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
@@ -90,24 +93,42 @@ func NewRefreshTokenGrant(opt *option.Option) *RefreshTokenGrant {
 
 type RefreshTokenGrant struct {
 	cache iface.RefreshTokenReader
-	token iface.TokenGenerateValidator
+	token iface.TokenProcessor
 }
 
-func (r *RefreshTokenGrant) ReadRefreshToken(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
-	if err := r.token.Validate(token); err != nil {
-		return nil, xerr.InvalidToken
-	}
-
-	perm, err := r.cache.ReadRefreshToken(ctx, token)
+func (r *RefreshTokenGrant) VerifyRefreshToken(ctx context.Context, token string, clientID string) error {
+	rt1, err := r.token.Parse(token)
 	if err != nil {
-		return nil, xerr.RefreshTokenPermissionNotFound
+		return xerr.InvalidToken
 	}
 
-	if perm.ClientId != clientId {
-		return nil, xerr.ClientIdNotMatched
+	uid, err := strconv.Atoi(rt1.Subject())
+	if err != nil {
+		return err
 	}
 
-	return perm, nil
+	rt2, err := r.cache.ReadRefreshToken(ctx, clientID, typedef.UserID(uid))
+	if err != nil {
+		return xerr.RefreshTokenNotFound
+	}
+
+	if !jwt.Equal(rt1, rt2) {
+		return xerr.RefreshTokenNotMatched
+	}
+
+	return nil
+}
+
+func (r *RefreshTokenGrant) ExtractUserID(refreshToken string) (typedef.UserID, error) {
+	t, err := r.token.Parse(refreshToken)
+	if err != nil {
+		return 0, err
+	}
+	uid, err := strconv.Atoi(t.Subject())
+	if err != nil {
+		return 0, err
+	}
+	return typedef.UserID(uid), nil
 }
 
 func (r *RefreshTokenGrant) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {

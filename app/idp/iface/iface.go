@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/lestrrat-go/jwx/v2/jwt"
+
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 )
 
@@ -61,13 +63,18 @@ type TokenGenerator interface {
 	IdTokenGenerator
 }
 
-type TokenValidator interface {
-	Validate(name string) error
+type TokenParser interface {
+	Parse(token string) (jwt.Token, error)
 }
 
-type TokenGenerateValidator interface {
+//type TokenValidator interface {
+//	Validate(name string) error
+//}
+
+type TokenProcessor interface {
 	TokenGenerator
-	TokenValidator
+	TokenParser
+	//TokenValidator
 }
 
 //  Cache
@@ -82,7 +89,7 @@ type AuthorizationRequestFingerprintWriter interface {
 }
 
 type RefreshTokenReader interface {
-	ReadRefreshToken(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error)
+	ReadRefreshToken(ctx context.Context, clientID string, userID typedef.UserID) (jwt.Token, error)
 }
 
 type RefreshTokenWriter interface {

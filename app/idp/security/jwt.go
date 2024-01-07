@@ -135,14 +135,19 @@ func (j *JWT) GenerateIdToken(uid typedef.UserID, audiences []string, authTime t
 	return string(ret), nil
 }
 
-func (j *JWT) Validate(token string) error {
-	t, err := jwt.ParseString(token, jwt.WithKey(jwa.ES256, j.publicKey))
-	if err != nil {
-		return xerr.InvalidToken
-	}
-	return j.validate(t)
+func (j *JWT) Parse(token string) (jwt.Token, error) {
+	// NOTE: ParseString() performs verification by default.
+	return jwt.ParseString(token, jwt.WithKey(jwa.ES256, j.publicKey))
 }
 
-func (j *JWT) validate(token jwt.Token) error {
-	return jwt.Validate(token, jwt.WithClock(j.clock))
-}
+//func (j *JWT) Validate(token string) error {
+//	t, err := jwt.ParseString(token, jwt.WithKey(jwa.ES256, j.publicKey))
+//	if err != nil {
+//		return xerr.InvalidToken
+//	}
+//	return j.validate(t)
+//}
+//
+//func (j *JWT) validate(token jwt.Token) error {
+//	return jwt.Validate(token, jwt.WithClock(j.clock))
+//}
