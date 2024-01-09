@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
 	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 
@@ -41,7 +43,7 @@ func TestNewOapiErrorHandler(t *testing.T) {
 	ctx := context.Background()
 
 	createRelyingParty := func() *entity.RelyingParty {
-		clientID := "CDcp9v3Nn4i70FqWig5AuohmorD6MG"
+		clientID := typedef.ClientID("CDcp9v3Nn4i70FqWig5AuohmorD6MG")
 		clientSecret := "whc5nzVjt7AQpTrAhUqVaGgV2PK4oo"
 
 		rp, err := opt.DB.Client.RelyingParty.Create().SetClientID(clientID).SetClientSecret(clientSecret).Save(ctx)

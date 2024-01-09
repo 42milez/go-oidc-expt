@@ -38,7 +38,7 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		RespondServerError(w, r, xerr.TypeAssertionFailed)
 	}
 	if err := a.v.Struct(params); err != nil {
-		RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.InvalidRequest)
+		RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.InvalidRequest)
 		return
 	}
 
@@ -48,34 +48,28 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
-	location, authCode, err := a.svc.Authorize(r.Context(), params.ClientID, params.RedirectUri, params.State)
+	location, authCode, err := a.svc.Authorize(r.Context(), params.ClientID, params.RedirectURI, params.State)
 	if err != nil {
-		if errors.Is(err, xerr.UserIdNotFoundInContext) {
-			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.AccessDenied)
+		if errors.Is(err, xerr.UserIDNotFoundInContext) {
+			RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.AccessDenied)
 		} else if errors.Is(err, xerr.InvalidRedirectURI) {
-			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.InvalidRequest)
+			RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.InvalidRequest)
 		} else {
 			RespondServerError(w, r, err)
 		}
 		return
 	}
 
-	fp := &typedef.AuthorizationRequestFingerPrintParam{
-		ClientID:    params.ClientID,
-		RedirectURI: params.RedirectUri,
-		AuthCode:    authCode,
-		Nonce:       params.Nonce,
-	}
-	if err := a.svc.SaveRequestFingerprint(ctx, fp); err != nil {
-		if errors.Is(err, xerr.UserIdNotFoundInContext) {
-			RespondAuthorizationRequestError(w, r, params.RedirectUri, params.State, xerr.AccessDenied)
+	if err := a.svc.SaveAuthorizationRequestFingerprint(ctx, params.ClientID, params.RedirectURI, params.Nonce, authCode); err != nil {
+		if errors.Is(err, xerr.UserIDNotFoundInContext) {
+			RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.AccessDenied)
 		} else {
 			RespondServerError(w, r, err)
 		}
 		return
 	}
 
-	Redirect(w, r, location, http.StatusFound)
+	http.Redirect(w, r, location.String(), http.StatusFound)
 }
 
 func NewAuthorizePost() *AuthorizePost {

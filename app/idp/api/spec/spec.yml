@@ -238,6 +238,7 @@ components:
       required: true
       schema:
         type: string
+        x-go-type: typedef.ClientID
       example: WDAVqWSJzs78oZE8JXmVfq0j1NhJvb
       x-go-name: ClientID
       x-oapi-codegen-extra-tags:
@@ -327,6 +328,7 @@ components:
         schema: redirect_uri
         url: redirect_uri
         validate: required,url_encoded
+      x-go-name: RedirectURI
     ResponseType:
       name: response_type
       in: query
@@ -397,6 +399,7 @@ components:
                 x-oapi-codegen-extra-tags:
                   schema: redirect_uri
                   validate: omitempty,url_encoded
+                x-go-name: RedirectURI
               refresh_token:
                 description: represents "refresh_token" parameter
                 type: string
@@ -517,6 +520,7 @@ components:
         id_token:
           type: string
           example: ''
+          x-go-name: IDToken
         refresh_token:
           type: string
           example: ''

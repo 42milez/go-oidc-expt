@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/xtime"
+
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
-	"github.com/42milez/go-oidc-server/app/pkg/xtime"
-
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
@@ -32,7 +32,7 @@ func TestJWT_Embed(t *testing.T) {
 	}
 }
 
-func TestJWT_GenerateIdToken(t *testing.T) {
+func TestJWT_GenerateIDToken(t *testing.T) {
 	t.Parallel()
 
 	clock := &xtestutil.FixedClocker{}
@@ -82,7 +82,7 @@ func TestJWT_GenerateIdToken(t *testing.T) {
 				t.Fatal("type assertion failed")
 			}
 
-			got, err := j.GenerateIdToken(tt.WantUserID, audiences, authTime, nonce)
+			got, err := j.GenerateIDToken(tt.WantUserID, audiences, authTime, nonce)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -208,7 +208,7 @@ func TestJWT_Validate(t *testing.T) {
 			UserID:    uid,
 		},
 		//"IDToken_OK": {
-		//	Generator: j.GenerateIdToken,
+		//	Generator: j.GenerateIDToken,
 		//	UserID:    uid,
 		//},
 	}
@@ -224,7 +224,7 @@ func TestJWT_Validate(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if err := j.Validate(token); err != nil {
+			if _, err := j.Parse(token); err != nil {
 				t.Error(err)
 			}
 		})

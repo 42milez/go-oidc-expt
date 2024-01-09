@@ -34,7 +34,7 @@ type UserCreator interface {
 }
 
 type ConsentReader interface {
-	ReadConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error)
+	ReadConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (*entity.Consent, error)
 }
 
 type UserReader interface {
@@ -47,38 +47,38 @@ type UserConsentReader interface {
 }
 
 type CredentialReader interface {
-	ReadCredential(ctx context.Context, clientID, clientSecret string) (*entity.RelyingParty, error)
+	ReadCredential(ctx context.Context, clientID typedef.ClientID, clientSecret string) (*entity.RelyingParty, error)
 }
 
 //  Authorization
 // --------------------------------------------------
 
 type AuthCodeCreator interface {
-	CreateAuthCode(ctx context.Context, code string, clientID string, userID typedef.UserID) (*entity.AuthCode, error)
+	CreateAuthCode(ctx context.Context, code string, clientID typedef.ClientID, userID typedef.UserID) (*entity.AuthCode, error)
 }
 
-type RedirectUrisReader interface {
-	ReadRedirectUris(ctx context.Context, clientID string) ([]*entity.RedirectUri, error)
+type RedirectURIsReader interface {
+	ReadRedirectURIs(ctx context.Context, clientID typedef.ClientID) ([]*entity.RedirectURI, error)
 }
 
 type Authorizer interface {
 	AuthCodeCreator
-	RedirectUrisReader
+	RedirectURIsReader
 }
 
 type ConsentCreator interface {
-	CreateConsent(ctx context.Context, userID typedef.UserID, clientID string) (*entity.Consent, error)
+	CreateConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (*entity.Consent, error)
 }
 
 //  Token
 // --------------------------------------------------
 
 type AuthCodeReader interface {
-	ReadAuthCode(ctx context.Context, code string, clientId string) (*entity.AuthCode, error)
+	ReadAuthCode(ctx context.Context, code string, clientID typedef.ClientID) (*entity.AuthCode, error)
 }
 
 type AuthCodeRevoker interface {
-	RevokeAuthCode(ctx context.Context, code, clientId string) (*entity.AuthCode, error)
+	RevokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) (*entity.AuthCode, error)
 }
 
 type AuthCodeReadRevoker interface {
@@ -86,6 +86,6 @@ type AuthCodeReadRevoker interface {
 	AuthCodeRevoker
 }
 
-type RedirectUriReader interface {
-	ReadRedirectUri(ctx context.Context, clientId string) (*entity.RedirectUri, error)
+type RedirectURIReader interface {
+	ReadRedirectURI(ctx context.Context, clientID typedef.ClientID) (*entity.RedirectURI, error)
 }

@@ -20,12 +20,6 @@ type UserID uint64
 
 type RequestParamKey struct{}
 
-type SessionIdKey struct{}
-
-func (sid SessionID) String() string {
-	return strconv.FormatUint(uint64(sid), 10)
-}
-
 func (uid UserID) MarshalBinary() ([]byte, error) {
 	return []byte(strconv.FormatUint(uint64(uid), 10)), nil
 }
@@ -34,28 +28,20 @@ func (uid UserID) String() string {
 	return strconv.FormatUint(uint64(uid), 10)
 }
 
-//  Cache
-// --------------------------------------------------
-
-type OIDCParam struct {
-	RedirectURI string
-	UserId      UserID
-	AuthTime    time.Time
-	Nonce       string
-}
-
-type RefreshTokenPermission struct {
-	ClientId string
-	UserId   UserID
-}
-
 //  API
 // --------------------------------------------------
 
-type AuthorizationRequestFingerPrintParam struct {
-	ClientID    string
-	RedirectURI string
-	AuthCode    string
+type AuthorizationRequestFingerprint struct {
+	AuthTime    time.Time
 	Nonce       string
+	RedirectURI string
+	UserID      UserID
 }
+
+type ClientID string
+
+func (c ClientID) String() string {
+	return string(c)
+}
+
 type TokenType string

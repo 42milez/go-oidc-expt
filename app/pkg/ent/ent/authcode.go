@@ -20,7 +20,7 @@ type AuthCode struct {
 	// ID of the ent.
 	ID typedef.AuthCodeID `json:"id,omitempty"`
 	// Code holds the value of the "code" field.
-	Code string `json:"code,omitempty"`
+	Code string `json:"-"`
 	// UserID holds the value of the "user_id" field.
 	UserID typedef.UserID `json:"user_id,omitempty"`
 	// ExpireAt holds the value of the "expire_at" field.
@@ -177,8 +177,7 @@ func (ac *AuthCode) String() string {
 	var builder strings.Builder
 	builder.WriteString("AuthCode(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", ac.ID))
-	builder.WriteString("code=")
-	builder.WriteString(ac.Code)
+	builder.WriteString("code=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", ac.UserID))

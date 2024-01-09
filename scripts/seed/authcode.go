@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	ent2 "github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
@@ -18,11 +18,11 @@ const nAuthCodeMin = 1
 type AuthCode struct {
 	Code         string
 	UsedAt       *time.Time
-	RelyingParty *ent2.RelyingParty
-	User         *ent2.User
+	RelyingParty *ent.RelyingParty
+	User         *ent.User
 }
 
-func InsertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties []*ent2.RelyingParty, users []*ent2.User, nAuthCode int) ([]*ent2.AuthCode, error) {
+func InsertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties []*ent.RelyingParty, users []*ent.User, nAuthCode int) ([]*ent.AuthCode, error) {
 	if nAuthCode < nAuthCodeMin {
 		return nil, fmt.Errorf("the number of auth codes must be greater than or equal to %d", nAuthCodeMin)
 	}
@@ -42,7 +42,7 @@ func InsertAuthCodes(ctx context.Context, db *datastore.Database, relyingParties
 		params[i].User = users[i%nUser]
 	}
 
-	builders := make([]*ent2.AuthCodeCreate, len(params))
+	builders := make([]*ent.AuthCodeCreate, len(params))
 
 	for i, v := range params {
 		builders[i] = db.Client.AuthCode.Create().SetCode(v.Code).SetRelyingParty(v.RelyingParty).SetUserID(v.User.ID)

@@ -88,13 +88,13 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			svcMock := NewMockAuthorizer(gomock.NewController(t))
 			svcMock.EXPECT().Authorize(r.Context(), gomock.Any(), gomock.Any(), gomock.Any()).
 				Return(tt.resp.location, "", nil).AnyTimes()
-			svcMock.EXPECT().SaveRequestFingerprint(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
+			svcMock.EXPECT().SaveAuthorizationRequestFingerprint(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.RequestParamKey{}).Return(&AuthorizeParams{
 				ClientID:     "9NXtT29fw2lvmQ5EA42htc8sfNRQYe",
 				Nonce:        "K45zJFN4L7tXjlXpFtVRjqWbSnSCz6",
-				RedirectUri:  "https://example.com/cb",
+				RedirectURI:  "https://example.com/cb",
 				ResponseType: "code",
 				Scope:        "openid",
 				State:        "lgwyrqpZ0jLGQI5Ftu94HytJRJOJSa",

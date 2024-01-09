@@ -3,7 +3,10 @@ package service
 import (
 	"context"
 	"errors"
+	"strconv"
 	"time"
+
+	"github.com/lestrrat-go/jwx/v2/jwt"
 
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
@@ -30,18 +33,18 @@ type AuthCodeGrant struct {
 	token iface.TokenGenerator
 }
 
-func (a *AuthCodeGrant) RevokeAuthCode(ctx context.Context, code, clientId string) error {
-	if err := a.validateAuthCode(ctx, code, clientId); err != nil {
+func (a *AuthCodeGrant) RevokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error {
+	if err := a.validateAuthCode(ctx, code, clientID); err != nil {
 		return err
 	}
-	if err := a.revokeAuthCode(ctx, code, clientId); err != nil {
+	if err := a.revokeAuthCode(ctx, code, clientID); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code, clientId string) error {
-	authCode, err := a.repo.ReadAuthCode(ctx, code, clientId)
+func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error {
+	authCode, err := a.repo.ReadAuthCode(ctx, code, clientID)
 	if err != nil {
 		if errors.Is(err, xerr.RecordNotFound) {
 			return xerr.AuthCodeNotFound
@@ -61,8 +64,8 @@ func (a *AuthCodeGrant) validateAuthCode(ctx context.Context, code, clientId str
 	return nil
 }
 
-func (a *AuthCodeGrant) revokeAuthCode(ctx context.Context, code, clientId string) error {
-	_, err := a.repo.RevokeAuthCode(ctx, code, clientId)
+func (a *AuthCodeGrant) revokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error {
+	_, err := a.repo.RevokeAuthCode(ctx, code, clientID)
 	if err != nil {
 		return err
 	}
@@ -77,7 +80,7 @@ func (a *AuthCodeGrant) GenerateRefreshToken(uid typedef.UserID, claims map[stri
 	return generateRefreshToken(a.token, uid, claims)
 }
 
-func (a *AuthCodeGrant) GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
+func (a *AuthCodeGrant) GenerateIDToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
 	return generateIDToken(a.token, uid, audiences, authTime, nonce)
 }
 
@@ -89,25 +92,43 @@ func NewRefreshTokenGrant(opt *option.Option) *RefreshTokenGrant {
 }
 
 type RefreshTokenGrant struct {
-	cache iface.RefreshTokenPermissionReader
-	token iface.TokenGenerateValidator
+	cache iface.RefreshTokenReader
+	token iface.TokenProcessor
 }
 
-func (r *RefreshTokenGrant) ReadRefreshTokenPermission(ctx context.Context, token, clientId string) (*typedef.RefreshTokenPermission, error) {
-	if err := r.token.Validate(token); err != nil {
-		return nil, xerr.InvalidToken
-	}
-
-	perm, err := r.cache.ReadRefreshTokenPermission(ctx, token)
+func (r *RefreshTokenGrant) VerifyRefreshToken(ctx context.Context, token string, clientID typedef.ClientID) error {
+	rt1, err := r.token.Parse(token)
 	if err != nil {
-		return nil, xerr.RefreshTokenPermissionNotFound
+		return xerr.InvalidToken
 	}
 
-	if perm.ClientId != clientId {
-		return nil, xerr.ClientIdNotMatched
+	uid, err := strconv.Atoi(rt1.Subject())
+	if err != nil {
+		return err
 	}
 
-	return perm, nil
+	rt2, err := r.cache.ReadRefreshToken(ctx, clientID, typedef.UserID(uid))
+	if err != nil {
+		return xerr.RefreshTokenNotFound
+	}
+
+	if !jwt.Equal(rt1, rt2) {
+		return xerr.RefreshTokenNotMatched
+	}
+
+	return nil
+}
+
+func (r *RefreshTokenGrant) ExtractUserID(refreshToken string) (typedef.UserID, error) {
+	t, err := r.token.Parse(refreshToken)
+	if err != nil {
+		return 0, err
+	}
+	uid, err := strconv.Atoi(t.Subject())
+	if err != nil {
+		return 0, err
+	}
+	return typedef.UserID(uid), nil
 }
 
 func (r *RefreshTokenGrant) GenerateAccessToken(uid typedef.UserID, claims map[string]any) (string, error) {
@@ -135,7 +156,7 @@ func generateRefreshToken(tokenGen iface.TokenGenerator, uid typedef.UserID, cla
 }
 
 func generateIDToken(tokenGen iface.TokenGenerator, uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error) {
-	idToken, err := tokenGen.GenerateIdToken(uid, audiences, authTime, nonce)
+	idToken, err := tokenGen.GenerateIDToken(uid, audiences, authTime, nonce)
 	if err != nil {
 		return "", err
 	}

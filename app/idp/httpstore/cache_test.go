@@ -22,11 +22,11 @@ func TestCache_Restore(t *testing.T) {
 	clock := xtestutil.FixedClocker{}
 
 	wantSid := typedef.SessionID(484493849343885677)
-	wantUserId := typedef.UserID(484493849343820141)
+	wantUserID := typedef.UserID(484493849343820141)
 	wantAuthTime := clock.Now()
 
 	cacheRWMock := NewMockCacheReadWriter(gomock.NewController(t))
-	cacheRWMock.EXPECT().ReadHash(gomock.Any(), gomock.Any(), userIdFieldName).Return(wantUserId.String(), nil).AnyTimes()
+	cacheRWMock.EXPECT().ReadHash(gomock.Any(), gomock.Any(), userIDFieldName).Return(wantUserID.String(), nil).AnyTimes()
 	cacheRWMock.EXPECT().ReadHash(gomock.Any(), gomock.Any(), authTimeFieldName).Return(strconv.FormatInt(wantAuthTime.Unix(), 10), nil).AnyTimes()
 
 	cache := &Cache{
@@ -41,20 +41,20 @@ func TestCache_Restore(t *testing.T) {
 
 	ctx := gotReq.Context()
 
-	gotSid, ok := ctx.Value(typedef.SessionIdKey{}).(typedef.SessionID)
+	sess, ok := ctx.Value(SessionKey{}).(*Session)
 	if !ok {
 		t.Fatal(xerr.TypeAssertionFailed)
 	}
-	if wantSid != gotSid {
-		t.Errorf("want = %d; got = %d", wantSid, gotSid)
+	if wantSid != sess.ID {
+		t.Errorf("want = %d; got = %d", wantSid, sess.ID)
 	}
 
 	gotSess, ok := ctx.Value(SessionKey{}).(*Session)
 	if !ok {
 		t.Fatal(xerr.TypeAssertionFailed)
 	}
-	if wantUserId != gotSess.UserID {
-		t.Errorf("want = %d; got = %d", wantUserId, gotSess.UserID)
+	if wantUserID != gotSess.UserID {
+		t.Errorf("want = %d; got = %d", wantUserID, gotSess.UserID)
 	}
 	if !wantAuthTime.Equal(gotSess.AuthTime) {
 		t.Errorf("want = %v; got = %v", wantAuthTime, gotSess.AuthTime)
@@ -72,7 +72,7 @@ func TestCache_CreateSession(t *testing.T) {
 	cacheRWMock := NewMockCacheReadWriter(ctrl)
 	cacheRWMock.EXPECT().WriteHash(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
-	idGenMock := iface.NewMockIdGenerator(ctrl)
+	idGenMock := iface.NewMockIDGenerator(ctrl)
 	idGenMock.EXPECT().NextID().Return(uint64(wantSid), nil).AnyTimes()
 
 	cache := &Cache{

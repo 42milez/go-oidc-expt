@@ -41,7 +41,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
-	clientId := credentials[0]
+	clientID := typedef.ClientID(credentials[0])
 
 	param, err := t.parseForm(r)
 	if err != nil {
@@ -55,10 +55,10 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if param.GrantType == config.AuthorizationCodeGrantType {
-		t.handleAuthCodeGrant(w, r, param, clientId)
+		t.handleAuthCodeGrant(w, r, param, clientID)
 		return
 	} else if param.GrantType == config.RefreshTokenGrantType {
-		t.handleRefreshTokenGrant(w, r, param, clientId)
+		t.handleRefreshTokenGrant(w, r, param, clientID)
 		return
 	} else {
 		RespondTokenRequestError(w, r, xerr.InvalidRequest)
@@ -66,20 +66,20 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
+func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID typedef.ClientID) {
 	ctx := r.Context()
 
-	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectUri) {
+	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectURI) {
 		RespondTokenRequestError(w, r, xerr.InvalidRequest)
 		return
 	}
 
-	if err := t.acSVC.RevokeAuthCode(ctx, *param.Code, clientId); err != nil {
+	if err := t.acSVC.RevokeAuthCode(ctx, *param.Code, clientID); err != nil {
 		respondRevokeAuthCodeError(w, r, err)
 		return
 	}
 
-	oidcParam, err := t.cache.ReadOpenIdParam(ctx, clientId, *param.Code)
+	fp, err := t.cache.ReadAuthorizationRequestFingerprint(ctx, clientID, *param.Code)
 	if err != nil {
 		if errors.Is(err, xerr.UnauthorizedRequest) {
 			RespondTokenRequestError(w, r, xerr.InvalidRequest)
@@ -89,26 +89,26 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 		return
 	}
 
-	if *param.RedirectUri != oidcParam.RedirectURI {
+	if *param.RedirectURI != fp.RedirectURI {
 		RespondTokenRequestError(w, r, xerr.InvalidGrant)
 		return
 	}
 
-	tokens, err := t.generateToken(oidcParam, clientId)
+	tokenSet, err := t.generateTokens(fp, clientID)
 	if err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
 
-	if err = t.cache.WriteRefreshTokenPermission(ctx, *tokens[refreshTokenKey], clientId, oidcParam.UserId); err != nil {
+	if err = t.cache.WriteRefreshToken(ctx, tokenSet.RefreshToken, clientID, fp.UserID); err != nil {
 		RespondServerError(w, r, err)
 		return
 	}
 
 	respBody := &TokenResponse{
-		AccessToken:  *tokens[accessTokenKey],
-		RefreshToken: *tokens[refreshTokenKey],
-		IdToken:      tokens[idTokenKey],
+		AccessToken:  tokenSet.AccessToken,
+		RefreshToken: tokenSet.RefreshToken,
+		IDToken:      &tokenSet.IDToken,
 		TokenType:    config.BearerTokenType,
 		ExpiresIn:    3600,
 	}
@@ -140,61 +140,72 @@ func respondRevokeAuthCodeError(w http.ResponseWriter, r *http.Request, err erro
 	RespondServerError(w, r, err)
 }
 
-const accessTokenKey = "AccessToken"
-const refreshTokenKey = "RefreshToken"
-const idTokenKey = "IDToken"
+type TokenSet struct {
+	AccessToken  string
+	RefreshToken string
+	IDToken      string
+}
 
-func (t *Token) generateToken(param *typedef.OIDCParam, clientId string) (map[string]*string, error) {
-	accessToken, err := t.acSVC.GenerateAccessToken(param.UserId, nil)
+func (t *Token) generateTokens(param *typedef.AuthorizationRequestFingerprint, clientID typedef.ClientID) (*TokenSet, error) {
+	accessToken, err := t.acSVC.GenerateAccessToken(param.UserID, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := t.acSVC.GenerateRefreshToken(param.UserId, nil)
+	refreshToken, err := t.acSVC.GenerateRefreshToken(param.UserID, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	audiences := []string{clientId}
-	idToken, err := t.acSVC.GenerateIdToken(param.UserId, audiences, param.AuthTime, param.Nonce)
+	audiences := []string{clientID.String()}
+	idToken, err := t.acSVC.GenerateIDToken(param.UserID, audiences, param.AuthTime, param.Nonce)
 	if err != nil {
 		return nil, err
 	}
 
-	return map[string]*string{
-		accessTokenKey:  &accessToken,
-		refreshTokenKey: &refreshToken,
-		idTokenKey:      &idToken,
+	return &TokenSet{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		IDToken:      idToken,
 	}, nil
 }
 
-func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientId string) {
+func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, param *TokenFormdataBody, clientID typedef.ClientID) {
 	ctx := r.Context()
 
-	perm, err := t.rtSVC.ReadRefreshTokenPermission(ctx, *param.RefreshToken, clientId)
+	err := t.rtSVC.VerifyRefreshToken(ctx, *param.RefreshToken, clientID)
 	if err != nil {
-		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIdNotMatched) {
+		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIDNotMatched) {
 			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
-		} else if errors.Is(err, xerr.RefreshTokenPermissionNotFound) {
+			return
+		} else if errors.Is(err, xerr.RefreshTokenNotFound) {
 			RespondJSON401(w, r, xerr.InvalidRequest2, nil, err)
+			return
 		} else {
 			RespondJSON500(w, r, err)
+			return
 		}
 	}
 
-	accessToken, err := t.rtSVC.GenerateAccessToken(perm.UserId, nil)
+	uid, err := t.rtSVC.ExtractUserID(*param.RefreshToken)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	refreshToken, err := t.rtSVC.GenerateRefreshToken(perm.UserId, nil)
+	accessToken, err := t.rtSVC.GenerateAccessToken(uid, nil)
 	if err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
 
-	if err = t.cache.WriteRefreshTokenPermission(ctx, refreshToken, clientId, perm.UserId); err != nil {
+	refreshToken, err := t.rtSVC.GenerateRefreshToken(uid, nil)
+	if err != nil {
+		RespondJSON500(w, r, err)
+		return
+	}
+
+	if err = t.cache.WriteRefreshToken(ctx, refreshToken, clientID, uid); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}
@@ -234,7 +245,7 @@ func (t *Token) parseForm(r *http.Request) (*TokenFormdataBody, error) {
 	}
 
 	if !xutil.IsEmpty(redirectUri) {
-		ret.RedirectUri = &redirectUri
+		ret.RedirectURI = &redirectUri
 	}
 
 	if !xutil.IsEmpty(refreshToken) {

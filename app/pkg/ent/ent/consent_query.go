@@ -300,7 +300,7 @@ func (cq *ConsentQuery) WithUser(opts ...func(*UserQuery)) *ConsentQuery {
 // Example:
 //
 //	var v []struct {
-//		ClientID string `json:"client_id,omitempty"`
+//		ClientID typedef.ClientID `json:"client_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -323,7 +323,7 @@ func (cq *ConsentQuery) GroupBy(field string, fields ...string) *ConsentGroupBy 
 // Example:
 //
 //	var v []struct {
-//		ClientID string `json:"client_id,omitempty"`
+//		ClientID typedef.ClientID `json:"client_id,omitempty"`
 //	}
 //
 //	client.Consent.Query().

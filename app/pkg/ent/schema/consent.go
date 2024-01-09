@@ -24,6 +24,7 @@ func (Consent) Fields() []ent.Field {
 			GoType(typedef.ConsentID(0)).
 			Immutable(),
 		field.String("client_id").
+			GoType(typedef.ClientID("")).
 			Immutable(),
 		field.Time("created_at").
 			Default(time.Now).

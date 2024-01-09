@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/redirecturi"
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
 
@@ -14,34 +16,34 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewRedirectUri(db *datastore.Database) *RedirectUri {
-	return &RedirectUri{
+func NewRedirectURI(db *datastore.Database) *RedirectURI {
+	return &RedirectURI{
 		db: db,
 	}
 }
 
-type RedirectUri struct {
+type RedirectURI struct {
 	db *datastore.Database
 }
 
-func (ru *RedirectUri) ReadRedirectUri(ctx context.Context, clientId string) (*entity.RedirectUri, error) {
-	v, err := ru.db.Client.RedirectUri.Query().
+func (ru *RedirectURI) ReadRedirectURI(ctx context.Context, clientID typedef.ClientID) (*entity.RedirectURI, error) {
+	v, err := ru.db.Client.RedirectURI.Query().
 		Where(func(s *sql.Selector) {
 			t := sql.Table(relyingparty.Table)
 			s.Where(
 				sql.In(
 					s.C(redirecturi.FieldRelyingPartyID),
-					sql.Select(t.C(relyingparty.FieldID)).From(t).Where(sql.EQ(t.C(relyingparty.FieldClientID), clientId)),
+					sql.Select(t.C(relyingparty.FieldID)).From(t).Where(sql.EQ(t.C(relyingparty.FieldClientID), clientID)),
 				),
 			)
 		}).
 		Only(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {
-			return nil, xerr.RedirectUriNotFound
+			return nil, xerr.RedirectURINotFound
 		} else {
 			return nil, err
 		}
 	}
-	return entity.NewRedirectUri(v), nil
+	return entity.NewRedirectURI(v), nil
 }

@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/user"
@@ -50,7 +52,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		},
 	}
 
-	newAuthorizeParam := func(clientId string) string {
+	newAuthorizeParam := func(clientID typedef.ClientID) string {
 		nonce, err := xrandom.GenerateCryptoRandomString(nonceLength)
 		xtestutil.ExitOnError(t, err)
 
@@ -58,12 +60,12 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		xtestutil.ExitOnError(t, err)
 
 		authoParam := &api.AuthorizeParams{
-			ClientID:     clientId,
+			ClientID:     clientID,
 			Display:      "page",
 			MaxAge:       86400,
 			Nonce:        nonce,
 			Prompt:       "consent",
-			RedirectUri:  redirectUri,
+			RedirectURI:  redirectUri,
 			ResponseType: responseType,
 			Scope:        scope,
 			State:        state,
@@ -78,13 +80,13 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	}
 
 	registerRelyingParty := func() *entity.RelyingParty {
-		clientId, err := xrandom.GenerateCryptoRandomString(config.ClientIDLength)
+		clientID, err := xrandom.GenerateCryptoRandomString(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
 		clientSecret, err := xrandom.GenerateCryptoRandomString(config.ClientIDLength)
 		xtestutil.ExitOnError(t, err)
 
-		rp, err := db.Client.RelyingParty.Create().SetClientID(clientId).SetClientSecret(clientSecret).Save(ctx)
+		rp, err := db.Client.RelyingParty.Create().SetClientID(typedef.ClientID(clientID)).SetClientSecret(clientSecret).Save(ctx)
 		xtestutil.ExitOnError(t, err)
 
 		t.Cleanup(func() {
@@ -92,7 +94,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 			xtestutil.ExitOnError(t, err)
 		})
 
-		_, err = db.Client.RedirectUri.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
+		_, err = db.Client.RedirectURI.Create().SetURI(redirectUri).SetRelyingParty(rp).Save(ctx)
 		xtestutil.ExitOnError(t, err)
 
 		return entity.NewRelyingParty(rp)
@@ -268,7 +270,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		}
 
 		param := url.Values{}
-		param.Add("client_id", rp.ClientID())
+		param.Add("client_id", rp.ClientID().String())
 		param.Add("client_secret", rp.ClientSecret())
 		param.Add("grant_type", "refresh_token")
 		param.Add("refresh_token", refreshToken)

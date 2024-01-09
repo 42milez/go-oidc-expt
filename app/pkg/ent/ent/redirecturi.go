@@ -14,8 +14,8 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 )
 
-// RedirectUri is the model entity for the RedirectUri schema.
-type RedirectUri struct {
+// RedirectURI is the model entity for the RedirectURI schema.
+type RedirectURI struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID typedef.RedirectURIID `json:"id,omitempty"`
@@ -28,13 +28,13 @@ type RedirectUri struct {
 	// RelyingPartyID holds the value of the "relying_party_id" field.
 	RelyingPartyID typedef.RelyingPartyID `json:"relying_party_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the RedirectUriQuery when eager-loading is set.
-	Edges        RedirectUriEdges `json:"edges"`
+	// The values are being populated by the RedirectURIQuery when eager-loading is set.
+	Edges        RedirectURIEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
-// RedirectUriEdges holds the relations/edges for other nodes in the graph.
-type RedirectUriEdges struct {
+// RedirectURIEdges holds the relations/edges for other nodes in the graph.
+type RedirectURIEdges struct {
 	// RelyingParty holds the value of the relying_party edge.
 	RelyingParty *RelyingParty `json:"relying_party,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -44,7 +44,7 @@ type RedirectUriEdges struct {
 
 // RelyingPartyOrErr returns the RelyingParty value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e RedirectUriEdges) RelyingPartyOrErr() (*RelyingParty, error) {
+func (e RedirectURIEdges) RelyingPartyOrErr() (*RelyingParty, error) {
 	if e.loadedTypes[0] {
 		if e.RelyingParty == nil {
 			// Edge was loaded but was not found.
@@ -56,7 +56,7 @@ func (e RedirectUriEdges) RelyingPartyOrErr() (*RelyingParty, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*RedirectUri) scanValues(columns []string) ([]any, error) {
+func (*RedirectURI) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
@@ -74,8 +74,8 @@ func (*RedirectUri) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the RedirectUri fields.
-func (ru *RedirectUri) assignValues(columns []string, values []any) error {
+// to the RedirectURI fields.
+func (ru *RedirectURI) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -118,39 +118,39 @@ func (ru *RedirectUri) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the RedirectUri.
+// Value returns the ent.Value that was dynamically selected and assigned to the RedirectURI.
 // This includes values selected through modifiers, order, etc.
-func (ru *RedirectUri) Value(name string) (ent.Value, error) {
+func (ru *RedirectURI) Value(name string) (ent.Value, error) {
 	return ru.selectValues.Get(name)
 }
 
-// QueryRelyingParty queries the "relying_party" edge of the RedirectUri entity.
-func (ru *RedirectUri) QueryRelyingParty() *RelyingPartyQuery {
-	return NewRedirectUriClient(ru.config).QueryRelyingParty(ru)
+// QueryRelyingParty queries the "relying_party" edge of the RedirectURI entity.
+func (ru *RedirectURI) QueryRelyingParty() *RelyingPartyQuery {
+	return NewRedirectURIClient(ru.config).QueryRelyingParty(ru)
 }
 
-// Update returns a builder for updating this RedirectUri.
-// Note that you need to call RedirectUri.Unwrap() before calling this method if this RedirectUri
+// Update returns a builder for updating this RedirectURI.
+// Note that you need to call RedirectURI.Unwrap() before calling this method if this RedirectURI
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (ru *RedirectUri) Update() *RedirectUriUpdateOne {
-	return NewRedirectUriClient(ru.config).UpdateOne(ru)
+func (ru *RedirectURI) Update() *RedirectURIUpdateOne {
+	return NewRedirectURIClient(ru.config).UpdateOne(ru)
 }
 
-// Unwrap unwraps the RedirectUri entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the RedirectURI entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (ru *RedirectUri) Unwrap() *RedirectUri {
+func (ru *RedirectURI) Unwrap() *RedirectURI {
 	_tx, ok := ru.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: RedirectUri is not a transactional entity")
+		panic("ent: RedirectURI is not a transactional entity")
 	}
 	ru.config.driver = _tx.drv
 	return ru
 }
 
 // String implements the fmt.Stringer.
-func (ru *RedirectUri) String() string {
+func (ru *RedirectURI) String() string {
 	var builder strings.Builder
-	builder.WriteString("RedirectUri(")
+	builder.WriteString("RedirectURI(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", ru.ID))
 	builder.WriteString("uri=")
 	builder.WriteString(ru.URI)
@@ -167,5 +167,5 @@ func (ru *RedirectUri) String() string {
 	return builder.String()
 }
 
-// RedirectUris is a parsable slice of RedirectUri.
-type RedirectUris []*RedirectUri
+// RedirectURIs is a parsable slice of RedirectURI.
+type RedirectURIs []*RedirectURI

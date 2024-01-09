@@ -12,7 +12,7 @@ type Option struct {
 	Cache  *datastore.Cache
 	Cookie iface.CookieReadWriter
 	DB     *datastore.Database
-	IdGen  *xid.UniqueID
+	IDGen  *xid.UniqueID
 	Token  *security.JWT
 	V      *validator.Validate
 }

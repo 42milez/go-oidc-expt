@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/lestrrat-go/jwx/v2/jwt"
+
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 )
 
@@ -51,42 +53,42 @@ type RefreshTokenGenerator interface {
 	GenerateRefreshToken(uid typedef.UserID, claims map[string]any) (string, error)
 }
 
-type IdTokenGenerator interface {
-	GenerateIdToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error)
+type IDTokenGenerator interface {
+	GenerateIDToken(uid typedef.UserID, audiences []string, authTime time.Time, nonce string) (string, error)
 }
 
 type TokenGenerator interface {
 	AccessTokenGenerator
 	RefreshTokenGenerator
-	IdTokenGenerator
+	IDTokenGenerator
 }
 
-type TokenValidator interface {
-	Validate(name string) error
+type TokenParser interface {
+	Parse(token string) (jwt.Token, error)
 }
 
-type TokenGenerateValidator interface {
+type TokenProcessor interface {
 	TokenGenerator
-	TokenValidator
+	TokenParser
 }
 
 //  Cache
 // --------------------------------------------------
 
-type OpenIdParamReader interface {
-	ReadOpenIdParam(ctx context.Context, clientId, authCode string) (*typedef.OIDCParam, error)
+type AuthorizationRequestFingerprintReader interface {
+	ReadAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string) (*typedef.AuthorizationRequestFingerprint, error)
 }
 
-type OpenIdParamWriter interface {
-	WriteOpenIdParam(ctx context.Context, param *typedef.OIDCParam, clientId, authCode string) error
+type AuthorizationRequestFingerprintWriter interface {
+	WriteAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, authCode string, param *typedef.AuthorizationRequestFingerprint) error
 }
 
-type RefreshTokenPermissionReader interface {
-	ReadRefreshTokenPermission(ctx context.Context, token string) (*typedef.RefreshTokenPermission, error)
+type RefreshTokenReader interface {
+	ReadRefreshToken(ctx context.Context, clientID typedef.ClientID, userID typedef.UserID) (jwt.Token, error)
 }
 
-type RefreshTokenPermissionWriter interface {
-	WriteRefreshTokenPermission(ctx context.Context, token, clientId string, userId typedef.UserID) error
+type RefreshTokenWriter interface {
+	WriteRefreshToken(ctx context.Context, token string, clientID typedef.ClientID, userID typedef.UserID) error
 }
 
 type SessionCreator interface {
@@ -103,6 +105,6 @@ type StructValidator interface {
 //  ID Generator
 // --------------------------------------------------
 
-type IdGenerator interface {
+type IDGenerator interface {
 	NextID() (uint64, error)
 }

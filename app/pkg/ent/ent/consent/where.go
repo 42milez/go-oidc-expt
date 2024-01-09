@@ -57,8 +57,9 @@ func IDLTE(id typedef.ConsentID) predicate.Consent {
 }
 
 // ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
-func ClientID(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldEQ(FieldClientID, v))
+func ClientID(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldEQ(FieldClientID, vc))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -73,68 +74,87 @@ func UserID(v typedef.UserID) predicate.Consent {
 }
 
 // ClientIDEQ applies the EQ predicate on the "client_id" field.
-func ClientIDEQ(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldEQ(FieldClientID, v))
+func ClientIDEQ(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldEQ(FieldClientID, vc))
 }
 
 // ClientIDNEQ applies the NEQ predicate on the "client_id" field.
-func ClientIDNEQ(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldNEQ(FieldClientID, v))
+func ClientIDNEQ(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldNEQ(FieldClientID, vc))
 }
 
 // ClientIDIn applies the In predicate on the "client_id" field.
-func ClientIDIn(vs ...string) predicate.Consent {
-	return predicate.Consent(sql.FieldIn(FieldClientID, vs...))
+func ClientIDIn(vs ...typedef.ClientID) predicate.Consent {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = string(vs[i])
+	}
+	return predicate.Consent(sql.FieldIn(FieldClientID, v...))
 }
 
 // ClientIDNotIn applies the NotIn predicate on the "client_id" field.
-func ClientIDNotIn(vs ...string) predicate.Consent {
-	return predicate.Consent(sql.FieldNotIn(FieldClientID, vs...))
+func ClientIDNotIn(vs ...typedef.ClientID) predicate.Consent {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = string(vs[i])
+	}
+	return predicate.Consent(sql.FieldNotIn(FieldClientID, v...))
 }
 
 // ClientIDGT applies the GT predicate on the "client_id" field.
-func ClientIDGT(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldGT(FieldClientID, v))
+func ClientIDGT(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldGT(FieldClientID, vc))
 }
 
 // ClientIDGTE applies the GTE predicate on the "client_id" field.
-func ClientIDGTE(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldGTE(FieldClientID, v))
+func ClientIDGTE(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldGTE(FieldClientID, vc))
 }
 
 // ClientIDLT applies the LT predicate on the "client_id" field.
-func ClientIDLT(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldLT(FieldClientID, v))
+func ClientIDLT(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldLT(FieldClientID, vc))
 }
 
 // ClientIDLTE applies the LTE predicate on the "client_id" field.
-func ClientIDLTE(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldLTE(FieldClientID, v))
+func ClientIDLTE(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldLTE(FieldClientID, vc))
 }
 
 // ClientIDContains applies the Contains predicate on the "client_id" field.
-func ClientIDContains(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldContains(FieldClientID, v))
+func ClientIDContains(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldContains(FieldClientID, vc))
 }
 
 // ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
-func ClientIDHasPrefix(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldHasPrefix(FieldClientID, v))
+func ClientIDHasPrefix(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldHasPrefix(FieldClientID, vc))
 }
 
 // ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
-func ClientIDHasSuffix(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldHasSuffix(FieldClientID, v))
+func ClientIDHasSuffix(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldHasSuffix(FieldClientID, vc))
 }
 
 // ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
-func ClientIDEqualFold(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldEqualFold(FieldClientID, v))
+func ClientIDEqualFold(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldEqualFold(FieldClientID, vc))
 }
 
 // ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
-func ClientIDContainsFold(v string) predicate.Consent {
-	return predicate.Consent(sql.FieldContainsFold(FieldClientID, v))
+func ClientIDContainsFold(v typedef.ClientID) predicate.Consent {
+	vc := string(v)
+	return predicate.Consent(sql.FieldContainsFold(FieldClientID, vc))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

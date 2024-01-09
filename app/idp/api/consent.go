@@ -55,5 +55,5 @@ func (ch *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Redirect2(w, r, config.AuthorizationPath, http.StatusFound)
+	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
 }

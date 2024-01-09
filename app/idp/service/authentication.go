@@ -15,7 +15,7 @@ import (
 
 func NewAuthenticate(opt *option.Option) *Authenticate {
 	return &Authenticate{
-		repo:  repository.NewUser(opt.DB, opt.IdGen),
+		repo:  repository.NewUser(opt.DB, opt.IDGen),
 		token: opt.Token,
 	}
 }
@@ -25,7 +25,7 @@ type Authenticate struct {
 	token iface.TokenGenerator
 }
 
-func (a *Authenticate) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error) {
+func (a *Authenticate) VerifyConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (bool, error) {
 	_, err := a.repo.ReadConsent(ctx, userID, clientID)
 	if err != nil {
 		if errors.Is(err, xerr.ConsentNotFound) {

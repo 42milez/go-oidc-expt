@@ -23,8 +23,8 @@ type ConsentCreate struct {
 }
 
 // SetClientID sets the "client_id" field.
-func (cc *ConsentCreate) SetClientID(s string) *ConsentCreate {
-	cc.mutation.SetClientID(s)
+func (cc *ConsentCreate) SetClientID(ti typedef.ClientID) *ConsentCreate {
+	cc.mutation.SetClientID(ti)
 	return cc
 }
 

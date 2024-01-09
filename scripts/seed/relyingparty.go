@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	ent2 "github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
@@ -19,7 +21,7 @@ type RelyingParty struct {
 	ClientSecret string
 }
 
-func InsertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingParty int) ([]*ent2.RelyingParty, error) {
+func InsertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingParty int) ([]*ent.RelyingParty, error) {
 	if nRelyingParty < nRelyingPartyMin {
 		return nil, fmt.Errorf("the number of relying parties must be greater than or equal to %d", nRelyingPartyMin)
 	}
@@ -39,10 +41,10 @@ func InsertRelyingParties(ctx context.Context, db *datastore.Database, nRelyingP
 		params[i].ClientSecret = string(v)
 	}
 
-	builders := make([]*ent2.RelyingPartyCreate, len(params))
+	builders := make([]*ent.RelyingPartyCreate, len(params))
 
 	for i, v := range params {
-		builders[i] = db.Client.RelyingParty.Create().SetClientID(v.ClientID).SetClientSecret(v.ClientSecret)
+		builders[i] = db.Client.RelyingParty.Create().SetClientID(typedef.ClientID(v.ClientID)).SetClientSecret(v.ClientSecret)
 	}
 
 	return db.Client.RelyingParty.CreateBulk(builders...).Save(ctx)

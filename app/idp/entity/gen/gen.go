@@ -14,7 +14,7 @@ import (
 	"strings"
 	"unicode"
 
-	ent2 "github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
 
 	"github.com/Masterminds/sprig"
 )
@@ -59,11 +59,11 @@ func isPrivateField(f string) bool {
 
 func main() {
 	targets := []any{
-		ent2.AuthCode{},
-		ent2.Consent{},
-		ent2.RedirectUri{},
-		ent2.RelyingParty{},
-		ent2.User{},
+		ent.AuthCode{},
+		ent.Consent{},
+		ent.RedirectURI{},
+		ent.RelyingParty{},
+		ent.User{},
 	}
 
 	funcMap := template.FuncMap{

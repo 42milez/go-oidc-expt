@@ -32,7 +32,7 @@ type HealthChecker interface {
 // --------------------------------------------------
 
 type ConsentVerifier interface {
-	VerifyConsent(ctx context.Context, userID typedef.UserID, clientID string) (bool, error)
+	VerifyConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) (bool, error)
 }
 
 type PasswordVerifier interface {
@@ -52,47 +52,52 @@ type UserRegisterer interface {
 // --------------------------------------------------
 
 type RequestFingerprintSaver interface {
-	SaveRequestFingerprint(ctx context.Context, params *typedef.AuthorizationRequestFingerPrintParam) error
+	SaveAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, redirectURI, nonce, authCode string) error
 }
 
 type Authorizer interface {
-	Authorize(ctx context.Context, clientID, redirectURI, state string) (*url.URL, string, error)
+	Authorize(ctx context.Context, clientID typedef.ClientID, redirectURI, state string) (*url.URL, string, error)
 	RequestFingerprintSaver
 }
 
 type ConsentAcceptor interface {
-	AcceptConsent(ctx context.Context, userID typedef.UserID, clientID string) error
+	AcceptConsent(ctx context.Context, userID typedef.UserID, clientID typedef.ClientID) error
 }
 
 //  Token
 // --------------------------------------------------
 
 type CredentialValidator interface {
-	ValidateCredential(ctx context.Context, clientID, clientSecret string) error
+	ValidateCredential(ctx context.Context, clientID typedef.ClientID, clientSecret string) error
 }
 
-type RefreshTokenPermissionReader interface {
-	ReadRefreshTokenPermission(ctx context.Context, token string, clientId string) (*typedef.RefreshTokenPermission, error)
+type RefreshTokenVerifier interface {
+	VerifyRefreshToken(ctx context.Context, token string, clientID typedef.ClientID) error
+}
+
+type UserIDExtractor interface {
+	ExtractUserID(refreshToken string) (typedef.UserID, error)
 }
 
 type AuthCodeRevoker interface {
-	RevokeAuthCode(ctx context.Context, code, clientId string) error
+	RevokeAuthCode(ctx context.Context, code string, clientID typedef.ClientID) error
 }
 
 type TokenCacheReadWriter interface {
-	iface.OpenIdParamReader
-	iface.RefreshTokenPermissionWriter
+	iface.AuthorizationRequestFingerprintReader
+	iface.RefreshTokenWriter
 }
 
 type AuthCodeGrantAcceptor interface {
 	AuthCodeRevoker
 	iface.AccessTokenGenerator
 	iface.RefreshTokenGenerator
-	iface.IdTokenGenerator
+	iface.IDTokenGenerator
 }
 
 type RefreshTokenGrantAcceptor interface {
-	RefreshTokenPermissionReader
+	RefreshTokenVerifier
+	UserIDExtractor
 	iface.AccessTokenGenerator
 	iface.RefreshTokenGenerator
 }

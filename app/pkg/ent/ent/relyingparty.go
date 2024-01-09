@@ -19,9 +19,9 @@ type RelyingParty struct {
 	// ID of the ent.
 	ID typedef.RelyingPartyID `json:"id,omitempty"`
 	// ClientID holds the value of the "client_id" field.
-	ClientID string `json:"client_id,omitempty"`
+	ClientID typedef.ClientID `json:"client_id,omitempty"`
 	// ClientSecret holds the value of the "client_secret" field.
-	ClientSecret string `json:"client_secret,omitempty"`
+	ClientSecret string `json:"-"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// ModifiedAt holds the value of the "modified_at" field.
@@ -37,7 +37,7 @@ type RelyingPartyEdges struct {
 	// AuthCodes holds the value of the auth_codes edge.
 	AuthCodes []*AuthCode `json:"auth_codes,omitempty"`
 	// RedirectUris holds the value of the redirect_uris edge.
-	RedirectUris []*RedirectUri `json:"redirect_uris,omitempty"`
+	RedirectUris []*RedirectURI `json:"redirect_uris,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -54,7 +54,7 @@ func (e RelyingPartyEdges) AuthCodesOrErr() ([]*AuthCode, error) {
 
 // RedirectUrisOrErr returns the RedirectUris value or an error if the edge
 // was not loaded in eager-loading.
-func (e RelyingPartyEdges) RedirectUrisOrErr() ([]*RedirectUri, error) {
+func (e RelyingPartyEdges) RedirectUrisOrErr() ([]*RedirectURI, error) {
 	if e.loadedTypes[1] {
 		return e.RedirectUris, nil
 	}
@@ -97,7 +97,7 @@ func (rp *RelyingParty) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
-				rp.ClientID = value.String
+				rp.ClientID = typedef.ClientID(value.String)
 			}
 		case relyingparty.FieldClientSecret:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -136,7 +136,7 @@ func (rp *RelyingParty) QueryAuthCodes() *AuthCodeQuery {
 }
 
 // QueryRedirectUris queries the "redirect_uris" edge of the RelyingParty entity.
-func (rp *RelyingParty) QueryRedirectUris() *RedirectUriQuery {
+func (rp *RelyingParty) QueryRedirectUris() *RedirectURIQuery {
 	return NewRelyingPartyClient(rp.config).QueryRedirectUris(rp)
 }
 
@@ -164,10 +164,9 @@ func (rp *RelyingParty) String() string {
 	builder.WriteString("RelyingParty(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", rp.ID))
 	builder.WriteString("client_id=")
-	builder.WriteString(rp.ClientID)
+	builder.WriteString(fmt.Sprintf("%v", rp.ClientID))
 	builder.WriteString(", ")
-	builder.WriteString("client_secret=")
-	builder.WriteString(rp.ClientSecret)
+	builder.WriteString("client_secret=<sensitive>")
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(rp.CreatedAt.Format(time.ANSIC))

@@ -30,11 +30,11 @@ func NewAuthorize(opt *option.Option) *Authorize {
 
 type Authorize struct {
 	repo    Authorizer
-	cache   iface.OpenIdParamWriter
+	cache   iface.AuthorizationRequestFingerprintWriter
 	context iface.ContextReader
 }
 
-func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state string) (*url.URL, string, error) {
+func (a *Authorize) Authorize(ctx context.Context, clientID typedef.ClientID, redirectURI, state string) (*url.URL, string, error) {
 	code, err := xrandom.GenerateCryptoRandomString(config.AuthCodeLength)
 	if err != nil {
 		return nil, "", err
@@ -49,12 +49,12 @@ func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state 
 		return nil, "", err
 	}
 
-	ru, err := a.repo.ReadRedirectUris(ctx, clientID)
+	ru, err := a.repo.ReadRedirectURIs(ctx, clientID)
 	if err != nil {
 		return nil, "", err
 	}
 
-	if !a.validateRedirectUri(ru, redirectURI) {
+	if !a.validateRedirectURI(ru, redirectURI) {
 		return nil, "", xerr.InvalidRedirectURI
 	}
 
@@ -66,8 +66,8 @@ func (a *Authorize) Authorize(ctx context.Context, clientID, redirectURI, state 
 	return uri, code, nil
 }
 
-func (a *Authorize) validateRedirectUri(s []*entity.RedirectUri, v string) bool {
-	return slices.ContainsFunc(s, func(uri *entity.RedirectUri) bool {
+func (a *Authorize) validateRedirectURI(s []*entity.RedirectURI, v string) bool {
+	return slices.ContainsFunc(s, func(uri *entity.RedirectURI) bool {
 		if uri.URI() != v {
 			return false
 		}
@@ -75,18 +75,16 @@ func (a *Authorize) validateRedirectUri(s []*entity.RedirectUri, v string) bool 
 	})
 }
 
-func (a *Authorize) SaveRequestFingerprint(ctx context.Context, param *typedef.AuthorizationRequestFingerPrintParam) error {
+func (a *Authorize) SaveAuthorizationRequestFingerprint(ctx context.Context, clientID typedef.ClientID, redirectURI, nonce, authCode string) error {
 	sess, ok := a.context.Read(ctx, httpstore.SessionKey{}).(*httpstore.Session)
 	if !ok {
-		return xerr.UnauthorizedRequest
+		return xerr.FailedToReadSession
 	}
-
-	oidcParam := &typedef.OIDCParam{
-		RedirectURI: param.RedirectURI,
-		UserId:      sess.UserID,
+	fp := &typedef.AuthorizationRequestFingerprint{
 		AuthTime:    sess.AuthTime,
-		Nonce:       param.Nonce,
+		Nonce:       nonce,
+		RedirectURI: redirectURI,
+		UserID:      sess.UserID,
 	}
-
-	return a.cache.WriteOpenIdParam(ctx, oidcParam, param.ClientID, param.AuthCode)
+	return a.cache.WriteAuthorizationRequestFingerprint(ctx, clientID, authCode, fp)
 }
