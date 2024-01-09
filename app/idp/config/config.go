@@ -14,9 +14,6 @@ const LoggerTagKey = "type"
 const AppLoggerTagValue = "app"
 const AccessLoggerTagValue = "access"
 
-//  Environment Variable
-// --------------------------------------------------
-
 type Config struct {
 	Port                int           `env:"PORT" envDefault:"80"`
 	DB1Host             string        `env:"DB1_HOST" envDefault:"127.0.0.1"`
@@ -42,33 +39,14 @@ func New() (*Config, error) {
 	return cfg, nil
 }
 
-//  Application
-// --------------------------------------------------
-
 const (
 	AppName = "idp"
 )
 
-//  Cache
-// --------------------------------------------------
-
-const (
-	SessionTTL = 24 * time.Hour * 30 // 30 days
-)
-
-//  Cookie
-// --------------------------------------------------
-
 const (
 	SessionIDCookieName = "sid"
+	SessionTTL          = 24 * time.Hour * 30 // 30 days
 	SessionIDCookieTTL  = SessionTTL
-)
-
-//  Identity Provider
-// --------------------------------------------------
-
-const (
-	RegisterPath = "/user/registration"
 )
 
 const (
@@ -76,6 +54,7 @@ const (
 	AuthorizationPath  = "/authorization"
 	ConsentPath        = "/consent"
 	TokenPath          = "/token"
+	RegisterPath       = "/user/registration"
 )
 
 const (
@@ -83,20 +62,16 @@ const (
 )
 
 const (
-	AuthCodeLength     = 30
-	AuthCodeTTL        = 10 * time.Minute
-	AccessTokenLength  = 30
-	RefreshTokenLength = 30
+	AuthCodeTTL     = 10 * time.Minute
+	AccessTokenTTL  = 30 * time.Minute
+	RefreshTokenTTL = SessionTTL
+	IDTokenTTL      = SessionTTL
 )
 
 const (
+	AuthCodeLength     = 10
 	ClientIDLength     = 30
 	ClientSecretLength = 30
-)
-
-const (
-	AuthorizationCodeGrantType = "authorization_code"
-	RefreshTokenGrantType      = "refresh_token"
 )
 
 const (
@@ -104,7 +79,6 @@ const (
 )
 
 const (
-	AccessTokenTTL  = 30 * time.Minute
-	RefreshTokenTTL = SessionTTL
-	IDTokenTTL      = SessionTTL
+	AuthorizationCodeGrantType typedef.GrantType = "authorization_code"
+	RefreshTokenGrantType                        = "refresh_token"
 )
