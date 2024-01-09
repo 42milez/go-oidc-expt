@@ -44,4 +44,5 @@ func (c ClientID) String() string {
 	return string(c)
 }
 
+type GrantType string
 type TokenType string

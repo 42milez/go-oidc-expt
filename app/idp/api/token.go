@@ -237,7 +237,7 @@ func (t *Token) parseForm(r *http.Request) (*TokenFormdataBody, error) {
 	refreshToken := params.Get("refresh_token")
 
 	ret := &TokenFormdataBody{
-		GrantType: grantType,
+		GrantType: typedef.GrantType(grantType),
 	}
 
 	if !xutil.IsEmpty(code) {
