@@ -275,6 +275,7 @@ components:
       required: true
       schema:
         type: string
+        x-go-type: typedef.GrantType
       example: authorization_code
       x-oapi-codegen-extra-tags:
         schema: grant_type
@@ -383,6 +384,7 @@ components:
                 x-oapi-codegen-extra-tags:
                   schema: grant_type
                   validate: required,grant-type-validator
+                x-go-type: typedef.GrantType
               code:
                 description: represents "code" parameter
                 type: string

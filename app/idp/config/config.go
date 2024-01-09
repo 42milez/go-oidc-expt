@@ -80,5 +80,5 @@ const (
 
 const (
 	AuthorizationCodeGrantType typedef.GrantType = "authorization_code"
-	RefreshTokenGrantType                        = "refresh_token"
+	RefreshTokenGrantType      typedef.GrantType = "refresh_token"
 )
