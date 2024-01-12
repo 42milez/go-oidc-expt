@@ -234,7 +234,7 @@ components:
     ClientID:
       name: client_id
       in: query
-      description: represents "client_id" parameter
+      description: Represents "client_id" parameter
       required: true
       schema:
         type: string
@@ -248,7 +248,7 @@ components:
     Code:
       name: code
       in: query
-      description: represents "code" parameter
+      description: Represents "code" parameter
       required: true
       schema:
         type: string
@@ -259,7 +259,7 @@ components:
     Display:
       name: display
       in: query
-      description: represents "display" parameter
+      description: Represents "display" parameter
       required: true
       schema:
         type: string
@@ -271,7 +271,7 @@ components:
     GrantType:
       name: grant_type
       in: query
-      description: represents "grant_type" parameter
+      description: Represents "grant_type" parameter
       required: true
       schema:
         type: string
@@ -283,7 +283,7 @@ components:
     MaxAge:
       name: max_age
       in: query
-      description: represents "max_age" parameter
+      description: Represents "max_age" parameter
       required: true
       schema:
         type: integer
@@ -296,7 +296,7 @@ components:
     Nonce:
       name: nonce
       in: query
-      description: represents "nonce" parameter
+      description: Represents "nonce" parameter
       required: true
       schema:
         type: string
@@ -308,7 +308,7 @@ components:
     Prompt:
       name: prompt
       in: query
-      description: represents "prompt" parameter
+      description: Represents "prompt" parameter
       required: true
       schema:
         type: string
@@ -320,7 +320,7 @@ components:
     RedirectUri:
       name: redirect_uri
       in: query
-      description: represents "redirect_uri" parameter
+      description: Represents "redirect_uri" parameter
       required: true
       schema:
         type: string
@@ -333,7 +333,7 @@ components:
     ResponseType:
       name: response_type
       in: query
-      description: represents "response_type" parameter
+      description: Represents "response_type" parameter
       required: true
       schema:
         type: string
@@ -345,7 +345,7 @@ components:
     Scope:
       name: scope
       in: query
-      description: represents "scope" parameter
+      description: Represents "scope" parameter
       required: true
       schema:
         type: string
@@ -357,7 +357,7 @@ components:
     State:
       name: state
       in: query
-      description: represents "state" parameter
+      description: Represents "state" parameter
       required: true
       schema:
         type: string
@@ -378,7 +378,7 @@ components:
               - grant_type
             properties:
               grant_type:
-                description: represents "grant_type" parameter
+                description: Represents "grant_type" parameter
                 type: string
                 example: authorization_code
                 x-oapi-codegen-extra-tags:
@@ -386,7 +386,7 @@ components:
                   validate: required,grant-type-validator
                 x-go-type: typedef.GrantType
               code:
-                description: represents "code" parameter
+                description: Represents "code" parameter
                 type: string
                 nullable: true
                 example: EYdxIU30xstnWZKxgA54RJMz1YUR0J
@@ -394,7 +394,7 @@ components:
                   schema: code
                   validate: omitempty,alphanum
               redirect_uri:
-                description: represents "redirect_uri" parameter
+                description: Represents "redirect_uri" parameter
                 type: string
                 nullable: true
                 example: https%3A%2F%2Fexample.com%2Fcb
@@ -403,7 +403,7 @@ components:
                   validate: omitempty,url_encoded
                 x-go-name: RedirectURI
               refresh_token:
-                description: represents "refresh_token" parameter
+                description: Represents "refresh_token" parameter
                 type: string
                 nullable: true
                 example: 8xLOxBtZp8
@@ -460,7 +460,7 @@ components:
               - some error 3
   schemas:
     Health:
-      description: represents the status of service.
+      description: Represents the status of service.
       type: object
       required:
         - status
@@ -470,7 +470,7 @@ components:
           format: uint64
           example: 200
     User:
-      description: represents user data.
+      description: Represents user data.
       allOf:
         - type: object
           required:
@@ -486,7 +486,7 @@ components:
                 validate: required
         - $ref: '#/components/schemas/UserName'
     UserName:
-      description: represents a part of user data.
+      description: Represents a part of user data.
       type: object
       required:
         - name
@@ -497,7 +497,7 @@ components:
           x-oapi-codegen-extra-tags:
             validate: required
     UserPassword:
-      description: represents the password of user
+      description: Represents the password of user
       type: object
       required:
         - password
@@ -550,7 +550,7 @@ components:
             - unauthorized_client
             - unsupported_grant_type
     ErrorResponse:
-      description: represents error response
+      description: Represents error response
       type: object
       required:
         - status
