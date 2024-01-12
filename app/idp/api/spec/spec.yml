@@ -469,6 +469,148 @@ components:
           type: integer
           format: uint64
           example: 200
+    Configuration:
+      description: Represents the configuration information of OpenID Provider.
+      type: object
+      required:
+        - authorization_endpoint
+        - claims_locales_supported
+        - claims_supported
+        - display_values_supported
+        - id_token_signing_alg_values_supported
+        - issuer
+        - jwks_uri
+        - op_policy_uri
+        - op_tos_uri
+        - response_types_supported
+        - scopes_supported
+        - service_documentation
+        - subject_types_supported
+        - token_endpoint
+        - token_endpoint_auth_methods_supported
+        - ui_locales_supported
+        - userinfo_endpoint
+      properties:
+        #  REQUIRED
+        # --------------------------------------------------
+        authorization_endpoint:
+          type: string
+        id_token_signing_alg_values_supported:
+          type: array
+          items:
+            type: string
+        issuer:
+          type: string
+        jwks_uri:
+          type: string
+        response_types_supported:
+          type: array
+          items:
+            type: string
+        subject_types_supported:
+          type: array
+          items:
+            type: string
+        token_endpoint:
+          type: string
+        #  RECOMMENDED
+        # --------------------------------------------------
+        # claim_types_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # registration_endpoint:
+        #   type: string
+        scopes_supported:
+          type: array
+          items:
+            type: string
+        userinfo_endpoint:
+          type: string
+        #  OPTIONAL
+        # --------------------------------------------------
+        # acr_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        claims_locales_supported:
+          type: array
+          items:
+            type: string
+        # claims_parameter_supported:
+        #   type: boolean
+        claims_supported:
+          type: array
+          items:
+            type: string
+        display_values_supported:
+          type: array
+          items:
+            type: string
+        # grant_types_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # id_token_encryption_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # id_token_encryption_enc_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        op_policy_uri:
+          type: string
+        op_tos_uri:
+          type: string
+        # request_object_encryption_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # request_object_encryption_enc_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # request_object_signing_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # request_parameter_supported:
+        #   type: boolean
+        # request_uri_parameter_supported:
+        #   type: boolean
+        # require_request_uri_registration:
+        #   type: boolean
+        # response_modes_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        service_documentation:
+          type: string
+        token_endpoint_auth_methods_supported:
+          type: array
+          items:
+            type: string
+        # token_endpoint_auth_signing_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        ui_locales_supported:
+          type: array
+          items:
+            type: string
+        # userinfo_encryption_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # userinfo_encryption_enc_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # userinfo_signing_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
     User:
       description: Represents user data.
       allOf:
