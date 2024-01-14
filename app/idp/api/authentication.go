@@ -20,12 +20,14 @@ const sessionIDCookieName = config.SessionIDCookieName
 
 var authentication *Authentication
 
-func NewAuthentication(opt *option.Option) *Authentication {
-	return &Authentication{
-		svc:    service.NewAuthenticate(opt),
-		cache:  httpstore.NewCache(opt),
-		cookie: opt.Cookie,
-		v:      opt.V,
+func InitAuthentication(opt *option.Option) {
+	if authentication == nil {
+		authentication = &Authentication{
+			svc:    service.NewAuthenticate(opt),
+			cache:  httpstore.NewCache(opt),
+			cookie: opt.Cookie,
+			v:      opt.V,
+		}
 	}
 }
 

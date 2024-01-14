@@ -16,11 +16,13 @@ import (
 
 var authorizationGet *AuthorizationGet
 
-func NewAuthorizationGet(opt *option.Option) *AuthorizationGet {
-	return &AuthorizationGet{
-		svc:     service.NewAuthorize(opt),
-		context: &httpstore.Context{},
-		v:       opt.V,
+func InitAuthorizationGet(opt *option.Option) {
+	if authorizationGet == nil {
+		authorizationGet = &AuthorizationGet{
+			svc:     service.NewAuthorize(opt),
+			context: &httpstore.Context{},
+			v:       opt.V,
+		}
 	}
 }
 

@@ -14,10 +14,12 @@ import (
 
 var registration *Registration
 
-func NewRegistration(opt *option.Option) *Registration {
-	return &Registration{
-		svc: service.NewRegisterUser(repository.NewUser(opt.DB, opt.IDGen)),
-		v:   opt.V,
+func InitRegistration(opt *option.Option) {
+	if registration == nil {
+		registration = &Registration{
+			svc: service.NewRegisterUser(repository.NewUser(opt.DB, opt.IDGen)),
+			v:   opt.V,
+		}
 	}
 }
 

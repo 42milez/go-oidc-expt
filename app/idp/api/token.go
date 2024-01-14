@@ -6,25 +6,28 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/42milez/go-oidc-server/app/idp/httpstore"
+	"github.com/42milez/go-oidc-server/app/idp/service"
+
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
 	"github.com/42milez/go-oidc-server/app/idp/option"
-	"github.com/42milez/go-oidc-server/app/idp/service"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xutil"
 )
 
 var token *Token
 
-func NewToken(opt *option.Option) *Token {
-	return &Token{
-		acSVC: service.NewAuthCodeGrant(opt),
-		rtSVC: service.NewRefreshTokenGrant(opt),
-		cache: httpstore.NewCache(opt),
-		v:     opt.V,
+func InitToken(opt *option.Option) {
+	if token == nil {
+		token = &Token{
+			acSVC: service.NewAuthCodeGrant(opt),
+			rtSVC: service.NewRefreshTokenGrant(opt),
+			cache: httpstore.NewCache(opt),
+			v:     opt.V,
+		}
 	}
 }
 

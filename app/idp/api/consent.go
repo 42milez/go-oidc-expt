@@ -14,11 +14,13 @@ import (
 
 var consent *Consent
 
-func NewConsent(opt *option.Option) *Consent {
-	return &Consent{
-		svc:     service.NewConsent(opt),
-		context: &httpstore.Context{},
-		v:       opt.V,
+func InitConsent(opt *option.Option) {
+	if consent == nil {
+		consent = &Consent{
+			svc:     service.NewConsent(opt),
+			context: &httpstore.Context{},
+			v:       opt.V,
+		}
 	}
 }
 
