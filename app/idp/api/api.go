@@ -21,6 +21,10 @@ func (_ *HandlerImpl) CheckHealth(w http.ResponseWriter, r *http.Request) {
 	healthCheck.ServeHTTP(w, r)
 }
 
+func (_ *HandlerImpl) Configuration(w http.ResponseWriter, r *http.Request) {
+	configuration.ServeHTTP(w, r)
+}
+
 func (_ *HandlerImpl) Consent(w http.ResponseWriter, r *http.Request) {
 	consent.ServeHTTP(w, r)
 }

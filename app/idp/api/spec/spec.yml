@@ -48,60 +48,22 @@ paths:
                 $ref: '#/components/schemas/Health'
               example:
                 status: 500
-  /authentication:
-    post:
-      description: Authenticates a user.
-      operationId: authenticate
+  # OpenID Connect Discovery 1.0 incorporating errata set 2
+  # https://openid.net/specs/openid-connect-discovery-1_0.html
+  /connect/.well-known/openid-configuration:
+    get:
+      description: Return the configuration information about the OpenID Provider.
+      operationId: configuration
       tags:
-        - Authentication
-      parameters:
-        - $ref: '#/components/parameters/SessionId'
-      requestBody:
-        description: User credential
-        required: true
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/UserName'
-                - $ref: '#/components/schemas/UserPassword'
+        - Configuration
       responses:
         '200':
-          description: Successfully authenticated.
-          headers:
-            Location:
-              description: Redirects consent endpoint with authorization request parameters.
+          description: The configuration information successfully returned.
+          content:
+            application/json:
               schema:
-                type: string
-                format: url
-              example: http://localhost:8080/consent?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
-        '400':
-          $ref: '#/components/responses/InvalidRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /consent:
-    post:
-      description: Grant relying party permission to use user data.
-      operationId: consent
-      tags:
-        - Authorization
-      parameters:
-        - $ref: '#/components/parameters/SessionId'
-      responses:
-        '302':
-          description: Consent successfully accepted.
-          headers:
-            Location:
-              description: Redirects to authorization endpoint with authorization request parameters.
-              schema:
-                type: string
-                format: url
-              example: http://localhost:8080/authorization?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /authorization:
+                $ref: '#/components/schemas/ConfigurationResponse'
+  /connect/authorization:
     get:
       description: Determines authentication and authorization status of user, redirects user to the appropriate page and returns an authorization code.
       operationId: authorize
@@ -133,7 +95,7 @@ paths:
           $ref: '#/components/responses/UnauthorizedRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /token:
+  /connect/token:
     post:
       description: Returns a new Access Token, Refresh Token, and ID Token using the authorization code obtained from the authorization endpoint. The Refresh Token is used to reissue the access token.
       operationId: token
@@ -213,6 +175,59 @@ paths:
                   - some error 3
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /user/authentication:
+    post:
+      description: Authenticates a user.
+      operationId: authenticate
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        description: User credential
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserName'
+                - $ref: '#/components/schemas/UserPassword'
+      responses:
+        '200':
+          description: Successfully authenticated.
+          headers:
+            Location:
+              description: Redirects consent endpoint with authorization request parameters.
+              schema:
+                type: string
+                format: url
+              example: http://localhost:8080/consent?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /user/consent:
+    post:
+      description: Grant relying party permission to use user data.
+      operationId: consent
+      tags:
+        - Authorization
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '302':
+          description: Consent successfully accepted.
+          headers:
+            Location:
+              description: Redirects to authorization endpoint with authorization request parameters.
+              schema:
+                type: string
+                format: url
+              example: http://localhost:8080/authorization?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   securitySchemes:
     # https://swagger.io/docs/specification/authentication/basic-authentication/
@@ -234,7 +249,7 @@ components:
     ClientID:
       name: client_id
       in: query
-      description: represents "client_id" parameter
+      description: Represents "client_id" parameter
       required: true
       schema:
         type: string
@@ -248,7 +263,7 @@ components:
     Code:
       name: code
       in: query
-      description: represents "code" parameter
+      description: Represents "code" parameter
       required: true
       schema:
         type: string
@@ -259,7 +274,7 @@ components:
     Display:
       name: display
       in: query
-      description: represents "display" parameter
+      description: Represents "display" parameter
       required: true
       schema:
         type: string
@@ -271,7 +286,7 @@ components:
     GrantType:
       name: grant_type
       in: query
-      description: represents "grant_type" parameter
+      description: Represents "grant_type" parameter
       required: true
       schema:
         type: string
@@ -283,7 +298,7 @@ components:
     MaxAge:
       name: max_age
       in: query
-      description: represents "max_age" parameter
+      description: Represents "max_age" parameter
       required: true
       schema:
         type: integer
@@ -296,7 +311,7 @@ components:
     Nonce:
       name: nonce
       in: query
-      description: represents "nonce" parameter
+      description: Represents "nonce" parameter
       required: true
       schema:
         type: string
@@ -308,7 +323,7 @@ components:
     Prompt:
       name: prompt
       in: query
-      description: represents "prompt" parameter
+      description: Represents "prompt" parameter
       required: true
       schema:
         type: string
@@ -320,7 +335,7 @@ components:
     RedirectUri:
       name: redirect_uri
       in: query
-      description: represents "redirect_uri" parameter
+      description: Represents "redirect_uri" parameter
       required: true
       schema:
         type: string
@@ -333,7 +348,7 @@ components:
     ResponseType:
       name: response_type
       in: query
-      description: represents "response_type" parameter
+      description: Represents "response_type" parameter
       required: true
       schema:
         type: string
@@ -345,7 +360,7 @@ components:
     Scope:
       name: scope
       in: query
-      description: represents "scope" parameter
+      description: Represents "scope" parameter
       required: true
       schema:
         type: string
@@ -357,7 +372,7 @@ components:
     State:
       name: state
       in: query
-      description: represents "state" parameter
+      description: Represents "state" parameter
       required: true
       schema:
         type: string
@@ -378,7 +393,7 @@ components:
               - grant_type
             properties:
               grant_type:
-                description: represents "grant_type" parameter
+                description: Represents "grant_type" parameter
                 type: string
                 example: authorization_code
                 x-oapi-codegen-extra-tags:
@@ -386,7 +401,7 @@ components:
                   validate: required,grant-type-validator
                 x-go-type: typedef.GrantType
               code:
-                description: represents "code" parameter
+                description: Represents "code" parameter
                 type: string
                 nullable: true
                 example: EYdxIU30xstnWZKxgA54RJMz1YUR0J
@@ -394,7 +409,7 @@ components:
                   schema: code
                   validate: omitempty,alphanum
               redirect_uri:
-                description: represents "redirect_uri" parameter
+                description: Represents "redirect_uri" parameter
                 type: string
                 nullable: true
                 example: https%3A%2F%2Fexample.com%2Fcb
@@ -403,7 +418,7 @@ components:
                   validate: omitempty,url_encoded
                 x-go-name: RedirectURI
               refresh_token:
-                description: represents "refresh_token" parameter
+                description: Represents "refresh_token" parameter
                 type: string
                 nullable: true
                 example: 8xLOxBtZp8
@@ -460,7 +475,7 @@ components:
               - some error 3
   schemas:
     Health:
-      description: represents the status of service.
+      description: Represents the status of service.
       type: object
       required:
         - status
@@ -469,8 +484,198 @@ components:
           type: integer
           format: uint64
           example: 200
+    ConfigurationResponse:
+      description: Represents the configuration information of OpenID Provider.
+      type: object
+      required:
+        - authorization_endpoint
+        - claims_locales_supported
+        - claims_supported
+        - display_values_supported
+        - id_token_signing_alg_values_supported
+        - issuer
+        - jwks_uri
+        - op_policy_uri
+        - op_tos_uri
+        - response_types_supported
+        - scopes_supported
+        - service_documentation
+        - subject_types_supported
+        - token_endpoint
+        - token_endpoint_auth_methods_supported
+        - ui_locales_supported
+        - userinfo_endpoint
+      properties:
+        #  REQUIRED
+        # --------------------------------------------------
+        authorization_endpoint:
+          type: string
+          example: https://auth.42milez.com/connect/authorization
+        id_token_signing_alg_values_supported:
+          type: array
+          items:
+            type: string
+            enum:
+              - ES256
+            x-go-type-name: IDTokenSigningAlgValuesSupported
+          x-go-name: IDTokenSigningAlgValuesSupported
+          example:
+            - ES256
+        issuer:
+          type: string
+          example: https://auth.42milez.com/connect/
+        jwks_uri:
+          type: string
+          x-go-name: JWKsURI
+          example: https://auth.42milez.com/connect/jwks
+        response_types_supported:
+          type: array
+          items:
+            type: string
+            enum:
+              - code
+            x-go-type-name: ResponseTypesSupported
+          example:
+            - code
+        subject_types_supported:
+          type: array
+          items:
+            type: string
+            enum:
+              - public
+            x-go-type-name: SubjectTypesSupported
+          example:
+            - public
+        token_endpoint:
+          type: string
+          example: https://auth.42milez.com/connect/token
+        #  RECOMMENDED
+        # --------------------------------------------------
+        # claim_types_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # registration_endpoint:
+        #   type: string
+        scopes_supported:
+          type: array
+          items:
+            type: string
+            enum:
+              - openid
+              - profile
+              - email
+            x-go-type-name: ScopesSupported
+          example:
+            - openid
+            - profile
+            - email
+        userinfo_endpoint:
+          type: string
+          x-go-name: UserInfoEndpoint
+          example: https://auth.42milez.com/connect/userinfo
+        #  OPTIONAL
+        # --------------------------------------------------
+        # acr_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # claims_locales_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # claims_parameter_supported:
+        #   type: boolean
+        # claims_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        display_values_supported:
+          type: array
+          items:
+            type: string
+            enum:
+              - page
+            x-go-type-name: DisplayValuesSupported
+          example:
+            - page
+        # grant_types_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # id_token_encryption_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # id_token_encryption_enc_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # op_policy_uri:
+        #   type: string
+        # op_tos_uri:
+        #   type: string
+        # request_object_encryption_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # request_object_encryption_enc_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # request_object_signing_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # request_parameter_supported:
+        #   type: boolean
+        # request_uri_parameter_supported:
+        #   type: boolean
+        # require_request_uri_registration:
+        #   type: boolean
+        # response_modes_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # service_documentation:
+        #   type: string
+        token_endpoint_auth_methods_supported:
+          type: array
+          items:
+            type: string
+            enum:
+              - client_secret_basic
+            x-go-type-name: TokenEndpointAuthMethodsSupported
+          example:
+            - client_secret_basic
+        # token_endpoint_auth_signing_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        ui_locales_supported:
+          type: array
+          items:
+            type: string
+            enum:
+              - ja-JP
+            x-go-type-name: UILocalesSupported
+          x-go-name: UILocalesSupported
+          example:
+            - ja-JP
+        # userinfo_encryption_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # userinfo_encryption_enc_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
+        # userinfo_signing_alg_values_supported:
+        #   type: array
+        #   items:
+        #     type: string
     User:
-      description: represents user data.
+      description: Represents user data.
       allOf:
         - type: object
           required:
@@ -486,7 +691,7 @@ components:
                 validate: required
         - $ref: '#/components/schemas/UserName'
     UserName:
-      description: represents a part of user data.
+      description: Represents a part of user data.
       type: object
       required:
         - name
@@ -497,7 +702,7 @@ components:
           x-oapi-codegen-extra-tags:
             validate: required
     UserPassword:
-      description: represents the password of user
+      description: Represents the password of user
       type: object
       required:
         - password
@@ -550,7 +755,7 @@ components:
             - unauthorized_client
             - unsupported_grant_type
     ErrorResponse:
-      description: represents error response
+      description: Represents error response
       type: object
       required:
         - status

@@ -57,7 +57,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	//  HANDLER
 	// --------------------------------------------------
 
-	ConfigureHandler(opt)
+	InitHandler(opt)
 
 	//  ROUTER
 	// --------------------------------------------------
@@ -197,11 +197,12 @@ func ConfigureDatastore(ctx context.Context, cfg *config.Config, opt *option.Opt
 	return nil
 }
 
-func ConfigureHandler(opt *option.Option) {
-	healthCheck = NewHealthCheck(opt)
-	registration = NewRegistration(opt)
-	authentication = NewAuthentication(opt)
-	consent = NewConsent(opt)
-	authorizationGet = NewAuthorizationGet(opt)
-	token = NewToken(opt)
+func InitHandler(opt *option.Option) {
+	InitAuthentication(opt)
+	InitAuthorizationGet(opt)
+	InitConfiguration()
+	InitConsent(opt)
+	InitHealthCheck(opt)
+	InitRegistration(opt)
+	InitToken(opt)
 }

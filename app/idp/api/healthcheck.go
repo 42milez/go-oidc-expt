@@ -10,9 +10,11 @@ import (
 
 var healthCheck *HealthCheck
 
-func NewHealthCheck(opt *option.Option) *HealthCheck {
-	return &HealthCheck{
-		svc: service.NewCheckHealth(repository.NewCheckHealth(opt.DB, opt.Cache)),
+func InitHealthCheck(opt *option.Option) {
+	if healthCheck == nil {
+		healthCheck = &HealthCheck{
+			svc: service.NewCheckHealth(repository.NewCheckHealth(opt.DB, opt.Cache)),
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
@@ -49,13 +50,28 @@ const (
 	SessionIDCookieTTL  = SessionTTL
 )
 
-const (
-	AuthenticationPath = "/authentication"
-	AuthorizationPath  = "/authorization"
-	ConsentPath        = "/consent"
-	TokenPath          = "/token"
-	RegisterPath       = "/user/registration"
-)
+const OIDCRootPath = "connect"
+const UserRootPath = "user"
+
+func AuthorizationPath() string {
+	return fmt.Sprintf("/%s/%s", OIDCRootPath, "authorization")
+}
+
+func TokenPath() string {
+	return fmt.Sprintf("/%s/%s", OIDCRootPath, "token")
+}
+
+func UserRegistrationPath() string {
+	return fmt.Sprintf("/%s/%s", UserRootPath, "registration")
+}
+
+func UserAuthenticationPath() string {
+	return fmt.Sprintf("/%s/%s", UserRootPath, "authentication")
+}
+
+func UserConsentPath() string {
+	return fmt.Sprintf("/%s/%s", UserRootPath, "consent")
+}
 
 const (
 	Issuer = "42milez.dev"

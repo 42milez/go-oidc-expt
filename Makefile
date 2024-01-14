@@ -176,6 +176,11 @@ stop:
 	@cmd="docker-compose stop"; \
 		$(call run,$${cmd})
 
+## restart: Restart containers
+restart:
+	@cmd="make down && make up"; \
+		$(call run,$${cmd})
+
 ## destroy: Delete all resources
 destroy:
 	@cmd="docker-compose down --volumes"; \

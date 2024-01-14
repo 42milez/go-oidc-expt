@@ -20,12 +20,14 @@ const sessionIDCookieName = config.SessionIDCookieName
 
 var authentication *Authentication
 
-func NewAuthentication(opt *option.Option) *Authentication {
-	return &Authentication{
-		svc:    service.NewAuthenticate(opt),
-		cache:  httpstore.NewCache(opt),
-		cookie: opt.Cookie,
-		v:      opt.V,
+func InitAuthentication(opt *option.Option) {
+	if authentication == nil {
+		authentication = &Authentication{
+			svc:    service.NewAuthenticate(opt),
+			cache:  httpstore.NewCache(opt),
+			cookie: opt.Cookie,
+			v:      opt.V,
+		}
 	}
 }
 
@@ -80,11 +82,11 @@ func (ah *Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !isConsented {
-		Redirect(w, r, config.ConsentPath, http.StatusFound)
+		Redirect(w, r, config.UserConsentPath(), http.StatusFound)
 		return
 	}
 
-	Redirect(w, r, config.AuthorizationPath, http.StatusFound)
+	Redirect(w, r, config.AuthorizationPath(), http.StatusFound)
 }
 
 func (ah *Authentication) parseRequestBody(r *http.Request) (*AuthenticateJSONRequestBody, error) {

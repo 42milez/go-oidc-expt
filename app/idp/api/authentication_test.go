@@ -7,9 +7,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/idp/config"
+
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/app/idp/config"
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/idp/iface"
 	"github.com/42milez/go-oidc-server/app/idp/security"
@@ -152,7 +153,7 @@ func TestAuthentication_ServeHTTP(t *testing.T) {
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(
 				http.MethodPost,
-				config.AuthenticationPath,
+				config.UserAuthenticationPath(),
 				bytes.NewReader(xtestutil.LoadFile(t, tt.reqBodyFile)))
 			r.URL.RawQuery = strings.Replace(xstring.ByteToString(xtestutil.LoadFile(t, tt.reqParamFile)), "\n", "", -1)
 
