@@ -200,6 +200,7 @@ func ConfigureDatastore(ctx context.Context, cfg *config.Config, opt *option.Opt
 func InitHandler(opt *option.Option) {
 	InitAuthentication(opt)
 	InitAuthorizationGet(opt)
+	InitConfiguration()
 	InitConsent(opt)
 	InitHealthCheck(opt)
 	InitRegistration(opt)

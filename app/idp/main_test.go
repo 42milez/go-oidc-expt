@@ -32,11 +32,11 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	t.Parallel()
 
 	const baseUrl = "http://127.0.0.1:8081"
-	const registrationEndpoint = baseUrl + config.RegisterPath
-	const authenticationEndpoint = baseUrl + config.AuthenticationPath
-	const consentEndpoint = baseUrl + config.ConsentPath
-	const authorizationEndpoint = baseUrl + config.AuthorizationPath
-	const tokenEndpoint = baseUrl + config.TokenPath
+	userRegistrationEndpoint := baseUrl + config.UserRegistrationPath()
+	userAuthenticationEndpoint := baseUrl + config.UserAuthenticationPath()
+	userConsentEndpoint := baseUrl + config.UserConsentPath()
+	authorizationEndpoint := baseUrl + config.AuthorizationPath()
+	tokenEndpoint := baseUrl + config.TokenPath()
 
 	const responseType = "code"
 	const scope = "openid profile email"
@@ -101,7 +101,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	}
 
 	registerUser := func() *entity.User {
-		regUrl, err := url.Parse(registrationEndpoint)
+		regUrl, err := url.Parse(userRegistrationEndpoint)
 		xtestutil.ExitOnError(t, err)
 
 		rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -145,7 +145,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	}
 
 	authenticate := func(u *entity.User, authoParam string) []*http.Cookie {
-		autheUrl, err := url.Parse(fmt.Sprintf("%s?%s", authenticationEndpoint, authoParam))
+		autheUrl, err := url.Parse(fmt.Sprintf("%s?%s", userAuthenticationEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
 		autheReqBody := &api.AuthenticateJSONRequestBody{
@@ -173,7 +173,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	}
 
 	consent := func(cookies []*http.Cookie, authoParam string) {
-		consentUrl, err := url.Parse(fmt.Sprintf("%s?%s", consentEndpoint, authoParam))
+		consentUrl, err := url.Parse(fmt.Sprintf("%s?%s", userConsentEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
 		consentReqParam := &xtestutil.RequestParam{

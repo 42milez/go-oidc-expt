@@ -48,62 +48,9 @@ paths:
                 $ref: '#/components/schemas/Health'
               example:
                 status: 500
-  /authentication:
-    post:
-      description: Authenticates a user.
-      operationId: authenticate
-      tags:
-        - Authentication
-      parameters:
-        - $ref: '#/components/parameters/SessionId'
-      requestBody:
-        description: User credential
-        required: true
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/schemas/UserName'
-                - $ref: '#/components/schemas/UserPassword'
-      responses:
-        '200':
-          description: Successfully authenticated.
-          headers:
-            Location:
-              description: Redirects consent endpoint with authorization request parameters.
-              schema:
-                type: string
-                format: url
-              example: http://localhost:8080/consent?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
-        '400':
-          $ref: '#/components/responses/InvalidRequest'
-        '401':
-          $ref: '#/components/responses/UnauthorizedRequest'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /consent:
-    post:
-      description: Grant relying party permission to use user data.
-      operationId: consent
-      tags:
-        - Authorization
-      parameters:
-        - $ref: '#/components/parameters/SessionId'
-      responses:
-        '302':
-          description: Consent successfully accepted.
-          headers:
-            Location:
-              description: Redirects to authorization endpoint with authorization request parameters.
-              schema:
-                type: string
-                format: url
-              example: http://localhost:8080/authorization?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
-        '500':
-          $ref: '#/components/responses/InternalServerError'
   # OpenID Connect Discovery 1.0 incorporating errata set 2
   # https://openid.net/specs/openid-connect-discovery-1_0.html
-  /.well-known/openid-configuration:
+  /connect/.well-known/openid-configuration:
     get:
       description: Return the configuration information about the OpenID Provider.
       operationId: configuration
@@ -115,8 +62,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Configuration'
-  /authorization:
+                $ref: '#/components/schemas/ConfigurationResponse'
+  /connect/authorization:
     get:
       description: Determines authentication and authorization status of user, redirects user to the appropriate page and returns an authorization code.
       operationId: authorize
@@ -148,7 +95,7 @@ paths:
           $ref: '#/components/responses/UnauthorizedRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /token:
+  /connect/token:
     post:
       description: Returns a new Access Token, Refresh Token, and ID Token using the authorization code obtained from the authorization endpoint. The Refresh Token is used to reissue the access token.
       operationId: token
@@ -226,6 +173,59 @@ paths:
                   - some error 1
                   - some error 2
                   - some error 3
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /user/authentication:
+    post:
+      description: Authenticates a user.
+      operationId: authenticate
+      tags:
+        - Authentication
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        description: User credential
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserName'
+                - $ref: '#/components/schemas/UserPassword'
+      responses:
+        '200':
+          description: Successfully authenticated.
+          headers:
+            Location:
+              description: Redirects consent endpoint with authorization request parameters.
+              schema:
+                type: string
+                format: url
+              example: http://localhost:8080/consent?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/UnauthorizedRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /user/consent:
+    post:
+      description: Grant relying party permission to use user data.
+      operationId: consent
+      tags:
+        - Authorization
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '302':
+          description: Consent successfully accepted.
+          headers:
+            Location:
+              description: Redirects to authorization endpoint with authorization request parameters.
+              schema:
+                type: string
+                format: url
+              example: http://localhost:8080/authorization?client_id=WDAVqWSJzs78oZE8JXmVfq0j1NhJvb&display=page&max_age=86400&nonce=GFpkQE1azrQtQ6DYLj1KSVENVYU69k&prompt=consent&redirect_uri=https%3A%2F%2Fexample.com%2Fcb&response_type=code&scope=openid%20profile%20email&state=IanAk1SxWLp2jKA6F8Cwl2zBV2Y8tU
         '500':
           $ref: '#/components/responses/InternalServerError'
 components:
@@ -484,7 +484,7 @@ components:
           type: integer
           format: uint64
           example: 200
-    Configuration:
+    ConfigurationResponse:
       description: Represents the configuration information of OpenID Provider.
       type: object
       required:
@@ -515,6 +515,10 @@ components:
           type: array
           items:
             type: string
+            enum:
+              - ES256
+            x-go-type-name: IDTokenSigningAlgValuesSupported
+          x-go-name: IDTokenSigningAlgValuesSupported
           example:
             - ES256
         issuer:
@@ -522,17 +526,24 @@ components:
           example: https://auth.42milez.com/connect/
         jwks_uri:
           type: string
+          x-go-name: JWKsURI
           example: https://auth.42milez.com/connect/jwks
         response_types_supported:
           type: array
           items:
             type: string
+            enum:
+              - code
+            x-go-type-name: ResponseTypesSupported
           example:
             - code
         subject_types_supported:
           type: array
           items:
             type: string
+            enum:
+              - public
+            x-go-type-name: SubjectTypesSupported
           example:
             - public
         token_endpoint:
@@ -554,12 +565,14 @@ components:
               - openid
               - profile
               - email
+            x-go-type-name: ScopesSupported
           example:
             - openid
             - profile
             - email
         userinfo_endpoint:
           type: string
+          x-go-name: UserInfoEndpoint
           example: https://auth.42milez.com/connect/userinfo
         #  OPTIONAL
         # --------------------------------------------------
@@ -583,6 +596,7 @@ components:
             type: string
             enum:
               - page
+            x-go-type-name: DisplayValuesSupported
           example:
             - page
         # grant_types_supported:
@@ -631,6 +645,7 @@ components:
             type: string
             enum:
               - client_secret_basic
+            x-go-type-name: TokenEndpointAuthMethodsSupported
           example:
             - client_secret_basic
         # token_endpoint_auth_signing_alg_values_supported:
@@ -643,6 +658,8 @@ components:
             type: string
             enum:
               - ja-JP
+            x-go-type-name: UILocalesSupported
+          x-go-name: UILocalesSupported
           example:
             - ja-JP
         # userinfo_encryption_alg_values_supported:

@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/idp/config"
+
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/relyingparty"
@@ -65,7 +67,7 @@ func TestNewOapiErrorHandler(t *testing.T) {
 		},
 		ErrorHandler: NewOapiErrorHandler(),
 	}))
-	mux.Post("/token", func(w http.ResponseWriter, r *http.Request) {
+	mux.Post(config.TokenPath(), func(w http.ResponseWriter, r *http.Request) {
 		RespondJSON200(w, r)
 	})
 
@@ -91,7 +93,7 @@ func TestNewOapiErrorHandler(t *testing.T) {
 				param.Add("code", "EYdxIU30xstnWZKxgA54RJMz1YUR0J")
 				param.Add("redirect_uri", "https://rp.example.com/cb")
 				reqBody := bytes.NewReader([]byte(param.Encode()))
-				req := httptest.NewRequest(http.MethodPost, "/token", reqBody)
+				req := httptest.NewRequest(http.MethodPost, config.TokenPath(), reqBody)
 				credential := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", tt.ClientID, rp.ClientSecret())))
 				req.Header.Set("Authorization", fmt.Sprintf("Basic %s", credential))
 				req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
