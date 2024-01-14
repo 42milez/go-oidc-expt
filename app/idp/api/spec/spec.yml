@@ -550,10 +550,10 @@ components:
           type: array
           items:
             type: string
-          enum:
-            - openid
-            - profile
-            - email
+            enum:
+              - openid
+              - profile
+              - email
           example:
             - openid
             - profile
@@ -581,8 +581,8 @@ components:
           type: array
           items:
             type: string
-          enum:
-            - page
+            enum:
+              - page
           example:
             - page
         # grant_types_supported:
@@ -629,8 +629,8 @@ components:
           type: array
           items:
             type: string
-          enum:
-            - client_secret_basic
+            enum:
+              - client_secret_basic
           example:
             - client_secret_basic
         # token_endpoint_auth_signing_alg_values_supported:
@@ -641,8 +641,8 @@ components:
           type: array
           items:
             type: string
-          enum:
-            - ja-JP
+            enum:
+              - ja-JP
           example:
             - ja-JP
         # userinfo_encryption_alg_values_supported:
