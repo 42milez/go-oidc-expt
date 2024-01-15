@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/url"
 
+	"github.com/lestrrat-go/jwx/v2/jwt"
+
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"github.com/42milez/go-oidc-server/app/idp/entity"
@@ -71,6 +73,10 @@ type CredentialValidator interface {
 	ValidateCredential(ctx context.Context, clientID typedef.ClientID, clientSecret string) error
 }
 
+type AccessTokenParser interface {
+	ParseAccessToken(token string) (jwt.Token, error)
+}
+
 type RefreshTokenVerifier interface {
 	VerifyRefreshToken(ctx context.Context, token string, clientID typedef.ClientID) error
 }
@@ -100,4 +106,11 @@ type RefreshTokenGrantAcceptor interface {
 	UserIDExtractor
 	iface.AccessTokenGenerator
 	iface.RefreshTokenGenerator
+}
+
+//  UserInfo
+// --------------------------------------------------
+
+type UserInfoReader interface {
+	ReadUserInfo(ctx context.Context, accessToken jwt.Token) (*entity.UserInfo, error)
 }

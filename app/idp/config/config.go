@@ -61,6 +61,10 @@ func TokenPath() string {
 	return fmt.Sprintf("/%s/%s", OIDCRootPath, "token")
 }
 
+func UserInfoPath() string {
+	return fmt.Sprintf("/%s/%s", OIDCRootPath, "userinfo")
+}
+
 func UserRegistrationPath() string {
 	return fmt.Sprintf("/%s/%s", UserRootPath, "registration")
 }

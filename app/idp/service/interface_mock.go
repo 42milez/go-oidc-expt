@@ -257,6 +257,21 @@ func (mr *MockUserReaderMockRecorder) ReadUser(ctx, name any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUser", reflect.TypeOf((*MockUserReader)(nil).ReadUser), ctx, name)
 }
 
+// ReadUserByID mocks base method.
+func (m *MockUserReader) ReadUserByID(ctx context.Context, id typedef.UserID) (*entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadUserByID", ctx, id)
+	ret0, _ := ret[0].(*entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadUserByID indicates an expected call of ReadUserByID.
+func (mr *MockUserReaderMockRecorder) ReadUserByID(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUserByID", reflect.TypeOf((*MockUserReader)(nil).ReadUserByID), ctx, id)
+}
+
 // MockUserConsentReader is a mock of UserConsentReader interface.
 type MockUserConsentReader struct {
 	ctrl     *gomock.Controller
@@ -308,6 +323,21 @@ func (m *MockUserConsentReader) ReadUser(ctx context.Context, name string) (*ent
 func (mr *MockUserConsentReaderMockRecorder) ReadUser(ctx, name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUser", reflect.TypeOf((*MockUserConsentReader)(nil).ReadUser), ctx, name)
+}
+
+// ReadUserByID mocks base method.
+func (m *MockUserConsentReader) ReadUserByID(ctx context.Context, id typedef.UserID) (*entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadUserByID", ctx, id)
+	ret0, _ := ret[0].(*entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadUserByID indicates an expected call of ReadUserByID.
+func (mr *MockUserConsentReaderMockRecorder) ReadUserByID(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUserByID", reflect.TypeOf((*MockUserConsentReader)(nil).ReadUserByID), ctx, id)
 }
 
 // MockCredentialReader is a mock of CredentialReader interface.

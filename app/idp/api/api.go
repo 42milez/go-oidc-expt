@@ -36,3 +36,7 @@ func (_ *HandlerImpl) Register(w http.ResponseWriter, r *http.Request) {
 func (_ *HandlerImpl) Token(w http.ResponseWriter, r *http.Request) {
 	token.ServeHTTP(w, r)
 }
+
+func (_ *HandlerImpl) UserInfo(w http.ResponseWriter, r *http.Request) {
+	userinfo.ServeHTTP(w, r)
+}

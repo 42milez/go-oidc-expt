@@ -20,6 +20,7 @@ var (
 	FailedToValidate             InternalError = "failed to validate"
 	FailedToWriteCache           InternalError = "failed to write cache"
 	InvalidPath                  InternalError = "invalid path"
+	InvalidRedirectURI           InternalError = "invalid redirect uri"
 	InvalidResponseType          InternalError = "invalid response type"
 	InvalidToken                 InternalError = "invalid token"
 	PasswordNotMatched           InternalError = "password not matched"
@@ -27,13 +28,13 @@ var (
 	RedirectURINotFound          InternalError = "redirect uri not found"
 	RefreshTokenNotFound         InternalError = "refresh token not found"
 	RefreshTokenNotMatched       InternalError = "refresh token not matched"
+	TokenNotFoundInHeader        InternalError = "token not found in header"
 	UnauthorizedRequest          InternalError = "unauthorized request"
 	UnexpectedErrorOccurred      InternalError = "unexpected error occurred"
 	UnknownSecurityScheme        InternalError = "unknown security scheme"
+	UnsupportedClaim             InternalError = "unsupported claim"
 	UserIDNotFoundInContext      InternalError = "user id not found in context"
 	UserNotFound                 InternalError = "user not found"
-	InvalidRedirectURI           InternalError = "invalid redirect uri"
-	UnsupportedClaim             InternalError = "unsupported claim"
 )
 
 var (

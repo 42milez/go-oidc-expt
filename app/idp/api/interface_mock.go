@@ -17,6 +17,7 @@ import (
 
 	entity "github.com/42milez/go-oidc-server/app/idp/entity"
 	typedef "github.com/42milez/go-oidc-server/app/pkg/typedef"
+	jwt "github.com/lestrrat-go/jwx/v2/jwt"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -476,6 +477,44 @@ func (mr *MockCredentialValidatorMockRecorder) ValidateCredential(ctx, clientID,
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateCredential", reflect.TypeOf((*MockCredentialValidator)(nil).ValidateCredential), ctx, clientID, clientSecret)
 }
 
+// MockAccessTokenParser is a mock of AccessTokenParser interface.
+type MockAccessTokenParser struct {
+	ctrl     *gomock.Controller
+	recorder *MockAccessTokenParserMockRecorder
+}
+
+// MockAccessTokenParserMockRecorder is the mock recorder for MockAccessTokenParser.
+type MockAccessTokenParserMockRecorder struct {
+	mock *MockAccessTokenParser
+}
+
+// NewMockAccessTokenParser creates a new mock instance.
+func NewMockAccessTokenParser(ctrl *gomock.Controller) *MockAccessTokenParser {
+	mock := &MockAccessTokenParser{ctrl: ctrl}
+	mock.recorder = &MockAccessTokenParserMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAccessTokenParser) EXPECT() *MockAccessTokenParserMockRecorder {
+	return m.recorder
+}
+
+// ParseAccessToken mocks base method.
+func (m *MockAccessTokenParser) ParseAccessToken(token string) (jwt.Token, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ParseAccessToken", token)
+	ret0, _ := ret[0].(jwt.Token)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ParseAccessToken indicates an expected call of ParseAccessToken.
+func (mr *MockAccessTokenParserMockRecorder) ParseAccessToken(token any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ParseAccessToken", reflect.TypeOf((*MockAccessTokenParser)(nil).ParseAccessToken), token)
+}
+
 // MockRefreshTokenVerifier is a mock of RefreshTokenVerifier interface.
 type MockRefreshTokenVerifier struct {
 	ctrl     *gomock.Controller
@@ -802,4 +841,42 @@ func (m *MockRefreshTokenGrantAcceptor) VerifyRefreshToken(ctx context.Context, 
 func (mr *MockRefreshTokenGrantAcceptorMockRecorder) VerifyRefreshToken(ctx, token, clientID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyRefreshToken", reflect.TypeOf((*MockRefreshTokenGrantAcceptor)(nil).VerifyRefreshToken), ctx, token, clientID)
+}
+
+// MockUserInfoReader is a mock of UserInfoReader interface.
+type MockUserInfoReader struct {
+	ctrl     *gomock.Controller
+	recorder *MockUserInfoReaderMockRecorder
+}
+
+// MockUserInfoReaderMockRecorder is the mock recorder for MockUserInfoReader.
+type MockUserInfoReaderMockRecorder struct {
+	mock *MockUserInfoReader
+}
+
+// NewMockUserInfoReader creates a new mock instance.
+func NewMockUserInfoReader(ctrl *gomock.Controller) *MockUserInfoReader {
+	mock := &MockUserInfoReader{ctrl: ctrl}
+	mock.recorder = &MockUserInfoReaderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserInfoReader) EXPECT() *MockUserInfoReaderMockRecorder {
+	return m.recorder
+}
+
+// ReadUserInfo mocks base method.
+func (m *MockUserInfoReader) ReadUserInfo(ctx context.Context, accessToken jwt.Token) (*entity.UserInfo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadUserInfo", ctx, accessToken)
+	ret0, _ := ret[0].(*entity.UserInfo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadUserInfo indicates an expected call of ReadUserInfo.
+func (mr *MockUserInfoReaderMockRecorder) ReadUserInfo(ctx, accessToken any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadUserInfo", reflect.TypeOf((*MockUserInfoReader)(nil).ReadUserInfo), ctx, accessToken)
 }

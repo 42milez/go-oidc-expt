@@ -14,7 +14,6 @@ import (
 	"github.com/42milez/go-oidc-server/app/idp/datastore"
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 	"github.com/42milez/go-oidc-server/app/idp/option"
-	"github.com/42milez/go-oidc-server/app/idp/repository"
 	"github.com/42milez/go-oidc-server/app/idp/security"
 	"github.com/42milez/go-oidc-server/app/idp/service"
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
@@ -30,6 +29,7 @@ import (
 )
 
 const basicAuthSchemeName = "basicAuth"
+const bearerAuthSchemaName = "bearerAuth"
 const requestTimeout = 30 * time.Second
 
 func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (http.Handler, func(), error) {
@@ -38,7 +38,7 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 	appLogger = logger.With().Str(config.LoggerTagKey, config.AppLoggerTagValue).Logger()
 	accessLogger = logger.With().Str(config.LoggerTagKey, config.AccessLoggerTagValue).Logger()
 
-	//  HANDLER OPTION
+	//  Handler Option
 	// --------------------------------------------------
 
 	var opt *option.Option
@@ -47,44 +47,41 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 		return nil, nil, err
 	}
 
-	//  DATASTORE
+	//  Datastore
 	// --------------------------------------------------
 
 	if err = ConfigureDatastore(ctx, cfg, opt); err != nil {
 		return nil, nil, err
 	}
 
-	//  HANDLER
+	//  Handler
 	// --------------------------------------------------
 
 	InitHandler(opt)
 
-	//  ROUTER
+	//  Router
 	// --------------------------------------------------
 
 	mux := chi.NewRouter()
 
 	// Common Middleware Configuration
-
 	mux.Use(middleware.RequestID)
 	mux.Use(AccessLogger)
 	mux.Use(middleware.Timeout(requestTimeout))
 	mux.Use(middleware.Recoverer)
 
 	// Enable debugging
-
 	if cfg.EnableProfiler {
 		mux.Mount("/debug", middleware.Profiler())
 	}
 
 	// Middleware Configuration on Each Handler
-
 	mw := NewMiddlewareFuncMap()
 	restoreSessMW := RestoreSession(opt)
-
 	mw.SetAuthenticateMW(restoreSessMW).SetAuthorizeMW(restoreSessMW).SetConsentMW(restoreSessMW).
 		SetRegisterMW(restoreSessMW)
 
+	// Configure router
 	mux, err = MuxWithOptions(&HandlerImpl{}, &ChiServerOptions{
 		BaseRouter:  mux,
 		Middlewares: mw,
@@ -101,17 +98,20 @@ func NewMux(ctx context.Context, cfg *config.Config, logger *zerolog.Logger) (ht
 }
 
 func NewOapiAuthentication(opt *option.Option) openapi3filter.AuthenticationFunc {
-	svc := service.NewOapiAuthenticate(repository.NewRelyingParty(opt.DB))
 	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
-		return oapiBasicAuthenticate(ctx, input, svc)
+		svc := service.NewOapiAuthenticate(opt)
+		switch input.SecuritySchemeName {
+		case basicAuthSchemeName:
+			return oapiBasicAuthenticate(ctx, input, svc)
+		case bearerAuthSchemaName:
+			return oapiBearerAuthenticate(input, svc)
+		default:
+			return xerr.UnknownSecurityScheme
+		}
 	}
 }
 
 func oapiBasicAuthenticate(ctx context.Context, input *openapi3filter.AuthenticationInput, svc CredentialValidator) error {
-	if input.SecuritySchemeName != basicAuthSchemeName {
-		return xerr.UnknownSecurityScheme
-	}
-
 	credentials, err := extractCredential(input.RequestValidationInput.Request)
 	if err != nil {
 		return err
@@ -122,6 +122,24 @@ func oapiBasicAuthenticate(ctx context.Context, input *openapi3filter.Authentica
 
 	if err = svc.ValidateCredential(ctx, clientID, clientSecret); err != nil {
 		LogError(input.RequestValidationInput.Request, err, nil)
+		return err
+	}
+
+	return nil
+}
+
+type AccessTokenKey struct{}
+
+func oapiBearerAuthenticate(input *openapi3filter.AuthenticationInput, svc AccessTokenParser) error {
+	req := input.RequestValidationInput.Request
+	raw, err := extractAccessToken(req)
+	if err != nil {
+		return err
+	}
+
+	_, err = svc.ParseAccessToken(raw)
+	if err != nil {
+		LogError(req, err, nil)
 		return err
 	}
 
@@ -144,6 +162,15 @@ func extractCredential(r *http.Request) ([]string, error) {
 	credentials := strings.Split(string(credentialDecoded), ":")
 
 	return credentials, nil
+}
+
+func extractAccessToken(r *http.Request) (string, error) {
+	bearerHdr := r.Header.Get("Authorization")
+	if xutil.IsEmpty(bearerHdr) {
+		return "", xerr.TokenNotFoundInHeader
+	}
+	t := strings.Replace(bearerHdr, "Bearer ", "", -1)
+	return t, nil
 }
 
 func NewOapiErrorHandler() nethttpmiddleware.ErrorHandler {
@@ -205,4 +232,5 @@ func InitHandler(opt *option.Option) {
 	InitHealthCheck(opt)
 	InitRegistration(opt)
 	InitToken(opt)
+	InitUserInfo(opt)
 }
