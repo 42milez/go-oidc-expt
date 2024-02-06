@@ -11,7 +11,7 @@ import (
 
 func NewConsent(opt *option.Option) *AcceptConsent {
 	return &AcceptConsent{
-		repo: repository.NewUser(opt.DB, opt.IDGen),
+		repo: repository.NewUser(opt),
 	}
 }
 

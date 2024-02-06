@@ -3,6 +3,8 @@ package repository
 import (
 	"testing"
 
+	"github.com/42milez/go-oidc-server/app/idp/option"
+
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 	"github.com/42milez/go-oidc-server/app/pkg/xid"
 	"github.com/42milez/go-oidc-server/app/pkg/xtestutil"
@@ -28,7 +30,11 @@ func TestNewUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if user := NewUser(xtestutil.NewDatabase(t, nil), idGen); user == nil {
+	opt := &option.Option{
+		DB:    xtestutil.NewDatabase(t, nil),
+		IDGen: idGen,
+	}
+	if user := NewUser(opt); user == nil {
 		t.Fatal(xerr.FailedToInitialize)
 	}
 }

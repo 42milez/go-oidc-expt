@@ -10,13 +10,13 @@ info:
     url: https://example.com/support/
   license:
     name: MIT
-    url: TBD
+    url: https://example.com/license/
 servers:
   - url: http://localhost:8080
     description: Development Environment
-  - url: https://staging.idp.example.com
+  - url: https://staging.auth.example.com
     description: Staging Environment
-  - url: https://idp.example.com
+  - url: https://auth.example.com
     description: Production Environment
 tags:
   - name: Authentication
@@ -138,6 +138,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenErrorResponse'
+  /connect/userinfo:
+    get:
+      description: Return user information
+      operationId: userInfo
+      tags:
+        - UserInfo
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Token successfully accepted.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: 'no-store'
+            Pragma:
+              schema:
+                type: string
+                example: 'no-cache'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfoResponse'
+        '400':
+          description: Token not accepted.
   /user/registration:
     post:
       description: Creates a new user in the database.
@@ -235,6 +261,11 @@ components:
       description: The combination of "client_id" and "client_secret" that concatenated with colon and base64 encoded.
       type: http
       scheme: basic
+    # https://swagger.io/docs/specification/authentication/bearer-authentication/
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   parameters:
     SessionId:
       name: sid
@@ -489,17 +520,12 @@ components:
       type: object
       required:
         - authorization_endpoint
-        - claims_locales_supported
-        - claims_supported
         - display_values_supported
         - id_token_signing_alg_values_supported
         - issuer
         - jwks_uri
-        - op_policy_uri
-        - op_tos_uri
         - response_types_supported
         - scopes_supported
-        - service_documentation
         - subject_types_supported
         - token_endpoint
         - token_endpoint_auth_methods_supported
@@ -510,7 +536,7 @@ components:
         # --------------------------------------------------
         authorization_endpoint:
           type: string
-          example: https://auth.42milez.com/connect/authorization
+          example: https://auth.example.com/connect/authorization
         id_token_signing_alg_values_supported:
           type: array
           items:
@@ -523,11 +549,11 @@ components:
             - ES256
         issuer:
           type: string
-          example: https://auth.42milez.com/connect/
+          example: https://auth.example.com/connect/
         jwks_uri:
           type: string
           x-go-name: JWKsURI
-          example: https://auth.42milez.com/connect/jwks
+          example: https://auth.example.com/connect/jwks
         response_types_supported:
           type: array
           items:
@@ -548,7 +574,7 @@ components:
             - public
         token_endpoint:
           type: string
-          example: https://auth.42milez.com/connect/token
+          example: https://auth.example.com/connect/token
         #  RECOMMENDED
         # --------------------------------------------------
         # claim_types_supported:
@@ -573,7 +599,7 @@ components:
         userinfo_endpoint:
           type: string
           x-go-name: UserInfoEndpoint
-          example: https://auth.42milez.com/connect/userinfo
+          example: https://auth.example.com/connect/userinfo
         #  OPTIONAL
         # --------------------------------------------------
         # acr_values_supported:
@@ -674,6 +700,17 @@ components:
         #   type: array
         #   items:
         #     type: string
+    UserInfoResponse:
+      description: Represents user information
+      type: object
+      properties:
+        sub:
+          type: integer
+          format: uint64
+          example: 496100682294624621
+        name:
+          type: string
+          example: 42milez
     User:
       description: Represents user data.
       allOf:

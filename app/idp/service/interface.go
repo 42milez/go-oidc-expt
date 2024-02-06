@@ -39,6 +39,7 @@ type ConsentReader interface {
 
 type UserReader interface {
 	ReadUser(ctx context.Context, name string) (*entity.User, error)
+	ReadUserByID(ctx context.Context, id typedef.UserID) (*entity.User, error)
 }
 
 type UserConsentReader interface {

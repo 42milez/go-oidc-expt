@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/42milez/go-oidc-server/app/idp/option"
+
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/consent"
 	"github.com/42milez/go-oidc-server/app/pkg/ent/ent/user"
 
@@ -17,10 +19,10 @@ import (
 	"github.com/42milez/go-oidc-server/app/pkg/xerr"
 )
 
-func NewUser(db *datastore.Database, idGen iface.IDGenerator) *User {
+func NewUser(opt *option.Option) *User {
 	return &User{
-		db:    db,
-		idGen: idGen,
+		db:    opt.DB,
+		idGen: opt.IDGen,
 	}
 }
 
@@ -74,6 +76,17 @@ func (u *User) ReadConsent(ctx context.Context, userID typedef.UserID, clientID 
 
 func (u *User) ReadUser(ctx context.Context, name string) (*entity.User, error) {
 	v, err := u.db.Client.User.Query().Where(user.NameEQ(name)).First(ctx)
+	if err != nil {
+		if errors.As(err, &errEntNotFoundError) {
+			return nil, xerr.UserNotFound
+		}
+		return nil, err
+	}
+	return entity.NewUser(v), err
+}
+
+func (u *User) ReadUserByID(ctx context.Context, id typedef.UserID) (*entity.User, error) {
+	v, err := u.db.Client.User.Query().Where(user.IDEQ(id)).First(ctx)
 	if err != nil {
 		if errors.As(err, &errEntNotFoundError) {
 			return nil, xerr.UserNotFound
