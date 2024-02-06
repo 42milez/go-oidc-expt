@@ -30,6 +30,7 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
+// nolint:gocyclo
 func TestAuthorizationCodeFlow(t *testing.T) {
 	t.Parallel()
 
