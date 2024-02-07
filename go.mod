@@ -24,7 +24,7 @@ require (
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.4.0
-	github.com/rs/zerolog v1.31.0
+	github.com/rs/zerolog v1.32.0
 	github.com/sony/sonyflake v1.2.0
 	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.18.0
