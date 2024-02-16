@@ -13,7 +13,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-playground/validator/v10 v10.17.0
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/golangci/golangci-lint v1.56.1
+	github.com/golangci/golangci-lint v1.56.2
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
@@ -30,7 +30,7 @@ require (
 	golang.org/x/crypto v0.19.0
 	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc
 	golang.org/x/sync v0.6.0
-	golang.org/x/tools v0.17.0
+	golang.org/x/tools v0.18.0
 )
 
 require (
@@ -40,7 +40,7 @@ require (
 	github.com/Abirdcfly/dupword v0.0.13 // indirect
 	github.com/Antonboom/errname v0.1.12 // indirect
 	github.com/Antonboom/nilnil v0.1.7 // indirect
-	github.com/Antonboom/testifylint v1.1.1 // indirect
+	github.com/Antonboom/testifylint v1.1.2 // indirect
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v3 v3.2.0 // indirect
@@ -59,13 +59,13 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bkielbasa/cyclop v1.2.1 // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
-	github.com/bombsimon/wsl/v4 v4.2.0 // indirect
+	github.com/bombsimon/wsl/v4 v4.2.1 // indirect
 	github.com/breml/bidichk v0.2.7 // indirect
 	github.com/breml/errchkjson v0.3.6 // indirect
 	github.com/butuzov/ireturn v0.3.0 // indirect
 	github.com/butuzov/mirror v1.1.0 // indirect
 	github.com/catenacyber/perfsprint v0.6.0 // indirect
-	github.com/ccojocar/zxcvbn-go v1.0.1 // indirect
+	github.com/ccojocar/zxcvbn-go v1.0.2 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/charithe/durationcheck v0.0.10 // indirect
 	github.com/chavacava/garif v0.1.0 // indirect
@@ -84,7 +84,7 @@ require (
 	github.com/fzipp/gocyclo v0.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/ghostiam/protogetter v0.3.4 // indirect
-	github.com/go-critic/go-critic v0.11.0 // indirect
+	github.com/go-critic/go-critic v0.11.1 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-openapi/jsonpointer v0.20.2 // indirect
 	github.com/go-openapi/swag v0.22.8 // indirect
@@ -92,7 +92,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-toolsmith/astcast v1.1.0 // indirect
 	github.com/go-toolsmith/astcopy v1.1.0 // indirect
-	github.com/go-toolsmith/astequal v1.1.0 // indirect
+	github.com/go-toolsmith/astequal v1.2.0 // indirect
 	github.com/go-toolsmith/astfmt v1.1.0 // indirect
 	github.com/go-toolsmith/astp v1.1.0 // indirect
 	github.com/go-toolsmith/strparse v1.1.0 // indirect
@@ -190,8 +190,8 @@ require (
 	github.com/ryanrolds/sqlclosecheck v0.5.1 // indirect
 	github.com/sanposhiho/wastedassign/v2 v2.0.7 // indirect
 	github.com/sashamelentyev/interfacebloat v1.1.0 // indirect
-	github.com/sashamelentyev/usestdlibvars v1.24.0 // indirect
-	github.com/securego/gosec/v2 v2.18.2 // indirect
+	github.com/sashamelentyev/usestdlibvars v1.25.0 // indirect
+	github.com/securego/gosec/v2 v2.19.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
@@ -234,7 +234,7 @@ require (
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20231219180239-dc181d75b848 // indirect
 	golang.org/x/mod v0.15.0 // indirect
-	golang.org/x/net v0.20.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
