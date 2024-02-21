@@ -92,12 +92,8 @@ esac
 function resource_url() {
   local url=""
   case "${SERVICE}:${DATABASE}" in
-    db1:idp | db1:idp_test)
-      url="mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB1_PORT}/${DATABASE}"
-    ;;
-    db2:idp)
-      #shellcheck disable=SC2153
-      url="mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB2_PORT}/${DATABASE}"
+    db:idp | db:idp_test)
+      url="mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DATABASE}"
     ;;
     *)
       echo "unknown service or database: ${SERVICE}:${DATABASE}"
@@ -115,12 +111,12 @@ function run() {
       atlas migrate apply --dir "${MIGRATION_DIR}" --url "${url}"
     ;;
     diff)
-      export DB1_PORT
+      export DB_PORT
       export DB_NAME="atlas"
       go run -mod=mod "scripts/ent/migrate/diff/main.go" "${MIGRATION_NAME}"
     ;;
     lint)
-      cmd="atlas migrate lint --dir file://app/pkg/ent/migrations --dev-url mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB1_PORT}/${DB_NAME}"
+      cmd="atlas migrate lint --dir file://app/pkg/ent/migrations --dev-url mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
       if [[ -n "${LATEST}" ]]; then
         cmd_exec="${cmd} --latest ${LATEST}"
       else

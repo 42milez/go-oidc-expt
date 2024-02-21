@@ -59,7 +59,7 @@ func main() {
 	cfg.DBAdmin = cfg.DBName
 	cfg.DBPassword = cfg.DBName
 
-	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.DBAdmin, cfg.DBPassword, cfg.DB1Host, cfg.DB1Port, cfg.DBName)
+	url := fmt.Sprintf("mysql://%s:%s@%s:%d/%s", cfg.DBAdmin, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 
 	if err = migrate.NamedDiff(ctx, url, os.Args[1], opts...); err != nil {
 		log.Fatalf("failed to generate migration file: %+v", err)

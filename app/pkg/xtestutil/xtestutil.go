@@ -160,8 +160,8 @@ func LoadFile(t *testing.T, path string) []byte {
 //  Data Store
 // --------------------------------------------------
 
-const TestDB1Host = "127.0.0.1"
-const TestDB1Port = 13306
+const TestDBHost = "127.0.0.1"
+const TestDBPort = 13306
 const TestDBUser = "idp_test"
 const TestDBPassword = "idp_test"
 const TestDBName = "idp_test"
@@ -180,8 +180,8 @@ func NewDatabase(t *testing.T, c *config.Config) *datastore.Database {
 		}
 		cfg.DBAdmin = TestDBUser
 		cfg.DBPassword = TestDBPassword
-		cfg.DB1Host = TestDB1Host
-		cfg.DB1Port = TestDB1Port
+		cfg.DBHost = TestDBHost
+		cfg.DBPort = TestDBPort
 		cfg.DBName = TestDBName
 		cfg.EnableDebugDBClient = false
 	}
