@@ -36,15 +36,15 @@ benchmark:
 		$(call run,"$${cmd}")
 
 ## cleanup-db: Clean up database
-cleanup-db: export DB1_HOST := 127.0.0.1
+cleanup-db: export DB_HOST := 127.0.0.1
 cleanup-db: export DB_USER := root
-cleanup-db: export DB1_PORT := 13306
+cleanup-db: export DB_PORT := 13306
 cleanup-db: export DB_NAME := idp
 cleanup-db:
-	@mysql -h $$DB1_HOST -u $$DB_USER -P $$DB1_PORT -Nse "show tables" $$DB_NAME | \
+	@mysql -h $$DB_HOST -u $$DB_USER -P $$DB_PORT -Nse "show tables" $$DB_NAME | \
 		while read table; do \
 			[[ $$table == "atlas_schema_revisions" ]] && continue; \
-			cmd="mysql -h $$DB1_HOST -u $$DB_USER -P $$DB1_PORT --init-command='SET SESSION FOREIGN_KEY_CHECKS=0;' -e 'truncate table $$table' $$DB_NAME"; \
+			cmd="mysql -h $$DB_HOST -u $$DB_USER -P $$DB_PORT --init-command='SET SESSION FOREIGN_KEY_CHECKS=0;' -e 'truncate table $$table' $$DB_NAME"; \
 			$(call run,"$${cmd}"); \
 		done
 

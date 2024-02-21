@@ -26,7 +26,7 @@ services:
         source: app_pkg_cache
         target: /go/pkg
     environment:
-      DB1_HOST: db1
+      DB_HOST: db
       REDIS_HOST: cache
     deploy:
       resources:
@@ -38,8 +38,7 @@ services:
         max_attempts: 3
     depends_on:
       - cache
-      - db1
-      - db2
+      - db
       - log
     cap_add:
       - SYS_PTRACE
@@ -77,7 +76,7 @@ services:
         source: ci_app_pkg_cache
         target: /go/pkg
     environment:
-      DB1_HOST: db1
+      DB_HOST: db
       DB_USER: idp_test
       DB_PASSWORD: idp_test
       DB_NAME: idp_test
@@ -92,8 +91,7 @@ services:
         max_attempts: 3
     depends_on:
       - cache
-      - db1
-      - db2
+      - db
     cap_add:
       - SYS_PTRACE
     security_opt:
@@ -119,11 +117,11 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
-  db1:
+  db:
     build:
       context: ./docker/db
-    container_name: db1
-    image: go-oidc-server-db1:dev
+    container_name: db
+    image: go-oidc-server-db:dev
     networks:
       - dev
     ports:
@@ -140,46 +138,10 @@ services:
         target: /docker-entrypoint-initdb.d
         read_only: true
       - type: volume
-        source: db1_data
+        source: db_data
         target: /var/lib/mysql
       - type: volume
-        source: db1_log
-        target: /var/log/mysql
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-      restart_policy:
-        condition: on-failure
-        max_attempts: 3
-  db2:
-    build:
-      context: ./docker/db
-    container_name: db2
-    image: go-oidc-server-db2:dev
-    networks:
-      - dev
-    ports:
-      - "23306:3306"
-    stdin_open: true
-    tty: true
-    volumes:
-      - type: bind
-        source: ./docker/db/conf.d
-        target: /etc/mysql/conf.d
-        read_only: true
-      - type: bind
-        source: ./docker/db/docker-entrypoint-initdb.d
-        target: /docker-entrypoint-initdb.d
-        read_only: true
-      - type: volume
-        source: db2_data
-        target: /var/lib/mysql
-      - type: volume
-        source: db2_log
+        source: db_log
         target: /var/log/mysql
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
@@ -274,13 +236,9 @@ volumes:
     driver: local
   app_pkg_cache:
     driver: local
-  db1_data:
+  db_data:
     driver: local
-  db1_log:
-    driver: local
-  db2_data:
-    driver: local
-  db2_log:
+  db_log:
     driver: local
   cache_data:
     driver: local

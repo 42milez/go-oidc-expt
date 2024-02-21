@@ -17,8 +17,8 @@ const AccessLoggerTagValue = "access"
 
 type Config struct {
 	Port                int           `env:"PORT" envDefault:"80"`
-	DB1Host             string        `env:"DB1_HOST" envDefault:"127.0.0.1"`
-	DB1Port             int           `env:"DB1_PORT" envDefault:"3306"`
+	DBHost              string        `env:"DB_HOST" envDefault:"127.0.0.1"`
+	DBPort              int           `env:"DB_PORT" envDefault:"3306"`
 	DBAdmin             string        `env:"DB_USER" envDefault:"idp"`
 	DBPassword          string        `env:"DB_PASSWORD" envDefault:"idp"`
 	DBName              string        `env:"DB_NAME" envDefault:"idp"`
