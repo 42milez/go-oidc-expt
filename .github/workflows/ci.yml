@@ -61,12 +61,12 @@ jobs:
       # --------------------------------------------------
       - uses: docker/setup-buildx-action@v3
       - name: Inject cache-go-build into docker
-        uses: reproducible-containers/buildkit-cache-dance@v2.1.4
+        uses: reproducible-containers/buildkit-cache-dance@v3.1.0
         with:
           cache-source: cache-go-build
           cache-target: /root/.cache/go-build
       - name: Inject cache-go-pkg into docker
-        uses: reproducible-containers/buildkit-cache-dance@v2.1.4
+        uses: reproducible-containers/buildkit-cache-dance@v3.1.0
         with:
           cache-source: cache-go-pkg
           cache-target: /go/pkg
