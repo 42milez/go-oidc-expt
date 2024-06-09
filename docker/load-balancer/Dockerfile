@@ -1,0 +1,8 @@
+FROM nginx:1.27.0
+
+ARG LOCAL_FILES_DIR=docker/load-balancer
+ARG NGINX_DIR=/etc/nginx
+
+COPY $LOCAL_FILES_DIR$NGINX_DIR/nginx.conf $NGINX_DIR/
+
+EXPOSE 443

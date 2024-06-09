@@ -36,6 +36,17 @@ References:
 
 - [Generating an Elliptic Curve keys](https://cloud.google.com/iot/docs/how-tos/credentials/keys#generating_an_elliptic_curve_keys)
 
+### Generate certificates for load balancer
+
+```
+mkcert -install
+mkcert localhost
+cat localhost.pem > localhost-fullchain.pem
+cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
+openssl dhparam -out dhparam.pem 2048
+mv *.pem docker/load-balancer/etc/nginx/ssl
+```
+
 ### Run containers
 
 ```

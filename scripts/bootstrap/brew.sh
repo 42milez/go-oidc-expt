@@ -6,6 +6,8 @@ readonly FORMULAS=(
   daveshanley/vacuum/vacuum
   golangci-lint
   gnu-getopt
+  mkcert
+  nss
   openssl@3
   # docker
   # docker-buildx
