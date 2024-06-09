@@ -38,11 +38,13 @@ References:
 
 ### Generate certificates for load balancer
 
+For the conformance test of OpenID connect. 
+
 ```
 mkcert -install
-mkcert localhost
-cat localhost.pem > localhost-fullchain.pem
-cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
+mkcert host.docker.internal
+cat host.docker.internal.pem > host.docker.internal-fullchain.pem
+cat "$(mkcert -CAROOT)/rootCA.pem" >> host.docker.internal-fullchain.pem
 openssl dhparam -out dhparam.pem 2048
 mv *.pem docker/load-balancer/etc/nginx/ssl
 ```

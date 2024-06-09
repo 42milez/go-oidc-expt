@@ -14,15 +14,15 @@ type Configuration struct{}
 
 func (c *Configuration) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	respBody := &ConfigurationResponse{
-		AuthorizationEndpoint: "https://auth.42milez.com/connect/authorization",
+		AuthorizationEndpoint: "https://host.docker.internal:4443/api/connect/authorization",
 		DisplayValuesSupported: []DisplayValuesSupported{
 			Page,
 		},
 		IDTokenSigningAlgValuesSupported: []IDTokenSigningAlgValuesSupported{
 			ES256,
 		},
-		Issuer:  "https://auth.42milez.com/connect/",
-		JWKsURI: "https://auth.42milez.com/connect/jwks",
+		Issuer:  "https://host.docker.internal:4443/api/connect/",
+		JWKsURI: "https://host.docker.internal:4443/api/connect/jwks",
 		ResponseTypesSupported: []ResponseTypesSupported{
 			ResponseTypesSupportedCode,
 		},
@@ -34,14 +34,14 @@ func (c *Configuration) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		SubjectTypesSupported: []SubjectTypesSupported{
 			Public,
 		},
-		TokenEndpoint: "https://auth.42milez.com/connect/token",
+		TokenEndpoint: "https://host.docker.internal:4443/api/connect/token",
 		TokenEndpointAuthMethodsSupported: []TokenEndpointAuthMethodsSupported{
 			ClientSecretBasic,
 		},
 		UILocalesSupported: []UILocalesSupported{
 			JaJP,
 		},
-		UserInfoEndpoint: "https://auth.42milez.com/connect/userinfo",
+		UserInfoEndpoint: "https://host.docker.internal:4443/api/connect/userinfo",
 	}
 
 	RespondJSON(w, r, http.StatusOK, nil, respBody)
