@@ -127,30 +127,30 @@ test:
 #  Lima
 # ==================================================
 
-## lc-create: Create virtual machine with Lima
-lc-create:
-	@cmd="limactl create --tty=false --name=$(PROJECT_NAME) lima.yml"; \
-		$(call run,$${cmd})
+# lc-create: Create virtual machine with Lima
+#lc-create:
+#	@cmd="limactl create --tty=false --name=$(PROJECT_NAME) lima.yml"; \
+#		$(call run,$${cmd})
 
-## lc-start: Start virtual machine
-lc-start:
-	@cmd="limactl start $(PROJECT_NAME)"; \
-		$(call run,$${cmd})
+# lc-start: Start virtual machine
+#lc-start:
+#	@cmd="limactl start $(PROJECT_NAME)"; \
+#		$(call run,$${cmd})
 
-## lc-stop: Stop virtual machine
-lc-stop:
-	@cmd="limactl stop $(PROJECT_NAME)"; \
-		$(call run,$${cmd})
+# lc-stop: Stop virtual machine
+#lc-stop:
+#	@cmd="limactl stop $(PROJECT_NAME)"; \
+#		$(call run,$${cmd})
 
-## lc-delete: Delete virtual machine
-lc-delete:
-	@cmd="limactl delete $(PROJECT_NAME)"; \
-		$(call run,$${cmd})
+# lc-delete: Delete virtual machine
+#lc-delete:
+#	@cmd="limactl delete $(PROJECT_NAME)"; \
+#		$(call run,$${cmd})
 
-## lc-restart: Restart virutal machine
-lc-restart:
-	@cmd="limactl stop $(PROJECT_NAME) && limactl start $(PROJECT_NAME)"; \
-		$(call run,$${cmd})
+# lc-restart: Restart virutal machine
+#lc-restart:
+#	@cmd="limactl stop $(PROJECT_NAME) && limactl start $(PROJECT_NAME)"; \
+#		$(call run,$${cmd})
 
 # ==================================================
 #  Docker
