@@ -4,12 +4,12 @@ set -eu
 readonly FORMULAS=(
   ariga/tap/atlas
   daveshanley/vacuum/vacuum
-  docker
-  docker-buildx
-  docker-compose
+  # docker
+  # docker-buildx
+  # docker-compose
   golangci-lint
   gnu-getopt
-  lima
+  #lima
   openssl@3
 )
 
