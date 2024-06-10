@@ -36,6 +36,19 @@ References:
 
 - [Generating an Elliptic Curve keys](https://cloud.google.com/iot/docs/how-tos/credentials/keys#generating_an_elliptic_curve_keys)
 
+### Generate certificates for load balancer
+
+For the conformance test of OpenID connect. 
+
+```
+mkcert -install
+mkcert host.docker.internal
+cat host.docker.internal.pem > host.docker.internal-fullchain.pem
+cat "$(mkcert -CAROOT)/rootCA.pem" >> host.docker.internal-fullchain.pem
+openssl dhparam -out dhparam.pem 2048
+mv *.pem docker/load-balancer/etc/nginx/ssl
+```
+
 ### Run containers
 
 ```

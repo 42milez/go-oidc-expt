@@ -1,5 +1,43 @@
 version: "3.9"
 services:
+  load-balancer:
+    build:
+      context: .
+      dockerfile: docker/load-balancer/Dockerfile
+    container_name: load-balancer
+    image: go-oidc-server-load-balancer:dev
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        fluentd-async-connect: 'true' # https://github.com/moby/moby/issues/44511
+        tag: docker.{{.Name}}
+    networks:
+      - dev
+    ports:
+      - "4443:443"
+    stdin_open: true
+    tty: true
+    volumes:
+      - type: bind
+        source: docker/load-balancer/etc/nginx/ssl
+        target: /etc/nginx/ssl
+      - type: bind
+        source: docker/load-balancer/etc/nginx/templates
+        target: /etc/nginx/templates
+    env_file:
+      - docker/load-balancer/env
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    depends_on:
+      - log
+      - app
   app:
     build:
       context: .
