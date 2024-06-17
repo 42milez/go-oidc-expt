@@ -38,7 +38,7 @@ var (
 )
 
 var (
-	InvalidRequest2             PublicError = "invalid request"
+	InvalidRequest              PublicError = "invalid request"
 	InvalidUsernameOrPassword   PublicError = "invalid username or password"
 	OK                          PublicError = "ok"
 	ServiceTemporaryUnavailable PublicError = "service temporary unavailable"
@@ -46,11 +46,11 @@ var (
 )
 
 var (
-	AccessDenied   OIDCError = "access_denied"
-	InvalidClient  OIDCError = "invalid_client"
-	InvalidGrant   OIDCError = "invalid_grant"
-	InvalidRequest OIDCError = "invalid_request"
-	ServerError    OIDCError = "server_error"
+	AccessDenied       OIDCError = "access_denied"
+	InvalidClient      OIDCError = "invalid_client"
+	InvalidGrant       OIDCError = "invalid_grant"
+	InvalidRequestOIDC OIDCError = "invalid_request"
+	ServerError        OIDCError = "server_error"
 )
 
 var (

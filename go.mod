@@ -10,7 +10,6 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/cenkalti/backoff/v4 v4.3.0
-	github.com/deepmap/oapi-codegen/v2 v2.1.0
 	github.com/getkin/kin-openapi v0.124.0
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-playground/validator/v10 v10.19.0
@@ -23,6 +22,7 @@ require (
 	github.com/gorilla/securecookie v1.1.2
 	github.com/lestrrat-go/jwx/v2 v2.0.21
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
+	github.com/oapi-codegen/oapi-codegen/v2 v2.3.0
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.5.1

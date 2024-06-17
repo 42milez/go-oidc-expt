@@ -42,9 +42,9 @@ For the conformance test of OpenID connect.
 
 ```
 mkcert -install
-mkcert host.docker.internal
-cat host.docker.internal.pem > host.docker.internal-fullchain.pem
-cat "$(mkcert -CAROOT)/rootCA.pem" >> host.docker.internal-fullchain.pem
+mkcert localhost host.docker.internal
+cat localhost+1.pem > localhost+1-fullchain.pem
+cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost+1-fullchain.pem
 openssl dhparam -out dhparam.pem 2048
 mv *.pem docker/load-balancer/etc/nginx/ssl
 ```
@@ -152,6 +152,9 @@ docker-compose up -d swagger-ui
 
 ## References
 
+- Cryptography
+  - [ECC SubjectPublicKeyInfo Format](https://www.ietf.org/rfc/rfc5480.txt)
+    - 2.2. Subject Public Key
 - Identifier
   - [Awesome Identifiers](https://github.com/adileo/awesome-identifiers)
   - [sonyflake](https://github.com/sony/sonyflake)
@@ -160,6 +163,8 @@ docker-compose up -d swagger-ui
   - OpenID Connect Core 1.0 incorporating errata set 1
     - [English](https://openid.net/specs/openid-connect-core-1_0.html)
     - [Japanese](https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html)
+  - [JSON Web Key (JWK)](https://www.rfc-editor.org/rfc/rfc7517.html)
+  - [JSON Web Algorithms (JWA)](https://www.rfc-editor.org/rfc/rfc7518.html)
 - OpenAPI
   - [OpenAPI.Tools](https://openapi.tools/)
 - OTP
@@ -171,6 +176,8 @@ docker-compose up -d swagger-ui
   - [Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
 - Session
   - [Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
+- Others
+  - [The Base16, Base32, and Base64 Data Encodings](https://www.rfc-editor.org/rfc/rfc4648.html)
 
 ## Miscellaneous
 

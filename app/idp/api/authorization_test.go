@@ -91,6 +91,9 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 			svcMock.EXPECT().SaveAuthorizationRequestFingerprint(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
 			ctxMock := iface.NewMockContextReader(gomock.NewController(t))
+			display := "page"
+			maxAge := uint64(600)
+			prompt := "consent"
 			ctxMock.EXPECT().Read(gomock.Any(), typedef.RequestParamKey{}).Return(&AuthorizeParams{
 				ClientID:     "9NXtT29fw2lvmQ5EA42htc8sfNRQYe",
 				Nonce:        "K45zJFN4L7tXjlXpFtVRjqWbSnSCz6",
@@ -98,9 +101,9 @@ func TestAuthorizeGet_ServeHTTP(t *testing.T) {
 				ResponseType: "code",
 				Scope:        "openid",
 				State:        "lgwyrqpZ0jLGQI5Ftu94HytJRJOJSa",
-				Display:      "page",
-				MaxAge:       600,
-				Prompt:       "consent",
+				Display:      &display,
+				MaxAge:       &maxAge,
+				Prompt:       &prompt,
 			}).AnyTimes()
 			ctxMock.EXPECT().Read(gomock.Any(), httpstore.SessionKey{}).Return(sess).AnyTimes()
 

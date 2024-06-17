@@ -105,7 +105,7 @@ func (ah *Authentication) parseRequestBody(r *http.Request) (*AuthenticateJSONRe
 
 func (ah *Authentication) respondError(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, xerr.FailedToValidate) {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 

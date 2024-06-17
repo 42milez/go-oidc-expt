@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-//go:generate go run -mod=mod github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen -config gen/config.yml -o api_gen.go spec/spec.yml
+//go:generate go run -mod=mod github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen -config gen/config.yml -o api_gen.go spec/spec.yml
 
 type HandlerImpl struct{}
 
@@ -27,6 +27,10 @@ func (_ *HandlerImpl) Configuration(w http.ResponseWriter, r *http.Request) {
 
 func (_ *HandlerImpl) Consent(w http.ResponseWriter, r *http.Request) {
 	consent.ServeHTTP(w, r)
+}
+
+func (_ *HandlerImpl) Jwks(w http.ResponseWriter, r *http.Request) {
+	jwks.ServeHTTP(w, r)
 }
 
 func (_ *HandlerImpl) Register(w http.ResponseWriter, r *http.Request) {

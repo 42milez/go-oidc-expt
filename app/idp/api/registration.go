@@ -37,7 +37,7 @@ func (rr *Registration) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := rr.v.Struct(req); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
