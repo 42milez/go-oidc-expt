@@ -51,12 +51,10 @@ type AuthCodeEdges struct {
 // RelyingPartyOrErr returns the RelyingParty value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AuthCodeEdges) RelyingPartyOrErr() (*RelyingParty, error) {
-	if e.loadedTypes[0] {
-		if e.RelyingParty == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: relyingparty.Label}
-		}
+	if e.RelyingParty != nil {
 		return e.RelyingParty, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: relyingparty.Label}
 	}
 	return nil, &NotLoadedError{edge: "relying_party"}
 }

@@ -63,12 +63,15 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		state, err := xrandom.GenerateCryptoRandomString(stateLength)
 		xtestutil.ExitOnError(t, err)
 
+		display := "page"
+		maxAge := uint64(86400)
+		prompt := "consent"
 		authoParam := &AuthorizeParams{
 			ClientID:     clientID,
-			Display:      "page",
-			MaxAge:       86400,
+			Display:      &display,
+			MaxAge:       &maxAge,
 			Nonce:        nonce,
-			Prompt:       "consent",
+			Prompt:       &prompt,
 			RedirectURI:  redirectUri,
 			ResponseType: responseType,
 			Scope:        scope,

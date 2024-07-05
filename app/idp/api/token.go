@@ -53,7 +53,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err = t.v.Struct(param); err != nil {
-		RespondTokenRequestError(w, r, xerr.InvalidRequest)
+		RespondTokenRequestError(w, r, xerr.InvalidRequestOIDC)
 		return
 	}
 
@@ -64,7 +64,7 @@ func (t *Token) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		t.handleRefreshTokenGrant(w, r, param, clientID)
 		return
 	} else {
-		RespondTokenRequestError(w, r, xerr.InvalidRequest)
+		RespondTokenRequestError(w, r, xerr.InvalidRequestOIDC)
 		return
 	}
 }
@@ -73,7 +73,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 	ctx := r.Context()
 
 	if xutil.IsEmpty(*param.Code) || xutil.IsEmpty(*param.RedirectURI) {
-		RespondTokenRequestError(w, r, xerr.InvalidRequest)
+		RespondTokenRequestError(w, r, xerr.InvalidRequestOIDC)
 		return
 	}
 
@@ -85,7 +85,7 @@ func (t *Token) handleAuthCodeGrant(w http.ResponseWriter, r *http.Request, para
 	fp, err := t.cache.ReadAuthorizationRequestFingerprint(ctx, clientID, *param.Code)
 	if err != nil {
 		if errors.Is(err, xerr.UnauthorizedRequest) {
-			RespondTokenRequestError(w, r, xerr.InvalidRequest)
+			RespondTokenRequestError(w, r, xerr.InvalidRequestOIDC)
 		} else {
 			RespondServerError(w, r, err)
 		}
@@ -179,10 +179,10 @@ func (t *Token) handleRefreshTokenGrant(w http.ResponseWriter, r *http.Request, 
 	err := t.rtSVC.VerifyRefreshToken(ctx, *param.RefreshToken, clientID)
 	if err != nil {
 		if errors.Is(err, xerr.InvalidToken) || errors.Is(err, xerr.ClientIDNotMatched) {
-			RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+			RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 			return
 		} else if errors.Is(err, xerr.RefreshTokenNotFound) {
-			RespondJSON401(w, r, xerr.InvalidRequest2, nil, err)
+			RespondJSON401(w, r, xerr.InvalidRequest, nil, err)
 			return
 		} else {
 			RespondJSON500(w, r, err)

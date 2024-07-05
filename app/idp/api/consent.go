@@ -42,13 +42,13 @@ func (ch *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := ch.v.Struct(q); err != nil {
-		RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
 
 	sess, ok := ch.context.Read(ctx, httpstore.SessionKey{}).(*httpstore.Session)
 	if !ok {
-		RespondJSON401(w, r, xerr.InvalidRequest2, nil, nil)
+		RespondJSON401(w, r, xerr.InvalidRequest, nil, nil)
 		return
 	}
 

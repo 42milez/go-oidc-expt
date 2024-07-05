@@ -40,7 +40,8 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		RespondServerError(w, r, xerr.TypeAssertionFailed)
 	}
 	if err := a.v.Struct(params); err != nil {
-		RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.InvalidRequest)
+		LogError(r, err, nil)
+		RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.InvalidRequestOIDC)
 		return
 	}
 
@@ -52,10 +53,11 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	location, authCode, err := a.svc.Authorize(r.Context(), params.ClientID, params.RedirectURI, params.State)
 	if err != nil {
+		LogError(r, err, nil)
 		if errors.Is(err, xerr.UserIDNotFoundInContext) {
 			RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.AccessDenied)
 		} else if errors.Is(err, xerr.InvalidRedirectURI) {
-			RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.InvalidRequest)
+			RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.InvalidRequestOIDC)
 		} else {
 			RespondServerError(w, r, err)
 		}

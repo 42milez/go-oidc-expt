@@ -1,4 +1,4 @@
-openapi: "3.1.0"
+openapi: "3.0.3"
 info:
   version: 1.0.0
   title: go-oidc-server
@@ -63,6 +63,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigurationResponse'
+  /connect/jwks:
+    get:
+      description: Return JSON web keys.
+      operationId: jwks
+      tags:
+        - Jwks
+      responses:
+        '200':
+          description: The keys successfully returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JwksResponse'
   /connect/authorization:
     get:
       description: Determines authentication and authorization status of user, redirects user to the appropriate page and returns an authorization code.
@@ -306,14 +319,14 @@ components:
       name: display
       in: query
       description: Represents "display" parameter
-      required: true
+      required: false
       schema:
         type: string
       example: page
       x-oapi-codegen-extra-tags:
         schema: display
         url: display
-        validate: required,display-validator
+        validate: display-validator
     GrantType:
       name: grant_type
       in: query
@@ -330,7 +343,7 @@ components:
       name: max_age
       in: query
       description: Represents "max_age" parameter
-      required: true
+      required: false
       schema:
         type: integer
         format: uint64
@@ -338,7 +351,7 @@ components:
       x-oapi-codegen-extra-tags:
         schema: max_age
         url: max_age
-        validate: required,numeric
+        validate: numeric
     Nonce:
       name: nonce
       in: query
@@ -355,14 +368,14 @@ components:
       name: prompt
       in: query
       description: Represents "prompt" parameter
-      required: true
+      required: false
       schema:
         type: string
       example: consent
       x-oapi-codegen-extra-tags:
         schema: prompt
         url: prompt
-        validate: required,prompt-validator
+        validate: prompt-validator
     RedirectUri:
       name: redirect_uri
       in: query
@@ -700,6 +713,50 @@ components:
         #   type: array
         #   items:
         #     type: string
+    JwksResponse:
+      description: Represents the set of JSON Web Key
+      type: object
+      required:
+        - keys
+      properties:
+        keys:
+          description: The set of JSON Web Key
+          type: array
+          items:
+            $ref: '#/components/schemas/JWK'
+    JWK:
+      description: JSON Web Key format
+      type: object
+      required:
+        - kty
+        - use
+        - kid
+        - crv
+        - x
+        - y
+      properties:
+        kty:
+          description: Key type ( Only supports elliptic curve key )
+          type: string
+          enum:
+            - EC
+        crv:
+          description: ECDSA
+          type: string
+          enum:
+            - P-256
+        x:
+          description: X coordinate of elliptic curve key
+          type: string
+        y:
+          description: Y coordinate of elliptic curve key
+          type: string
+        use:
+          description: Public key use
+          type: string
+        kid:
+          description: Key ID
+          type: string
     UserInfoResponse:
       description: Represents user information
       type: object
@@ -750,7 +807,7 @@ components:
           x-oapi-codegen-extra-tags:
             validate: required
     TokenResponse:
-      description: ''
+      description: '...'
       type: object
       required:
         - access_token
@@ -760,14 +817,14 @@ components:
       properties:
         access_token:
           type: string
-          example: ''
+          example: '...'
         id_token:
           type: string
-          example: ''
+          example: '...'
           x-go-name: IDToken
         refresh_token:
           type: string
-          example: ''
+          example: '...'
         token_type:
           type: string
           x-go-type: typedef.TokenType

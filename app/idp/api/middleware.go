@@ -68,7 +68,7 @@ func RestoreSession(opt *option.Option) MiddlewareFunc {
 			}
 			sidUint64, err := strconv.ParseUint(sid, 10, 64)
 			if err != nil {
-				RespondJSON400(w, r, xerr.InvalidRequest2, nil, err)
+				RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 				return
 			}
 			req, err := rs.Restore(r, typedef.SessionID(sidUint64))

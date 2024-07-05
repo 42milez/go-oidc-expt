@@ -1,7 +1,13 @@
 package security
 
 import (
+	"bytes"
+	"crypto/ecdsa"
+	"crypto/sha256"
+	"crypto/x509"
 	_ "embed"
+	"encoding/pem"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -151,3 +157,24 @@ func (j *JWT) Parse(token string) (jwt.Token, error) {
 //func (j *JWT) validate(token jwt.Token) error {
 //	return jwt.Validate(token, jwt.WithClock(j.clock))
 //}
+
+func DecodePublicKey() (*ecdsa.PublicKey, string, error) {
+	// Create the instance of ecdsa.PublicKey from the bytes of public key
+	// https://pkg.go.dev/crypto/x509#example-ParsePKIXPublicKey
+	block, _ := pem.Decode(rawPublicKey)
+	pub, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return nil, "", err
+	}
+	publicKey := pub.(*ecdsa.PublicKey)
+
+	fingerprint := sha256.Sum256(block.Bytes)
+	var buf bytes.Buffer
+	for _, f := range fingerprint {
+		if _, err = fmt.Fprintf(&buf, "%02X", f); err != nil {
+			return nil, "", err
+		}
+	}
+
+	return publicKey, buf.String(), nil
+}
