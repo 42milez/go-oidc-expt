@@ -71,7 +71,7 @@ jobs:
           cache-source: cache-go-pkg
           cache-target: /go/pkg
       - name: Build app-ci
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./docker/app/Dockerfile
@@ -80,7 +80,7 @@ jobs:
           load: true
           push: false
       #- name: Build db
-      #  uses: docker/build-push-action@v5
+      #  uses: docker/build-push-action@v6
       #  with:
       #    context: .
       #    file: ./docker/db/Dockerfile
