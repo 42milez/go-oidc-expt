@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"errors"
 	"net/http"
 
@@ -35,9 +36,9 @@ type AuthorizationGet struct {
 func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	params, ok := a.context.Read(ctx, typedef.RequestParamKey{}).(*AuthorizeParams)
-	if !ok {
-		RespondServerError(w, r, xerr.TypeAssertionFailed)
+	params := a.readAuthorizeParams(ctx)
+	if params == nil {
+		RespondServerError(w, r, xerr.FailedToReadAuthorizationParameters)
 	}
 	if err := a.v.Struct(params); err != nil {
 		LogError(r, err, nil)
@@ -45,17 +46,16 @@ func (a *AuthorizationGet) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Redirect unauthenticated user to the authentication endpoint with the posted parameters
-	// ...
-
 	// TODO: Redirect authenticated user to the consent endpoint with the posted parameters
 	// ...
 
 	location, authCode, err := a.svc.Authorize(r.Context(), params.ClientID, params.RedirectURI, params.State)
 	if err != nil {
 		LogError(r, err, nil)
-		if errors.Is(err, xerr.UserIDNotFoundInContext) {
-			RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.AccessDenied)
+		if errors.Is(err, xerr.UnauthorizedRequest) {
+			q := r.URL.Query().Encode()
+			http.Redirect(w, r, "https://localhost:4443/signin?"+q, http.StatusFound)
+			return
 		} else if errors.Is(err, xerr.InvalidRedirectURI) {
 			RespondAuthorizationRequestError(w, r, params.RedirectURI, params.State, xerr.InvalidRequestOIDC)
 		} else {
@@ -99,10 +99,29 @@ func parseAuthorizeParam(r *http.Request, v iface.StructValidator) (*AuthorizePa
 	if err := decoder.Decode(ret, r.URL.Query()); err != nil {
 		return nil, err
 	}
+	setAuthorizeParamsDefault(ret)
 
 	if err := v.Struct(ret); err != nil {
 		return nil, xerr.FailedToValidate.Wrap(err)
 	}
 
 	return ret, nil
+}
+
+func (a *AuthorizationGet) readAuthorizeParams(ctx context.Context) *AuthorizeParams {
+	ret, ok := a.context.Read(ctx, typedef.RequestParamKey{}).(*AuthorizeParams)
+	if !ok {
+		return nil
+	}
+	setAuthorizeParamsDefault(ret)
+	return ret
+}
+
+func setAuthorizeParamsDefault(p *AuthorizeParams) {
+	display := "page"
+	maxAge := uint64(86400)
+	prompt := "consent"
+	p.Display = &display
+	p.MaxAge = &maxAge
+	p.Prompt = &prompt
 }

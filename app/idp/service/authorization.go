@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"net/url"
-
 	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+	"net/url"
+	"strings"
 
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 
@@ -68,7 +68,8 @@ func (a *Authorize) Authorize(ctx context.Context, clientID typedef.ClientID, re
 
 func (a *Authorize) validateRedirectURI(s []*entity.RedirectURI, v string) bool {
 	return slices.ContainsFunc(s, func(uri *entity.RedirectURI) bool {
-		if uri.URI() != v {
+		// TODO: compare domains
+		if !strings.HasPrefix(v, uri.URI()) {
 			return false
 		}
 		return true

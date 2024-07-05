@@ -23,7 +23,7 @@ build:
 
 ## build-local: Build docker images
 build-local:
-	@cmd="docker-compose build --no-cache"; \
+	@cmd="docker compose build --no-cache"; \
 		$(call run,"$${cmd}")
 
 # ==================================================
@@ -163,17 +163,17 @@ up:
 
 ## down: Stop and remove containers
 down:
-	@cmd="docker-compose down"; \
+	@cmd="docker compose down"; \
 		$(call run,$${cmd})
 
 ## start: Start containers
 start:
-	@cmd="docker-compose start"; \
+	@cmd="docker compose start"; \
 		$(call run,$${cmd})
 
 ## stop: Stop containers
 stop:
-	@cmd="docker-compose stop"; \
+	@cmd="docker compose stop"; \
 		$(call run,$${cmd})
 
 ## restart: Restart containers
@@ -183,5 +183,5 @@ restart:
 
 ## destroy: Delete all resources
 destroy:
-	@cmd="docker-compose down --volumes"; \
+	@cmd="docker compose down --volumes"; \
 		$(call run,$${cmd})

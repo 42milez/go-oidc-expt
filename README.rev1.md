@@ -158,7 +158,7 @@ make seed
 API specification (Swagger UI) is available on `http://localhost:8880`. Before accessing the URL, it needs to run the following command to start `swagger-ui` container.
 
 ```
-docker-compose up -d swagger-ui
+docker compose up -d swagger-ui
 ```
 
 ## References

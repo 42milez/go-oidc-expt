@@ -78,7 +78,7 @@ func UserConsentPath() string {
 }
 
 const (
-	Issuer = "42milez.dev"
+	Issuer = "https://localhost:4443"
 )
 
 const (
@@ -89,7 +89,7 @@ const (
 )
 
 const (
-	AuthCodeLength     = 10
+	AuthCodeLength     = 30
 	ClientIDLength     = 30
 	ClientSecretLength = 30
 )
