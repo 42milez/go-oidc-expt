@@ -21,7 +21,7 @@ require (
 	github.com/gorilla/schema v1.4.1
 	github.com/gorilla/securecookie v1.1.2
 	github.com/lestrrat-go/jwx/v2 v2.0.21
-	github.com/oapi-codegen/nethttp-middleware v1.0.1
+	github.com/oapi-codegen/nethttp-middleware v1.0.2
 	github.com/oapi-codegen/oapi-codegen/v2 v2.3.0
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
