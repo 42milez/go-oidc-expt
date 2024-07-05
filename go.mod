@@ -25,7 +25,7 @@ require (
 	github.com/oapi-codegen/oapi-codegen/v2 v2.3.0
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
-	github.com/redis/go-redis/v9 v9.5.1
+	github.com/redis/go-redis/v9 v9.5.3
 	github.com/rs/zerolog v1.33.0
 	github.com/sony/sonyflake v1.2.0
 	go.uber.org/mock v0.4.0
