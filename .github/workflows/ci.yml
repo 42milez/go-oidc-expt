@@ -92,7 +92,7 @@ jobs:
       - name: Install atlas
         run: curl -sSf https://atlasgo.sh | sh
       - name: Start datastore
-        run: docker-compose up -d cache db
+        run: docker compose up -d cache db
       - name: Wait for database to be available
         run: scripts/docker/waiter/db.sh "db" "127.0.0.1" 13306 "root"
       - name: Apply migrations
@@ -102,7 +102,7 @@ jobs:
       - name: Start application
         env:
           CI_APP_BUILD_TARGET: deploy
-        run: docker-compose up -d app-ci
+        run: docker compose up -d app-ci
       #  Run tests
       # --------------------------------------------------
       - name: Run all tests

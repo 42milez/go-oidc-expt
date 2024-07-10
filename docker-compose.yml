@@ -25,6 +25,10 @@ services:
       - type: bind
         source: docker/load-balancer/etc/nginx/templates
         target: /etc/nginx/templates
+      - type: bind
+        source: public
+        target: /usr/share/nginx/html/public
+        read_only: true
     env_file:
       - docker/load-balancer/env
     deploy:

@@ -54,15 +54,15 @@ const OIDCRootPath = "connect"
 const UserRootPath = "user"
 
 func AuthorizationPath() string {
-	return fmt.Sprintf("/%s/%s", OIDCRootPath, "authorization")
+	return fmt.Sprintf("/%s", "authorization")
 }
 
 func TokenPath() string {
-	return fmt.Sprintf("/%s/%s", OIDCRootPath, "token")
+	return fmt.Sprintf("/%s", "token")
 }
 
 func UserInfoPath() string {
-	return fmt.Sprintf("/%s/%s", OIDCRootPath, "userinfo")
+	return fmt.Sprintf("/%s", "userinfo")
 }
 
 func UserRegistrationPath() string {
@@ -78,7 +78,7 @@ func UserConsentPath() string {
 }
 
 const (
-	Issuer = "42milez.dev"
+	Issuer = "https://localhost:4443"
 )
 
 const (
@@ -89,7 +89,7 @@ const (
 )
 
 const (
-	AuthCodeLength     = 10
+	AuthCodeLength     = 30
 	ClientIDLength     = 30
 	ClientSecretLength = 30
 )

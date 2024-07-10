@@ -36,5 +36,9 @@ func InsertRedirectUris(ctx context.Context, db *datastore.Database, relyingPart
 		builders[i] = db.Client.RedirectURI.Create().SetURI(v.URI).SetRelyingParty(v.RelyingParty)
 	}
 
+	// For OpenID Connect conformance test suite
+	builders = append(builders, db.Client.RedirectURI.Create().SetURI("https://localhost.emobix.co.uk:8443").
+		SetRelyingPartyID(1))
+
 	return db.Client.RedirectURI.CreateBulk(builders...).Save(ctx)
 }

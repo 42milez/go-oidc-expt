@@ -50,7 +50,7 @@ paths:
                 status: 500
   # OpenID Connect Discovery 1.0 incorporating errata set 2
   # https://openid.net/specs/openid-connect-discovery-1_0.html
-  /connect/.well-known/openid-configuration:
+  /.well-known/openid-configuration:
     get:
       description: Return the configuration information about the OpenID Provider.
       operationId: configuration
@@ -63,7 +63,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigurationResponse'
-  /connect/jwks:
+  /jwks:
     get:
       description: Return JSON web keys.
       operationId: jwks
@@ -76,7 +76,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JwksResponse'
-  /connect/authorization:
+  /authorization:
     get:
       description: Determines authentication and authorization status of user, redirects user to the appropriate page and returns an authorization code.
       operationId: authorize
@@ -108,7 +108,7 @@ paths:
           $ref: '#/components/responses/UnauthorizedRequest'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /connect/token:
+  /token:
     post:
       description: Returns a new Access Token, Refresh Token, and ID Token using the authorization code obtained from the authorization endpoint. The Refresh Token is used to reissue the access token.
       operationId: token
@@ -151,7 +151,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenErrorResponse'
-  /connect/userinfo:
+  /userinfo:
     get:
       description: Return user information
       operationId: userInfo

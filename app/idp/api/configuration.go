@@ -21,7 +21,7 @@ func (c *Configuration) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		IDTokenSigningAlgValuesSupported: []IDTokenSigningAlgValuesSupported{
 			ES256,
 		},
-		Issuer:  "https://localhost:4443/connect/",
+		Issuer:  "https://localhost:4443",
 		JWKsURI: "https://host.docker.internal:4443/connect/jwks",
 		ResponseTypesSupported: []ResponseTypesSupported{
 			ResponseTypesSupportedCode,
@@ -34,14 +34,14 @@ func (c *Configuration) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		SubjectTypesSupported: []SubjectTypesSupported{
 			Public,
 		},
-		TokenEndpoint: "https://localhost:4443/connect/token",
+		TokenEndpoint: "https://host.docker.internal:4443/connect/token",
 		TokenEndpointAuthMethodsSupported: []TokenEndpointAuthMethodsSupported{
 			ClientSecretBasic,
 		},
 		UILocalesSupported: []UILocalesSupported{
 			JaJP,
 		},
-		UserInfoEndpoint: "https://localhost:4443/connect/userinfo",
+		UserInfoEndpoint: "https://host.docker.internal:4443/connect/userinfo",
 	}
 
 	RespondJSON(w, r, http.StatusOK, nil, respBody)
