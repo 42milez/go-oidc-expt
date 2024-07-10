@@ -12,7 +12,7 @@ var (
 	// AuthCodesColumns holds the columns for the "auth_codes" table.
 	AuthCodesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(10)"}},
+		{Name: "code", Type: field.TypeString, SchemaType: map[string]string{"mysql": "CHAR(30)"}},
 		{Name: "user_id", Type: field.TypeUint64},
 		{Name: "expire_at", Type: field.TypeTime},
 		{Name: "used_at", Type: field.TypeTime, Nullable: true},
