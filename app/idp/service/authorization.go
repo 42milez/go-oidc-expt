@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 	"net/url"
 	"strings"
+
+	"github.com/42milez/go-oidc-server/app/pkg/typedef"
 
 	"github.com/42milez/go-oidc-server/app/idp/httpstore"
 

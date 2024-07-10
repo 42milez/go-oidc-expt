@@ -54,15 +54,15 @@ const OIDCRootPath = "connect"
 const UserRootPath = "user"
 
 func AuthorizationPath() string {
-	return fmt.Sprintf("/%s/%s", OIDCRootPath, "authorization")
+	return fmt.Sprintf("/%s", "authorization")
 }
 
 func TokenPath() string {
-	return fmt.Sprintf("/%s/%s", OIDCRootPath, "token")
+	return fmt.Sprintf("/%s", "token")
 }
 
 func UserInfoPath() string {
-	return fmt.Sprintf("/%s/%s", OIDCRootPath, "userinfo")
+	return fmt.Sprintf("/%s", "userinfo")
 }
 
 func UserRegistrationPath() string {
