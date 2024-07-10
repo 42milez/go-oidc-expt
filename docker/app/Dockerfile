@@ -1,7 +1,7 @@
 #  deploy-builder
 # --------------------------------------------------
 
-FROM golang:1.22.3 as deploy-builder
+FROM golang:1.22.5 as deploy-builder
 
 ENV CGO_ENABLED 0
 
@@ -36,7 +36,7 @@ CMD [ "./idp" ]
 #  dev
 # --------------------------------------------------
 
-FROM golang:1.22.3 as dev
+FROM golang:1.22.5 as dev
 
 WORKDIR /workspace
 

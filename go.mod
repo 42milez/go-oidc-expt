@@ -1,6 +1,7 @@
 module github.com/42milez/go-oidc-server
 
-go 1.22.3
+go 1.22.5
+
 require (
 	ariga.io/atlas v0.25.0
 	entgo.io/ent v0.13.1
@@ -19,7 +20,7 @@ require (
 	github.com/gorilla/securecookie v1.1.2
 	github.com/lestrrat-go/jwx/v2 v2.1.0
 	github.com/oapi-codegen/nethttp-middleware v1.0.2
-	github.com/oapi-codegen/oapi-codegen/v2 v2.3.0
+	github.com/oapi-codegen/oapi-codegen/v2 v2.3.1-0.20240709092903-309b11f85c73
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.5.3
