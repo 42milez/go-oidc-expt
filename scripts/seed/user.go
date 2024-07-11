@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+	"github.com/42milez/go-oidc-server/pkg/ent/ent"
 
-	"github.com/42milez/go-oidc-server/app/idp/datastore"
-	"github.com/42milez/go-oidc-server/app/idp/security"
+	"github.com/42milez/go-oidc-server/cmd/datastore"
+	"github.com/42milez/go-oidc-server/cmd/security"
 )
 
 const nUserMin = 1

@@ -36,7 +36,7 @@
 ./scripts/bootstrap/key.sh
 ```
 
-The script creates a key pair in `app/pkg/xjwt/cert`.
+The script creates a key pair in `pkg/xjwt/cert`.
 
 References:
 
@@ -110,7 +110,7 @@ make migrate-apply SERVICE=db DATABASE=idp_test
 e.g. The following command generates `AuthCode` schema.
 
 ```
-go run -mod=mod entgo.io/ent/cmd/ent new --target app/pkg/ent/schema AuthCode
+go run -mod=mod entgo.io/ent/cmd/ent new --target pkg/ent/schema AuthCode
 ```
 
 ### Generating versioned a migration file

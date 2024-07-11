@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/42milez/go-oidc-server/app/pkg/typedef"
+	"github.com/42milez/go-oidc-server/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+	"github.com/42milez/go-oidc-server/pkg/ent/ent"
 
-	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/42milez/go-oidc-server/app/idp/datastore"
+	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-server/cmd/datastore"
 
-	"github.com/42milez/go-oidc-server/app/pkg/xrandom"
+	"github.com/42milez/go-oidc-server/pkg/xrandom"
 )
 
 const nRelyingPartyMin = 1

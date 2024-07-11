@@ -1,0 +1,30 @@
+import (
+    "github.com/42milez/go-oidc-server/pkg/ent/ent"
+    "github.com/42milez/go-oidc-server/pkg/typedef"
+    "time"
+)
+
+{{$schemaName := .SchemaName}}
+{{$receiverName := shortenByCapitalLetter $schemaName}}
+
+func New{{.SchemaName}}(entity *ent.{{.SchemaName}}) *{{.SchemaName}} {
+    return &{{.SchemaName}}{
+        entity: entity,
+    }
+}
+
+type {{.SchemaName}} struct {
+    entity *ent.{{.SchemaName}}
+}
+
+{{range $field := .Fields}}
+{{if isEdgeField $field.Name}}
+    {{continue}}
+{{end}}
+{{if isPrivateField $field.Name}}
+    {{continue}}
+{{end}}
+func ({{$receiverName}} *{{$schemaName}}) {{$field.Name}}() {{$field.Type}} {
+    return {{$receiverName}}.entity.{{$field.Name}}
+}
+{{end}}

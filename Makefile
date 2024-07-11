@@ -56,7 +56,9 @@ cleanup-go:
 ## fmt: Run formatter
 fmt:
 	@commands=( \
-		"go run -mod=mod golang.org/x/tools/cmd/goimports -w ./app" \
+		"go run -mod=mod golang.org/x/tools/cmd/goimports -w ./cmd" \
+		"go run -mod=mod golang.org/x/tools/cmd/goimports -w ./pkg" \
+		"go run -mod=mod golang.org/x/tools/cmd/goimports -w ./tools" \
 		"go run -mod=mod golang.org/x/tools/cmd/goimports -w ./scripts" \
 		"go fmt ./..." \
 	); \
@@ -73,7 +75,7 @@ gen:
 lint:
 	@commands=( \
 		"go run -mod=mod github.com/golangci/golangci-lint/cmd/golangci-lint run --fix" \
-		"vacuum lint -r .vacuum.yml -d app/idp/api/spec/spec.yml" \
+		"vacuum lint -r .vacuum.yml -d cmd/api/spec/spec.yml" \
 	); \
 		for cmd in "$${commands[@]}"; do \
 			$(call run,$${cmd}); \

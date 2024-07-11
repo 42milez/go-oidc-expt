@@ -6,12 +6,12 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+	"github.com/42milez/go-oidc-server/pkg/ent/ent"
 
-	"github.com/42milez/go-oidc-server/app/idp/config"
-	"github.com/42milez/go-oidc-server/app/idp/datastore"
+	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-server/cmd/datastore"
 
-	_ "github.com/42milez/go-oidc-server/app/pkg/ent/ent/runtime"
+	_ "github.com/42milez/go-oidc-server/pkg/ent/ent/runtime"
 )
 
 func printSeeds(data any) {
