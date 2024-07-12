@@ -234,7 +234,7 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: ./app/idp/api/spec/spec.yml
+        source: ./cmd/api/spec/spec.yml
         target: /spec.yml
         read_only: true
     environment:
@@ -258,7 +258,7 @@ services:
     tty: true
     volumes:
       - type: bind
-        source: ./app/idp/api/spec/spec.yml
+        source: ./cmd/api/spec/spec.yml
         target: /spec.yml
     environment:
       SWAGGER_FILE: /spec.yml

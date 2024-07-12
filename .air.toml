@@ -10,9 +10,9 @@ tmp_dir = "../tmp"
 # Add additional arguments when running binary (bin/full_bin). Will run './tmp/main hello world'.
 args_bin = []
 # Binary file yields from `cmd`.
-bin = "../tmp/app"
+bin = "../tmp/cmd"
 # Just plain old shell command. You could use `make` as well.
-cmd = 'go build -gcflags "all=-N -l" -o ../tmp/app ./app/idp'
+cmd = 'go build -gcflags "all=-N -l" -o ../tmp/cmd ./cmd'
 # It's not necessary to trigger build each time file changes if it's too frequent.
 delay = 0 # ms
 # Ignore these filename extensions or directories.
@@ -26,8 +26,8 @@ exclude_unchanged = true
 # Follow symlink for directories
 follow_symlink = true
 # Customize binary, can setup environment variables when run your app.
-full_bin = "dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec --continue ../tmp/app"
-#full_bin = "dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient --log --log-output rpc exec --continue ../tmp/app"
+full_bin = "dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec --continue ../tmp/cmd"
+#full_bin = "dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient --log --log-output rpc exec --continue ../tmp/cmd"
 # Watch these filename extensions.
 include_ext = [ "go", "html", "tmpl", "tpl" ]
 # Watch these directories if you specified.

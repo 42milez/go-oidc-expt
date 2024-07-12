@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/42milez/go-oidc-server/app/pkg/ent/ent"
+	"github.com/42milez/go-oidc-server/pkg/ent/ent"
 
-	"github.com/42milez/go-oidc-server/app/idp/datastore"
+	"github.com/42milez/go-oidc-server/cmd/datastore"
 )
 
 const nRedirectUriMin = 1

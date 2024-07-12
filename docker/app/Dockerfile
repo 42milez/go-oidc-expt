@@ -14,12 +14,12 @@ COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg \
     go mod download
 
-COPY app/idp/ ./app/idp
-COPY app/pkg/ ./app/pkg
+COPY cmd/ ./cmd
+COPY pkg/ ./pkg
 
 RUN --mount=type=cache,target=/go/pkg \
     --mount=type=cache,target=/root/.cache/go-build \
-    go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o idp ./app/idp
+    go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o idp ./cmd
 
 #  deploy
 # --------------------------------------------------
