@@ -72,6 +72,10 @@ server {
         proxy_pass http://app/;
     }
 
+    location /authorization {
+        return 302 https://localhost:4443/connect$uri?$query_string;
+    }
+
     location /nginx_status {
         stub_status on;
         access_log off;

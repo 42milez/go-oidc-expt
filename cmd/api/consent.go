@@ -9,7 +9,6 @@ import (
 	"github.com/42milez/go-oidc-server/cmd/option"
 	"github.com/42milez/go-oidc-server/cmd/service"
 	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/gorilla/schema"
 )
 
 var consent *Consent
@@ -33,15 +32,13 @@ type Consent struct {
 func (ch *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	decoder := schema.NewDecoder()
-	q := &AuthorizeParams{}
-
-	if err := decoder.Decode(q, r.URL.Query()); err != nil {
-		RespondJSON500(w, r, err)
+	q, err := parseAuthorizeParam(r, ch.v)
+	if err != nil {
+		respondError(w, r, err)
 		return
 	}
 
-	if err := ch.v.Struct(q); err != nil {
+	if err = ch.v.Struct(q); err != nil {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return
 	}
@@ -52,7 +49,7 @@ func (ch *Consent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ch.svc.AcceptConsent(ctx, sess.UserID, q.ClientID); err != nil {
+	if err = ch.svc.AcceptConsent(ctx, sess.UserID, q.ClientID); err != nil {
 		RespondJSON500(w, r, err)
 		return
 	}

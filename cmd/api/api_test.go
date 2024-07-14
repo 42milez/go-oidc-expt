@@ -179,7 +179,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 		return cookies
 	}
 
-	consent := func(cookies []*http.Cookie, authoParam string) {
+	consentFunc := func(cookies []*http.Cookie, authoParam string) {
 		consentUrl, err := url.Parse(fmt.Sprintf("%s?%s", userConsentEndpoint, authoParam))
 		xtestutil.ExitOnError(t, err)
 
@@ -338,7 +338,7 @@ func TestAuthorizationCodeFlow(t *testing.T) {
 	registeredUser := registerUser()
 	authoParam := newAuthorizeParam(registeredRp.ClientID())
 	cookies := authenticate(registeredUser, authoParam)
-	consent(cookies, authoParam)
+	consentFunc(cookies, authoParam)
 	callbackUrl := authorize(cookies, authoParam)
 	refreshToken := initialRequestToken(registeredRp, cookies, authoParam, callbackUrl)
 	accessToken := requestToken(registeredRp, cookies, refreshToken)
