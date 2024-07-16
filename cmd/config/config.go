@@ -27,7 +27,7 @@ type Config struct {
 	RedisPassword       string        `env:"REDIS_PASSWORD" envDefault:""`
 	RedisDB             int           `env:"REDIS_DB" envDefault:"0"`
 	LogLevel            zerolog.Level `env:"ZEROLOG_LEVEL" envDefault:"0"` // debug
-	IdpHost             string        `env:"IDP_HOST" envDefault:"http://localhost:8080"`
+	IdpHost             string        `env:"IDP_HOST" envDefault:"https://localhost:4443"`
 	EnableDebugDBClient bool          `env:"ENABLE_DEBUG_DB_CLIENT" envDefault:"true"`
 	EnableProfiler      bool          `env:"ENABLE_PROFILER" envDefault:"true"`
 }

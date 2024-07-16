@@ -46,43 +46,43 @@ func (ah *Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	if q, err = parseAuthorizeParam(r, ah.v); err != nil {
-		ah.respondError(w, r, err)
+		respondError(w, r, err)
 		return
 	}
 
 	if reqBody, err = ah.parseRequestBody(r); err != nil {
-		ah.respondError(w, r, err)
+		respondError(w, r, err)
 		return
 	}
 
 	var userID typedef.UserID
 
 	if userID, err = ah.svc.VerifyPassword(ctx, reqBody.Name, reqBody.Password); err != nil {
-		ah.respondError(w, r, err)
+		respondError(w, r, err)
 		return
 	}
 
 	var sid typedef.SessionID
 
 	if sid, err = ah.cache.CreateSession(ctx, userID); err != nil {
-		ah.respondError(w, r, err)
+		respondError(w, r, err)
 		return
 	}
 
 	if err = ah.cookie.Write(w, sessionIDCookieName, strconv.FormatUint(uint64(sid), 10), config.SessionIDCookieTTL); err != nil {
-		ah.respondError(w, r, err)
+		respondError(w, r, err)
 		return
 	}
 
 	var isConsented bool
 
 	if isConsented, err = ah.svc.VerifyConsent(ctx, userID, q.ClientID); err != nil {
-		ah.respondError(w, r, err)
+		respondError(w, r, err)
 		return
 	}
 
 	if !isConsented {
-		Redirect(w, r, config.UserConsentPath(), http.StatusFound)
+		Redirect(w, r, "/consent", http.StatusFound)
 		return
 	}
 
@@ -103,7 +103,7 @@ func (ah *Authentication) parseRequestBody(r *http.Request) (*AuthenticateJSONRe
 	return ret, nil
 }
 
-func (ah *Authentication) respondError(w http.ResponseWriter, r *http.Request, err error) {
+func respondError(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, xerr.FailedToValidate) {
 		RespondJSON400(w, r, xerr.InvalidRequest, nil, err)
 		return

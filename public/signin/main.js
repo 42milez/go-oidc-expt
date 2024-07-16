@@ -1,7 +1,8 @@
 "use strict";
 
-const API_BASE_URL = "https://localhost:4443/connect";
-const API_SIGNIN_ENDPOINT = API_BASE_URL + "/user/authentication";
+const FRONT_BASE_URL = "https://localhost:4443"
+const API_ENDPOINT_BASE_URL = `${FRONT_BASE_URL}/connect`;
+const API_SIGNIN_ENDPOINT = API_ENDPOINT_BASE_URL + "/user/authentication";
 
 function showError(msg) {
   if (!msg) {
@@ -62,14 +63,17 @@ $(function () {
 
       const RESP = await fetch(API_SIGNIN_ENDPOINT + window.location.search, OPTIONS)
         .then(resp => {
+          if (resp.redirected) {
+            window.location.href = resp.url;
+          }
           switch (resp.status) {
             case 200:
               return resp;
             case 403:
-              showError("Access denied.");
+              showError(`${resp.status}: Access denied.`);
               break;
             default:
-              showError();
+              showError(`An error occurred.`);
           }
         })
         .catch(err => {
