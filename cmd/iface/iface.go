@@ -7,7 +7,7 @@ import (
 
 	"github.com/lestrrat-go/jwx/v2/jwt"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 )
 
 //go:generate go run -mod=mod go.uber.org/mock/mockgen -source=iface.go -destination=iface_mock.go -package=$GOPACKAGE

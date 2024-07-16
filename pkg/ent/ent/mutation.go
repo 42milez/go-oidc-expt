@@ -11,13 +11,13 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/authcode"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/consent"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/redirecturi"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/relyingparty"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/user"
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/authcode"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/consent"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/predicate"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/user"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 )
 
 const (

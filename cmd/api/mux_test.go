@@ -10,18 +10,18 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/config"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/relyingparty"
 	nethttpmiddleware "github.com/oapi-codegen/nethttp-middleware"
 
-	"github.com/42milez/go-oidc-server/cmd/entity"
-	"github.com/42milez/go-oidc-server/cmd/option"
+	"github.com/42milez/go-oidc-expt/cmd/entity"
+	"github.com/42milez/go-oidc-expt/cmd/option"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xtestutil"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"

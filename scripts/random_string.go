@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/42milez/go-oidc-server/pkg/xrandom"
+	"github.com/42milez/go-oidc-expt/pkg/xrandom"
 )
 
 var (

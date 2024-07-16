@@ -3,13 +3,13 @@ package repository
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/relyingparty"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/entity"
+	"github.com/42milez/go-oidc-expt/cmd/entity"
 
-	"github.com/42milez/go-oidc-server/cmd/datastore"
+	"github.com/42milez/go-oidc-expt/cmd/datastore"
 )
 
 func NewRelyingParty(db *datastore.Database) *RelyingParty {

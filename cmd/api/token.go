@@ -6,16 +6,16 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/42milez/go-oidc-server/cmd/httpstore"
-	"github.com/42milez/go-oidc-server/cmd/service"
+	"github.com/42milez/go-oidc-expt/cmd/httpstore"
+	"github.com/42milez/go-oidc-expt/cmd/service"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
-	"github.com/42milez/go-oidc-server/cmd/iface"
-	"github.com/42milez/go-oidc-server/cmd/option"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-expt/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
+	"github.com/42milez/go-oidc-expt/cmd/option"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xutil"
 )
 
 var token *Token

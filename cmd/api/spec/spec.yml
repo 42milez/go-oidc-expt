@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   version: 1.0.0
-  title: go-oidc-server
+  title: go-oidc-expt
   description: An experimental implementation of OpenID Connect with Go
   termsOfService: http://example.com/terms/
   contact:

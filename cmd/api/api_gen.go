@@ -14,9 +14,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/42milez/go-oidc-server/cmd/option"
-	"github.com/42milez/go-oidc-server/pkg/typedef"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/cmd/option"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
@@ -1020,25 +1020,25 @@ var swaggerSpec = []string{
 	"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",
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

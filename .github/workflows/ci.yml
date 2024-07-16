@@ -76,7 +76,7 @@ jobs:
           context: .
           file: ./docker/app/Dockerfile
           target: deploy
-          tags: go-oidc-server-app-ci:dev
+          tags: go-oidc-expt-app-ci:dev
           load: true
           push: false
       #- name: Build db
@@ -84,7 +84,7 @@ jobs:
       #  with:
       #    context: .
       #    file: ./docker/db/Dockerfile
-      #    tags: go-oidc-server-db:dev
+      #    tags: go-oidc-expt-db:dev
       #    load: true
       #    push: false
       #  Start datastore

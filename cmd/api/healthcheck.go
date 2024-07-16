@@ -3,9 +3,9 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/cmd/option"
-	"github.com/42milez/go-oidc-server/cmd/repository"
-	"github.com/42milez/go-oidc-server/cmd/service"
+	"github.com/42milez/go-oidc-expt/cmd/option"
+	"github.com/42milez/go-oidc-expt/cmd/repository"
+	"github.com/42milez/go-oidc-expt/cmd/service"
 )
 
 var healthCheck *HealthCheck

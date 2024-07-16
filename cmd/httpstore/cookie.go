@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/42milez/go-oidc-server/cmd/iface"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
 
 	"github.com/gorilla/securecookie"
 )

@@ -6,10 +6,10 @@ import (
 
 	"github.com/lestrrat-go/jwx/v2/jwt"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/entity"
-	"github.com/42milez/go-oidc-server/cmd/iface"
+	"github.com/42milez/go-oidc-expt/cmd/entity"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
 )
 
 //go:generate go run -mod=mod go.uber.org/mock/mockgen -source=interface.go -destination=interface_mock.go -package=$GOPACKAGE

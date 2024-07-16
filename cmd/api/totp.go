@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/config"
 
-	"github.com/42milez/go-oidc-server/pkg/xrandom"
+	"github.com/42milez/go-oidc-expt/pkg/xrandom"
 )
 
 func NewTOTP(key string) *TOTP {

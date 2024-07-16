@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/option"
-	"github.com/42milez/go-oidc-server/cmd/repository"
+	"github.com/42milez/go-oidc-expt/cmd/option"
+	"github.com/42milez/go-oidc-expt/cmd/repository"
 )
 
 func NewConsent(opt *option.Option) *AcceptConsent {

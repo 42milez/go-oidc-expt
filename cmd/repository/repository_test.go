@@ -3,11 +3,11 @@ package repository
 import (
 	"testing"
 
-	"github.com/42milez/go-oidc-server/cmd/option"
+	"github.com/42milez/go-oidc-expt/cmd/option"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xid"
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xid"
+	"github.com/42milez/go-oidc-expt/pkg/xtestutil"
 )
 
 func TestNewCheckHealth(t *testing.T) {

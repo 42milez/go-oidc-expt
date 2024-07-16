@@ -32,7 +32,7 @@ fi
 )
 
 # Message Example:
-# Workflow: CI (#7) of 42milez/go-oidc-server (branch: the-first-step) passed.
+# Workflow: CI (#7) of 42milez/go-oidc-expt (branch: the-first-step) passed.
 # Commit: Apr. 10, 2023 (39e3068) by 42milez
 readonly TEXT=$(
 WF=${GITHUB_WORKFLOW}

@@ -1,6 +1,6 @@
 package entity
 
-import "github.com/42milez/go-oidc-server/pkg/typedef"
+import "github.com/42milez/go-oidc-expt/pkg/typedef"
 
 type UserInfo struct {
 	ID   typedef.UserID `json:"id"`

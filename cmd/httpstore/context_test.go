@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
 )
 
 func TestContext_Read(t *testing.T) {

@@ -1,4 +1,4 @@
-PROJECT_NAME := go-oidc-server
+PROJECT_NAME := go-oidc-expt
 VERSION := $(shell git tag --sort=-v:refname | head -n 1)
 GITHUB_ID := 42milez
 

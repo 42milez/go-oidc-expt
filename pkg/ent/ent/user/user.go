@@ -62,7 +62,7 @@ func ValidColumn(column string) bool {
 // package on the initialization of the application. Therefore,
 // it should be imported in the main as follows:
 //
-//	import _ "github.com/42milez/go-oidc-server/pkg/ent/ent/runtime"
+//	import _ "github.com/42milez/go-oidc-expt/pkg/ent/ent/runtime"
 var (
 	Hooks [1]ent.Hook
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.

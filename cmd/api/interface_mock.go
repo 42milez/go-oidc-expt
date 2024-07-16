@@ -15,8 +15,8 @@ import (
 	reflect "reflect"
 	time "time"
 
-	entity "github.com/42milez/go-oidc-server/cmd/entity"
-	typedef "github.com/42milez/go-oidc-server/pkg/typedef"
+	entity "github.com/42milez/go-oidc-expt/cmd/entity"
+	typedef "github.com/42milez/go-oidc-expt/pkg/typedef"
 	jwt "github.com/lestrrat-go/jwx/v2/jwt"
 	gomock "go.uber.org/mock/gomock"
 )

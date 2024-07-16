@@ -1,10 +1,10 @@
 package option
 
 import (
-	"github.com/42milez/go-oidc-server/cmd/datastore"
-	"github.com/42milez/go-oidc-server/cmd/iface"
-	"github.com/42milez/go-oidc-server/cmd/security"
-	"github.com/42milez/go-oidc-server/pkg/xid"
+	"github.com/42milez/go-oidc-expt/cmd/datastore"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
+	"github.com/42milez/go-oidc-expt/cmd/security"
+	"github.com/42milez/go-oidc-expt/pkg/xid"
 	"github.com/go-playground/validator/v10"
 )
 
