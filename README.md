@@ -1,7 +1,7 @@
 # go-oidc-expt
 
 - `go-oidc-expt` is an experimental implementation of [OpenID Connect](https://openid.net/connect/) with Go.
-- The results of [the conformance test](https://openid.net/certification/about-conformance-suite/) is available [here](https://github.com/42milez/go-oidc-expt/blob/main/docs/conformance-test/oidcc-basic-certification-test-plan/test_oidc-server/index.html).
+- The results of [the conformance test](https://openid.net/certification/about-conformance-suite/) is available [here](https://htmlpreview.github.io/?https://github.com/42milez/go-oidc-expt/blob/main/docs/conformance-test/oidcc-basic-certification-test-plan/test_oidc-server/index.html).
 
 ## Features
 
