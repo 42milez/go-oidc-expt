@@ -166,6 +166,9 @@ docker compose up -d swagger-ui
     - [Japanese](https://openid-foundation-japan.github.io/openid-connect-core-1_0.ja.html)
   - [JSON Web Key (JWK)](https://www.rfc-editor.org/rfc/rfc7517.html)
   - [JSON Web Algorithms (JWA)](https://www.rfc-editor.org/rfc/rfc7518.html)
+  - Conformance Test
+    - [About the Conformance Suite ](https://openid.net/certification/about-conformance-suite/)
+    - [OpenID Connect Conformance Profiles v3.0](https://github.com/42milez/go-oidc-expt/tree/main/docs/conformance-test/oidcc-basic-certification-test-plan/test_oidc-server)
 - OpenAPI
   - [OpenAPI.Tools](https://openapi.tools/)
 - OTP
