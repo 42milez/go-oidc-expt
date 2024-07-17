@@ -1,0 +1,6885 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Test detail</title>
+  <meta http-equiv="Cache-control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <style>
+    html{
+      box-sizing: border-box;
+    }
+    body{
+      font-family:sans-serif;
+      line-height:1.5em;
+      padding-left:30px;
+      padding-right:30px;
+      padding-top:2em;
+      min-width:700px;
+    }
+    pre{
+      margin-top:0px;
+      margin-bottom:0px;
+      margin-left:0px;
+      font-family: sans-serif;
+    }
+    #header{
+    }
+    #header th{
+      text-align:left;
+    }
+    #results{
+      overflow-x:auto;
+    }
+    table{
+      width:100%;
+    }
+    .log-item{
+      width:100%;
+      margin-bottom:0;
+      padding-bottom:1em;
+      padding-top:1em;
+      border-top:1px solid #ccc;
+      line-height:1.7em;
+    }
+    .log-item:hover{
+      background-color: #ebf6fa;
+    }
+    .row{
+      padding-top:0.2em;
+      padding-left:0.2em;
+      padding-bottom:0.2em;
+      padding-right:0.2em;
+    }
+    .col-1{
+      width:10%;
+      min-width:100px;
+      vertical-align: top;
+      font-size:0.90em;
+    }
+    .col-2{
+      width:10%;
+      min-width:100px;
+      vertical-align: top;
+      padding-left:20px;
+    }
+    .col-3{
+      vertical-align: top;
+    }
+    .labelCollection{
+
+    }
+    .labelCollection span{
+      border:1px;
+    }
+
+    .wrapLongStrings{
+      white-space:pre-wrap;
+    }
+    .collapse:not(.show) {
+      display:none;
+    }
+    .label{
+      border-bottom-left-radius: 3px;
+      border-bottom-right-radius: 3px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      box-sizing: border-box;
+      color: rgb(255, 255, 255);
+      display: inline;
+      font-size: 0.8em;
+      font-weight: 700;
+      line-height: 1.2em;
+      padding-bottom: 3.6px;
+      padding-left: 7.2px;
+      padding-right: 7.2px;
+      padding-top: 2.4px;
+      text-align: center;
+      vertical-align: baseline;
+      white-space: no-wrap;
+    }
+    .label-info{
+      background-color: #5bc0de;
+    }
+    .testStatus-created {
+      background-color: #fcd9f6;
+      color: black;
+    }
+
+    .testStatus-configured {
+      background-color: #d3fffe;
+      color: black;
+    }
+
+    .testStatus-running {
+      background-color: #6d09e8;
+      color: white;
+    }
+
+    .testStatus-waiting {
+      background-color: #6ac4c2;
+      color: black;
+    }
+
+    .testStatus-interrupted {
+      background-color: #b70018;
+      color: white;
+    }
+
+    .testStatus-finished {
+      background-color: #383647;
+      color: white;
+    }
+
+    .testStatus-unknown {
+      background-color: #dedada;
+      color: #6d6a6a;
+    }
+
+    .testResult-passed {
+      background-color: #40e809;
+      color: black;
+    }
+
+    .testResult-warning {
+      background-color: #d88602;
+      color: white;
+    }
+
+    .testResult-failed {
+      background-color: red;
+      color: white;
+    }
+
+    .testResult-review {
+      background-color: #6ac4c2;
+      color: black;
+    }
+
+    .testResult-skipped {
+      background-color: #d88602;
+      color: white;
+    }
+
+    .testResult-unknown {
+      background-color: #dedada;
+      color: #6d6a6a;
+    }
+    .result-success {
+      background-color: #00cc00;
+    }
+
+    .result-failure {
+      background-color: #cc0000;
+    }
+
+    .result-warning {
+      background-color: #d88602;
+    }
+
+    .result-review {
+      background-color: #00ccff;
+    }
+
+    .result-interrupted {
+      background-color: #ddbb88;
+    }
+
+    .result-finished {
+      background-color: #383647;
+    }
+
+    .result-info {
+      background-color: #e2bfce;
+    }
+
+    .result-skipped {
+      background-color: #d88602;
+    }
+
+    .result-default {
+      background-color: #00cc00;
+    }
+    .rounded-pill{
+      background-color: rgba(0.5, 0.5, 0.5, 0.5);
+      border-top-left-radius: 0.25em;
+      border-top-right-radius: 0.25em;
+      border-bottom-right-radius: 0.25em;
+      border-bottom-left-radius: 0.25em;
+      padding-left:0.4em;
+      padding-right:0.4em;
+      padding-top:0.1em;
+      padding-bottom:0.1em;
+      font-size:0.85em;
+    }
+    .requirement{
+      border:1px solid #ccc;
+      padding-left:0.3em;
+      padding-right:0.3em;
+      padding-top:0.2em;
+      padding-bottom:0.2em;
+      display:inline-block;
+      background-color: rgb(119, 119, 119);
+      color:#fff;
+      font-size:0.7em;
+      font-weight:normal;
+      text-decoration:none;
+    }
+    .log-http{
+    }
+    .more{
+      background-color:#fff;
+    }
+    .more-btn{
+    }
+    a.more-btn{
+      font-size:0.85em;
+      background-image: linear-gradient(rgb(255, 255, 255) 0px, rgb(224, 224, 224) 100%);
+      border:1px solid rgb(204, 204, 204);
+      padding-left: 0.4em;
+      padding-right: 0.4em;
+      padding-top:0.3em;
+      padding-bottom:0.3em;
+      color:rgb(51, 51, 51);
+      text-decoration: none;
+    }
+    .more-row{
+      border:1px solid #eee;
+      width:100%;
+    }
+    .more-key{
+      text-align:right;
+      vertical-align: top;
+      background-color: #edf2f4;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      word-break: break-all;
+      padding-right:3px;
+    }
+    td.more-key{
+      width:15%;
+    }
+    .more-value{
+      vertical-align: top;
+      background-color: #f1f1f1;
+      padding-left:3px;
+      font-size:0.9em;
+    }
+    .more-text{
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+    .more-jwt{
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+    .more-json{
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+    .log-msg{
+    }
+    .log-src{
+      font-family: monospace;
+    }
+    .prettyprint{
+    }
+    .lang-javascript{
+    }
+    .block-title{
+      font-size:1.15em;
+      color:#fff;
+      padding-left:0.25em;
+      padding-right:0.25em;
+      padding-bottom:0.25em;
+      padding-top:0.25em;
+    }
+    .log-entry-title{
+    }
+    ul.stacktrace{
+      margin-top:3px;
+      margin-left:3px;
+    }
+    .stacktrace li{
+      list-style-type:none;
+      margin-top:2px;
+      margin-bottom:2px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+    .p-1{
+      padding:0.1em 0.1em 0.1em 0.1em;
+    }
+    .test-summary{
+      background-color: rgb(217, 237, 247);
+      border: 1px solid rgb(221, 221, 221);
+      padding-top:0.3em;
+      padding-left:0.3em;
+      padding-right:0.3em;
+      padding-bottom:0.3em;
+    }
+    #fixedtoplink{
+      position:fixed;
+      bottom:30px;
+      right:30px;
+      background-color:#999;
+      color:#fff;
+      opacity: 0.8;
+      padding-top:0.3em;
+      padding-left:0.3em;
+      padding-right:0.3em;
+      padding-bottom:0.3em;
+      font-size:0.85em;
+      text-decoration:none;
+    }
+
+    .review-img{
+      max-height: 50vh;
+      display: block;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+  </style>
+  <script>
+    function moreClicked(itemid){
+      var moreelem = document.getElementById('more_' + itemid);
+      if(moreelem.className.includes('collapse')){
+        moreelem.className='more';
+      }
+      else{
+        moreelem.className='more collapse';
+      }
+    }
+
+    function expandMores() {
+      var mores = document.querySelectorAll('.more');
+      for(var i in mores){
+        var moreelem = mores[i];
+        if(moreelem.className){
+          moreelem.className='more';
+        }
+      }
+    }
+
+    function collapseMores(){
+      var mores = document.querySelectorAll('.more');
+      for(var i in mores){
+        var moreelem = mores[i];
+        if(moreelem.className){
+          moreelem.className='more collapse';
+        }
+      }
+    }
+
+  </script>
+</head>
+<body>
+<h1>
+  Test Summary
+</h1>
+<div  id="header">
+  <table style="width:auto;">
+    <tr>
+      <th>Test Name</th>
+      <td>oidcc-server</td>
+    </tr>
+    <tr>
+      <th>Variant</th>
+      <td>client_auth_type=client_secret_basic, server_metadata=discovery, response_type=code, response_mode=default, client_registration=static_client</td>
+    </tr>
+    <tr>
+      <th>Test ID</th>
+      <td>
+        <span>h7DgRNfD6P1B6QH</span>
+        <a target="_blank" href="https://localhost.emobix.co.uk:8443/log-detail.html?public=true&amp;log=h7DgRNfD6P1B6QH">https://localhost.emobix.co.uk:8443/log-detail.html?public=true&amp;log=h7DgRNfD6P1B6QH</a>
+      </td>
+    </tr>
+    <tr>
+      <th>Created</th>
+      <td>2024-07-17T10:44:09.333877095Z</td>
+    </tr>
+    <tr>
+      <th>Description</th>
+      <td></td>
+    </tr>
+    <tr>
+      <th>Test Version</th>
+      <td>5.1.17</td>
+    </tr>
+    <tr>
+      <th>Test Owner</th>
+      <td>developer https://developer.com</td>
+    </tr>
+    <tr>
+      <th>Plan ID</th>
+      <td>
+        <span>GV8caGyjk6cuD</span>
+        <a target="_blank" href="https://localhost.emobix.co.uk:8443/plan-detail.html?public=true&amp;plan=GV8caGyjk6cuD">https://localhost.emobix.co.uk:8443/plan-detail.html?public=true&amp;plan=GV8caGyjk6cuD</a>
+      </td>
+    </tr>
+    <tr>
+      <th>Exported From</th>
+      <td>https://localhost.emobix.co.uk:8443</td>
+    </tr>
+    <tr>
+      <th>Exported By</th>
+      <td>developer https://developer.com</td>
+    </tr>
+    <tr>
+      <th>Suite Version</th>
+      <td>5.1.17</td>
+    </tr>
+    <tr>
+      <th>Exported</th>
+      <td>2024-07-17 11:33:59 (UTC)</td>
+    </tr>
+  </table>
+  <div class="test-summary">Tests primarily &#39;happy&#39; flows</div>
+  <hr>
+  <table>
+    <tr>
+      <td align="center">
+        Status:
+        <span class="label testStatus-finished">FINISHED</span>
+
+        Result:
+        <span class="label testResult-passed">PASSED</span>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <span class="label result-success">SUCCESS <span class="badge rounded-pill">47</span></span>
+
+        <span class="label result-failure">FAILURE <span class="badge rounded-pill">0</span></span>
+
+        <span class="label result-warning">WARNING <span class="badge rounded-pill">0</span></span>
+
+        <span class="label result-review">REVIEW <span class="badge rounded-pill">0</span></span>
+
+        <span class="label result-info">INFO <span class="badge rounded-pill">10</span></span>
+      </td>
+    </tr>
+
+  </table>
+  <hr>
+</div>
+
+<h1 id="testresultsheader">Test Results</h1>
+<a href="javascript:expandMores()">Expand All</a>
+<a href="javascript:collapseMores()">Collapse All</a>
+<div>All times are UTC</div>
+<div id="results">
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-4nnHumFQjgJkgyV15gzIHMlQAG8mqZxn">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-4nnHumFQjgJkgyV15gzIHMlQAG8mqZxn&#39;)">(7) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">TEST-RUNNER</div>
+          <div class="log-msg">Test instance h7DgRNfD6P1B6QH created</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-4nnHumFQjgJkgyV15gzIHMlQAG8mqZxn">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">baseUrl</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">variant</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;client_auth_type&quot;: &quot;client_secret_basic&quot;,
+  &quot;response_type&quot;: &quot;code&quot;,
+  &quot;server_metadata&quot;: &quot;discovery&quot;,
+  &quot;response_mode&quot;: &quot;default&quot;,
+  &quot;client_registration&quot;: &quot;static_client&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">alias</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text"></pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">description</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">planId</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">GV8caGyjk6cuD</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">config</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;server&quot;: {
+    &quot;discoveryUrl&quot;: &quot;https://host.docker.internal:4443/connect/.well-known/openid-configuration&quot;
+  },
+  &quot;client&quot;: {
+    &quot;client_id&quot;: &quot;CDcp9v3Nn4i70FqWig5AuohmorD6MG&quot;,
+    &quot;client_secret&quot;: &quot;nZ83cfW2yPmIItORmzYH9XdM5oLE7t&quot;
+  },
+  &quot;client_secret_post&quot;: {
+    &quot;client_id&quot;: &quot;CDcp9v3Nn4i70FqWig5AuohmorD6MG&quot;,
+    &quot;client_secret&quot;: &quot;nZ83cfW2yPmIItORmzYH9XdM5oLE7t&quot;
+  }
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">testName</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">oidcc-server</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-uytOMek5lMMNxLgDSifh0Et3qG3nrkuF">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-uytOMek5lMMNxLgDSifh0Et3qG3nrkuF&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CreateRedirectUri</div>
+          <div class="log-msg">Created redirect URI</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-uytOMek5lMMNxLgDSifh0Et3qG3nrkuF">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">redirect_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-MVg8MYSnKWDS99FVmgxjUhggC5d5Kcc8">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-MVg8MYSnKWDS99FVmgxjUhggC5d5Kcc8&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">GetDynamicServerConfiguration</div>
+          <div class="log-msg">HTTP request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-MVg8MYSnKWDS99FVmgxjUhggC5d5Kcc8">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">request_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/.well-known/openid-configuration</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_method</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">GET</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;Accept&quot;: &quot;text/plain, application/json, application/*+json, */*&quot;,
+  &quot;Content-Length&quot;: &quot;0&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text"></pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-u8OOkfZ54UeCGCzdcg5PiWMFXER2xD9Z">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-u8OOkfZ54UeCGCzdcg5PiWMFXER2xD9Z&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+                        <span class="label bg-info">RESPONSE</span>
+
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">GetDynamicServerConfiguration</div>
+          <div class="log-msg">HTTP response</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-u8OOkfZ54UeCGCzdcg5PiWMFXER2xD9Z">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">response_status_code</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">200 OK</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_status_text</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">OK</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;server&quot;: &quot;nginx&quot;,
+  &quot;date&quot;: &quot;Wed, 17 Jul 2024 10:44:09 GMT&quot;,
+  &quot;content-type&quot;: &quot;application/json; charset\u003dutf-8&quot;,
+  &quot;content-length&quot;: &quot;611&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;strict-transport-security&quot;: &quot;max-age\u003d63072000&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">{&quot;authorization_endpoint&quot;:&quot;https://localhost:4443/connect/authorization&quot;,&quot;display_values_supported&quot;:[&quot;page&quot;],&quot;id_token_signing_alg_values_supported&quot;:[&quot;ES256&quot;],&quot;issuer&quot;:&quot;https://localhost:4443&quot;,&quot;jwks_uri&quot;:&quot;https://host.docker.internal:4443/connect/jwks&quot;,&quot;response_types_supported&quot;:[&quot;code&quot;],&quot;scopes_supported&quot;:[&quot;openid&quot;,&quot;profile&quot;,&quot;email&quot;],&quot;subject_types_supported&quot;:[&quot;public&quot;],&quot;token_endpoint&quot;:&quot;https://host.docker.internal:4443/connect/token&quot;,&quot;token_endpoint_auth_methods_supported&quot;:[&quot;client_secret_basic&quot;],&quot;ui_locales_supported&quot;:[&quot;ja-JP&quot;],&quot;userinfo_endpoint&quot;:&quot;https://host.docker.internal:4443/connect/userinfo&quot;}</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-F3gCshvSnQOxkCycZrP3mIsoCs3dpv9r">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-F3gCshvSnQOxkCycZrP3mIsoCs3dpv9r&#39;)">(12) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">GetDynamicServerConfiguration</div>
+          <div class="log-msg">Successfully parsed server configuration</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-F3gCshvSnQOxkCycZrP3mIsoCs3dpv9r">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">authorization_endpoint</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost:4443/connect/authorization</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">display_values_supported</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;page&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">id_token_signing_alg_values_supported</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;ES256&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">issuer</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost:4443</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">jwks_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/jwks</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_types_supported</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;code&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">scopes_supported</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;openid&quot;,
+  &quot;profile&quot;,
+  &quot;email&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">subject_types_supported</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;public&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">token_endpoint</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/token</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">token_endpoint_auth_methods_supported</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;client_secret_basic&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">ui_locales_supported</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;ja-JP&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">userinfo_endpoint</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/userinfo</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-ES3lmJPsB7zooUQXZxCYu7TYX3pUPskd">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-ES3lmJPsB7zooUQXZxCYu7TYX3pUPskd&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckServerConfiguration</div>
+          <div class="log-msg">Found required server configuration keys</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-ES3lmJPsB7zooUQXZxCYu7TYX3pUPskd">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">required</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;authorization_endpoint&quot;,
+  &quot;token_endpoint&quot;,
+  &quot;issuer&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-aupNYPviz5KDRTYLs7kdgaOr48DL99Tg">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-aupNYPviz5KDRTYLs7kdgaOr48DL99Tg&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractTLSTestValuesFromServerConfiguration</div>
+          <div class="log-msg">Extracted TLS information from authorization server configuration</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-aupNYPviz5KDRTYLs7kdgaOr48DL99Tg">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">registration_endpoint</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">authorization_endpoint</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;testHost&quot;: &quot;localhost&quot;,
+  &quot;testPort&quot;: 4443
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">token_endpoint</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;testHost&quot;: &quot;host.docker.internal&quot;,
+  &quot;testPort&quot;: 4443
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">userinfo_endpoint</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;testHost&quot;: &quot;host.docker.internal&quot;,
+  &quot;testPort&quot;: 4443
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-d30HOPV9Ro5sdGniwZPTITIQZQ3DITsD">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-d30HOPV9Ro5sdGniwZPTITIQZQ3DITsD&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">FetchServerKeys</div>
+          <div class="log-msg">Fetching server key</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-d30HOPV9Ro5sdGniwZPTITIQZQ3DITsD">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">jwks_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/jwks</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-fH8vLeZA8t6ZgXSqaMShhwpKgnvYiisB">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-fH8vLeZA8t6ZgXSqaMShhwpKgnvYiisB&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">FetchServerKeys</div>
+          <div class="log-msg">HTTP request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-fH8vLeZA8t6ZgXSqaMShhwpKgnvYiisB">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">request_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/jwks</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_method</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">GET</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;Accept&quot;: &quot;text/plain, application/json, application/*+json, */*&quot;,
+  &quot;Content-Length&quot;: &quot;0&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text"></pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-fGdhPq2T5YVVxu35yqm6UfKFVn3efYBl">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-fGdhPq2T5YVVxu35yqm6UfKFVn3efYBl&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+                        <span class="label bg-info">RESPONSE</span>
+
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">FetchServerKeys</div>
+          <div class="log-msg">HTTP response</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-fGdhPq2T5YVVxu35yqm6UfKFVn3efYBl">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">response_status_code</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">200 OK</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_status_text</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">OK</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;server&quot;: &quot;nginx&quot;,
+  &quot;date&quot;: &quot;Wed, 17 Jul 2024 10:44:09 GMT&quot;,
+  &quot;content-type&quot;: &quot;application/json; charset\u003dutf-8&quot;,
+  &quot;content-length&quot;: &quot;222&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;strict-transport-security&quot;: &quot;max-age\u003d63072000&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">{&quot;keys&quot;:[{&quot;crv&quot;:&quot;P-256&quot;,&quot;kid&quot;:&quot;1649929AB11D4CACB1AE142842D953F55C26218C0E719088EC99BEB7F968C360&quot;,&quot;kty&quot;:&quot;EC&quot;,&quot;use&quot;:&quot;sig&quot;,&quot;x&quot;:&quot;i_yQD8rwa9vnsfmtT67PZXUtU-QVYUs3-IsJ3pegygk&quot;,&quot;y&quot;:&quot;fj8UdMQo0CchNivDpTeeBZykjNp_Fu5XekRlNKoipao&quot;}]}</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-vyhmLIETZvzrY2HODt1r8imcMawJ58Xw">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-vyhmLIETZvzrY2HODt1r8imcMawJ58Xw&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">FetchServerKeys</div>
+          <div class="log-msg">Found JWK set string</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-vyhmLIETZvzrY2HODt1r8imcMawJ58Xw">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">jwk_string</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">{&quot;keys&quot;:[{&quot;crv&quot;:&quot;P-256&quot;,&quot;kid&quot;:&quot;1649929AB11D4CACB1AE142842D953F55C26218C0E719088EC99BEB7F968C360&quot;,&quot;kty&quot;:&quot;EC&quot;,&quot;use&quot;:&quot;sig&quot;,&quot;x&quot;:&quot;i_yQD8rwa9vnsfmtT67PZXUtU-QVYUs3-IsJ3pegygk&quot;,&quot;y&quot;:&quot;fj8UdMQo0CchNivDpTeeBZykjNp_Fu5XekRlNKoipao&quot;}]}</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-h3Y2SMxkm4tViimhvirKqv3qyQgfUYA2">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-h3Y2SMxkm4tViimhvirKqv3qyQgfUYA2&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">FetchServerKeys</div>
+          <div class="log-msg">Found server JWK set</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-h3Y2SMxkm4tViimhvirKqv3qyQgfUYA2">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">server_jwks</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;keys&quot;: [
+    {
+      &quot;crv&quot;: &quot;P-256&quot;,
+      &quot;kid&quot;: &quot;1649929AB11D4CACB1AE142842D953F55C26218C0E719088EC99BEB7F968C360&quot;,
+      &quot;kty&quot;: &quot;EC&quot;,
+      &quot;use&quot;: &quot;sig&quot;,
+      &quot;x&quot;: &quot;i_yQD8rwa9vnsfmtT67PZXUtU-QVYUs3-IsJ3pegygk&quot;,
+      &quot;y&quot;: &quot;fj8UdMQo0CchNivDpTeeBZykjNp_Fu5XekRlNKoipao&quot;
+    }
+  ]
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-slVcmvs5qrEFnmQmjmh1xltQUinDjHVB">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-slVcmvs5qrEFnmQmjmh1xltQUinDjHVB&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckServerKeysIsValid</div>
+          <div class="log-msg">Server JWKs is valid</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-slVcmvs5qrEFnmQmjmh1xltQUinDjHVB">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">server_jwks</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;keys&quot;: [
+    {
+      &quot;crv&quot;: &quot;P-256&quot;,
+      &quot;kid&quot;: &quot;1649929AB11D4CACB1AE142842D953F55C26218C0E719088EC99BEB7F968C360&quot;,
+      &quot;kty&quot;: &quot;EC&quot;,
+      &quot;use&quot;: &quot;sig&quot;,
+      &quot;x&quot;: &quot;i_yQD8rwa9vnsfmtT67PZXUtU-QVYUs3-IsJ3pegygk&quot;,
+      &quot;y&quot;: &quot;fj8UdMQo0CchNivDpTeeBZykjNp_Fu5XekRlNKoipao&quot;
+    }
+  ]
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-LIXHBLaZRKveWAFZdTftlAKlGFyufGX9">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc7517#section-1.1">RFC7517-1.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateServerJWKs</div>
+          <div class="log-msg">Valid server JWKs: keys are valid JSON, contain the required fields and are correctly encoded using unpadded base64url</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-LIXHBLaZRKveWAFZdTftlAKlGFyufGX9">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-lToFc50ZzAfd4p6CXvSYfaXcSfYgGz4p">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.10.1">OIDCC-10.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckForKeyIdInServerJWKs</div>
+          <div class="log-msg">All keys contain kids</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-lToFc50ZzAfd4p6CXvSYfaXcSfYgGz4p">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-YUKJ69czBenkJhfCG15lqTRBnDKMuPX5">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-YUKJ69czBenkJhfCG15lqTRBnDKMuPX5&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc7517#section-4.5">RFC7517-4.5</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckDistinctKeyIdValueInServerJWKs</div>
+          <div class="log-msg">Distinct &#39;kid&#39; value in all keys of server_jwks</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-YUKJ69czBenkJhfCG15lqTRBnDKMuPX5">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">see</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://bitbucket.org/openid/connect/issues/1127</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-OY0S8CP95kOiKsIzZfC4Y4IBw7QzReF9">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank">RFC7518-6.3.2.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">EnsureServerJwksDoesNotContainPrivateOrSymmetricKeys</div>
+          <div class="log-msg">Jwks does not contain any private or symmetric keys</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-OY0S8CP95kOiKsIzZfC4Y4IBw7QzReF9">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-fRmAjDXaJ2xdXD6beAhMzXphJgPUwV81">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-fRmAjDXaJ2xdXD6beAhMzXphJgPUwV81&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">GetStaticClientConfiguration</div>
+          <div class="log-msg">Found a static client object</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-fRmAjDXaJ2xdXD6beAhMzXphJgPUwV81">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">client_id</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">CDcp9v3Nn4i70FqWig5AuohmorD6MG</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">client_secret</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">nZ83cfW2yPmIItORmzYH9XdM5oLE7t</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-h0A5qmpMkK8WnQqDuvbBLi8gj54VMn2r">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-h0A5qmpMkK8WnQqDuvbBLi8gj54VMn2r&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc7517#section-1.1">RFC7517-1.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateClientJWKsPrivatePart</div>
+          <div class="log-msg">Skipped evaluation due to missing required element: client jwks</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-h0A5qmpMkK8WnQqDuvbBLi8gj54VMn2r">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">path</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">jwks</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">mapped</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">object</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">client</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-tn9QXKIrgwTbQEmB7FFIo0B7XIt2YEQ3">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-tn9QXKIrgwTbQEmB7FFIo0B7XIt2YEQ3&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractJWKsFromStaticClientConfiguration</div>
+          <div class="log-msg">Skipped evaluation due to missing required element: client jwks</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-tn9QXKIrgwTbQEmB7FFIo0B7XIt2YEQ3">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">path</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">jwks</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">mapped</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">object</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">client</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-qlXY0g1JFXWcJMdw0PfcBLikkKrK8EBz">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-qlXY0g1JFXWcJMdw0PfcBLikkKrK8EBz&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc7517#section-4.5">RFC7517-4.5</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckDistinctKeyIdValueInClientJWKs</div>
+          <div class="log-msg">Skipped evaluation due to missing required element: client jwks</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-qlXY0g1JFXWcJMdw0PfcBLikkKrK8EBz">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">path</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">jwks</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">mapped</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">object</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">client</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-XGlZCEKu37ObApX741zVVfB7p3PyIpvJ">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-XGlZCEKu37ObApX741zVVfB7p3PyIpvJ&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">SetScopeInClientConfigurationToOpenId</div>
+          <div class="log-msg">Set scope in client configuration to &quot;openid&quot;</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-XGlZCEKu37ObApX741zVVfB7p3PyIpvJ">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">scope</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">openid</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-HKrIC1EZW5bWCBLwsJJ3H2H17hE53hwD">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-HKrIC1EZW5bWCBLwsJJ3H2H17hE53hwD&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">EnsureServerConfigurationSupportsClientSecretBasic</div>
+          <div class="log-msg">Contents of &#39;token_endpoint_auth_methods_supported&#39; in discovery document matches expectations.</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-HKrIC1EZW5bWCBLwsJJ3H2H17hE53hwD">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">actual</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;client_secret_basic&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">expected</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;client_secret_basic&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">minimum_matches_required</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">1</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-ou8jQMvgjUT50Z0FWC78kTXY7bVgLcgg">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-ou8jQMvgjUT50Z0FWC78kTXY7bVgLcgg&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">SetProtectedResourceUrlToUserInfoEndpoint</div>
+          <div class="log-msg">userinfo_endpoint will be used to test access token. The user info is not a mandatory to implement feature in the OpenID Connect specification, but is mandatory for certification.</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-ou8jQMvgjUT50Z0FWC78kTXY7bVgLcgg">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">protected_resource_url</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/userinfo</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-H3wtM0i5vXsPnTJIghyEIDU1QxXI9ZeN">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">oidcc-server</div>
+          <div class="log-msg">Setup Done</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-H3wtM0i5vXsPnTJIghyEIDU1QxXI9ZeN">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-QbhiOrZGVVlCG0dR5pszdnaz8NLAQSjA">
+      <tbody>
+      <tr>
+        <td colspan="3" class="block-title" style="background-color:#6d597a">Make request to authorization endpoint</td>
+      </tr>
+      </tbody>
+
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-3PwKJrQmNBluoIVKUPeU4R1YhoQDaNU7">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-3PwKJrQmNBluoIVKUPeU4R1YhoQDaNU7&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CreateAuthorizationEndpointRequestFromClientInformation</div>
+          <div class="log-msg">Created authorization endpoint request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-3PwKJrQmNBluoIVKUPeU4R1YhoQDaNU7">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">client_id</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">CDcp9v3Nn4i70FqWig5AuohmorD6MG</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">redirect_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">scope</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">openid</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-ds4fCx4TpIrBZKMAufQ5BYTRx91FIljU">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-ds4fCx4TpIrBZKMAufQ5BYTRx91FIljU&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CreateRandomStateValue</div>
+          <div class="log-msg">Created state value</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-ds4fCx4TpIrBZKMAufQ5BYTRx91FIljU">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">requested_state_length</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">10</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">state</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">xKvnhvJkby</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-PfjiiTcSh6M6b8Br9Z3pPEXhlcwblTuL">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-PfjiiTcSh6M6b8Br9Z3pPEXhlcwblTuL&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">AddStateToAuthorizationEndpointRequest</div>
+          <div class="log-msg">Added state parameter to request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-PfjiiTcSh6M6b8Br9Z3pPEXhlcwblTuL">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">client_id</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">CDcp9v3Nn4i70FqWig5AuohmorD6MG</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">redirect_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">scope</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">openid</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">state</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">xKvnhvJkby</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-uX5T9p9wFb6bvvEdwID6wIiYMYitxkNw">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-uX5T9p9wFb6bvvEdwID6wIiYMYitxkNw&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CreateRandomNonceValue</div>
+          <div class="log-msg">Created nonce value</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-uX5T9p9wFb6bvvEdwID6wIiYMYitxkNw">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">requested_nonce_length</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">10</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">nonce</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">hvLIrl2HjD</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-6luwbqiBiqytpTCRdMrDNQvRLqVgiuJx">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-6luwbqiBiqytpTCRdMrDNQvRLqVgiuJx&#39;)">(5) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">AddNonceToAuthorizationEndpointRequest</div>
+          <div class="log-msg">Added nonce parameter to request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-6luwbqiBiqytpTCRdMrDNQvRLqVgiuJx">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">client_id</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">CDcp9v3Nn4i70FqWig5AuohmorD6MG</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">redirect_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">scope</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">openid</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">state</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">xKvnhvJkby</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">nonce</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">hvLIrl2HjD</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-jIwqUE4qhhIerZTfpygV8nNkbf6GppK2">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-jIwqUE4qhhIerZTfpygV8nNkbf6GppK2&#39;)">(6) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">SetAuthorizationEndpointRequestResponseTypeFromEnvironment</div>
+          <div class="log-msg">Added response_type parameter to request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-jIwqUE4qhhIerZTfpygV8nNkbf6GppK2">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">client_id</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">CDcp9v3Nn4i70FqWig5AuohmorD6MG</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">redirect_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">scope</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">openid</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">state</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">xKvnhvJkby</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">nonce</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">hvLIrl2HjD</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_type</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">code</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-qWmnyFCMvSzmeQj8KFNop9zF8NIRqeZL">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-qWmnyFCMvSzmeQj8KFNop9zF8NIRqeZL&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">BuildPlainRedirectToAuthorizationEndpoint</div>
+          <div class="log-msg">Sending to authorization endpoint</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-qWmnyFCMvSzmeQj8KFNop9zF8NIRqeZL">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">auth_request</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;client_id&quot;: &quot;CDcp9v3Nn4i70FqWig5AuohmorD6MG&quot;,
+  &quot;redirect_uri&quot;: &quot;https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback&quot;,
+  &quot;scope&quot;: &quot;openid&quot;,
+  &quot;state&quot;: &quot;xKvnhvJkby&quot;,
+  &quot;nonce&quot;: &quot;hvLIrl2HjD&quot;,
+  &quot;response_type&quot;: &quot;code&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">redirect_to_authorization_endpoint</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost:4443/connect/authorization?client_id=CDcp9v3Nn4i70FqWig5AuohmorD6MG&amp;redirect_uri=https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback&amp;scope=openid&amp;state=xKvnhvJkby&amp;nonce=hvLIrl2HjD&amp;response_type=code</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-NOEBOJUNHJriwktUwzKNwfw1iRiyOU8c">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:09</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-NOEBOJUNHJriwktUwzKNwfw1iRiyOU8c&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+
+
+                        <span class="label bg-info">REDIRECT</span>
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">oidcc-server</div>
+          <div class="log-msg">Redirecting to authorization endpoint</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-NOEBOJUNHJriwktUwzKNwfw1iRiyOU8c">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">redirect_to</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost:4443/connect/authorization?client_id=CDcp9v3Nn4i70FqWig5AuohmorD6MG&amp;redirect_uri=https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback&amp;scope=openid&amp;state=xKvnhvJkby&amp;nonce=hvLIrl2HjD&amp;response_type=code</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-3oWrKC4qWXjTzl4u0zyi0TmaMHfaB3N0">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:13</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-3oWrKC4qWXjTzl4u0zyi0TmaMHfaB3N0&#39;)">(12) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+                        <span class="label bg-info">INCOMING</span>
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">oidcc-server</div>
+          <div class="log-msg">Incoming HTTP request to /test/h7DgRNfD6P1B6QH/callback</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-3oWrKC4qWXjTzl4u0zyi0TmaMHfaB3N0">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">incoming_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;host&quot;: &quot;localhost.emobix.co.uk:8443&quot;,
+  &quot;user-agent&quot;: &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:128.0) Gecko/20100101 Firefox/128.0&quot;,
+  &quot;accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q\u003d0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q\u003d0.8&quot;,
+  &quot;accept-language&quot;: &quot;en-US,en;q\u003d0.7,ja;q\u003d0.3&quot;,
+  &quot;accept-encoding&quot;: &quot;gzip, deflate, br, zstd&quot;,
+  &quot;referer&quot;: &quot;https://localhost:8443/&quot;,
+  &quot;dnt&quot;: &quot;1&quot;,
+  &quot;upgrade-insecure-requests&quot;: &quot;1&quot;,
+  &quot;sec-fetch-dest&quot;: &quot;document&quot;,
+  &quot;sec-fetch-mode&quot;: &quot;navigate&quot;,
+  &quot;sec-fetch-site&quot;: &quot;cross-site&quot;,
+  &quot;sec-fetch-user&quot;: &quot;?1&quot;,
+  &quot;priority&quot;: &quot;u\u003d0, i&quot;,
+  &quot;connection&quot;: &quot;Keep-Alive&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_path</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">/test/h7DgRNfD6P1B6QH/callback</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_body_form_params</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_method</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">GET</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_tls_version</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">TLSv1.2</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_tls_cert</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_query_string_params</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;code&quot;: &quot;ZbRDkamnaBozpPURheoUdSbspBpMvZ&quot;,
+  &quot;state&quot;: &quot;xKvnhvJkby&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_tls_chain</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_body_json_parse_error</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_tls_cipher</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">ECDHE-RSA-AES128-GCM-SHA256</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_body_json</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-cvOhwbXoi0CZhz2idxotuTXVcGps8fCD">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:13</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-cvOhwbXoi0CZhz2idxotuTXVcGps8fCD&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CreateRandomImplicitSubmitUrl</div>
+          <div class="log-msg">Created random implicit submission URL</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-cvOhwbXoi0CZhz2idxotuTXVcGps8fCD">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">implicit_submit</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;path&quot;: &quot;implicit/f9SnHqC8WIWB5FXDUOME&quot;,
+  &quot;fullUrl&quot;: &quot;https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/implicit/f9SnHqC8WIWB5FXDUOME&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-QuId8KMd2UuC5sEKSlPlzlLAvjqKkpqr">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:13</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-QuId8KMd2UuC5sEKSlPlzlLAvjqKkpqr&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+
+                        <span class="label bg-info">OUTGOING</span>
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">oidcc-server</div>
+          <div class="log-msg">Response to HTTP request to test instance h7DgRNfD6P1B6QH</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-QuId8KMd2UuC5sEKSlPlzlLAvjqKkpqr">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">outgoing</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">ModelAndView [view=&quot;implicitCallback&quot;; model={implicitSubmitUrl=https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/implicit/f9SnHqC8WIWB5FXDUOME, returnUrl=/log-detail.html?log=h7DgRNfD6P1B6QH}]</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">outgoing_path</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">callback</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-lbh7Uif2zn6LukL7MPhb1xavZrBcQeRl">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-lbh7Uif2zn6LukL7MPhb1xavZrBcQeRl&#39;)">(12) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+                        <span class="label bg-info">INCOMING</span>
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">oidcc-server</div>
+          <div class="log-msg">Incoming HTTP request to /test/h7DgRNfD6P1B6QH/implicit/f9SnHqC8WIWB5FXDUOME</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-lbh7Uif2zn6LukL7MPhb1xavZrBcQeRl">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">incoming_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;host&quot;: &quot;localhost.emobix.co.uk:8443&quot;,
+  &quot;user-agent&quot;: &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:128.0) Gecko/20100101 Firefox/128.0&quot;,
+  &quot;accept&quot;: &quot;*/*&quot;,
+  &quot;accept-language&quot;: &quot;en-US,en;q\u003d0.7,ja;q\u003d0.3&quot;,
+  &quot;accept-encoding&quot;: &quot;gzip, deflate, br, zstd&quot;,
+  &quot;content-type&quot;: &quot;text/plain&quot;,
+  &quot;origin&quot;: &quot;https://localhost.emobix.co.uk:8443&quot;,
+  &quot;dnt&quot;: &quot;1&quot;,
+  &quot;referer&quot;: &quot;https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback?code\u003dZbRDkamnaBozpPURheoUdSbspBpMvZ\u0026state\u003dxKvnhvJkby&quot;,
+  &quot;cookie&quot;: &quot;JSESSIONID\u003d95E138673B1473F6484095885DD89756&quot;,
+  &quot;sec-fetch-dest&quot;: &quot;empty&quot;,
+  &quot;sec-fetch-mode&quot;: &quot;cors&quot;,
+  &quot;sec-fetch-site&quot;: &quot;same-origin&quot;,
+  &quot;content-length&quot;: &quot;0&quot;,
+  &quot;connection&quot;: &quot;Keep-Alive&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_path</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">/test/h7DgRNfD6P1B6QH/implicit/f9SnHqC8WIWB5FXDUOME</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_body_form_params</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_method</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">POST</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_tls_version</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">TLSv1.2</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_tls_cert</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_query_string_params</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                    <pre class="more-json prettyprint lang-javascript">{}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_tls_chain</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">[
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;,
+  &quot;CONFORMANCE_SUITE_JSON_NULL&quot;
+]</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_body_json_parse_error</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_tls_cipher</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">ECDHE-RSA-AES128-GCM-SHA256</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">incoming_body_json</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-2BqU7axFupwLEl8hY0fRytT03EOErVAa">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-2BqU7axFupwLEl8hY0fRytT03EOErVAa&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+
+                        <span class="label bg-info">OUTGOING</span>
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">oidcc-server</div>
+          <div class="log-msg">Response to HTTP request to test instance h7DgRNfD6P1B6QH</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-2BqU7axFupwLEl8hY0fRytT03EOErVAa">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">outgoing_status_code</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">204</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">outgoing_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                    <pre class="more-json prettyprint lang-javascript">{}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">outgoing_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text"></pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">outgoing_path</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">implicit/f9SnHqC8WIWB5FXDUOME</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-qTYl7KqPi0W7xvM5n6wnwkenDWsHbeg8">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractImplicitHashToCallbackResponse</div>
+          <div class="log-msg">implicit_hash is empty</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-qTYl7KqPi0W7xvM5n6wnwkenDWsHbeg8">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-NRStSNMa1ImxtMEndmvt15R8kqKG6fbm">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-NRStSNMa1ImxtMEndmvt15R8kqKG6fbm&#39;)">(5) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+
+
+
+                        <span class="label bg-info">REDIRECT-IN</span>
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">oidcc-server</div>
+          <div class="log-msg">Authorization endpoint response captured</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-NRStSNMa1ImxtMEndmvt15R8kqKG6fbm">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">url_query</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;code&quot;: &quot;ZbRDkamnaBozpPURheoUdSbspBpMvZ&quot;,
+  &quot;state&quot;: &quot;xKvnhvJkby&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;host&quot;: &quot;localhost.emobix.co.uk:8443&quot;,
+  &quot;user-agent&quot;: &quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:128.0) Gecko/20100101 Firefox/128.0&quot;,
+  &quot;accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q\u003d0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q\u003d0.8&quot;,
+  &quot;accept-language&quot;: &quot;en-US,en;q\u003d0.7,ja;q\u003d0.3&quot;,
+  &quot;accept-encoding&quot;: &quot;gzip, deflate, br, zstd&quot;,
+  &quot;referer&quot;: &quot;https://localhost:8443/&quot;,
+  &quot;dnt&quot;: &quot;1&quot;,
+  &quot;upgrade-insecure-requests&quot;: &quot;1&quot;,
+  &quot;sec-fetch-dest&quot;: &quot;document&quot;,
+  &quot;sec-fetch-mode&quot;: &quot;navigate&quot;,
+  &quot;sec-fetch-site&quot;: &quot;cross-site&quot;,
+  &quot;sec-fetch-user&quot;: &quot;?1&quot;,
+  &quot;priority&quot;: &quot;u\u003d0, i&quot;,
+  &quot;x-ssl-cipher&quot;: &quot;ECDHE-RSA-AES128-GCM-SHA256&quot;,
+  &quot;x-ssl-protocol&quot;: &quot;TLSv1.2&quot;,
+  &quot;x-forwarded-proto&quot;: &quot;https&quot;,
+  &quot;x-forwarded-port&quot;: &quot;8443&quot;,
+  &quot;x-forwarded-host&quot;: &quot;localhost.emobix.co.uk:8443&quot;,
+  &quot;x-forwarded-server&quot;: &quot;localhost&quot;,
+  &quot;connection&quot;: &quot;Keep-Alive&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">http_method</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">GET</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">url_fragment</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                    <pre class="more-json prettyprint lang-javascript">{}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">post_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-5CudRg4LJbEoKzfzyceEU7WpImjSh4gH">
+      <tbody>
+      <tr>
+        <td colspan="3" class="block-title" style="background-color:#6d597a">Verify authorization endpoint response</td>
+      </tr>
+      </tbody>
+
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-zn3uWP0EzM2J7fO4iu41S9Ty49z1pnZt">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckMatchingCallbackParameters</div>
+          <div class="log-msg">Callback parameters successfully verified</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-zn3uWP0EzM2J7fO4iu41S9Ty49z1pnZt">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-ygOkiFcKIRURtYxPM4ZO4VUZkjIc3vLd">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateIssIfPresentInAuthorizationResponse</div>
+          <div class="log-msg">No &#39;iss&#39; value in authorization response.</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-ygOkiFcKIRURtYxPM4ZO4VUZkjIc3vLd">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-yPzcPT5dhlJSmmtHTadYjEq0KfVeIoYd">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckIfAuthorizationEndpointError</div>
+          <div class="log-msg">No error from authorization endpoint</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-yPzcPT5dhlJSmmtHTadYjEq0KfVeIoYd">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-Sc4dl0MfdzgSCViNGSkbgoEcZEh7mJRF">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-Sc4dl0MfdzgSCViNGSkbgoEcZEh7mJRF&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckStateInAuthorizationResponse</div>
+          <div class="log-msg">State in response correctly returned</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-Sc4dl0MfdzgSCViNGSkbgoEcZEh7mJRF">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">state</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">xKvnhvJkby</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-stZbAWKm1kw9RH432FPTE6BYP8CAmuBl">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-stZbAWKm1kw9RH432FPTE6BYP8CAmuBl&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractAuthorizationCodeFromAuthorizationResponse</div>
+          <div class="log-msg">Found authorization code</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-stZbAWKm1kw9RH432FPTE6BYP8CAmuBl">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">code</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">ZbRDkamnaBozpPURheoUdSbspBpMvZ</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-MTCPzUd1EUqfFjBEbcUsZUm0QFu6M4RV">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-MTCPzUd1EUqfFjBEbcUsZUm0QFu6M4RV&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc6819#section-5.1.4.2-2">RFC6819-5.1.4.2-2</a><a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc6749#section-10.10">RFC6749-10.10</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">EnsureMinimumAuthorizationCodeLength</div>
+          <div class="log-msg">Authorization code is of sufficient length</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-MTCPzUd1EUqfFjBEbcUsZUm0QFu6M4RV">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">actual</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">240</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">required</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">128</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-CLxpiTOT61qrqBQul9fBUJMvifxGXZ8z">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-CLxpiTOT61qrqBQul9fBUJMvifxGXZ8z&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc6819#section-5.1.4.2-2">RFC6819-5.1.4.2-2</a><a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc6749#section-10.10">RFC6749-10.10</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">EnsureMinimumAuthorizationCodeEntropy</div>
+          <div class="log-msg">Calculated shannon entropy seems sufficient</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-CLxpiTOT61qrqBQul9fBUJMvifxGXZ8z">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">actual</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">128.45183036609208</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">expected</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">96.0</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">value</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">ZbRDkamnaBozpPURheoUdSbspBpMvZ</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-7mcpHoNdvQaQlFssR6l33CotNR62eWdr">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-7mcpHoNdvQaQlFssR6l33CotNR62eWdr&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CreateTokenEndpointRequestForAuthorizationCodeGrant</div>
+          <div class="log-msg">Created token endpoint request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-7mcpHoNdvQaQlFssR6l33CotNR62eWdr">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">grant_type</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">authorization_code</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">code</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">ZbRDkamnaBozpPURheoUdSbspBpMvZ</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">redirect_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://localhost.emobix.co.uk:8443/test/h7DgRNfD6P1B6QH/callback</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-godEitWJ0VCrf0yR43A9ovERtPS03nhf">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-godEitWJ0VCrf0yR43A9ovERtPS03nhf&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">AddBasicAuthClientSecretAuthenticationParameters</div>
+          <div class="log-msg">Added basic authorization header</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-godEitWJ0VCrf0yR43A9ovERtPS03nhf">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">Authorization</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">Basic Q0RjcDl2M05uNGk3MEZxV2lnNUF1b2htb3JENk1HOm5aODNjZlcyeVBtSUl0T1JtellIOVhkTTVvTEU3dA==</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-hnACf59uyn6QhGu4uuoeGAuwkoncx0fQ">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-hnACf59uyn6QhGu4uuoeGAuwkoncx0fQ&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CallTokenEndpoint</div>
+          <div class="log-msg">HTTP request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-hnACf59uyn6QhGu4uuoeGAuwkoncx0fQ">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">request_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/token</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_method</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">POST</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;Accept&quot;: &quot;application/json&quot;,
+  &quot;Authorization&quot;: &quot;Basic Q0RjcDl2M05uNGk3MEZxV2lnNUF1b2htb3JENk1HOm5aODNjZlcyeVBtSUl0T1JtellIOVhkTTVvTEU3dA\u003d\u003d&quot;,
+  &quot;Content-Type&quot;: &quot;application/x-www-form-urlencoded;charset\u003dUTF-8&quot;,
+  &quot;Content-Length&quot;: &quot;158&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">grant_type=authorization_code&amp;code=ZbRDkamnaBozpPURheoUdSbspBpMvZ&amp;redirect_uri=https%3A%2F%2Flocalhost.emobix.co.uk%3A8443%2Ftest%2Fh7DgRNfD6P1B6QH%2Fcallback</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-sz9DXaLWI5ZtdwQuRuUbKrOaogTwRNUr">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-sz9DXaLWI5ZtdwQuRuUbKrOaogTwRNUr&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+                        <span class="label bg-info">RESPONSE</span>
+
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CallTokenEndpoint</div>
+          <div class="log-msg">HTTP response</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-sz9DXaLWI5ZtdwQuRuUbKrOaogTwRNUr">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">response_status_code</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">200 OK</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_status_text</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">OK</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;server&quot;: &quot;nginx&quot;,
+  &quot;date&quot;: &quot;Wed, 17 Jul 2024 10:44:14 GMT&quot;,
+  &quot;content-type&quot;: &quot;application/json; charset\u003dutf-8&quot;,
+  &quot;content-length&quot;: &quot;1130&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;cache-control&quot;: &quot;no-store&quot;,
+  &quot;pragma&quot;: &quot;no-cache&quot;,
+  &quot;strict-transport-security&quot;: &quot;max-age\u003d63072000&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">{&quot;access_token&quot;:&quot;eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjEyMTQ4NTQsImlhdCI6MTcyMTIxMzA1NCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0MyIsImp0aSI6IjA0OTI1ZDliLWEzNTgtNGY5MS1hNWE2LTZhYWE5Y2Q0Yjc3YSIsInN1YiI6IjUyMjc5MTEyMTEzNTMzNzgzNyJ9.Ufbv9c1iWN8RdgRkEp67T8S5hPvGgub64HrvwyfD6AlEXsYqPBax4RQ7y9UUbCoczb-w822iqjv4foQ1abN9Lw&quot;,&quot;expires_in&quot;:3600,&quot;id_token&quot;:&quot;eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiQ0RjcDl2M05uNGk3MEZxV2lnNUF1b2htb3JENk1HIl0sImF1dGhfdGltZSI6MTcyMTIxMjQwMCwiZXhwIjoxNzIzODA1MDU0LCJpYXQiOjE3MjEyMTMwNTQsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0NDMiLCJqdGkiOiI0YTcxZjI4Yi1kODM4LTQ5ZDItYmNlNy02ZjU1MWRkNjU4MTEiLCJub25jZSI6Imh2TElybDJIakQiLCJzdWIiOiI1MjI3OTExMjExMzUzMzc4MzcifQ.yAftR87sXDtL-r6j_7wVDHnTCpyVah1fvDpQSkHCvQ7u26waIXbpU0gN2pBR94tDfnazltF5Y5dvaDJCYe-ERw&quot;,&quot;refresh_token&quot;:&quot;eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM4MDUwNTQsImlhdCI6MTcyMTIxMzA1NCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0MyIsImp0aSI6IjBkOTc4YWY1LTgxYWQtNDUyNy04YzdhLTQ2NGM2NzNhYmJhNyIsInN1YiI6IjUyMjc5MTEyMTEzNTMzNzgzNyJ9.tccGzHdHcVjUL2EeQrUsFR98PxyXclUCksQ6aEyNwRmVH3LERvTAIURNR8Xzjr0PPCpfL3LYXcMa5Ku30m6jfg&quot;,&quot;token_type&quot;:&quot;Bearer&quot;}</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-gSVpE3uK8qg0FcAzCWpzDGXrPlnzgo9n">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-gSVpE3uK8qg0FcAzCWpzDGXrPlnzgo9n&#39;)">(5) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CallTokenEndpoint</div>
+          <div class="log-msg">Parsed token endpoint response</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-gSVpE3uK8qg0FcAzCWpzDGXrPlnzgo9n">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">access_token</td>
+                <td class="more-value">
+                  <div>
+
+
+                    <div class="more-jwt">eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjEyMTQ4NTQsImlhdCI6MTcyMTIxMzA1NCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0MyIsImp0aSI6IjA0OTI1ZDliLWEzNTgtNGY5MS1hNWE2LTZhYWE5Y2Q0Yjc3YSIsInN1YiI6IjUyMjc5MTEyMTEzNTMzNzgzNyJ9.Ufbv9c1iWN8RdgRkEp67T8S5hPvGgub64HrvwyfD6AlEXsYqPBax4RQ7y9UUbCoczb-w822iqjv4foQ1abN9Lw</div>
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">expires_in</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">3600</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">id_token</td>
+                <td class="more-value">
+                  <div>
+
+
+                    <div class="more-jwt">eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiQ0RjcDl2M05uNGk3MEZxV2lnNUF1b2htb3JENk1HIl0sImF1dGhfdGltZSI6MTcyMTIxMjQwMCwiZXhwIjoxNzIzODA1MDU0LCJpYXQiOjE3MjEyMTMwNTQsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0NDMiLCJqdGkiOiI0YTcxZjI4Yi1kODM4LTQ5ZDItYmNlNy02ZjU1MWRkNjU4MTEiLCJub25jZSI6Imh2TElybDJIakQiLCJzdWIiOiI1MjI3OTExMjExMzUzMzc4MzcifQ.yAftR87sXDtL-r6j_7wVDHnTCpyVah1fvDpQSkHCvQ7u26waIXbpU0gN2pBR94tDfnazltF5Y5dvaDJCYe-ERw</div>
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">refresh_token</td>
+                <td class="more-value">
+                  <div>
+
+
+                    <div class="more-jwt">eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM4MDUwNTQsImlhdCI6MTcyMTIxMzA1NCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0MyIsImp0aSI6IjBkOTc4YWY1LTgxYWQtNDUyNy04YzdhLTQ2NGM2NzNhYmJhNyIsInN1YiI6IjUyMjc5MTEyMTEzNTMzNzgzNyJ9.tccGzHdHcVjUL2EeQrUsFR98PxyXclUCksQ6aEyNwRmVH3LERvTAIURNR8Xzjr0PPCpfL3LYXcMa5Ku30m6jfg</div>
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">token_type</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">Bearer</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-krR4IZJkK4WjENGdsDcB3M017155BXYx">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckIfTokenEndpointResponseError</div>
+          <div class="log-msg">No error from token endpoint</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-krR4IZJkK4WjENGdsDcB3M017155BXYx">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-t7hHC0RaMorWw3GF3kFR6uNRGizt90Aa">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-t7hHC0RaMorWw3GF3kFR6uNRGizt90Aa&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckForAccessTokenValue</div>
+          <div class="log-msg">Found an access token</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-t7hHC0RaMorWw3GF3kFR6uNRGizt90Aa">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">access_token</td>
+                <td class="more-value">
+                  <div>
+
+
+                    <div class="more-jwt">eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjEyMTQ4NTQsImlhdCI6MTcyMTIxMzA1NCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0MyIsImp0aSI6IjA0OTI1ZDliLWEzNTgtNGY5MS1hNWE2LTZhYWE5Y2Q0Yjc3YSIsInN1YiI6IjUyMjc5MTEyMTEzNTMzNzgzNyJ9.Ufbv9c1iWN8RdgRkEp67T8S5hPvGgub64HrvwyfD6AlEXsYqPBax4RQ7y9UUbCoczb-w822iqjv4foQ1abN9Lw</div>
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-AkH2QtjHvfq7dtaZ2ikaljAEpMd6nC4P">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-AkH2QtjHvfq7dtaZ2ikaljAEpMd6nC4P&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractAccessTokenFromTokenResponse</div>
+          <div class="log-msg">Extracted the access token</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-AkH2QtjHvfq7dtaZ2ikaljAEpMd6nC4P">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">value</td>
+                <td class="more-value">
+                  <div>
+
+
+                    <div class="more-jwt">eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjEyMTQ4NTQsImlhdCI6MTcyMTIxMzA1NCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0MyIsImp0aSI6IjA0OTI1ZDliLWEzNTgtNGY5MS1hNWE2LTZhYWE5Y2Q0Yjc3YSIsInN1YiI6IjUyMjc5MTEyMTEzNTMzNzgzNyJ9.Ufbv9c1iWN8RdgRkEp67T8S5hPvGgub64HrvwyfD6AlEXsYqPBax4RQ7y9UUbCoczb-w822iqjv4foQ1abN9Lw</div>
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">type</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">Bearer</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-KT15Tgif6MtRCYH9k5k9g57RePDMnkQJ">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-KT15Tgif6MtRCYH9k5k9g57RePDMnkQJ&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc6749#section-5.1">RFC6749-5.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractExpiresInFromTokenEndpointResponse</div>
+          <div class="log-msg">Extracted &#39;expires_in&#39;</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-KT15Tgif6MtRCYH9k5k9g57RePDMnkQJ">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">expires_in</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">3600</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-XD0nLQMIaYxYMF2NZ9zBuXVZW4ej2hvc">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-XD0nLQMIaYxYMF2NZ9zBuXVZW4ej2hvc&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc6749#section-5.1">RFC6749-5.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateExpiresIn</div>
+          <div class="log-msg">expires_in passed all validation checks</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-XD0nLQMIaYxYMF2NZ9zBuXVZW4ej2hvc">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">expires_in</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">3600</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-UqqDoT4fFQhsTIK6RDvnC19MiAATkjNJ">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-UqqDoT4fFQhsTIK6RDvnC19MiAATkjNJ&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckForRefreshTokenValue</div>
+          <div class="log-msg">Found a refresh token</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-UqqDoT4fFQhsTIK6RDvnC19MiAATkjNJ">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">refresh_token</td>
+                <td class="more-value">
+                  <div>
+
+
+                    <div class="more-jwt">eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM4MDUwNTQsImlhdCI6MTcyMTIxMzA1NCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0MyIsImp0aSI6IjBkOTc4YWY1LTgxYWQtNDUyNy04YzdhLTQ2NGM2NzNhYmJhNyIsInN1YiI6IjUyMjc5MTEyMTEzNTMzNzgzNyJ9.tccGzHdHcVjUL2EeQrUsFR98PxyXclUCksQ6aEyNwRmVH3LERvTAIURNR8Xzjr0PPCpfL3LYXcMa5Ku30m6jfg</div>
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-QuBxhqRCUe1LeMb6qBWsG1eiiwTeej1i">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-QuBxhqRCUe1LeMb6qBWsG1eiiwTeej1i&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.10.2">OIDCC-10.2</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateIdTokenFromTokenResponseEncryption</div>
+          <div class="log-msg">Skipped evaluation due to missing required object: client_jwks</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-QuBxhqRCUe1LeMb6qBWsG1eiiwTeej1i">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">expected</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">client_jwks</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">mapped</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-UkuxJR2FQ44KtS4UJcV4ONiP28tpUegC">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-UkuxJR2FQ44KtS4UJcV4ONiP28tpUegC&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.3.3.3">OIDCC-3.3.3.3</a><a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.3.3">OIDCC-3.1.3.3</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractIdTokenFromTokenResponse</div>
+          <div class="log-msg">Found and parsed the id_token from token_endpoint_response</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-UkuxJR2FQ44KtS4UJcV4ONiP28tpUegC">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">value</td>
+                <td class="more-value">
+                  <div>
+
+
+                    <div class="more-jwt">eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiQ0RjcDl2M05uNGk3MEZxV2lnNUF1b2htb3JENk1HIl0sImF1dGhfdGltZSI6MTcyMTIxMjQwMCwiZXhwIjoxNzIzODA1MDU0LCJpYXQiOjE3MjEyMTMwNTQsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0NDMiLCJqdGkiOiI0YTcxZjI4Yi1kODM4LTQ5ZDItYmNlNy02ZjU1MWRkNjU4MTEiLCJub25jZSI6Imh2TElybDJIakQiLCJzdWIiOiI1MjI3OTExMjExMzUzMzc4MzcifQ.yAftR87sXDtL-r6j_7wVDHnTCpyVah1fvDpQSkHCvQ7u26waIXbpU0gN2pBR94tDfnazltF5Y5dvaDJCYe-ERw</div>
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">header</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;typ&quot;: &quot;JWT&quot;,
+  &quot;alg&quot;: &quot;ES256&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">claims</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;aud&quot;: &quot;CDcp9v3Nn4i70FqWig5AuohmorD6MG&quot;,
+  &quot;sub&quot;: &quot;522791121135337837&quot;,
+  &quot;auth_time&quot;: 1721212400,
+  &quot;iss&quot;: &quot;https://localhost:4443&quot;,
+  &quot;exp&quot;: 1723805054,
+  &quot;iat&quot;: 1721213054,
+  &quot;nonce&quot;: &quot;hvLIrl2HjD&quot;,
+  &quot;jti&quot;: &quot;4a71f28b-d838-49d2-bce7-6f551dd65811&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-bEuczbFlZ8aKy2Utk4itvFuDfATKjefJ">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.3.7">OIDCC-3.1.3.7</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateIdToken</div>
+          <div class="log-msg">ID token iss, aud, exp, iat, auth_time, acr &amp; nbf claims passed validation checks</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-bEuczbFlZ8aKy2Utk4itvFuDfATKjefJ">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-dfYtnJLwDjFogRlpLrQ0WwaAAIUsoq0I">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateIdTokenStandardClaims</div>
+          <div class="log-msg">sub is a string with content</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-dfYtnJLwDjFogRlpLrQ0WwaAAIUsoq0I">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-wJDk5MI29QUsF9dF2Szmme6TcHUnO7qm">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.1">OIDCC-5.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateIdTokenStandardClaims</div>
+          <div class="log-msg">id_token claims are valid</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-wJDk5MI29QUsF9dF2Szmme6TcHUnO7qm">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-nKWJITuwct3147KIsWGQgnsaR0A6QuFu">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-nKWJITuwct3147KIsWGQgnsaR0A6QuFu&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.2">OIDCC-2</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateIdTokenNonce</div>
+          <div class="log-msg">Nonce values match</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-nKWJITuwct3147KIsWGQgnsaR0A6QuFu">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">nonce</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">hvLIrl2HjD</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-1z6CLFu3kmpBlTEQr4Xnho73eLPIncNZ">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.5.1.1">OIDCC-5.5.1.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateIdTokenACRClaimAgainstRequest</div>
+          <div class="log-msg">Nothing to check; the conformance suite did not request an acr claim in request object</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-1z6CLFu3kmpBlTEQr4Xnho73eLPIncNZ">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-O7GmYqHCRplo558L7RzhrJygSwVreTbo">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-O7GmYqHCRplo558L7RzhrJygSwVreTbo&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateIdTokenSignature</div>
+          <div class="log-msg">id_token signature validated</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-O7GmYqHCRplo558L7RzhrJygSwVreTbo">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">id_token</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+                    <div class="more-json">eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiQ0RjcDl2M05uNGk3MEZxV2lnNUF1b2htb3JENk1HIl0sImF1dGhfdGltZSI6MTcyMTIxMjQwMCwiZXhwIjoxNzIzODA1MDU0LCJpYXQiOjE3MjEyMTMwNTQsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0NDMiLCJqdGkiOiI0YTcxZjI4Yi1kODM4LTQ5ZDItYmNlNy02ZjU1MWRkNjU4MTEiLCJub25jZSI6Imh2TElybDJIakQiLCJzdWIiOiI1MjI3OTExMjExMzUzMzc4MzcifQ.yAftR87sXDtL-r6j_7wVDHnTCpyVah1fvDpQSkHCvQ7u26waIXbpU0gN2pBR94tDfnazltF5Y5dvaDJCYe-ERw</div>
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-zeDZE5t0uxipO47NqWZ5GuWKDssur3ux">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-zeDZE5t0uxipO47NqWZ5GuWKDssur3ux&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.2">OIDCC-2</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CheckForSubjectInIdToken</div>
+          <div class="log-msg">Found &#39;sub&#39; in id_token</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-zeDZE5t0uxipO47NqWZ5GuWKDssur3ux">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">sub</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">522791121135337837</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-KvXdj3Jw1jjqB6NuFDSItL6QeaykmsP8">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">EnsureIdTokenUpdatedAtValid</div>
+          <div class="log-msg">id_token response does not contain &#39;updated_at&#39;</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-KvXdj3Jw1jjqB6NuFDSItL6QeaykmsP8">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-cSqhkjy5ey82ENwGuAKzhJjxiFB2y215">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-cSqhkjy5ey82ENwGuAKzhJjxiFB2y215&#39;)">(3) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.10.2">OIDCC-10.2</a><a class="label requirement" target="_blank">OIDC-10.2.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateEncryptedIdTokenHasKid</div>
+          <div class="log-msg">Skipped evaluation due to missing required element: id_token jwe_header</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-cSqhkjy5ey82ENwGuAKzhJjxiFB2y215">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">path</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">jwe_header</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">mapped</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">object</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">id_token</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-FDHcFKuIcScQVPMM3DsZnHVLR3MGw8Bd">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.5">OIDCC-5.5</a><a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.5.1">OIDCC-5.5.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">EnsureIdTokenDoesNotContainName</div>
+          <div class="log-msg">name claim not found in id_token, which is expected as it was not requested to be returned there</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-FDHcFKuIcScQVPMM3DsZnHVLR3MGw8Bd">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-B7OjcOrtJvQZQ4D2xio8crCFv3KeId0n">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-B7OjcOrtJvQZQ4D2xio8crCFv3KeId0n&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://tools.ietf.org/html/rfc6749#section-5.1">RFC6749-5.1</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractExpiresInFromTokenEndpointResponse</div>
+          <div class="log-msg">Extracted &#39;expires_in&#39;</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-B7OjcOrtJvQZQ4D2xio8crCFv3KeId0n">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">expires_in</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">3600</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-YicVhMz6Ur76LA3OwEOT7cnoT8uzoGWy">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.3.3.6">OIDCC-3.3.3.6</a><a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.3.2.11">OIDCC-3.3.2.11</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractAtHash</div>
+          <div class="log-msg">Couldn&#39;t find at_hash in ID token</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-YicVhMz6Ur76LA3OwEOT7cnoT8uzoGWy">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-g1wWL7cMXqQausD3CU6ZiFRxBLKmTT99">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-g1wWL7cMXqQausD3CU6ZiFRxBLKmTT99&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.3.2.11">OIDCC-3.3.2.11</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateAtHash</div>
+          <div class="log-msg">Skipped evaluation due to missing required object: at_hash</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-g1wWL7cMXqQausD3CU6ZiFRxBLKmTT99">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">expected</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">at_hash</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">mapped</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-UTECua8yT7cqOiLmabv1ogtd4Hyy0rJo">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.3.3.6">OIDCC-3.3.3.6</a><a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.3.2.11">OIDCC-3.3.2.11</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ExtractCHash</div>
+          <div class="log-msg">Couldn&#39;t find c_hash in ID token</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-UTECua8yT7cqOiLmabv1ogtd4Hyy0rJo">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-GOUALZ0nHaSdP2J7XCfXhAhcoge7UIey">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-GOUALZ0nHaSdP2J7XCfXhAhcoge7UIey&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-info">INFO</span>
+
+
+
+
+          <div>
+            <a class="label requirement" target="_blank" href="https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.3.2.11">OIDCC-3.3.2.11</a>
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">ValidateCHash</div>
+          <div class="log-msg">Skipped evaluation due to missing required object: c_hash</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-GOUALZ0nHaSdP2J7XCfXhAhcoge7UIey">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">expected</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">c_hash</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">mapped</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-s7m5iedhaokwBgGwwrRYWvvMeXghgJJ8">
+      <tbody>
+      <tr>
+        <td colspan="3" class="block-title" style="background-color:#6d597a">Userinfo endpoint tests</td>
+      </tr>
+      </tbody>
+
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-PuGviJ9c9FdTSYYtvyBl7tZiE8QJ1kUl">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-PuGviJ9c9FdTSYYtvyBl7tZiE8QJ1kUl&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+
+
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CallProtectedResource</div>
+          <div class="log-msg">HTTP request</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-PuGviJ9c9FdTSYYtvyBl7tZiE8QJ1kUl">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">request_uri</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">https://host.docker.internal:4443/connect/userinfo</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_method</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">GET</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;Accept&quot;: &quot;application/json&quot;,
+  &quot;Authorization&quot;: &quot;Bearer eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjEyMTQ4NTQsImlhdCI6MTcyMTIxMzA1NCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQ0MyIsImp0aSI6IjA0OTI1ZDliLWEzNTgtNGY5MS1hNWE2LTZhYWE5Y2Q0Yjc3YSIsInN1YiI6IjUyMjc5MTEyMTEzNTMzNzgzNyJ9.Ufbv9c1iWN8RdgRkEp67T8S5hPvGgub64HrvwyfD6AlEXsYqPBax4RQ7y9UUbCoczb-w822iqjv4foQ1abN9Lw&quot;,
+  &quot;Content-Length&quot;: &quot;0&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">request_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text"></pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-p4oEJqPmM2B0VpnPqwoOI856R6yVARO3">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-p4oEJqPmM2B0VpnPqwoOI856R6yVARO3&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+                <span class="log-http">
+
+                        <span class="label bg-info">RESPONSE</span>
+
+
+
+
+                </span>
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CallProtectedResource</div>
+          <div class="log-msg">HTTP response</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-p4oEJqPmM2B0VpnPqwoOI856R6yVARO3">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">response_status_code</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">200 OK</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_status_text</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">OK</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;server&quot;: &quot;nginx&quot;,
+  &quot;date&quot;: &quot;Wed, 17 Jul 2024 10:44:14 GMT&quot;,
+  &quot;content-type&quot;: &quot;application/json; charset\u003dutf-8&quot;,
+  &quot;content-length&quot;: &quot;44&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;strict-transport-security&quot;: &quot;max-age\u003d63072000&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">response_body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">{&quot;id&quot;:522791121135337837,&quot;name&quot;:&quot;username0&quot;}</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-JxwEQ0NCiruDP1aF3nFDryBpmJrRnhAe">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-JxwEQ0NCiruDP1aF3nFDryBpmJrRnhAe&#39;)">(4) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">CallProtectedResource</div>
+          <div class="log-msg">Got a response from the resource endpoint</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-JxwEQ0NCiruDP1aF3nFDryBpmJrRnhAe">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">status</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">200</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">endpoint_name</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">resource</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">headers</td>
+                <td class="more-value">
+                  <div>
+
+
+
+                                    <pre class="more-json prettyprint lang-javascript">{
+  &quot;server&quot;: &quot;nginx&quot;,
+  &quot;date&quot;: &quot;Wed, 17 Jul 2024 10:44:14 GMT&quot;,
+  &quot;content-type&quot;: &quot;application/json; charset\u003dutf-8&quot;,
+  &quot;content-length&quot;: &quot;44&quot;,
+  &quot;connection&quot;: &quot;keep-alive&quot;,
+  &quot;strict-transport-security&quot;: &quot;max-age\u003d63072000&quot;
+}</pre>
+
+
+
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">body</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">{&quot;id&quot;:522791121135337837,&quot;name&quot;:&quot;username0&quot;}</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-GMUU8AohygAbmzl8nb3LXi7jc9MDGpkG">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-GMUU8AohygAbmzl8nb3LXi7jc9MDGpkG&#39;)">(2) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">EnsureHttpStatusCodeIs200</div>
+          <div class="log-msg">resource endpoint returned the expected http status</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-GMUU8AohygAbmzl8nb3LXi7jc9MDGpkG">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">expected_status</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">200</pre>
+                  </div>
+                </td>
+              </tr>
+              <tr class="more-row">
+                <td class="more-key">http_status</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">200</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-7V4PBzDxgUGaM7JV9hy8oNXzvaRMwqjL">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-success">SUCCESS</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">EnsureIdTokenDoesNotContainNonRequestedClaims</div>
+          <div class="log-msg">no non-requested id_token claims found</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-7V4PBzDxgUGaM7JV9hy8oNXzvaRMwqjL">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-xPeW9Uyf0MaWfE0NtDhH9mX58puEBTE8">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+          <div>
+            <a class="more-btn" href="javascript:moreClicked(&#39;h7DgRNfD6P1B6QH-xPeW9Uyf0MaWfE0NtDhH9mX58puEBTE8&#39;)">(1) More</a>
+          </div>
+        </td>
+
+        <td class="col-2 labelCollection">
+          <span class="label result-finished">FINISHED</span>
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">oidcc-server</div>
+          <div class="log-msg">Test has run to completion</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-xPeW9Uyf0MaWfE0NtDhH9mX58puEBTE8">
+
+
+            <table>
+              <tr class="more-row">
+                <td class="more-key">testmodule_result</td>
+                <td class="more-value">
+                  <div>
+
+
+
+
+
+
+                    <pre class="more-text">PASSED</pre>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-PFrsUwxydONiaUhB8s3GGKJX4oCuiOHa">
+      <tbody>
+      <tr>
+        <td colspan="3" class="block-title" style="background-color:#0077b6">Unregister dynamically registered client</td>
+      </tr>
+      </tbody>
+
+    </table>
+  </div>
+  <div class="log-item">
+    <table cellpadding="0" cellspacing="0" id="h7DgRNfD6P1B6QH-40y9Pn1osYTnlVwQtHcxTuIeGsAXvDZZ">
+
+      <tbody>
+      <tr class="log-entry-title">
+
+        <td class="col-1">
+          <span>2024-07-17 10:44:14</span>
+
+        </td>
+
+        <td class="col-2 labelCollection">
+
+
+
+
+
+          <div>
+
+          </div>
+        </td>
+
+        <td class="col-3">
+          <div class="log-src">UnregisterDynamicallyRegisteredClient</div>
+          <div class="log-msg">Couldn&#39;t find registration_access_token.</div>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <div class="more" id="more_h7DgRNfD6P1B6QH-40y9Pn1osYTnlVwQtHcxTuIeGsAXvDZZ">
+
+
+
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<a href="#testresultsheader" id="fixedtoplink">Test Results</a>
+</body>
+</html>
