@@ -4,19 +4,19 @@ import (
 	"context"
 	"errors"
 
-	"github.com/42milez/go-oidc-server/cmd/option"
+	"github.com/42milez/go-oidc-expt/cmd/option"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/consent"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/user"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/consent"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/user"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/entity"
+	"github.com/42milez/go-oidc-expt/cmd/entity"
 
-	"github.com/42milez/go-oidc-server/cmd/datastore"
-	"github.com/42milez/go-oidc-server/cmd/iface"
-	_ "github.com/42milez/go-oidc-server/pkg/ent/ent/runtime"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/cmd/datastore"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
+	_ "github.com/42milez/go-oidc-expt/pkg/ent/ent/runtime"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
 )
 
 func NewUser(opt *option.Option) *User {

@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/config"
 
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
+	"github.com/42milez/go-oidc-expt/pkg/xtestutil"
 	"github.com/gorilla/securecookie"
 )
 

@@ -10,8 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/consent"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/predicate"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/consent"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/predicate"
 )
 
 // ConsentUpdate is the builder for updating Consent entities.

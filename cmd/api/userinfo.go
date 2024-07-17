@@ -3,10 +3,10 @@ package api
 import (
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/cmd/service"
+	"github.com/42milez/go-oidc-expt/cmd/service"
 
-	"github.com/42milez/go-oidc-server/cmd/iface"
-	"github.com/42milez/go-oidc-server/cmd/option"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
+	"github.com/42milez/go-oidc-expt/cmd/option"
 )
 
 var userinfo *UserInfo

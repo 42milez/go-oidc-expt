@@ -6,17 +6,17 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/httpstore"
+	"github.com/42milez/go-oidc-expt/cmd/httpstore"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
-	"github.com/42milez/go-oidc-server/cmd/entity"
-	"github.com/42milez/go-oidc-server/cmd/iface"
-	"github.com/42milez/go-oidc-server/cmd/option"
-	"github.com/42milez/go-oidc-server/cmd/repository"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xrandom"
+	"github.com/42milez/go-oidc-expt/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/entity"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
+	"github.com/42milez/go-oidc-expt/cmd/option"
+	"github.com/42milez/go-oidc-expt/cmd/repository"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xrandom"
 
 	"golang.org/x/exp/slices"
 )

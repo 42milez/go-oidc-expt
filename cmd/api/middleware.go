@@ -9,12 +9,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
-	"github.com/42milez/go-oidc-server/cmd/httpstore"
-	"github.com/42milez/go-oidc-server/cmd/option"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/httpstore"
+	"github.com/42milez/go-oidc-expt/cmd/option"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
 	"github.com/rs/zerolog"
 
 	"github.com/go-chi/chi/v5/middleware"

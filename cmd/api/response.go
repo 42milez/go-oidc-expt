@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/config"
 
 	"github.com/pkg/errors"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xutil"
 )
 
 type Response struct {

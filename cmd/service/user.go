@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/cmd/entity"
-	"github.com/42milez/go-oidc-server/cmd/security"
+	"github.com/42milez/go-oidc-expt/cmd/entity"
+	"github.com/42milez/go-oidc-expt/cmd/security"
 )
 
 func NewRegisterUser(repo UserCreator) *CreateUser {

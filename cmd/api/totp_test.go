@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/config"
 )
 
 func Test_SecretKey(t *testing.T) {

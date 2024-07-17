@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/cmd/iface"
-	"github.com/42milez/go-oidc-server/cmd/option"
-	"github.com/42milez/go-oidc-server/cmd/repository"
-	"github.com/42milez/go-oidc-server/cmd/service"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
+	"github.com/42milez/go-oidc-expt/cmd/option"
+	"github.com/42milez/go-oidc-expt/cmd/repository"
+	"github.com/42milez/go-oidc-expt/cmd/service"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
 )
 
 var registration *Registration

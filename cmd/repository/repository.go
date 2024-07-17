@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent"
 )
 
 var errEntNotFoundError = &ent.NotFoundError{}

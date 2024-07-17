@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"net/http"
 
-	"github.com/42milez/go-oidc-server/cmd/security"
+	"github.com/42milez/go-oidc-expt/cmd/security"
 )
 
 var jwks *Jwks

@@ -5,14 +5,14 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/config"
 )
 
 // AuthCode holds the schema definition for the AuthCode entity.

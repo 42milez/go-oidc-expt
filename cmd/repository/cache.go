@@ -5,11 +5,11 @@ import (
 	"errors"
 	"time"
 
-	"github.com/42milez/go-oidc-server/cmd/datastore"
+	"github.com/42milez/go-oidc-expt/cmd/datastore"
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
 )
 
 func NewCache(cache *datastore.Cache) *Cache {

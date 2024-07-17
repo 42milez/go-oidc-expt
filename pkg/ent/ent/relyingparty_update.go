@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/authcode"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/redirecturi"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/relyingparty"
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/authcode"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/predicate"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/redirecturi"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 )
 
 // RelyingPartyUpdate is the builder for updating RelyingParty entities.

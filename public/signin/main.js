@@ -20,44 +20,14 @@ $(function () {
   $("#signin-btn").click(function () {
     $("#signin-btn").prop("disabled", true);
     (async function submit() {
-      // const RESP_GET = await fetch(API_SIGNIN_ENDPOINT)
-      //   .then(resp => {
-      //     switch (resp.status) {
-      //       case 200:
-      //         return resp;
-      //       default:
-      //         showError();
-      //     }
-      //   })
-      //   .catch(err => {
-      //     console.error(err);
-      //     showError();
-      //   });
-      // if (!RESP_GET) {
-      //   return;
-      // }
-
-      const PARAMS = new URLSearchParams(window.location.search);
-      // if (!PARAMS.has("cb")) {
-      //   showError("Invalid request.");
-      //   return
-      // }
-
       const OPTIONS = {
         method: "POST",
         headers: {
           "Content-Type": "application/json;charset=utf-8",
-          //"X-CSRF-Token": RESP_GET.headers.get("x-csrf-token"),
         },
         body: JSON.stringify({
           name: nameInput.val(),
           password: passwordInput.val(),
-          // client_id: PARAMS.get("client_id"),
-          // redirect_uri: PARAMS.get("redirect_uri"),
-          // scope: PARAMS.get("scope"),
-          // state: PARAMS.get("state"),
-          // nonce: PARAMS.get("nonce"),
-          // response_type: PARAMS.get("response_type"),
         }),
       };
 

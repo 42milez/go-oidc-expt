@@ -14,12 +14,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/42milez/go-oidc-server/cmd/datastore"
+	"github.com/42milez/go-oidc-expt/cmd/datastore"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
-	"github.com/42milez/go-oidc-server/pkg/xstring"
-	"github.com/42milez/go-oidc-server/pkg/xutil"
+	"github.com/42milez/go-oidc-expt/cmd/config"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/pkg/xstring"
+	"github.com/42milez/go-oidc-expt/pkg/xutil"
 
 	"github.com/google/go-cmp/cmp"
 )

@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/pkg/xhttp"
+	"github.com/42milez/go-oidc-expt/pkg/xhttp"
 
 	"golang.org/x/sync/errgroup"
 )

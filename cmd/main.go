@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/42milez/go-oidc-server/cmd/api"
-	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/api"
+	"github.com/42milez/go-oidc-expt/cmd/config"
 
 	"github.com/rs/zerolog/pkgerrors"
 

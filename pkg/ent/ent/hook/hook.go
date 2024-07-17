@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent"
 )
 
 // The AuthCodeFunc type is an adapter to allow the use of ordinary

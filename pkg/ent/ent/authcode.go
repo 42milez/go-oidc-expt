@@ -9,9 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/authcode"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/relyingparty"
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/authcode"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 )
 
 // AuthCode is the model entity for the AuthCode schema.

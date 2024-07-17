@@ -11,11 +11,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
-	"github.com/42milez/go-oidc-server/cmd/iface"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
 
 	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/v2/jwa"

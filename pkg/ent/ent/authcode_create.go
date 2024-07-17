@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/authcode"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/relyingparty"
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/authcode"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/relyingparty"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 )
 
 // AuthCodeCreate is the builder for creating a AuthCode entity.

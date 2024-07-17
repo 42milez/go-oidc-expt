@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent"
 )
 
 const (

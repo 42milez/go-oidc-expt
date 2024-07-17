@@ -1,4 +1,4 @@
-module github.com/42milez/go-oidc-server
+module github.com/42milez/go-oidc-expt
 
 go 1.22.5
 

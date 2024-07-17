@@ -5,12 +5,12 @@ package enttest
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent"
 	// required by schema hooks.
-	_ "github.com/42milez/go-oidc-server/pkg/ent/ent/runtime"
+	_ "github.com/42milez/go-oidc-expt/pkg/ent/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/migrate"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/migrate"
 )
 
 type (

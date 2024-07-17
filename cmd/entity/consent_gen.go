@@ -4,8 +4,8 @@ package entity
 import (
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent"
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 )
 
 func NewConsent(entity *ent.Consent) *Consent {

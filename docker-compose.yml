@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: docker/load-balancer/Dockerfile
     container_name: load-balancer
-    image: go-oidc-server-load-balancer:dev
+    image: go-oidc-expt-load-balancer:dev
     logging:
       driver: fluentd
       options:
@@ -48,7 +48,7 @@ services:
       dockerfile: ./docker/app/Dockerfile
       target: dev
     container_name: app
-    image: go-oidc-server-app:dev
+    image: go-oidc-expt-app:dev
     networks:
       - dev
     ports:
@@ -98,7 +98,7 @@ services:
       dockerfile: ./docker/app/Dockerfile
       target: "${CI_APP_BUILD_TARGET}"
     container_name: app-ci
-    image: go-oidc-server-app-ci:dev
+    image: go-oidc-expt-app-ci:dev
     networks:
       - dev
     ports:
@@ -163,7 +163,7 @@ services:
     build:
       context: ./docker/db
     container_name: db
-    image: go-oidc-server-db:dev
+    image: go-oidc-expt-db:dev
     networks:
       - dev
     ports:
@@ -200,7 +200,7 @@ services:
       context: .
       dockerfile: ./docker/log/Dockerfile
     container_name: log
-    image: go-oidc-server-log:dev
+    image: go-oidc-expt-log:dev
     networks:
       - dev
     ports:

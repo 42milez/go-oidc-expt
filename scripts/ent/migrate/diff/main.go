@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/migrate"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/migrate"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
+	"github.com/42milez/go-oidc-expt/cmd/config"
 
 	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect"

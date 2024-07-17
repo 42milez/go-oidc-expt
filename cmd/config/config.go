@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
 	"github.com/rs/zerolog"
 

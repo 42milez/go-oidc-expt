@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/42milez/go-oidc-server/cmd/datastore"
+	"github.com/42milez/go-oidc-expt/cmd/datastore"
 )
 
 func NewCheckHealth(db *datastore.Database, cache *datastore.Cache) *CheckHealth {

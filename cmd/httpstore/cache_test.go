@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
+	"github.com/42milez/go-oidc-expt/pkg/xtestutil"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/iface"
-	"github.com/42milez/go-oidc-server/pkg/xerr"
+	"github.com/42milez/go-oidc-expt/cmd/iface"
+	"github.com/42milez/go-oidc-expt/pkg/xerr"
 	"go.uber.org/mock/gomock"
 )
 

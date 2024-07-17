@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/user"
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/user"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 )
 
 // User is the model entity for the User schema.

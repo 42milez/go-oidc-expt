@@ -7,8 +7,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/42milez/go-oidc-server/pkg/ent/ent/predicate"
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/ent/ent/predicate"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 )
 
 // ID filters vertices based on their ID field.

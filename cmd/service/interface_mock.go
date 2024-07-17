@@ -13,8 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	entity "github.com/42milez/go-oidc-server/cmd/entity"
-	typedef "github.com/42milez/go-oidc-server/pkg/typedef"
+	entity "github.com/42milez/go-oidc-expt/cmd/entity"
+	typedef "github.com/42milez/go-oidc-expt/pkg/typedef"
 	gomock "go.uber.org/mock/gomock"
 )
 

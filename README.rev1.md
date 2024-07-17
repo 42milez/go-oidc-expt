@@ -1,6 +1,6 @@
-# go-oidc-server
+# go-oidc-expt
 
-`go-oidc-server` is an experimental implementation of [OpenID Connect](https://openid.net/connect/) with Go.
+`go-oidc-expt` is an experimental implementation of [OpenID Connect](https://openid.net/connect/) with Go.
 
 ## Features
 
@@ -45,8 +45,8 @@ References:
 ### Create and switch docker context:
 
 ```
-docker context create lima-go-oidc-server --docker "host=unix:///${HOME}/.lima/go-oidc-server/sock/docker.sock"
-docker context use lima-go-oidc-server
+docker context create lima-go-oidc-expt --docker "host=unix:///${HOME}/.lima/go-oidc-expt/sock/docker.sock"
+docker context use lima-go-oidc-expt
 ```
 
 ### Create and start the virtual machine thant runs docker containers

@@ -6,12 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/42milez/go-oidc-server/pkg/xtime"
+	"github.com/42milez/go-oidc-expt/pkg/xtime"
 
-	"github.com/42milez/go-oidc-server/pkg/typedef"
+	"github.com/42milez/go-oidc-expt/pkg/typedef"
 
-	"github.com/42milez/go-oidc-server/cmd/config"
-	"github.com/42milez/go-oidc-server/pkg/xtestutil"
+	"github.com/42milez/go-oidc-expt/cmd/config"
+	"github.com/42milez/go-oidc-expt/pkg/xtestutil"
 	"github.com/lestrrat-go/jwx/v2/jwa"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
