@@ -7,7 +7,7 @@
 
 ### Supported flows
 
-- [x] Authorization Code Flow
+- [x] [Authorization Code Flow](https://github.com/42milez/go-oidc-expt/blob/main/docs/uml/sequences/authorization_code_flow/README.md)
 - [ ] Implicit Flow
 - [ ] Hybrid Flow
 
