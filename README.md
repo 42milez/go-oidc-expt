@@ -1,6 +1,6 @@
 # go-oidc-expt
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/42milez/go-oidc-expt)](https://goreportcard.com/report/github.com/42milez/go-oidc-expt) [![Coverage Status](https://coveralls.io/repos/github/42milez/go-oidc-expt/badge.svg?branch=main)](https://coveralls.io/github/42milez/go-oidc-expt?branch=main) [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](https://github.com/42milez/go-oidc-expt/blob/main/LICENSE)
+[![Coverage Status](https://coveralls.io/repos/github/42milez/go-oidc-expt/badge.svg?branch=main)](https://coveralls.io/github/42milez/go-oidc-expt?branch=main) [![Go Report Card](https://goreportcard.com/badge/github.com/42milez/go-oidc-expt)](https://goreportcard.com/report/github.com/42milez/go-oidc-expt) [![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](https://github.com/42milez/go-oidc-expt/blob/main/LICENSE)
 
 - `go-oidc-expt` is an experimental implementation of [OpenID Connect](https://openid.net/connect/) with Go.
 - The results of [the conformance test](https://openid.net/certification/about-conformance-suite/) is available [here](https://htmlpreview.github.io/?https://github.com/42milez/go-oidc-expt/blob/main/docs/conformance-test/oidcc-basic-certification-test-plan/test_oidc-server/index.html).
