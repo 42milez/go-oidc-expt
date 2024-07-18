@@ -122,7 +122,7 @@ seed:
 ## test: Run all tests
 test:
 	@go clean -testcache
-	@cmd='go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs"`'; \
+	@cmd='go test -covermode=atomic -coverprofile=coverage.out `go list ./... | grep -v "/ent" | grep -v "/docs" | grep -v "/scripts"`'; \
 		$(call run,$${cmd})
 
 # ==================================================
