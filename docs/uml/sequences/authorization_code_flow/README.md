@@ -33,7 +33,7 @@ sequenceDiagram
     OP -->>- EndUser: Redirect to callback endpoint
   end
 
-  EndUser ->>+ RP: Send authorization code
+  EndUser ->>+ RP: Pass authorization code: GET /callback
 
   alt Get tokens (grant_type=authorization_code)
     RP ->>+ OP: Token Request: POST /token
