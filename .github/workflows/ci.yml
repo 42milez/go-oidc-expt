@@ -107,6 +107,13 @@ jobs:
       # --------------------------------------------------
       - name: Run all tests
         run: make test
+      #  Upload coverage
+      - name: Install goveralls
+        run: go install github.com/mattn/goveralls@latest
+      - name: Send coverage
+        run: goveralls -coverprofile=coverage.out -service=github
+        env:
+          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   notify:
     if: always()
     needs:
