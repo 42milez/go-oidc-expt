@@ -170,7 +170,7 @@ docker compose up -d swagger-ui
   - [JSON Web Algorithms (JWA)](https://www.rfc-editor.org/rfc/rfc7518.html)
   - Conformance Test
     - [About the Conformance Suite ](https://openid.net/certification/about-conformance-suite/)
-    - [OpenID Connect Conformance Profiles v3.0](https://github.com/42milez/go-oidc-expt/tree/main/docs/conformance-test/oidcc-basic-certification-test-plan/test_oidc-server)
+    - [OpenID Connect Conformance Profiles v3.0](https://openid.net/wordpress-content/uploads/2018/06/OpenID-Connect-Conformance-Profiles.pdf)
 - OpenAPI
   - [OpenAPI.Tools](https://openapi.tools/)
 - OTP
