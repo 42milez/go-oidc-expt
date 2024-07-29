@@ -4,7 +4,7 @@ go 1.22.5
 
 require (
 	ariga.io/atlas v0.25.0
-	entgo.io/ent v0.13.1
+	entgo.io/ent v0.14.0
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/caarlos0/env/v8 v8.0.0
 	github.com/cenkalti/backoff/v4 v4.3.0
