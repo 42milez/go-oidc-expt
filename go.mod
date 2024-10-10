@@ -1,9 +1,10 @@
 module github.com/42milez/go-oidc-expt
 
 go 1.22.5
+toolchain go1.22.8
 
 require (
-	ariga.io/atlas v0.25.0
+	ariga.io/atlas v0.28.1
 	entgo.io/ent v0.14.0
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/caarlos0/env/v8 v8.0.0
@@ -63,6 +64,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bkielbasa/cyclop v1.2.1 // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
+	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/bombsimon/wsl/v4 v4.2.1 // indirect
 	github.com/breml/bidichk v0.2.7 // indirect
 	github.com/breml/errchkjson v0.3.6 // indirect
